@@ -62,13 +62,13 @@ public class BuildSpecial extends AbstractAction {
 
 	private BuildingType chooseBuilding() {
 		List<JComponent> opts = new ArrayList<JComponent>();
-		List<BuildingType> types = new ArrayList<BuildingType>(GeneralSupply.getBuildingsLeft());
+		List<BuildingType> types = GeneralSupply.getBuildingsLeft();
 		if (types.size() == 0) {
 			System.out.println("No special buildings available");
 			return null;
 		}
 		for (BuildingType b : types) {
-			opts.add(new JLabel(Images.getBuildingIcon(b, 100)));			
+			opts.add(new JLabel(Images.getBuildingIcon(b, 150)));			
 		}
 		int optNo = SwingUtils.showOptionDialog("Choose building", "Special buildings", null, opts);
 		if (optNo == NONE) {

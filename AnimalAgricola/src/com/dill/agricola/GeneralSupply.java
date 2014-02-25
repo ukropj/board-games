@@ -1,11 +1,10 @@
 package com.dill.agricola;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.dill.agricola.model.Building;
 import com.dill.agricola.model.buildings.BuildingType;
@@ -27,7 +26,7 @@ public class GeneralSupply {
 	private static int stallsLeft;
 	private static int troughsLeft;
 	private static int expsLeft;
-	private static final Set<BuildingType> buildingsLeft = new HashSet<BuildingType>();
+	private static final List<BuildingType> buildingsLeft = new ArrayList<BuildingType>();
 	
 	static {
 		SPECIAL_BUILDINGS.put(BuildingType.HALF_TIMBERED_HOUSE, new HalfTimberedHouse());
@@ -55,7 +54,7 @@ public class GeneralSupply {
 		return expsLeft;
 	}
 
-	public static Set<BuildingType> getBuildingsLeft() {
+	public static List<BuildingType> getBuildingsLeft() {
 		return buildingsLeft;
 	}
 

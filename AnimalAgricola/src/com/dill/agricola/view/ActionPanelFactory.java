@@ -62,7 +62,7 @@ public class ActionPanelFactory {
 			JPanel bmP = SwingUtils.createVerticalPanel();
 			SwingUtils.updateResourcePanel(bmP, BuildingMaterial.MATERIALS, null, true);
 			actionButton.add(bmP);
-			c.gridx = 2;
+			c.gridx = 0;
 			c.gridy = 3;
 			c.gridwidth = 1;
 			c.gridheight = 2;
@@ -77,7 +77,7 @@ public class ActionPanelFactory {
 			fen1P.add(SwingUtils.createLabel(Images.toIcon(Images.getFenceImage(Dir.N), 5)));
 			fenP.add(fen1P);
 			actionButton.add(fenP);
-			c.gridx = 0;
+			c.gridx = 1;
 			c.gridy = 3;
 			c.gridwidth = 2;
 			break;
@@ -92,7 +92,7 @@ public class ActionPanelFactory {
 			wal1P.add(SwingUtils.createLabel(Images.toIcon(Images.getFenceImage(Dir.N), 5)));
 			walP.add(wal1P);
 			actionButton.add(walP);
-			c.gridx = 0;
+			c.gridx = 1;
 			c.gridy = 4;
 			c.gridwidth = 2;
 			break;
@@ -102,11 +102,11 @@ public class ActionPanelFactory {
 			return;
 		case TROUGHS:
 			JPanel troP = SwingUtils.createVerticalPanel();
-			troP.add(SwingUtils.createLabel("+1", Images.toIcon(Images.getThroughImage(), 20)));
+			troP.add(SwingUtils.createLabel("+1", Images.toIcon(Images.getTroughImage(), 20)));
 			troP.add(SwingUtils.createLabel("also unlimited"));
 			JPanel tro1P = SwingUtils.createResourcesPanel(BuildTrough.COST, null, SwingUtils.X_AXIS);
 			tro1P.add(SwingUtils.createArrowLabel(Dir.E, false));
-			tro1P.add(SwingUtils.createLabel(Images.toIcon(Images.getThroughImage(), 20)));
+			tro1P.add(SwingUtils.createLabel(Images.toIcon(Images.getTroughImage(), 20)));
 			troP.add(tro1P);
 			actionButton.add(troP);
 			c.gridx = 3;

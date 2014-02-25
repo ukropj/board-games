@@ -17,6 +17,10 @@ import com.dill.agricola.model.enums.Dir;
 import com.dill.agricola.model.enums.Material;
 
 public class Images {
+	
+	private final static int MISC_U_FENCE = 0;
+	private final static int MISC_TROUGH = 1;
+	private final static int MISC_U_TROUGH = 2;
 
 	private final static Map<BuildingType, BufferedImage> buildings = new EnumMap<BuildingType, BufferedImage>(BuildingType.class);
 	private final static Map<Animal, BufferedImage> animals = new EnumMap<Animal, BufferedImage>(Animal.class);
@@ -26,10 +30,9 @@ public class Images {
 	private final static Map<Material, ImageIcon> materialIcons = new EnumMap<Material, ImageIcon>(Material.class);
 	private final static Map<Dir, BufferedImage> fences = new EnumMap<Dir, BufferedImage>(Dir.class);
 	private final static BufferedImage[] firstTokens = new BufferedImage[2];
-	private final static BufferedImage[] farms = new BufferedImage[2];
-	private final static BufferedImage[] margins = new BufferedImage[2];
+	private final static BufferedImage[] farmsAndMargins = new BufferedImage[4];
+	private final static BufferedImage[] misc = new BufferedImage[4];
 	private static BufferedImage ext = null;
-	private static BufferedImage trough = null;
 
 	private final static Map<Dir, ImageIcon> arrowIcons = new EnumMap<Dir, ImageIcon>(Dir.class);
 	private final static Map<Dir, ImageIcon> redArrowIcons = new EnumMap<Dir, ImageIcon>(Dir.class);
@@ -63,10 +66,19 @@ public class Images {
 	}
 
 	public static BufferedImage getFarmImage(int id) {
-		if (farms[id] == null) {
-			farms[id] = createImage("farm" + (id + 1));
+		id = id % 2;
+		if (farmsAndMargins[id] == null) {
+			farmsAndMargins[id] = createImage("farm" + (id + 1));
 		}
-		return farms[id];
+		return farmsAndMargins[id];
+	}
+
+	public static BufferedImage getFarmMarginImage(Dir d) {
+		int id = d == Dir.W ? 0 : 1;
+		if (farmsAndMargins[2 + id] == null) {
+			farmsAndMargins[2 + id] = createImage("b" + (id + 1));
+		}
+		return farmsAndMargins[2 + id];
 	}
 
 	public static BufferedImage getExtensionImage() {
@@ -76,19 +88,18 @@ public class Images {
 		return ext;
 	}
 
-	public static BufferedImage getFarmMarginImage(Dir d) {
-		int id = d == Dir.W ? 0 : 1;
-		if (margins[id] == null) {
-			margins[id] = createImage("b" + (id + 1));
+	public static BufferedImage getTroughImage() {
+		if (misc[MISC_TROUGH] == null) {
+			misc[MISC_TROUGH] = createImage("trough");
 		}
-		return margins[id];
+		return misc[MISC_TROUGH];
 	}
-
-	public static BufferedImage getThroughImage() {
-		if (trough == null) {
-			trough = createImage("trough");
+	
+	public static BufferedImage getUnusedTroughImage() {
+		if (misc[MISC_U_TROUGH] == null) {
+			misc[MISC_U_TROUGH] = createImage("trough-unused");
 		}
-		return trough;
+		return misc[MISC_U_TROUGH];
 	}
 
 	public static BufferedImage getFenceImage(Dir d) {
@@ -110,6 +121,13 @@ public class Images {
 			fences.put(d.opposite(), img);
 			return img;
 		}
+	}
+	
+	public static BufferedImage getUnusedFenceImage() {
+		if (misc[MISC_U_FENCE] == null) {
+			misc[MISC_U_FENCE] = createImage("border-unused");
+		}
+		return misc[MISC_U_FENCE];
 	}
 
 	public static BufferedImage getAnimalImage(Animal type) {
