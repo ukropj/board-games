@@ -116,6 +116,7 @@ public class ActionPerformer {
 			action.setUsed();
 			System.out.println("Action done: " + Namer.getName(action));
 			action = null;
+			player.notifyObservers(ChangeType.ACTION_DONE);
 			return true;
 		} else{
 			return false;

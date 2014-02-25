@@ -29,6 +29,7 @@ import com.dill.agricola.actions.ThreeWood;
 import com.dill.agricola.actions.TwoStone;
 import com.dill.agricola.actions.Walls;
 import com.dill.agricola.model.Player;
+import com.dill.agricola.model.enums.ChangeType;
 import com.dill.agricola.model.enums.PlayerColor;
 import com.dill.agricola.view.Board;
 import com.dill.agricola.view.Images;
@@ -36,7 +37,7 @@ import com.dill.agricola.view.SwingUtils;
 
 public class Game {
 
-	public final static int ROUNDS = Main.DEBUG ? 3 : 8;
+	public final static int ROUNDS = Main.DEBUG ? 5 : 8;
 
 	private final Player[] players;
 	private final Board board;
@@ -166,6 +167,7 @@ public class Game {
 			p.returnAllWorkers();
 			// breed animals
 			newAnimals += p.breedAnimals();
+			p.notifyObservers(ChangeType.ROUND_END);
 		}
 		board.endRound();
 		if (newAnimals == 0) {
@@ -188,16 +190,9 @@ public class Game {
 	}
 
 	private void endGame() {
-		System.out.println("Scoring:");
-		float scoreBlue = players[PlayerColor.BLUE.ordinal()].getScore();
-		System.out.println("BLUE: " + scoreBlue);
-		float scoreRed = players[PlayerColor.RED.ordinal()].getScore();
-		System.out.println("RED: " + scoreRed);
-		if (scoreBlue == scoreRed) {
-			System.out.println("WINNER: " + initialStartingPlayer.other());
-		} else {
-			System.out.println("WINNER: " + (scoreBlue > scoreRed ? PlayerColor.BLUE : PlayerColor.RED));
-		}
+		float[] scores = new float[]{players[0].getScore(), players[1].getScore()};
+		int winnerNo = scores[0] > scores[1] ? 0 : scores[0] < scores[1] ? 1 : initialStartingPlayer.other().ordinal();
+		board.showScoring(players, players[winnerNo].getColor());
 	}
 
 	private void releaseAnimals() {
@@ -206,6 +201,7 @@ public class Game {
 			if (a > 0) {
 				System.out.println(p.getColor() + ": " + a + " animals run away!");
 			}
+			p.notifyObservers(ChangeType.TURN_END);
 		}
 	}
 

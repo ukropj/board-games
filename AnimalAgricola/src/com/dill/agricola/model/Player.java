@@ -265,7 +265,7 @@ public class Player extends SimpleObservable {
 		int count = 0;
 		for (Animal type : Animal.values()) {
 			int loose = farm.getLooseAnimals(type);
-			if (farm.removeAnimals(type, loose)) {
+			if (unpurchaseAnimal(type, loose)) {
 				count += loose;
 			}
 		}
@@ -294,23 +294,36 @@ public class Player extends SimpleObservable {
 		workers = MAX_WORKERS;
 		setChanged();
 	}
+	
+	public int getAnimalScore(Animal type) {
+		int count = getAnimal(type);
+		return count + type.getBonusPoints(count);
+	}
+	
+	public int getExtensionsScore() {
+		return farm.getUsedExtensions() * USED_EXT_VP;
+	}
+	
+	public float getBuildingScore() {
+		float score = 0;
+		for (Building b : farm.getBuiltBuildings()) {
+			score += b.getVictoryPoints(this);
+		}
+		return score;
+	}
 
 	public float getScore() {
 		// score animals
 		int animals = 0;
 		for (Animal type : Animal.values()) {
-			int count = getAnimal(type);
-			animals += count + type.getBonusPoints(count);
-			System.out.println("\t" + type + ": " + (count + type.getBonusPoints(count)));
+			animals += getAnimalScore(type);
+			System.out.println("\t" + type + ": " + getAnimalScore(type));
 		}
 		// score extensions
-		int usedExts = farm.getUsedExtensions() * USED_EXT_VP;
+		int usedExts = getExtensionsScore();
 		System.out.println("\tExtensions: " + usedExts);
 		// score buildings
-		float buildings = 0;
-		for (Building b : farm.getBuiltBuildings()) {
-			buildings += b.getVictoryPoints(this);
-		}
+		float buildings = getBuildingScore();
 		System.out.println("\tBuildings: " + buildings);
 
 		return animals + usedExts + buildings;

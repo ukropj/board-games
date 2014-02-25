@@ -134,9 +134,9 @@ public class FarmPanel extends JPanel {
 		// toggleMovableStroke(g, farm.isActiveSpot(new Point(pos.x, 0), Purchasable.EXTENSION));
 
 		g.setColor(Color.BLACK);
-		/*if (Main.DEBUG) {
-			g.drawRect(x + M, y + M, L, L);
-		}*/
+//		if (Main.DEBUG) {
+//			g.drawRect(x + M, y + M, L, L);
+//		}
 
 		// building
 		Building b = farm.getBuilding(pos);
@@ -247,16 +247,19 @@ public class FarmPanel extends JPanel {
 					j++;
 				}
 			}
+			
+			BufferedImage arrowImg = Images.getArrowImage(Dir.E, true);
+			g.drawImage(arrowImg, 2*M, y - M - arrowImg.getHeight() / 2, arrowImg.getWidth() / 2, arrowImg.getHeight() / 2, null);
 		}
 	}
 
 	private void drawUnused(Graphics2D g) {
 		int total = farm.getAllUnusedCount() + farm.getUnusedBuildings().size();
 		if (total > 0) {
-			int maxHeight = farm.getHeight() * S;
+			int maxHeight = farm.getHeight() * S - S/2;
 			int l = Math.min(S / 3, maxHeight / total);
 			int x = 0;
-			int y = Y1 + maxHeight - l;
+			int y = Y1 + S/4;
 			int j = 0;
 
 			for (Building b : farm.getUnusedBuildings()) {
@@ -264,7 +267,7 @@ public class FarmPanel extends JPanel {
 				float r = 0.2f;
 				int w = (int) (img.getWidth() * r), h = (int) (img.getHeight() * r);
 				System.out.println(w + " " + h);
-				g.drawImage(img, x + (X1 - w)/2, y - j * l, w, h, null);
+				g.drawImage(img, x + (X1 - w)/2, y + j * l, w, h, null);
 				j++;
 			}
 
@@ -288,10 +291,13 @@ public class FarmPanel extends JPanel {
 				}
 				for (int i = 0; i < count; i++) {
 					int w = (int) (img.getWidth() * r), h = (int) (img.getHeight() * r);
-					g.drawImage(img, x +(X1 - w)/2, y - j * l, w, h, null);
+					g.drawImage(img, x +(X1 - w)/2, y + j * l, w, h, null);
 					j++;
 				}
 			}
+			
+			BufferedImage arrowImg = Images.getArrowImage(Dir.S, true);
+			g.drawImage(arrowImg, 2*M, 2*M, arrowImg.getWidth() / 2, arrowImg.getHeight() / 2, null);
 		}
 	}
 

@@ -1,7 +1,9 @@
 package com.dill.agricola.view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -11,18 +13,24 @@ import java.awt.event.KeyEvent;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.BorderFactory;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
 import com.dill.agricola.ActionPerformer;
 import com.dill.agricola.Game;
 import com.dill.agricola.Main;
 import com.dill.agricola.model.Player;
+import com.dill.agricola.model.buildings.BuildingType;
+import com.dill.agricola.model.enums.Animal;
 import com.dill.agricola.model.enums.ChangeType;
 import com.dill.agricola.model.enums.PlayerColor;
 
@@ -148,6 +156,58 @@ public class Board extends JFrame implements Observer{
 		actionBoard.enableSubmitOnly();
 	}
 
+	public void showScoring(Player[] players, PlayerColor winner) {
+		// TODO extract to separate class
+		JDialog d = new JDialog(this, "Scoring", true);
+		JPanel p = new JPanel(new GridLayout(8, 3, 4, 4));
+		// heading
+		p.add(new JPanel());
+		for (Player player : players) {
+			JLabel playerL = SwingUtils.createLabel("Player " + (player.getColor().ordinal() + 1));
+			playerL.setOpaque(true);
+			playerL.setBackground(player.getColor().getRealColor());
+			p.add(addBorder(playerL));			
+		}
+		// animals
+		for (Animal a : Animal.values()) {
+			p.add(addBorder(SwingUtils.createAnimalLabel(a, 0, SwingUtils.NO_NUMBER)));
+			p.add(addBorder(SwingUtils.createLabel(players[0].getAnimalScore(a) + " [" + players[0].getAnimal(a) + "]")));
+			p.add(addBorder(SwingUtils.createLabel(players[1].getAnimalScore(a) + " [" + players[1].getAnimal(a) + "]")));
+		}
+		// extensions
+		p.add(addBorder(SwingUtils.createLabel(Images.toIcon(Images.getExtensionImage(), 30))));
+		p.add(addBorder(SwingUtils.createLabel(String.valueOf(players[0].getExtensionsScore()))));
+		p.add(addBorder(SwingUtils.createLabel(String.valueOf(players[1].getExtensionsScore()))));
+		// buildings
+		p.add(addBorder(SwingUtils.createLabel(Images.getBuildingIcon(BuildingType.HALF_TIMBERED_HOUSE, 30))));
+		p.add(addBorder(SwingUtils.createLabel(String.valueOf(players[0].getBuildingScore()))));
+		p.add(addBorder(SwingUtils.createLabel(String.valueOf(players[1].getBuildingScore()))));
+		// total
+		p.add(addBorder(SwingUtils.createLabel("\u03A3")));
+		float blueTotal = players[0].getScore();
+		float redTotal = players[1].getScore();
+		p.add(addBorder(SwingUtils.createLabel(String.valueOf(blueTotal))));
+		p.add(addBorder(SwingUtils.createLabel(String.valueOf(redTotal))));
+
+		d.getContentPane().setLayout(new BorderLayout(5, 5));
+		d.getContentPane().add(p, BorderLayout.CENTER);
+		JLabel winnerLabel = SwingUtils.createLabel("Player " + (winner.ordinal() + 1) + " is the winner");
+		winnerLabel.setOpaque(true);
+		winnerLabel.setBackground(winner.getRealColor());
+		d.getContentPane().add(winnerLabel, BorderLayout.SOUTH);
+		
+		d.pack();
+		d.setSize(300, 400);
+		d.setVisible(true);
+//		d.setLocation(getLocation());
+		d.setLocationRelativeTo(null);
+	}
+	
+	private JComponent addBorder(JComponent component) {
+		component.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+		return component;
+	}
+
 	public void startingPlayerChanged() {
 		playerBoards[0].updatePlayer();
 		playerBoards[1].updatePlayer();
@@ -195,5 +255,6 @@ public class Board extends JFrame implements Observer{
 			pack();
 		}
 	}
+
 
 }

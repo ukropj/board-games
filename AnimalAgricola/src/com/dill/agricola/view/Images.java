@@ -198,6 +198,10 @@ public class Images {
 		return toIcon(getBuildingImage(type), height);
 	}
 
+	public static BufferedImage getArrowImage(Dir d, boolean red) {
+		return createImage("arrow" + (red ? "-red" : "") + (d.ordinal() + 1));
+	}
+	
 	public static ImageIcon getArrowIcon(Dir d, boolean red) {
 		Map<Dir, ImageIcon> map = red ? redArrowIcons : arrowIcons;
 		if (map.containsKey(d)) {

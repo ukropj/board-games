@@ -25,7 +25,7 @@ public class Farm extends SimpleObservable {
 
 	private final Map<Dir, Integer> extensions = new EnumMap<Dir, Integer>(Dir.class);
 	private final Animals looseAnimals = new Animals();
-//	private final Map<Animal, Integer> animals = new EnumMap<Animal, Integer>(Animal.class);
+	//	private final Map<Animal, Integer> animals = new EnumMap<Animal, Integer>(Animal.class);
 
 	private final Map<Purchasable, Integer> unusedStuff = new EnumMap<Purchasable, Integer>(Purchasable.class);
 	private final Stack<Building> unusedBuildings = new Stack<Building>();
@@ -85,6 +85,7 @@ public class Farm extends SimpleObservable {
 			this.activeType = activeType;
 			activeSpots.clear();
 			activeFenceSpots.clear();
+			setChanged();
 		}
 	}
 
@@ -443,36 +444,26 @@ public class Farm extends SimpleObservable {
 	public void addAnimals(Animal type, int count) {
 		Main.asrtPositive(count, "Cannot add negative amount of animals");
 		addLooseAnimals(type, count);
-//		animals.put(type, animals.get(type) + count);
 	}
 
 	public boolean removeAnimals(Animal type, int count) {
 		int unused = getLooseAnimals(type);
 		if (unused >= count) {
 			addLooseAnimals(type, -count);
-//			animals.put(type, animals.get(type) - count);
 			return true;
 		}
-//		int present = getAnimals(type);
-//		if (present >= count) {
-			addLooseAnimals(type, -unused);
-			if (takeRandomAnimals(type, count - unused)) {
-				addLooseAnimals(type, -(count - unused));
-//				animals.put(type, animals.get(type) - count);
-				return true;
-			}
-//		}
+		addLooseAnimals(type, -unused);
+		if (takeRandomAnimals(type, count - unused)) {
+			addLooseAnimals(type, -(count - unused));
+			return true;
+		}
 		return false;
 	}
-
-//	public int getAnimals(Animal type) {
-//		return animals.get(type);
-//	}
 
 	public int getLooseAnimals(Animal type) {
 		return looseAnimals.get(type);
 	}
-	
+
 	public Animals getLooseAnimals() {
 		return looseAnimals;
 	}
