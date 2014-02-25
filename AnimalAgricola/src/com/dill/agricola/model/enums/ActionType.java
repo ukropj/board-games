@@ -1,0 +1,21 @@
+package com.dill.agricola.model.enums;
+
+public enum ActionType {
+	STARTING_ONE_WOOD,
+	THREE_WOOD,
+	TWO_STONE,
+	ONE_STONE,
+	BUILDING_MATERIAL,
+	EXPAND,
+	FENCES,
+	WALLS,
+	STALLS,
+	STABLES,
+	SPECIAL,
+	SPECIAL2,
+	TROUGHS,
+	MILLPOND,
+	PIG_AND_SHEEP,
+	COW_AND_PIGS,
+	HORSE_AND_SHEEP;
+}
