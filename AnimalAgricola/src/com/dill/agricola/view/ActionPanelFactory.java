@@ -44,9 +44,12 @@ public class ActionPanelFactory {
 		c.gridwidth = 3;
 		c.ipadx = c.ipady = 3;
 		c.insets = new Insets(5,5,5,5);
+		c.weighty = 0.5;
 		switch (action.getType()) {
 		case STARTING_ONE_WOOD:
 			JLabel firstL = SwingUtils.createLabel(Images.getFirstTokenIcon(0, 30));
+			firstL.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
+			firstL.setOpaque(false);
 			createRefillPanel(parent, 0, 0, action, actionButton, firstL, StartOneWood.REFILL);
 			return;
 		case THREE_WOOD:
@@ -125,8 +128,6 @@ public class ActionPanelFactory {
 			c.gridwidth = 2;
 			c.gridheight = 2;
 			c.weightx = 0.5;
-//			c.fill = GridBagConstraints.HORIZONTAL;
-//			c.anchor = GridBagConstraints.PAGE_START;
 			break;
 		case STABLES:
 			JPanel staP = SwingUtils.createVerticalPanel();
@@ -145,11 +146,9 @@ public class ActionPanelFactory {
 			c.gridwidth = 2;
 			c.gridheight = 2;
 			c.weightx = 0.5;
-//			c.fill = GridBagConstraints.HORIZONTAL;
-//			c.anchor = GridBagConstraints.PAGE_START;
 			break;
 		case SPECIAL:
-			actionButton.setText("<html>1 Special<br/>Building");
+			actionButton.add(SwingUtils.createLabel("<html>1 Special<br/>Building"));
 //			JPanel sbP = SwingUtils.createFlowPanel();
 //			for (BuildingType b : GeneralSupply.getBuildingsLeft()) {
 //				sbP.add(new JLabel(Images.getBuildingIcon(b, 40)));
@@ -159,18 +158,12 @@ public class ActionPanelFactory {
 			c.gridx = 4;
 			c.gridy = 7;
 			c.gridwidth = 2;
-			c.weighty = 0.5;
-//			c.fill = GridBagConstraints.HORIZONTAL;
-//			c.anchor = GridBagConstraints.PAGE_START;
 			break;
 		case SPECIAL2:
-			actionButton.setText("<html>1 Special<br/>Building");
+			actionButton.add(SwingUtils.createLabel("<html>1 Special<br/>Building"));
 			c.gridx = 4;
 			c.gridy = 8;
 			c.gridwidth = 2;
-			c.weighty = 0.5;
-//			c.fill = GridBagConstraints.HORIZONTAL;
-//			c.anchor = GridBagConstraints.PAGE_START;
 			break;
 		case MILLPOND:
 			createRefillPanel(parent, 0, 5, action, actionButton, null, Millpond.REFILL, null, Millpond.OTHER_ANIMAL);
@@ -210,7 +203,7 @@ public class ActionPanelFactory {
 		c.ipadx = c.ipady = 3;
 		c.insets = new Insets(5,5,5,0);
 		c.weightx = 0.6;
-//		c.weightx = 0.2;
+		c.weighty = 0.5;
 		parent.add(createPrefixPanel(materials, animal, otherAnimal), c);
 		c.gridx = 3*x + 2;
 		c.gridwidth = 1;
