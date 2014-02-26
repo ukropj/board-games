@@ -2,8 +2,8 @@ package com.dill.agricola.model;
 
 import com.dill.agricola.Main;
 import com.dill.agricola.common.Materials;
-import com.dill.agricola.model.buildings.BuildingType;
 import com.dill.agricola.model.types.Animal;
+import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.support.Namer;
 
 public abstract class Building extends Space {

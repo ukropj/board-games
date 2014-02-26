@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.dill.agricola.model.Building;
-import com.dill.agricola.model.buildings.BuildingType;
 import com.dill.agricola.model.buildings.HalfTimberedHouse;
 import com.dill.agricola.model.buildings.OpenStables;
 import com.dill.agricola.model.buildings.Shelter;
 import com.dill.agricola.model.buildings.StorageBuilding;
+import com.dill.agricola.model.types.BuildingType;
 
 public class GeneralSupply {
 

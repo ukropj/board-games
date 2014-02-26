@@ -2,6 +2,7 @@ package com.dill.agricola.model.buildings;
 
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Building;
+import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Material;
 
 public class Stall extends Building {

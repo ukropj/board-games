@@ -1,4 +1,4 @@
-package com.dill.agricola.model.buildings;
+package com.dill.agricola.model.types;
 
 public enum BuildingType {
 
