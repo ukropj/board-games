@@ -1,7 +1,7 @@
 package com.dill.agricola.actions;
 
-import com.dill.agricola.model.enums.ActionType;
-import com.dill.agricola.model.enums.Animal;
+import com.dill.agricola.model.types.ActionType;
+import com.dill.agricola.model.types.Animal;
 
 public class PigSheep extends AnimalAction {
 

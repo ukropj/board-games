@@ -1,4 +1,4 @@
-package com.dill.agricola.view;
+package com.dill.agricola.view.utils;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

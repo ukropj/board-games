@@ -26,14 +26,16 @@ import com.dill.agricola.actions.StateChangeListener;
 import com.dill.agricola.actions.ThreeWood;
 import com.dill.agricola.actions.TwoStone;
 import com.dill.agricola.actions.Walls;
+import com.dill.agricola.common.Animals;
+import com.dill.agricola.common.Dir;
+import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.buildings.BuildingType;
 import com.dill.agricola.model.buildings.Stables;
 import com.dill.agricola.model.buildings.Stall;
-import com.dill.agricola.model.enums.Animal;
-import com.dill.agricola.model.enums.Animals;
-import com.dill.agricola.model.enums.Dir;
-import com.dill.agricola.model.enums.Material;
-import com.dill.agricola.model.enums.Materials;
+import com.dill.agricola.model.types.Animal;
+import com.dill.agricola.model.types.Material;
+import com.dill.agricola.view.utils.Images;
+import com.dill.agricola.view.utils.SwingUtils;
 
 public class ActionPanelFactory {
 	

@@ -1,4 +1,4 @@
-package com.dill.agricola.view;
+package com.dill.agricola.view.utils;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -18,12 +18,12 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import com.dill.agricola.model.enums.Animal;
-import com.dill.agricola.model.enums.Animals;
-import com.dill.agricola.model.enums.Dir;
-import com.dill.agricola.model.enums.Material;
-import com.dill.agricola.model.enums.Materials;
-import com.dill.agricola.view.Images.IconSize;
+import com.dill.agricola.common.Animals;
+import com.dill.agricola.common.Dir;
+import com.dill.agricola.common.Materials;
+import com.dill.agricola.model.types.Animal;
+import com.dill.agricola.model.types.Material;
+import com.dill.agricola.view.utils.Images.IconSize;
 
 public class SwingUtils {
 

@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.buildings.HalfTimberedHouse;
 import com.dill.agricola.model.buildings.OpenStables;
@@ -14,10 +15,9 @@ import com.dill.agricola.model.buildings.Shelter;
 import com.dill.agricola.model.buildings.Stables;
 import com.dill.agricola.model.buildings.Stall;
 import com.dill.agricola.model.buildings.StorageBuilding;
-import com.dill.agricola.model.enums.Animal;
-import com.dill.agricola.model.enums.Material;
-import com.dill.agricola.model.enums.Materials;
-import com.dill.agricola.model.enums.Purchasable;
+import com.dill.agricola.model.types.Animal;
+import com.dill.agricola.model.types.Material;
+import com.dill.agricola.model.types.Purchasable;
 
 @SuppressWarnings("serial")
 public class DebugPanel extends JPanel {

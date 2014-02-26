@@ -1,9 +1,9 @@
 package com.dill.agricola.actions;
 
+import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Player;
-import com.dill.agricola.model.enums.ActionType;
-import com.dill.agricola.model.enums.Materials;
-import com.dill.agricola.model.enums.Purchasable;
+import com.dill.agricola.model.types.ActionType;
+import com.dill.agricola.model.types.Purchasable;
 
 public abstract class PurchaseAction extends AbstractAction {
 

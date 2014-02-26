@@ -1,4 +1,4 @@
-package com.dill.agricola.view;
+package com.dill.agricola.view.utils;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -11,10 +11,10 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 import com.dill.agricola.Main;
+import com.dill.agricola.common.Dir;
 import com.dill.agricola.model.buildings.BuildingType;
-import com.dill.agricola.model.enums.Animal;
-import com.dill.agricola.model.enums.Dir;
-import com.dill.agricola.model.enums.Material;
+import com.dill.agricola.model.types.Animal;
+import com.dill.agricola.model.types.Material;
 
 public class Images {
 	

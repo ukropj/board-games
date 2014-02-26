@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Set;
 
 import com.dill.agricola.Main;
-import com.dill.agricola.model.enums.Animal;
-import com.dill.agricola.model.enums.Dir;
+import com.dill.agricola.common.Dir;
+import com.dill.agricola.model.types.Animal;
 
 public abstract class Space {
 

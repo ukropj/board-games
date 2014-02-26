@@ -1,9 +1,9 @@
 package com.dill.agricola.model.buildings;
 
+import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Building;
 import com.dill.agricola.model.Space;
-import com.dill.agricola.model.enums.Material;
-import com.dill.agricola.model.enums.Materials;
+import com.dill.agricola.model.types.Material;
 
 
 public class Stables extends Building {

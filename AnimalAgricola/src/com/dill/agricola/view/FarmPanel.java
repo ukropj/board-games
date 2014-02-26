@@ -17,18 +17,19 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import com.dill.agricola.common.Animals;
+import com.dill.agricola.common.Dir;
+import com.dill.agricola.common.Point;
 import com.dill.agricola.model.Building;
 import com.dill.agricola.model.Farm;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.Space;
 import com.dill.agricola.model.buildings.BuildingType;
-import com.dill.agricola.model.enums.Animal;
-import com.dill.agricola.model.enums.Animals;
-import com.dill.agricola.model.enums.ChangeType;
-import com.dill.agricola.model.enums.Dir;
-import com.dill.agricola.model.enums.Point;
-import com.dill.agricola.model.enums.Purchasable;
-import com.dill.agricola.view.Images.IconSize;
+import com.dill.agricola.model.types.Animal;
+import com.dill.agricola.model.types.ChangeType;
+import com.dill.agricola.model.types.Purchasable;
+import com.dill.agricola.view.utils.Images;
+import com.dill.agricola.view.utils.Images.IconSize;
 
 @SuppressWarnings("serial")
 public class FarmPanel extends JPanel {

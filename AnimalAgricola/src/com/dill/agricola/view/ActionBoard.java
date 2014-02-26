@@ -16,9 +16,10 @@ import java.util.Map.Entry;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import com.dill.agricola.ActionPerformer;
 import com.dill.agricola.actions.Action;
-import com.dill.agricola.model.enums.ActionType;
+import com.dill.agricola.actions.ActionPerformer;
+import com.dill.agricola.model.types.ActionType;
+import com.dill.agricola.view.utils.SwingUtils;
 
 @SuppressWarnings("serial")
 public class ActionBoard extends JPanel {

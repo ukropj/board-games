@@ -12,6 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import com.dill.agricola.GeneralSupply;
+import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Building;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.buildings.BuildingType;
@@ -19,13 +20,12 @@ import com.dill.agricola.model.buildings.HalfTimberedHouse;
 import com.dill.agricola.model.buildings.OpenStables;
 import com.dill.agricola.model.buildings.Shelter;
 import com.dill.agricola.model.buildings.StorageBuilding;
-import com.dill.agricola.model.enums.ActionType;
-import com.dill.agricola.model.enums.Animal;
-import com.dill.agricola.model.enums.Materials;
-import com.dill.agricola.model.enums.Purchasable;
-import com.dill.agricola.view.Images;
-import com.dill.agricola.view.SwingUtils;
-import com.dill.agricola.view.Images.IconSize;
+import com.dill.agricola.model.types.ActionType;
+import com.dill.agricola.model.types.Animal;
+import com.dill.agricola.model.types.Purchasable;
+import com.dill.agricola.view.utils.Images;
+import com.dill.agricola.view.utils.SwingUtils;
+import com.dill.agricola.view.utils.Images.IconSize;
 
 public class BuildSpecial extends AbstractAction {
 

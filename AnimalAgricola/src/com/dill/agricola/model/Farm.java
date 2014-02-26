@@ -9,12 +9,12 @@ import java.util.Set;
 import java.util.Stack;
 
 import com.dill.agricola.Main;
-import com.dill.agricola.model.enums.Animal;
-import com.dill.agricola.model.enums.Animals;
-import com.dill.agricola.model.enums.Dir;
-import com.dill.agricola.model.enums.DirPoint;
-import com.dill.agricola.model.enums.Point;
-import com.dill.agricola.model.enums.Purchasable;
+import com.dill.agricola.common.Animals;
+import com.dill.agricola.common.Dir;
+import com.dill.agricola.common.DirPoint;
+import com.dill.agricola.common.Point;
+import com.dill.agricola.model.types.Animal;
+import com.dill.agricola.model.types.Purchasable;
 
 public class Farm extends SimpleObservable {
 

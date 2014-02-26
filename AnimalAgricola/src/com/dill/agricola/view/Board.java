@@ -25,14 +25,16 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
-import com.dill.agricola.ActionPerformer;
 import com.dill.agricola.Game;
 import com.dill.agricola.Main;
+import com.dill.agricola.actions.ActionPerformer;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.buildings.BuildingType;
-import com.dill.agricola.model.enums.Animal;
-import com.dill.agricola.model.enums.ChangeType;
-import com.dill.agricola.model.enums.PlayerColor;
+import com.dill.agricola.model.types.Animal;
+import com.dill.agricola.model.types.ChangeType;
+import com.dill.agricola.model.types.PlayerColor;
+import com.dill.agricola.view.utils.Images;
+import com.dill.agricola.view.utils.SwingUtils;
 
 @SuppressWarnings("serial")
 public class Board extends JFrame implements Observer{

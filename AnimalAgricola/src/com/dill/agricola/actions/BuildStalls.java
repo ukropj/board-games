@@ -3,8 +3,8 @@ package com.dill.agricola.actions;
 import com.dill.agricola.GeneralSupply;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.buildings.Stall;
-import com.dill.agricola.model.enums.ActionType;
-import com.dill.agricola.model.enums.Purchasable;
+import com.dill.agricola.model.types.ActionType;
+import com.dill.agricola.model.types.Purchasable;
 
 public class BuildStalls extends AbstractAction {
 	

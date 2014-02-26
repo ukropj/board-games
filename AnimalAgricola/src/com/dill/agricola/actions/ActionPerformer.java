@@ -1,8 +1,8 @@
-package com.dill.agricola;
+package com.dill.agricola.actions;
 
-import com.dill.agricola.actions.Action;
 import com.dill.agricola.model.Player;
-import com.dill.agricola.model.enums.ChangeType;
+import com.dill.agricola.model.types.ChangeType;
+import com.dill.agricola.support.Namer;
 
 public class ActionPerformer {
 

@@ -1,4 +1,4 @@
-package com.dill.agricola.model.enums;
+package com.dill.agricola.common;
 
 import java.util.EnumMap;
 import java.util.Map;

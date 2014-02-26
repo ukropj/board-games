@@ -1,7 +1,8 @@
-package com.dill.agricola.model.enums;
+package com.dill.agricola.common;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 
 public class Point {
