@@ -72,6 +72,7 @@ public class GeneralSupply {
 
 	public static void useBuilding(BuildingType buildingType, boolean use) {
 		if (use) {
+			// TODO building open stables returns one stall to supply!
 			buildingsLeft.remove(buildingType);
 		} else {
 			buildingsLeft.add(buildingType);

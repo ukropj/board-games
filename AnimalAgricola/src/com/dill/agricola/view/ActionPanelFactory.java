@@ -120,7 +120,7 @@ public class ActionPanelFactory {
 			stallP.add(SwingUtils.createLabel("once"));
 			stallP.add(SwingUtils.createResourcesPanel(Stall.COST, null, SwingUtils.X_AXIS));
 			stallP.add(SwingUtils.createArrowLabel(Dir.S, false));
-			stallP.add(SwingUtils.createLabel(Images.getBuildingIcon(BuildingType.STALL, 40)));
+			stallP.add(SwingUtils.createLabel(Images.getBuildingIcon(BuildingType.STALL, 50)));
 			stallP.add(Box.createVerticalGlue());
 			actionButton.add(stallP);
 			c.gridx = 0;
@@ -138,7 +138,7 @@ public class ActionPanelFactory {
 			costP.add(SwingUtils.createResourcesPanel(Stables.COST_STONE, null, SwingUtils.X_AXIS));
 			staP.add(costP);
 			staP.add(SwingUtils.createArrowLabel(Dir.S, false));
-			staP.add(SwingUtils.createLabel(Images.getBuildingIcon(BuildingType.STABLES, 40)));
+			staP.add(SwingUtils.createLabel(Images.getBuildingIcon(BuildingType.STABLES, 50)));
 			staP.add(Box.createVerticalGlue());
 			actionButton.add(staP);
 			c.gridx = 2;

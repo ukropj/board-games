@@ -266,7 +266,6 @@ public class FarmPanel extends JPanel {
 				BufferedImage img = Images.getBuildingImage(b.getType());
 				float r = 0.2f;
 				int w = (int) (img.getWidth() * r), h = (int) (img.getHeight() * r);
-				System.out.println(w + " " + h);
 				g.drawImage(img, x + (X1 - w)/2, y + j * l, w, h, null);
 				j++;
 			}
