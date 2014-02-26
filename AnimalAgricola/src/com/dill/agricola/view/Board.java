@@ -33,6 +33,7 @@ import com.dill.agricola.model.buildings.BuildingType;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.model.types.PlayerColor;
+import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.Images;
 import com.dill.agricola.view.utils.SwingUtils;
 
@@ -55,7 +56,7 @@ public class Board extends JFrame implements Observer{
 	public Board() {
 		playerBoards = new PlayerBoard[2];
 
-		setTitle("Agricola: All Creatures Big and Small");
+		setTitle(Msg.get("gameTitle"));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		mainPane = getContentPane();
@@ -67,12 +68,12 @@ public class Board extends JFrame implements Observer{
 	private void buildMenu() {
 		MenuListener bl = new MenuListener(this);
 		JMenuBar mb = new JMenuBar();
-		JMenu fileM = new JMenu("Game");
-		JMenuItem newI = new JMenuItem("New game");
+		JMenu fileM = new JMenu(Msg.get("game"));
+		JMenuItem newI = new JMenuItem(Msg.get("new"));
 		newI.setActionCommand(MenuCommand.NEW.toString());
 		newI.addActionListener(bl);
 		fileM.add(newI);
-		JMenuItem exitI = new JMenuItem("Exit");
+		JMenuItem exitI = new JMenuItem(Msg.get("exit"));
 		exitI.setActionCommand(MenuCommand.EXIT.toString());
 		exitI.addActionListener(bl);
 		exitI.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_DOWN_MASK));
@@ -107,7 +108,7 @@ public class Board extends JFrame implements Observer{
 	}
 
 	private void initStatusBar() {
-		statusL = new JLabel("Round: -");
+		statusL = new JLabel(Msg.get("round", 0, Game.ROUNDS));
 		mainPane.add(statusL, BorderLayout.NORTH);
 	}
 
@@ -135,7 +136,7 @@ public class Board extends JFrame implements Observer{
 	}
 
 	public void startRound(int roundNo) {
-		statusL.setText("Round: " + roundNo + " / " + Game.ROUNDS);
+		statusL.setText(Msg.get("round", roundNo, Game.ROUNDS));
 		actionBoard.initActions();
 		if (Main.DEBUG && roundNo == 1) {
 			actionBoard.initActions();
@@ -160,12 +161,12 @@ public class Board extends JFrame implements Observer{
 
 	public void showScoring(Player[] players, PlayerColor winner) {
 		// TODO extract to separate class
-		JDialog d = new JDialog(this, "Scoring", true);
+		JDialog d = new JDialog(this, Msg.get("scoring"), true);
 		JPanel p = new JPanel(new GridLayout(8, 3, 4, 4));
 		// heading
 		p.add(new JPanel());
 		for (Player player : players) {
-			JLabel playerL = SwingUtils.createLabel("Player " + (player.getColor().ordinal() + 1));
+			JLabel playerL = SwingUtils.createLabel(Msg.get("player", player.getColor().ordinal() + 1));
 			playerL.setOpaque(true);
 			playerL.setBackground(player.getColor().getRealColor());
 			p.add(addBorder(playerL));			
@@ -185,7 +186,7 @@ public class Board extends JFrame implements Observer{
 		p.add(addBorder(SwingUtils.createLabel(String.valueOf(players[0].getBuildingScore()))));
 		p.add(addBorder(SwingUtils.createLabel(String.valueOf(players[1].getBuildingScore()))));
 		// total
-		p.add(addBorder(SwingUtils.createLabel("\u03A3")));
+		p.add(addBorder(SwingUtils.createLabel(Msg.get("sum"))));
 		float blueTotal = players[0].getScore();
 		float redTotal = players[1].getScore();
 		p.add(addBorder(SwingUtils.createLabel(String.valueOf(blueTotal))));
@@ -193,7 +194,7 @@ public class Board extends JFrame implements Observer{
 
 		d.getContentPane().setLayout(new BorderLayout(5, 5));
 		d.getContentPane().add(p, BorderLayout.CENTER);
-		JLabel winnerLabel = SwingUtils.createLabel("Player " + (winner.ordinal() + 1) + " is the winner");
+		JLabel winnerLabel = SwingUtils.createLabel(Msg.get("msgWinner", winner.ordinal() + 1));
 		winnerLabel.setOpaque(true);
 		winnerLabel.setBackground(winner.getRealColor());
 		d.getContentPane().add(winnerLabel, BorderLayout.SOUTH);

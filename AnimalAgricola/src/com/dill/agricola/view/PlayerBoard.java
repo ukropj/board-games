@@ -20,6 +20,7 @@ import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.Material;
 import com.dill.agricola.model.types.PlayerColor;
+import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.Images;
 import com.dill.agricola.view.utils.SwingUtils;
 
@@ -69,7 +70,7 @@ public class PlayerBoard extends JPanel implements Observer {
 
 	private void initPurchasePanel() {
 		PlayerColor color = player.getColor();
-		playerLabel = SwingUtils.createLabel("Player " + (color.ordinal() + 1));
+		playerLabel = SwingUtils.createLabel(Msg.get("player", color.ordinal() + 1));
 		playerLabel.setOpaque(true);
 
 		GridBagConstraints c = new GridBagConstraints();
