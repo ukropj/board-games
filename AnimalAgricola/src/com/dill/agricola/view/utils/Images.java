@@ -17,7 +17,7 @@ import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Material;
 
 public class Images {
-	
+
 	private final static int MISC_U_FENCE = 0;
 	private final static int MISC_TROUGH = 1;
 	private final static int MISC_U_TROUGH = 2;
@@ -32,6 +32,7 @@ public class Images {
 	private final static BufferedImage[] firstTokens = new BufferedImage[2];
 	private final static BufferedImage[] farmsAndMargins = new BufferedImage[4];
 	private final static BufferedImage[] misc = new BufferedImage[4];
+	private static BufferedImage[] stallsAndStables = new BufferedImage[8];
 	private static BufferedImage[] exts = new BufferedImage[4];
 
 	private final static Map<Dir, ImageIcon> arrowIcons = new EnumMap<Dir, ImageIcon>(Dir.class);
@@ -97,7 +98,7 @@ public class Images {
 		}
 		return misc[MISC_TROUGH];
 	}
-	
+
 	public static BufferedImage getUnusedTroughImage() {
 		if (misc[MISC_U_TROUGH] == null) {
 			misc[MISC_U_TROUGH] = createImage("trough-unused");
@@ -125,7 +126,7 @@ public class Images {
 			return img;
 		}
 	}
-	
+
 	public static BufferedImage getUnusedFenceImage() {
 		if (misc[MISC_U_FENCE] == null) {
 			misc[MISC_U_FENCE] = createImage("border-unused");
@@ -197,6 +198,21 @@ public class Images {
 		}
 	}
 
+	public static BufferedImage getStallImage(int id) {
+		if (stallsAndStables[id] == null) {
+			stallsAndStables[id] = createImage("stall" + (id + 1));
+		}
+		return stallsAndStables[id];
+	}
+	
+	public static BufferedImage getStableImage(int id) {
+		int arrId = id + 4;
+		if (stallsAndStables[arrId] == null) {
+			stallsAndStables[arrId] = createImage("stable" + (id + 1));
+		}
+		return stallsAndStables[arrId];
+	}
+
 	public static ImageIcon getBuildingIcon(BuildingType type, int height) {
 		return toIcon(getBuildingImage(type), height);
 	}
@@ -204,7 +220,7 @@ public class Images {
 	public static BufferedImage getArrowImage(Dir d, boolean red) {
 		return createImage("arrow" + (red ? "-red" : "") + (d.ordinal() + 1));
 	}
-	
+
 	public static ImageIcon getArrowIcon(Dir d, boolean red) {
 		Map<Dir, ImageIcon> map = red ? redArrowIcons : arrowIcons;
 		if (map.containsKey(d)) {
@@ -216,8 +232,8 @@ public class Images {
 			return icon;
 		}
 	}
-	
-	private static <T extends Enum<T>> ImageIcon getCachedIcon(Map<T, ImageIcon> map, T type, BufferedImage img, int size){
+
+	private static <T extends Enum<T>> ImageIcon getCachedIcon(Map<T, ImageIcon> map, T type, BufferedImage img, int size) {
 		if (map.containsKey(type)) {
 			return map.get(type);
 		} else {
@@ -226,8 +242,8 @@ public class Images {
 			return icon;
 		}
 	}
-	
-	private static <T extends Enum<T>> ImageIcon getCachedIcon(Map<T, ImageIcon> map, T type, BufferedImage img, float ratio){
+
+	private static <T extends Enum<T>> ImageIcon getCachedIcon(Map<T, ImageIcon> map, T type, BufferedImage img, float ratio) {
 		if (map.containsKey(type)) {
 			return map.get(type);
 		} else {

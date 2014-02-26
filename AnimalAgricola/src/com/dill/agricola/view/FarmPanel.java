@@ -24,6 +24,7 @@ import com.dill.agricola.model.Building;
 import com.dill.agricola.model.Farm;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.Space;
+import com.dill.agricola.model.buildings.MultiImaged;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.ChangeType;
@@ -179,11 +180,23 @@ public class FarmPanel extends JPanel {
 		int x = X1 + S * pos.x + M, y = Y1 + S * pos.y + M;
 		BuildingType type = building.getType();
 		
-		if (type != BuildingType.COTTAGE) {
-			BufferedImage img = Images.getBuildingImage(type);
-			g.drawImage(img, x, y, L, L, null);			
+		BufferedImage img = null;
+		switch (type) {
+		case COTTAGE :
+			break;
+		case STALL :
+			img = Images.getStallImage(((MultiImaged)building).getId());
+			break;
+		case STABLES :
+			img = Images.getStableImage(((MultiImaged)building).getId());
+			break;
+		default:
+			img = Images.getBuildingImage(type);
 		}
-		
+		if (img != null) {
+			g.drawImage(img, x, y, L, L, null);									
+		}
+
 		if (type.isHouse()) {
 			g.setColor(player.getColor().getRealColor());
 			g.fillOval(x + 2 * M, y + L / 2, L / 3, L / 3);
