@@ -18,11 +18,13 @@ public class BuildStalls extends AbstractAction {
 
 	public boolean doOnce(Player player) {
 		if (GeneralSupply.getStallsLeft() > 0) {
-			boolean done = player.purchaseBuilding(new Stall(), Stall.COST);
+			Stall stall = GeneralSupply.useStall();
+			boolean done = player.purchaseBuilding(stall, Stall.COST);
 			if (done) {
 				player.setActiveType(Purchasable.BUILDING);
-				GeneralSupply.useStall(true);
 				setChanged();
+			} else {
+				GeneralSupply.unuseStall(stall);				
 			}
 			return done;
 		}
@@ -30,8 +32,9 @@ public class BuildStalls extends AbstractAction {
 	}
 	
 	public boolean undoOnce(Player player) {
-		if (player.unpurchaseBuilding()) {
-			GeneralSupply.useStall(false);
+		Stall stall = (Stall)player.unpurchaseBuilding();
+		if (stall != null) {
+			GeneralSupply.unuseStall(stall);
 			setChanged();
 			return true;
 		}

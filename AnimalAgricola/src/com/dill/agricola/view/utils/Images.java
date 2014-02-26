@@ -208,7 +208,7 @@ public class Images {
 	public static BufferedImage getStableImage(int id) {
 		int arrId = id + 4;
 		if (stallsAndStables[arrId] == null) {
-			stallsAndStables[arrId] = createImage("stable" + (id + 1));
+			stallsAndStables[arrId] = createImage("stables" + (id + 1));
 		}
 		return stallsAndStables[arrId];
 	}

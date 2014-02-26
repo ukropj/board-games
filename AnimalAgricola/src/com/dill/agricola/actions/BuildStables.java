@@ -67,7 +67,7 @@ public class BuildStables extends AbstractAction {
 	}
 
 	public boolean undoOnce(Player player) {
-		return player.unpurchaseBuilding();
+		return player.unpurchaseBuilding() != null;
 	}
 
 	public boolean doo(Player player) {

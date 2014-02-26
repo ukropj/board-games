@@ -236,14 +236,14 @@ public class Player extends SimpleObservable {
 		return true;
 	}
 
-	public boolean unpurchaseBuilding() {
+	public Building unpurchaseBuilding() {
 		Building b = farm.removeBuilding();
 		if (b != null) {
 			material.add(b.getPaidCost());
 			b.setPaidCost(null);
-			return true;
+			return b;
 		}
-		return false;
+		return null;
 	}
 
 	public boolean validate() {

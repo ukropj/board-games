@@ -182,6 +182,7 @@ public class Farm extends SimpleObservable {
 		 * d.opposite()); // put again to add new half } }
 		 */
 		setChanged();
+		System.out.println(extensions.get(d));
 		return true;
 	}
 

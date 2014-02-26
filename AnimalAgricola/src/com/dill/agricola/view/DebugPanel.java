@@ -105,7 +105,7 @@ public class DebugPanel extends JPanel {
 		});
 		createDebugButton("Stall", new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				currentPlayer.purchaseFreeBuilding(new Stall());
+				currentPlayer.purchaseFreeBuilding(new Stall(0));
 				currentPlayer.setActiveType(Purchasable.BUILDING);
 				currentPlayer.notifyObservers();
 			}

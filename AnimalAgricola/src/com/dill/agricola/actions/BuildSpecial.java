@@ -135,7 +135,7 @@ public class BuildSpecial extends AbstractAction {
 
 	public boolean undoOnce(Player player) {
 		if (toBuild != null) {
-			boolean done = player.unpurchaseBuilding();
+			boolean done = player.unpurchaseBuilding() != null;
 			if (toGive != null) {
 				done = player.unpurchaseAnimal(toGive, 1) && done;
 			}

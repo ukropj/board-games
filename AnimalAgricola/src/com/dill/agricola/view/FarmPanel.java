@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -66,12 +67,13 @@ public class FarmPanel extends JPanel {
 
 	public void paintComponent(Graphics g0) {
 		Graphics2D g = (Graphics2D) g0;
+		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		// background
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, getWidth(), getHeight());
 		// farm
 		drawFarm(g);
-		
+
 		// loose animals
 		drawLooseAnimals(g);
 		// unused stuff
@@ -91,28 +93,30 @@ public class FarmPanel extends JPanel {
 	private void drawFarm(Graphics2D g) {
 		BufferedImage img = null;
 		g.setColor(Color.BLACK);
-		// left margin
+		// west margin
 		img = Images.getFarmMarginImage(Dir.W);
 		g.drawImage(img, X1 - S / 2, 0, S / 2, H, null);
-		// left extensions
+		// west extensions
+		int westExts = farm.getExtensions(Dir.W).size(), farmCore = 2;
 		int i = 0;
 		for (Integer id : farm.getExtensions(Dir.W)) {
 			// TODO marker
 			img = Images.getExtensionImage(id);
-			g.drawImage(img, X1 + S * i, 0, S, H, null);
+			g.drawImage(img, X1 + (westExts - i - 1) * S, 0, S, H, null);
 			i++;
 		}
 		// farm
 		img = Images.getFarmImage(player.getColor().ordinal());
-		g.drawImage(img, X1 + farm.getExtensions(Dir.W).size() * S, 0, 2 * S, H, null);
-		// right extensions
+		g.drawImage(img, X1 + westExts * S, 0, farmCore * S, H, null);
+		// east extensions
 		i = 0;
 		for (Integer id : farm.getExtensions(Dir.E)) {
 			// TODO marker
 			img = Images.getExtensionImage(id);
-			g.drawImage(img, X1 + S * (farm.getWidth() - i - 1), 0, S, H, null);
+			g.drawImage(img, X1 + S * (westExts + farmCore + i), 0, S, H, null);
+			i++;
 		}
-		// right margin
+		// east margin
 		img = Images.getFarmMarginImage(Dir.E);
 		g.drawImage(img, X1 + S * farm.getWidth(), 0, S / 2, H, null);
 
@@ -133,9 +137,9 @@ public class FarmPanel extends JPanel {
 		// toggleMovableStroke(g, farm.isActiveSpot(new Point(pos.x, 0), Purchasable.EXTENSION));
 
 		g.setColor(Color.BLACK);
-//		if (Main.DEBUG) {
-//			g.drawRect(x + M, y + M, L, L);
-//		}
+		//		if (Main.DEBUG) {
+		//			g.drawRect(x + M, y + M, L, L);
+		//		}
 
 		// building
 		Building b = farm.getBuilding(pos);
@@ -151,22 +155,28 @@ public class FarmPanel extends JPanel {
 		// g.setStroke(NORMAL_STROKE);
 		g.setColor(Color.BLACK);
 		if (space.getAnimals() > 0) {
-			Color borderColor = space.isValid() ? space.getAnimalType().getContrastingColor() : Color.RED;
-			// Color fillColor = space.getAnimalType().getColor();
-			// DrawUtils.drawFillCircle(g, x + M, y + M, L / 2, fillColor, borderColor);
-			g.setColor(borderColor);
 			BufferedImage img = Images.getAnimalImage(space.getAnimalType());
-			g.drawImage(img, x + L / 2, y + 2 * M, img.getWidth() / 2, img.getHeight() / 2, null);
+			int w = img.getWidth() / 2, h = img.getHeight() / 2;
+			g.drawImage(img, x + (S - w) / 2 - M, y + (S - h) / 2, w, h, null);
+
+			g.setClip(x + M, y + M, L, L);
+			g.setColor(space.getAnimalType().getColor());
+			g.fillOval(x + S-5*M, y + S-5*M, S/3, S/3);
+			g.setClip(null);
+			
+			Color borderColor = space.isValid() ? space.getAnimalType().getContrastingColor() : Color.RED;
+			g.setColor(borderColor);
+			String text = space.getAnimals() + "/" + space.getMaxCapacity();
+			g.drawString(text, x + S - 4*M, y + S - 2*M);
 		}
-		String text = space.getAnimals() + "/" + space.getMaxCapacity();
-		g.drawString(text, x + L / 2 + 2 * M, y + M + L / 4);
 		// }
 		// trough
 		if (space.hasTrough()) {
 			// toggleMovableStroke(g, farm.isActiveSpot(pos, Purchasable.TROUGH));
 			// DrawUtils.drawFillRect(g, x + S / 2, y + S / 2, L / 3, L / 3, Color.YELLOW);
 			BufferedImage img = Images.getTroughImage();
-			g.drawImage(img, x + S / 2, y + S / 2, img.getWidth() / 2, img.getHeight() / 2, null);
+			int w = img.getWidth() / 2, h = img.getHeight() / 2;
+			g.drawImage(img, x + S - 2 * M - w, y + 2 * M, w, h, null);
 		}
 
 		for (Dir d : Dir.values()) {
@@ -179,22 +189,22 @@ public class FarmPanel extends JPanel {
 	private void drawBuilding(Graphics2D g, Point pos, Building building) {
 		int x = X1 + S * pos.x + M, y = Y1 + S * pos.y + M;
 		BuildingType type = building.getType();
-		
+
 		BufferedImage img = null;
 		switch (type) {
-		case COTTAGE :
+		case COTTAGE:
 			break;
-		case STALL :
-			img = Images.getStallImage(((MultiImaged)building).getId());
+		case STALL:
+			img = Images.getStallImage(((MultiImaged) building).getId());
 			break;
-		case STABLES :
-			img = Images.getStableImage(((MultiImaged)building).getId());
+		case STABLES:
+			img = Images.getStableImage(((MultiImaged) building).getId());
 			break;
 		default:
 			img = Images.getBuildingImage(type);
 		}
 		if (img != null) {
-			g.drawImage(img, x, y, L, L, null);									
+			g.drawImage(img, x, y, L, L, null);
 		}
 
 		if (type.isHouse()) {
@@ -247,7 +257,7 @@ public class FarmPanel extends JPanel {
 			int maxWidth = farm.getWidth() * S;
 			int l = Math.min(S / 3, maxWidth / total);
 			int x = X1 + maxWidth / 2 + (l * total / 2) - l;
-			int y = Y1 + farm.getHeight() * S + S/2 - 2 * M;
+			int y = Y1 + farm.getHeight() * S + S / 2 - 2 * M;
 			int j = 0;
 			for (Animal type : Animal.values()) {
 				int count = loose.get(type);
@@ -257,26 +267,26 @@ public class FarmPanel extends JPanel {
 					j++;
 				}
 			}
-			
+
 			BufferedImage arrowImg = Images.getArrowImage(Dir.E, true);
-			g.drawImage(arrowImg, 2*M, y - M - arrowImg.getHeight() / 2, arrowImg.getWidth() / 2, arrowImg.getHeight() / 2, null);
+			g.drawImage(arrowImg, 2 * M, y - M - arrowImg.getHeight() / 2, arrowImg.getWidth() / 2, arrowImg.getHeight() / 2, null);
 		}
 	}
 
 	private void drawUnused(Graphics2D g) {
 		int total = farm.getAllUnusedCount() + farm.getUnusedBuildings().size();
 		if (total > 0) {
-			int maxHeight = farm.getHeight() * S - S/2;
+			int maxHeight = farm.getHeight() * S - S / 2;
 			int l = Math.min(S / 3, maxHeight / total);
 			int x = 0;
-			int y = Y1 + S/4;
+			int y = Y1 + S / 4;
 			int j = 0;
 
 			for (Building b : farm.getUnusedBuildings()) {
 				BufferedImage img = Images.getBuildingImage(b.getType());
 				float r = 0.2f;
 				int w = (int) (img.getWidth() * r), h = (int) (img.getHeight() * r);
-				g.drawImage(img, x + (X1 - w)/2, y + j * l, w, h, null);
+				g.drawImage(img, x + (X1 - w) / 2, y + j * l, w, h, null);
 				j++;
 			}
 
@@ -300,13 +310,13 @@ public class FarmPanel extends JPanel {
 				}
 				for (int i = 0; i < count; i++) {
 					int w = (int) (img.getWidth() * r), h = (int) (img.getHeight() * r);
-					g.drawImage(img, x +(X1 - w)/2, y + j * l, w, h, null);
+					g.drawImage(img, x + (X1 - w) / 2, y + j * l, w, h, null);
 					j++;
 				}
 			}
-			
+
 			BufferedImage arrowImg = Images.getArrowImage(Dir.S, true);
-			g.drawImage(arrowImg, 2*M, 2*M, arrowImg.getWidth() / 2, arrowImg.getHeight() / 2, null);
+			g.drawImage(arrowImg, 2 * M, 2 * M, arrowImg.getWidth() / 2, arrowImg.getHeight() / 2, null);
 		}
 	}
 
