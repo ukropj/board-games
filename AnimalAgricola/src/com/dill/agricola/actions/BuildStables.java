@@ -7,16 +7,16 @@ import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
+import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Building;
 import com.dill.agricola.model.Player;
-import com.dill.agricola.model.buildings.BuildingType;
 import com.dill.agricola.model.buildings.Stables;
 import com.dill.agricola.model.buildings.Stall;
-import com.dill.agricola.model.enums.ActionType;
-import com.dill.agricola.model.enums.Materials;
-import com.dill.agricola.model.enums.Purchasable;
-import com.dill.agricola.view.Images;
-import com.dill.agricola.view.SwingUtils;
+import com.dill.agricola.model.types.ActionType;
+import com.dill.agricola.model.types.BuildingType;
+import com.dill.agricola.model.types.Purchasable;
+import com.dill.agricola.view.utils.Images;
+import com.dill.agricola.view.utils.SwingUtils;
 
 public class BuildStables extends AbstractAction {
 

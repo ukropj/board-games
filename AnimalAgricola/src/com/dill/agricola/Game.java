@@ -29,11 +29,11 @@ import com.dill.agricola.actions.ThreeWood;
 import com.dill.agricola.actions.TwoStone;
 import com.dill.agricola.actions.Walls;
 import com.dill.agricola.model.Player;
-import com.dill.agricola.model.enums.ChangeType;
-import com.dill.agricola.model.enums.PlayerColor;
+import com.dill.agricola.model.types.ChangeType;
+import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.view.Board;
-import com.dill.agricola.view.Images;
-import com.dill.agricola.view.SwingUtils;
+import com.dill.agricola.view.utils.Images;
+import com.dill.agricola.view.utils.SwingUtils;
 
 public class Game {
 

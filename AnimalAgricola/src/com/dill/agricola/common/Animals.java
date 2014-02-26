@@ -1,6 +1,8 @@
-package com.dill.agricola.model.enums;
+package com.dill.agricola.common;
 
 import java.util.Map;
+
+import com.dill.agricola.model.types.Animal;
 
 public class Animals extends Bag<Animal>{
 

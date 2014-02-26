@@ -1,4 +1,4 @@
-package com.dill.agricola;
+package com.dill.agricola.support;
 
 public class Namer {
 

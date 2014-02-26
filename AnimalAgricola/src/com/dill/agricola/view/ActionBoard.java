@@ -16,9 +16,11 @@ import java.util.Map.Entry;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import com.dill.agricola.ActionPerformer;
 import com.dill.agricola.actions.Action;
-import com.dill.agricola.model.enums.ActionType;
+import com.dill.agricola.actions.ActionPerformer;
+import com.dill.agricola.model.types.ActionType;
+import com.dill.agricola.support.Msg;
+import com.dill.agricola.view.utils.SwingUtils;
 
 @SuppressWarnings("serial")
 public class ActionBoard extends JPanel {
@@ -30,8 +32,8 @@ public class ActionBoard extends JPanel {
 	private final JPanel controlPanel;
 	private final Color defaultColor;
 
-	private JButton addB;
-	private JButton removeB;
+	private JButton moreB;
+	private JButton lessB;
 	private JButton submitB;
 	private JButton resetB;
 
@@ -87,7 +89,7 @@ public class ActionBoard extends JPanel {
 	}
 
 	private void buildControlPanel(final ActionListener submitListener) {
-		submitB = createButton("Ok", new ActionListener() {
+		submitB = createButton(Msg.get("finishAction"), new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (ap.hasAction()) {
 					//					Action action = ap.getAction();
@@ -103,19 +105,19 @@ public class ActionBoard extends JPanel {
 				}
 			}
 		});
-		addB = createButton("+", new ActionListener() {
+		moreB = createButton(Msg.get("doMoreAction"), new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ap.doActionMore();
 				updateControls();
 			}
 		});
-		removeB = createButton("-", new ActionListener() {
+		lessB = createButton(Msg.get("doLessAction"), new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ap.doActionLess();
 				updateControls();
 			}
 		});
-		resetB = createButton("X", new ActionListener() {
+		resetB = createButton(Msg.get("undoAction"), new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Action action = ap.getAction();
 				if (ap.undoAction()) {
@@ -144,8 +146,8 @@ public class ActionBoard extends JPanel {
 	}
 
 	private void updateControls() {
-		addB.setEnabled(ap.canDoMore());
-		removeB.setEnabled(ap.canDoLess());
+		moreB.setEnabled(ap.canDoMore());
+		lessB.setEnabled(ap.canDoLess());
 	}
 
 	private JButton createButton(String label, ActionListener al) {

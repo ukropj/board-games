@@ -5,19 +5,20 @@ import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import com.dill.agricola.model.Building;
-import com.dill.agricola.model.buildings.BuildingType;
 import com.dill.agricola.model.buildings.HalfTimberedHouse;
 import com.dill.agricola.model.buildings.OpenStables;
 import com.dill.agricola.model.buildings.Shelter;
 import com.dill.agricola.model.buildings.StorageBuilding;
+import com.dill.agricola.model.types.BuildingType;
 
 public class GeneralSupply {
 
 	public final static int MAX_STALLS = 4;
 	public final static int MAX_FEEDERS = 10;
-	public final static int MAX_EXPS = 4;
+	public final static Integer[] EXTS = {0,1,2,3};
 	
 	private final static List<BuildingType> SPECIAL_BUILDINGS_TYPES = Arrays.asList(new BuildingType[]{BuildingType.HALF_TIMBERED_HOUSE, 
 			BuildingType.STORAGE_BUILDING, BuildingType.SHELTER, BuildingType.OPEN_STABLES});
@@ -25,7 +26,8 @@ public class GeneralSupply {
 
 	private static int stallsLeft;
 	private static int troughsLeft;
-	private static int expsLeft;
+	private static final Stack<Integer> extsLeft = new Stack<Integer>();
+	private static int lastUsedExt = 0;
 	private static final List<BuildingType> buildingsLeft = new ArrayList<BuildingType>();
 	
 	static {
@@ -38,7 +40,8 @@ public class GeneralSupply {
 	public static void reset() {
 		stallsLeft = MAX_STALLS;
 		troughsLeft = MAX_FEEDERS;
-		expsLeft = MAX_EXPS;
+		extsLeft.addAll(Arrays.asList(EXTS));
+		buildingsLeft.clear();
 		buildingsLeft.addAll(SPECIAL_BUILDINGS_TYPES);
 	}
 
@@ -51,7 +54,7 @@ public class GeneralSupply {
 	}
 
 	public static int getExpansionsLeft() {
-		return expsLeft;
+		return extsLeft.size();
 	}
 
 	public static List<BuildingType> getBuildingsLeft() {
@@ -66,8 +69,12 @@ public class GeneralSupply {
 		troughsLeft += use ? 1 : -1;
 	}
 
-	public static void useExpansion(boolean use) {
-		expsLeft += use ? 1 : -1;
+	public static void useExtension(boolean use) {
+		if (use) {
+			lastUsedExt = extsLeft.pop();
+		} else {
+			extsLeft.push(lastUsedExt);			
+		}
 	}
 
 	public static void useBuilding(BuildingType buildingType, boolean use) {
@@ -81,6 +88,10 @@ public class GeneralSupply {
 
 	public static Building getSpecialBuilding(BuildingType type) {
 		return SPECIAL_BUILDINGS.get(type);
+	}
+
+	public static int getLastExtensionId() {
+		return lastUsedExt;
 	}
 
 }

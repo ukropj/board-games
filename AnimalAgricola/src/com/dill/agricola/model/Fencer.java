@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.dill.agricola.model.enums.Dir;
-import com.dill.agricola.model.enums.Point;
+import com.dill.agricola.common.Dir;
+import com.dill.agricola.common.Point;
 
 public class Fencer {
 

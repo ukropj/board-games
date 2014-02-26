@@ -3,15 +3,15 @@ package com.dill.agricola.model;
 import java.util.Observer;
 
 import com.dill.agricola.Main;
+import com.dill.agricola.common.Animals;
+import com.dill.agricola.common.Dir;
+import com.dill.agricola.common.Materials;
+import com.dill.agricola.common.Point;
 import com.dill.agricola.model.buildings.Cottage;
-import com.dill.agricola.model.enums.Animal;
-import com.dill.agricola.model.enums.Animals;
-import com.dill.agricola.model.enums.Dir;
-import com.dill.agricola.model.enums.Material;
-import com.dill.agricola.model.enums.Materials;
-import com.dill.agricola.model.enums.PlayerColor;
-import com.dill.agricola.model.enums.Point;
-import com.dill.agricola.model.enums.Purchasable;
+import com.dill.agricola.model.types.Animal;
+import com.dill.agricola.model.types.Material;
+import com.dill.agricola.model.types.PlayerColor;
+import com.dill.agricola.model.types.Purchasable;
 
 public class Player extends SimpleObservable {
 

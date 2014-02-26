@@ -3,11 +3,11 @@ package com.dill.agricola.actions;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.dill.agricola.Namer;
+import com.dill.agricola.common.Animals;
+import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Player;
-import com.dill.agricola.model.enums.ActionType;
-import com.dill.agricola.model.enums.Animals;
-import com.dill.agricola.model.enums.Materials;
+import com.dill.agricola.model.types.ActionType;
+import com.dill.agricola.support.Namer;
 
 public abstract class AbstractAction implements Action {
 

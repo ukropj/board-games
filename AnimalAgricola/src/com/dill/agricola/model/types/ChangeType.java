@@ -1,4 +1,4 @@
-package com.dill.agricola.model.enums;
+package com.dill.agricola.model.types;
 
 public enum ChangeType {
 	ACTION_DO,

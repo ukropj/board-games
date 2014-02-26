@@ -1,9 +1,9 @@
 package com.dill.agricola.actions;
 
+import com.dill.agricola.common.Animals;
 import com.dill.agricola.model.Player;
-import com.dill.agricola.model.enums.ActionType;
-import com.dill.agricola.model.enums.Animal;
-import com.dill.agricola.model.enums.Animals;
+import com.dill.agricola.model.types.ActionType;
+import com.dill.agricola.model.types.Animal;
 
 public abstract class AnimalAction extends AbstractAction {
 

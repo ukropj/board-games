@@ -17,9 +17,12 @@ import javax.swing.border.LineBorder;
 import com.dill.agricola.model.Farm;
 import com.dill.agricola.model.Fencer;
 import com.dill.agricola.model.Player;
-import com.dill.agricola.model.enums.Animal;
-import com.dill.agricola.model.enums.Material;
-import com.dill.agricola.model.enums.PlayerColor;
+import com.dill.agricola.model.types.Animal;
+import com.dill.agricola.model.types.Material;
+import com.dill.agricola.model.types.PlayerColor;
+import com.dill.agricola.support.Msg;
+import com.dill.agricola.view.utils.Images;
+import com.dill.agricola.view.utils.SwingUtils;
 
 @SuppressWarnings("serial")
 public class PlayerBoard extends JPanel implements Observer {
@@ -67,7 +70,7 @@ public class PlayerBoard extends JPanel implements Observer {
 
 	private void initPurchasePanel() {
 		PlayerColor color = player.getColor();
-		playerLabel = SwingUtils.createLabel("Player " + (color.ordinal() + 1));
+		playerLabel = SwingUtils.createLabel(Msg.get("player", color.ordinal() + 1));
 		playerLabel.setOpaque(true);
 
 		GridBagConstraints c = new GridBagConstraints();

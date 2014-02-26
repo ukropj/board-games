@@ -8,13 +8,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import com.dill.agricola.GeneralSupply;
 import com.dill.agricola.Main;
-import com.dill.agricola.model.enums.Animal;
-import com.dill.agricola.model.enums.Animals;
-import com.dill.agricola.model.enums.Dir;
-import com.dill.agricola.model.enums.DirPoint;
-import com.dill.agricola.model.enums.Point;
-import com.dill.agricola.model.enums.Purchasable;
+import com.dill.agricola.common.Animals;
+import com.dill.agricola.common.Dir;
+import com.dill.agricola.common.DirPoint;
+import com.dill.agricola.common.Point;
+import com.dill.agricola.model.types.Animal;
+import com.dill.agricola.model.types.Purchasable;
 
 public class Farm extends SimpleObservable {
 
@@ -23,7 +24,7 @@ public class Farm extends SimpleObservable {
 
 	private List<List<Space>> spaces;
 
-	private final Map<Dir, Integer> extensions = new EnumMap<Dir, Integer>(Dir.class);
+	private final Map<Dir, Stack<Integer>> extensions = new EnumMap<Dir, Stack<Integer>>(Dir.class);
 	private final Animals looseAnimals = new Animals();
 	//	private final Map<Animal, Integer> animals = new EnumMap<Animal, Integer>(Animal.class);
 
@@ -41,8 +42,8 @@ public class Farm extends SimpleObservable {
 
 	public void init(int w, int h) {
 		initSpaces(w, h);
-		extensions.put(Dir.E, 0);
-		extensions.put(Dir.W, 0);
+		extensions.put(Dir.E, new Stack<Integer>());
+		extensions.put(Dir.W, new Stack<Integer>());
 		for (Purchasable p : Purchasable.values()) {
 			unusedStuff.put(p, 0);
 		}
@@ -118,17 +119,17 @@ public class Farm extends SimpleObservable {
 		return activeFenceSpots.remove(new DirPoint(pos, d));
 	}
 
-	public int getExtensions(Dir d) {
+	public List<Integer> getExtensions(Dir d) {
 		return extensions.get(d);
 	}
 
 	public int getUsedExtensions() {
 		int used = 0;
 		List<List<Space>> extSpaces = new ArrayList<List<Space>>();
-		for (int i = 0; i < extensions.get(Dir.W); i++) {
+		for (int i = 0; i < extensions.get(Dir.W).size(); i++) {
 			extSpaces.add(spaces.get(i));
 		}
-		for (int i = 0; i < extensions.get(Dir.E); i++) {
+		for (int i = 0; i < extensions.get(Dir.E).size(); i++) {
 			extSpaces.add(spaces.get(spaces.size() - 1 - i));
 		}
 		for (List<Space> ext : extSpaces) {
@@ -171,7 +172,7 @@ public class Farm extends SimpleObservable {
 		}
 
 		spaces.add(targetCol, initCol(height));
-		extensions.put(d, extensions.get(d) + 1);
+		extensions.get(d).push(GeneralSupply.getLastExtensionId());
 		addUnused(Purchasable.EXTENSION, -1);
 		addActiveSpot(new Point(targetCol, 0));
 		width++;
@@ -185,8 +186,7 @@ public class Farm extends SimpleObservable {
 	}
 
 	private boolean unextend(Dir d, boolean activeOnly) {
-		int present = extensions.get(d);
-		if (present < 1) {
+		if (extensions.get(d).isEmpty()) {
 			// no extensions in this direction - cannot unextend
 			return false;
 		}
@@ -214,7 +214,7 @@ public class Farm extends SimpleObservable {
 			}
 		}
 		spaces.remove(targetCol);
-		extensions.put(d, present - 1);
+		extensions.get(d).pop();
 		addUnused(Purchasable.EXTENSION, 1);
 		removeActiveSpot(new Point(targetCol, 0));
 		width--;

@@ -1,4 +1,5 @@
-package com.dill.agricola.model.enums;
+package com.dill.agricola.common;
+
 
 public class DirPoint {
 
