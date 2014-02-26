@@ -36,7 +36,7 @@ public class FarmPanel extends JPanel {
 
 	public final static int S = 100;
 	public final static int M = S / 16, L = S - 2 * M;
-	public final static int X1 = S / 2, X2 = S / 2, Y1 = (int) (S * 0.28f), Y2 = S / 2;
+	public final static int X1 = S / 2, X2 = S / 2, Y1 = (int) (S * 0.28f);
 
 	static int H = (int) (S * 3.7f);
 
@@ -87,12 +87,6 @@ public class FarmPanel extends JPanel {
 		return new Dimension(X1 + farm.getWidth() * S + X2, H/*Y1 + farm.getHeight() * S + Y2*/);
 	}
 
-	/*
-	 * protected void drawPlayer(Graphics2D g) { g.setColor(player.getColor().getRealColor()); Font origFont = g.getFont(); g.setFont(new Font("Helvetica",
-	 * Font.BOLD, 20)); String info = player.getWorkers() + (player.isStarting() ? " *" : ""); g.drawString(info, X1 / 4, 3 * Y1 / 4); // if (active) { //
-	 * g.drawRect(2, 2, X1 - 2, Y1 - 2); // } g.setFont(origFont); }
-	 */
-
 	private void drawFarm(Graphics2D g) {
 		BufferedImage img = null;
 		g.setColor(Color.BLACK);
@@ -100,18 +94,21 @@ public class FarmPanel extends JPanel {
 		img = Images.getFarmMarginImage(Dir.W);
 		g.drawImage(img, X1 - S / 2, 0, S / 2, H, null);
 		// left extensions
-		for (int i = 0; i < farm.getExtensions(Dir.W); i++) {
-			// g.drawLine(X1 + S * (i + 1), Y1 - BY1, X1 + S * (i + 1), Y1 + S * farm.getHeight() + BY2);
-			img = Images.getExtensionImage();
+		int i = 0;
+		for (Integer id : farm.getExtensions(Dir.W)) {
+			// TODO marker
+			img = Images.getExtensionImage(id);
 			g.drawImage(img, X1 + S * i, 0, S, H, null);
+			i++;
 		}
 		// farm
 		img = Images.getFarmImage(player.getColor().ordinal());
-		g.drawImage(img, X1 + farm.getExtensions(Dir.W) * S, 0, 2 * S, H, null);
+		g.drawImage(img, X1 + farm.getExtensions(Dir.W).size() * S, 0, 2 * S, H, null);
 		// right extensions
-		for (int i = 0; i < farm.getExtensions(Dir.E); i++) {
-			// g.drawLine(X1 + S * (farm.getWidth() - i - 1), Y1 - BY1, X1 + S * (farm.getWidth() - i - 1), Y1 + S * farm.getHeight() + BY2);
-			img = Images.getExtensionImage();
+		i = 0;
+		for (Integer id : farm.getExtensions(Dir.E)) {
+			// TODO marker
+			img = Images.getExtensionImage(id);
 			g.drawImage(img, X1 + S * (farm.getWidth() - i - 1), 0, S, H, null);
 		}
 		// right margin
@@ -180,7 +177,6 @@ public class FarmPanel extends JPanel {
 
 	private void drawBuilding(Graphics2D g, Point pos, Building building) {
 		int x = X1 + S * pos.x + M, y = Y1 + S * pos.y + M;
-
 		BuildingType type = building.getType();
 		
 		if (type != BuildingType.COTTAGE) {
@@ -238,7 +234,7 @@ public class FarmPanel extends JPanel {
 			int maxWidth = farm.getWidth() * S;
 			int l = Math.min(S / 3, maxWidth / total);
 			int x = X1 + maxWidth / 2 + (l * total / 2) - l;
-			int y = Y1 + farm.getHeight() * S + Y2 - 2 * M;
+			int y = Y1 + farm.getHeight() * S + S/2 - 2 * M;
 			int j = 0;
 			for (Animal type : Animal.values()) {
 				int count = loose.get(type);

@@ -25,13 +25,19 @@ public class Main {
 
 	public static void asrtPositive(int i, String msg) throws IllegalArgumentException {
 		if (i < 0) {
-			throw new IllegalArgumentException(msg);
+			throw new IllegalArgumentException(msg + " " + i);
 		}
 	}
 
 	public static void asrtNotNull(Object o, String msg) throws IllegalArgumentException {
 		if (o == null) {
 			throw new IllegalArgumentException(msg);
+		}
+	}
+
+	public static void asrtInRange(int i, int min, int max, String msg) throws IllegalArgumentException {
+		if (i < min || i >= max) {
+			throw new IllegalArgumentException(msg + " " + i);
 		}
 	}
 

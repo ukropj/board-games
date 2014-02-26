@@ -100,7 +100,7 @@ public class ActionPanelFactory {
 			c.gridwidth = 2;
 			break;
 		case EXPAND:
-			JLabel extP = SwingUtils.createLabel("+", Images.toIcon(Images.getExtensionImage(), 30));
+			JLabel extP = SwingUtils.createLabel("+", Images.toIcon(Images.getExtensionImage(0), 30));
 			createRefillPanel(parent, 1, 3, action, actionButton, extP, Expand.REFILL);
 			return;
 		case TROUGHS:

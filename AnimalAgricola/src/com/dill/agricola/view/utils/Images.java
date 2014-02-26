@@ -32,7 +32,7 @@ public class Images {
 	private final static BufferedImage[] firstTokens = new BufferedImage[2];
 	private final static BufferedImage[] farmsAndMargins = new BufferedImage[4];
 	private final static BufferedImage[] misc = new BufferedImage[4];
-	private static BufferedImage ext = null;
+	private static BufferedImage[] exts = new BufferedImage[4];
 
 	private final static Map<Dir, ImageIcon> arrowIcons = new EnumMap<Dir, ImageIcon>(Dir.class);
 	private final static Map<Dir, ImageIcon> redArrowIcons = new EnumMap<Dir, ImageIcon>(Dir.class);
@@ -43,18 +43,19 @@ public class Images {
 	public static ImageIcon toIcon(BufferedImage image, int height) {
 		float ratio = 1.0f * height / image.getHeight();
 		int width = (int) (image.getWidth() * ratio);
-		// TODO dont use getScaledInstance
+		// TODO don't use getScaledInstance
 		return new ImageIcon(image.getScaledInstance(width, height, Image.SCALE_SMOOTH));
 	}
 
 	public static ImageIcon toIcon(BufferedImage image, float scale) {
 		int height = (int) (image.getHeight() * scale);
 		int width = (int) (image.getWidth() * scale);
-		// TODO dont use getScaledInstance
+		// TODO don't use getScaledInstance
 		return new ImageIcon(image.getScaledInstance(width, height, Image.SCALE_SMOOTH));
 	}
 
 	public static BufferedImage getFirstTokenImage(int id) {
+		Main.asrtInRange(id, 0, firstTokens.length, "Invalid img id");
 		if (firstTokens[id] == null) {
 			firstTokens[id] = createImage("first" + (id + 1));
 		}
@@ -66,7 +67,7 @@ public class Images {
 	}
 
 	public static BufferedImage getFarmImage(int id) {
-		id = id % 2;
+		Main.asrtInRange(id, 0, 2, "Invalid img id");
 		if (farmsAndMargins[id] == null) {
 			farmsAndMargins[id] = createImage("farm" + (id + 1));
 		}
@@ -75,17 +76,19 @@ public class Images {
 
 	public static BufferedImage getFarmMarginImage(Dir d) {
 		int id = d == Dir.W ? 0 : 1;
-		if (farmsAndMargins[2 + id] == null) {
-			farmsAndMargins[2 + id] = createImage("b" + (id + 1));
+		int arrId = id + 2;
+		if (farmsAndMargins[arrId] == null) {
+			farmsAndMargins[arrId] = createImage("b" + (id + 1));
 		}
-		return farmsAndMargins[2 + id];
+		return farmsAndMargins[arrId];
 	}
 
-	public static BufferedImage getExtensionImage() {
-		if (ext == null) {
-			ext = createImage("ext1");
+	public static BufferedImage getExtensionImage(int id) {
+		Main.asrtInRange(id, 0, exts.length, "Invalid img id");
+		if (exts[id] == null) {
+			exts[id] = createImage("ext" + (id + 1));
 		}
-		return ext;
+		return exts[id];
 	}
 
 	public static BufferedImage getTroughImage() {

@@ -178,7 +178,7 @@ public class Board extends JFrame implements Observer{
 			p.add(addBorder(SwingUtils.createLabel(players[1].getAnimalScore(a) + " [" + players[1].getAnimal(a) + "]")));
 		}
 		// extensions
-		p.add(addBorder(SwingUtils.createLabel(Images.toIcon(Images.getExtensionImage(), 30))));
+		p.add(addBorder(SwingUtils.createLabel(Images.toIcon(Images.getExtensionImage(0), 30))));
 		p.add(addBorder(SwingUtils.createLabel(String.valueOf(players[0].getExtensionsScore()))));
 		p.add(addBorder(SwingUtils.createLabel(String.valueOf(players[1].getExtensionsScore()))));
 		// buildings

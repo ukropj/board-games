@@ -22,7 +22,7 @@ public class Expand extends RefillAction {
 		if (GeneralSupply.getExpansionsLeft() > 0) {
 			player.purchase(Purchasable.EXTENSION);
 			player.setActiveType(Purchasable.EXTENSION);
-			GeneralSupply.useExpansion(true);
+			GeneralSupply.useExtension(true);
 			hadExp = true;
 		} else {
 			hadExp = false;
@@ -33,7 +33,7 @@ public class Expand extends RefillAction {
 	public boolean undoOnce(Player player) {
 		if (hadExp) {
 			if (player.unpurchase(Purchasable.EXTENSION)) {
-				GeneralSupply.useExpansion(false);
+				GeneralSupply.useExtension(false);
 				hadExp = false;
 			} else {
 				return false;				
