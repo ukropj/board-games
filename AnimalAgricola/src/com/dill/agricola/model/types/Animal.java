@@ -4,9 +4,10 @@ import java.awt.Color;
 
 public enum Animal {
 
-	SHEEP(Color.WHITE, Color.BLACK, new int[] { 4, 8, 11 }), //
-	PIG(Color.BLACK, Color.WHITE, new int[] { 4, 7, 9 }), //
-	COW(new Color(165, 42, 42), Color.WHITE, new int[] { 4, 6, 8 }), //
+	// TODO real colors
+	SHEEP(Color.WHITE, Color.BLACK, new int[] { 4, 8, 11 }),
+	PIG(Color.BLACK, Color.WHITE, new int[] { 4, 7, 9 }),
+	COW(new Color(165, 42, 42), Color.WHITE, new int[] { 4, 6, 8 }),
 	HORSE(Color.GRAY, Color.BLACK, new int[] { 4, 5, 7 });
 
 	private final Color color;

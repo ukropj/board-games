@@ -23,7 +23,7 @@ import com.dill.agricola.common.Dir;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.Material;
-import com.dill.agricola.view.utils.Images.IconSize;
+import com.dill.agricola.view.utils.AgriImages.ImgSize;
 
 public class SwingUtils {
 
@@ -72,12 +72,12 @@ public class SwingUtils {
 	}
 
 	public static JLabel createAnimalLabel(Animal type, int count, int labelStyle) {
-		Icon icon = Images.getAnimalIcon(type, IconSize.SMALL);
+		Icon icon = AgriImages.getAnimalIcon(type, ImgSize.MEDIUM);
 		return createGeneralLabel(count, icon, labelStyle);
 	}
 
 	public static JLabel createMaterialLabel(Material type, int count, int labelStyle) {
-		Icon icon = Images.getMaterialIcon(type);
+		Icon icon = AgriImages.getMaterialIcon(type);
 		return createGeneralLabel(count, icon, labelStyle);
 	}
 
@@ -101,7 +101,7 @@ public class SwingUtils {
 	}
 
 	public static JLabel createArrowLabel(Dir d, boolean red) {
-		JLabel l = createLabel(Images.getArrowIcon(d, red));
+		JLabel l = createLabel(AgriImages.getArrowIcon(d, red));
 		l.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		return l;
 	}

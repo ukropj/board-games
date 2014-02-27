@@ -35,8 +35,9 @@ import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Material;
 import com.dill.agricola.support.Msg;
-import com.dill.agricola.view.utils.Images;
+import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.SwingUtils;
+import com.dill.agricola.view.utils.AgriImages.ImgSize;
 
 public class ActionPanelFactory {
 	
@@ -50,7 +51,7 @@ public class ActionPanelFactory {
 		c.weighty = 0.5;
 		switch (action.getType()) {
 		case STARTING_ONE_WOOD:
-			JLabel firstL = SwingUtils.createLabel(Images.getFirstTokenIcon(0, 30));
+			JLabel firstL = SwingUtils.createLabel(AgriImages.getFirstTokenIcon(0, ImgSize.MEDIUM));
 			firstL.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
 			firstL.setOpaque(false);
 			createRefillPanel(parent, 0, 0, action, actionButton, firstL, StartOneWood.REFILL);
@@ -80,7 +81,7 @@ public class ActionPanelFactory {
 			fcost.substract(Material.BORDER, 1);
 			JPanel fen1P = SwingUtils.createResourcesPanel(fcost, null, SwingUtils.X_AXIS);
 			fen1P.add(SwingUtils.createArrowLabel(Dir.E, false));
-			fen1P.add(SwingUtils.createLabel(Images.toIcon(Images.getFenceImage(Dir.N), 5)));
+			fen1P.add(SwingUtils.createLabel("build", AgriImages.getMaterialIcon(Material.BORDER)));
 			fenP.add(fen1P);
 			actionButton.add(fenP);
 			c.gridx = 1;
@@ -89,13 +90,13 @@ public class ActionPanelFactory {
 			break;
 		case WALLS:
 			JPanel walP = SwingUtils.createVerticalPanel();
-			walP.add(SwingUtils.createLabel("2x", Images.toIcon(Images.getFenceImage(Dir.N), 5)), 0);
+			walP.add(SwingUtils.createLabel("2x build", AgriImages.getMaterialIcon(Material.BORDER)), 0);
 			walP.add(SwingUtils.createLabel(Msg.get("alsoUnlimited")));
 			Materials wcost = new Materials(Walls.COST);
 			wcost.substract(Material.BORDER, 1);
 			JPanel wal1P = SwingUtils.createResourcesPanel(wcost, null, SwingUtils.X_AXIS);
 			wal1P.add(SwingUtils.createArrowLabel(Dir.E, false));
-			wal1P.add(SwingUtils.createLabel(Images.toIcon(Images.getFenceImage(Dir.N), 5)));
+			wal1P.add(SwingUtils.createLabel("build", AgriImages.getMaterialIcon(Material.BORDER)));
 			walP.add(wal1P);
 			actionButton.add(walP);
 			c.gridx = 1;
@@ -103,16 +104,16 @@ public class ActionPanelFactory {
 			c.gridwidth = 2;
 			break;
 		case EXPAND:
-			JLabel extP = SwingUtils.createLabel("+", Images.toIcon(Images.getExtensionImage(0), 30));
+			JLabel extP = SwingUtils.createLabel("+", AgriImages.getExtensionIcon(0));
 			createRefillPanel(parent, 1, 3, action, actionButton, extP, Expand.REFILL);
 			return;
 		case TROUGHS:
 			JPanel troP = SwingUtils.createVerticalPanel();
-			troP.add(SwingUtils.createLabel("+1", Images.toIcon(Images.getTroughImage(), 20)));
+			troP.add(SwingUtils.createLabel("+1", AgriImages.getTroughIcon()));
 			troP.add(SwingUtils.createLabel(Msg.get("alsoUnlimited")));
 			JPanel tro1P = SwingUtils.createResourcesPanel(BuildTrough.COST, null, SwingUtils.X_AXIS);
 			tro1P.add(SwingUtils.createArrowLabel(Dir.E, false));
-			tro1P.add(SwingUtils.createLabel(Images.toIcon(Images.getTroughImage(), 20)));
+			tro1P.add(SwingUtils.createLabel(AgriImages.getTroughIcon()));
 			troP.add(tro1P);
 			actionButton.add(troP);
 			c.gridx = 3;
@@ -123,7 +124,7 @@ public class ActionPanelFactory {
 			stallP.add(SwingUtils.createLabel(Msg.get("once")));
 			stallP.add(SwingUtils.createResourcesPanel(Stall.COST, null, SwingUtils.X_AXIS));
 			stallP.add(SwingUtils.createArrowLabel(Dir.S, false));
-			stallP.add(SwingUtils.createLabel(Images.getBuildingIcon(BuildingType.STALL, 50)));
+			stallP.add(SwingUtils.createLabel(AgriImages.getBuildingIcon(BuildingType.STALL, ImgSize.MEDIUM)));
 			stallP.add(Box.createVerticalGlue());
 			actionButton.add(stallP);
 			c.gridx = 0;
@@ -141,7 +142,7 @@ public class ActionPanelFactory {
 			costP.add(SwingUtils.createResourcesPanel(Stables.COST_STONE, null, SwingUtils.X_AXIS));
 			staP.add(costP);
 			staP.add(SwingUtils.createArrowLabel(Dir.S, false));
-			staP.add(SwingUtils.createLabel(Images.getBuildingIcon(BuildingType.STABLES, 50)));
+			staP.add(SwingUtils.createLabel(AgriImages.getBuildingIcon(BuildingType.STABLES, ImgSize.MEDIUM)));
 			staP.add(Box.createVerticalGlue());
 			actionButton.add(staP);
 			c.gridx = 2;
@@ -154,7 +155,7 @@ public class ActionPanelFactory {
 			actionButton.add(SwingUtils.createLabel(Msg.get("specBuildLabel")));
 //			JPanel sbP = SwingUtils.createFlowPanel();
 //			for (BuildingType b : GeneralSupply.getBuildingsLeft()) {
-//				sbP.add(new JLabel(Images.getBuildingIcon(b, 40)));
+//				sbP.add(new JLabel(Images.getBuildingIcon(b, ImgSize.MEDIUM)));
 //			}
 //			action.setChangeListener(new BuildingChangeListener(sbP));
 //			actionPanel.add(sbP);

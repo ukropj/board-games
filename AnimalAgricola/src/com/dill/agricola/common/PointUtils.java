@@ -1,35 +1,39 @@
 package com.dill.agricola.common;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
 
 
-public class Point {
-	public final int x;
-	public final int y;
-
-	public Point(int x, int y) {
-		this.x = x;
-		this.y = y;
+public class PointUtils {
+	
+	private PointUtils() {
+		
 	}
 
-	public Point move(Dir d) {
-		if (d == null) {
-			return this;
+	public static Point getNext(Point point, Dir dir) {
+		if (dir == null) {
+			return point;
 		}
-		switch (d) {
+		Point ret = new Point(point);
+		switch (dir) {
 		case N:
-			return new Point(x, y - 1);
+			ret.translate(0, -1);
+			break;
 		case E:
-			return new Point(x + 1, y);
+			ret.translate(1, 0);
+			break;
 		case S:
-			return new Point(x, y + 1);
+			ret.translate(0, 1);
+			break;
 		case W:
-			return new Point(x - 1, y);
+			ret.translate(-1, 0);
+			break;
 		default:
 			throw new IllegalArgumentException();
 		}
+		return ret;
 	}
 
 	public static List<Point> createGridRange(int minX, int maxX, int minY, int maxY) {
@@ -53,33 +57,5 @@ public class Point {
 	public static boolean isInRange(Point pos, int maxX, int maxY) {
 		return isInRange(pos, 0, maxX, 0, maxY);
 	}
-	
-	public String toString() {
-		return "[" + x + "," + y + "]";
-	}
-
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + x;
-		result = prime * result + y;
-		return result;
-	}
-
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Point other = (Point) obj;
-		if (x != other.x)
-			return false;
-		if (y != other.y)
-			return false;
-		return true;
-	}
-	
 	
 }

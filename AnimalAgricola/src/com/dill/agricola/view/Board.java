@@ -34,8 +34,9 @@ import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.support.Msg;
-import com.dill.agricola.view.utils.Images;
+import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.SwingUtils;
+import com.dill.agricola.view.utils.AgriImages.ImgSize;
 
 @SuppressWarnings("serial")
 public class Board extends JFrame implements Observer{
@@ -178,11 +179,11 @@ public class Board extends JFrame implements Observer{
 			p.add(addBorder(SwingUtils.createLabel(players[1].getAnimalScore(a) + " [" + players[1].getAnimal(a) + "]")));
 		}
 		// extensions
-		p.add(addBorder(SwingUtils.createLabel(Images.toIcon(Images.getExtensionImage(0), 30))));
+		p.add(addBorder(SwingUtils.createLabel(AgriImages.getExtensionIcon(0))));
 		p.add(addBorder(SwingUtils.createLabel(String.valueOf(players[0].getExtensionsScore()))));
 		p.add(addBorder(SwingUtils.createLabel(String.valueOf(players[1].getExtensionsScore()))));
 		// buildings
-		p.add(addBorder(SwingUtils.createLabel(Images.getBuildingIcon(BuildingType.HALF_TIMBERED_HOUSE, 30))));
+		p.add(addBorder(SwingUtils.createLabel(AgriImages.getBuildingIcon(BuildingType.HALF_TIMBERED_HOUSE, ImgSize.SMALL))));
 		p.add(addBorder(SwingUtils.createLabel(String.valueOf(players[0].getBuildingScore()))));
 		p.add(addBorder(SwingUtils.createLabel(String.valueOf(players[1].getBuildingScore()))));
 		// total

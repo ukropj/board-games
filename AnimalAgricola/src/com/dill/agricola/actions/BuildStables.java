@@ -15,8 +15,9 @@ import com.dill.agricola.model.buildings.Stall;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Purchasable;
-import com.dill.agricola.view.utils.Images;
+import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.SwingUtils;
+import com.dill.agricola.view.utils.AgriImages.ImgSize;
 
 public class BuildStables extends AbstractAction {
 
@@ -50,7 +51,7 @@ public class BuildStables extends AbstractAction {
 		for (Materials cost : COSTS) {
 			opts.add(SwingUtils.createResourcesPanel(cost, null, SwingUtils.X_AXIS));
 		}
-		Icon icon = Images.getBuildingIcon(BuildingType.OPEN_STABLES, 40);
+		Icon icon = AgriImages.getBuildingIcon(BuildingType.OPEN_STABLES, ImgSize.MEDIUM);
 		return SwingUtils.showOptionDialog("Choose cost", "Stables", icon, opts);
 	}
 

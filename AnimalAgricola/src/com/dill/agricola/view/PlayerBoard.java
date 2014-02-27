@@ -21,7 +21,8 @@ import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.Material;
 import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.support.Msg;
-import com.dill.agricola.view.utils.Images;
+import com.dill.agricola.view.utils.AgriImages;
+import com.dill.agricola.view.utils.AgriImages.ImgSize;
 import com.dill.agricola.view.utils.SwingUtils;
 
 @SuppressWarnings("serial")
@@ -85,7 +86,7 @@ public class PlayerBoard extends JPanel implements Observer {
 	private void initFirstPanel() {
 		JPanel p = new JPanel();
 		p.setPreferredSize(new Dimension(50, 0));
-		firstLabel = SwingUtils.createLabel(Images.getFirstTokenIcon(player.getColor().ordinal(), 40));
+		firstLabel = SwingUtils.createLabel(AgriImages.getFirstTokenIcon(player.getColor().ordinal(), ImgSize.BIG));
 		firstLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 		firstLabel.setVisible(false);
 		p.add(firstLabel);

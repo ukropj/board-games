@@ -1,5 +1,6 @@
 package com.dill.agricola.model;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -7,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.dill.agricola.common.Dir;
-import com.dill.agricola.common.Point;
+import com.dill.agricola.common.PointUtils;
 
 public class Fencer {
 
@@ -18,7 +19,7 @@ public class Fencer {
 		int w = farm.getWidth();
 		int h = farm.getHeight();
 		int[][] floodMap = new int[w][h];
-		List<Point> range = Point.createGridRange(w, h);
+		List<Point> range = PointUtils.createGridRange(w, h);
 		List<Dir> dirs = Arrays.asList(Dir.W, Dir.N, Dir.S, Dir.E);
 		// init
 		for (Point pos : range) {
@@ -35,8 +36,8 @@ public class Fencer {
 				int current = floodMap[pos.x][pos.y];
 				for (Dir d : dirs) {
 					if (!farm.isClosed(pos, d)) {
-						Point nextPos = pos.move(d);
-						if (Point.isInRange(nextPos, w, h)) {
+						Point nextPos = PointUtils.getNext(pos, d);
+						if (PointUtils.isInRange(nextPos, w, h)) {
 							int next = floodMap[nextPos.x][nextPos.y];
 							if (current < 0) {
 								current = next;

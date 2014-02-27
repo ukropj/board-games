@@ -13,7 +13,9 @@ import com.dill.agricola.Main;
 import com.dill.agricola.common.Animals;
 import com.dill.agricola.common.Dir;
 import com.dill.agricola.common.DirPoint;
-import com.dill.agricola.common.Point;
+import com.dill.agricola.common.PointUtils;
+
+import java.awt.Point;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.Purchasable;
 
@@ -206,7 +208,7 @@ public class Farm extends SimpleObservable {
 		}
 
 		// retrieve fences & animals from removed extension
-		for (Point pos : Point.createGridRange(targetCol, targetCol + 1, 0, height)) {
+		for (Point pos : PointUtils.createGridRange(targetCol, targetCol + 1, 0, height)) {
 			takeAnimals(pos);
 			for (Dir dir : Dir.values()) {
 				if (dir != d.opposite()) { // keep fences on border
@@ -229,13 +231,13 @@ public class Farm extends SimpleObservable {
 			return false;
 		}
 		Space first = getSpace(pos);
-		Space second = getSpace(pos.move(d));
+		Space second = getSpace(PointUtils.getNext(pos, d));
 		return first != null && first.hasBorder(d) || second != null && second.hasBorder(d.opposite());
 	}
 
 	public boolean isClosed(Point pos, Dir d) {
 		Space first = getSpace(pos);
-		Space second = getSpace(pos.move(d));
+		Space second = getSpace(PointUtils.getNext(pos, d));
 		return first != null && (first.isAlwaysEnclosed() || first.hasBorder(d)) //
 				|| second != null && (second.isAlwaysEnclosed() || second.hasBorder(d.opposite()));
 	}
@@ -249,7 +251,7 @@ public class Farm extends SimpleObservable {
 		if (first != null) {
 			done = first.setBorder(d, true);
 		}
-		Space second = getSpace(pos.move(d));
+		Space second = getSpace(PointUtils.getNext(pos, d));
 		if (second != null) {
 			done = second.setBorder(d.opposite(), true) || done;
 		}
@@ -270,7 +272,7 @@ public class Farm extends SimpleObservable {
 		if (first != null) {
 			done = first.setBorder(d, false);
 		}
-		Space second = getSpace(pos.move(d));
+		Space second = getSpace(PointUtils.getNext(pos, d));
 		if (second != null) {
 			done = second.setBorder(d.opposite(), false) || done;
 		}
@@ -363,7 +365,7 @@ public class Farm extends SimpleObservable {
 	public List<Building> getBuiltBuildings() {
 		// TODO keep list
 		List<Building> buildings = new ArrayList<Building>();
-		List<Point> range = Point.createGridRange(width, height);
+		List<Point> range = PointUtils.createGridRange(width, height);
 		for (Point pos : range) {
 			Building b = getBuilding(pos);
 			if (b != null) {
@@ -428,14 +430,14 @@ public class Farm extends SimpleObservable {
 	}
 
 	private void putSpace(Point pos, Space space) {
-		if (Point.isInRange(pos, width, height)) {
+		if (PointUtils.isInRange(pos, width, height)) {
 			spaces.get(pos.x).set(pos.y, space);
 		}
 	}
 
 	public Space getSpace(Point pos) {
 		Main.asrtNotNull(pos, "Cannot handle null position");
-		if (Point.isInRange(pos, width, height)) {
+		if (PointUtils.isInRange(pos, width, height)) {
 			return spaces.get(pos.x).get(pos.y);
 		} else {
 			return null;
@@ -575,7 +577,7 @@ public class Farm extends SimpleObservable {
 
 	private boolean takeRandomAnimals(Animal type, int count) {
 		int moved = 0;
-		List<Point> range = Point.createGridRange(width, height);
+		List<Point> range = PointUtils.createGridRange(width, height);
 		for (Point pos : range) {
 			Space space = getSpace(pos);
 			if (space.getAnimalType() == type) {

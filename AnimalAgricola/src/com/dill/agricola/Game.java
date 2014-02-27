@@ -32,7 +32,8 @@ import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.view.Board;
-import com.dill.agricola.view.utils.Images;
+import com.dill.agricola.view.utils.AgriImages;
+import com.dill.agricola.view.utils.AgriImages.ImgSize;
 import com.dill.agricola.view.utils.SwingUtils;
 
 public class Game {
@@ -96,7 +97,7 @@ public class Game {
 		} else {			
 			List<JComponent> opts = new ArrayList<JComponent>();
 			for (PlayerColor color : PlayerColor.values()) {
-				Icon icon = Images.getFirstTokenIcon(color.ordinal(), 50);
+				Icon icon = AgriImages.getFirstTokenIcon(color.ordinal(), ImgSize.BIG);
 				JLabel l = new JLabel(icon);
 				l.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 				l.setOpaque(true);

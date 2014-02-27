@@ -23,9 +23,9 @@ import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Purchasable;
-import com.dill.agricola.view.utils.Images;
+import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.SwingUtils;
-import com.dill.agricola.view.utils.Images.IconSize;
+import com.dill.agricola.view.utils.AgriImages.ImgSize;
 
 public class BuildSpecial extends AbstractAction {
 
@@ -68,7 +68,7 @@ public class BuildSpecial extends AbstractAction {
 			return null;
 		}
 		for (BuildingType b : types) {
-			opts.add(new JLabel(Images.getBuildingIcon(b, 150)));			
+			opts.add(new JLabel(AgriImages.getBuildingIcon(b, ImgSize.BIG)));			
 		}
 		int optNo = SwingUtils.showOptionDialog("Choose building", "Special buildings", null, opts);
 		if (optNo == NONE) {
@@ -83,7 +83,7 @@ public class BuildSpecial extends AbstractAction {
 		for (Materials cost : OS_COSTS) {
 			opts.add(SwingUtils.createResourcesPanel(cost, null, SwingUtils.X_AXIS));
 		}
-		Icon icon = Images.getBuildingIcon(BuildingType.OPEN_STABLES, 40);
+		Icon icon = AgriImages.getBuildingIcon(BuildingType.OPEN_STABLES, ImgSize.MEDIUM);
 		return SwingUtils.showOptionDialog("Choose cost", "Open Stables", icon, opts);
 	}
 
@@ -94,10 +94,10 @@ public class BuildSpecial extends AbstractAction {
 		}
 		Icon[] icons = new ImageIcon[animalRewards.length];
 		for (int i = 0; i < animalRewards.length; i++) {
-			icons[i] = Images.getAnimalIcon(animalRewards[i], IconSize.BIG);
+			icons[i] = AgriImages.getAnimalIcon(animalRewards[i], ImgSize.BIG);
 		}
 		int result = JOptionPane.showOptionDialog(null, "Choose free animal", "Reward", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
-				Images.getBuildingIcon(building.getType(), 40), icons, icons[0]);
+				AgriImages.getBuildingIcon(building.getType(), ImgSize.MEDIUM), icons, icons[0]);
 		return result != NONE ? animalRewards[result] : null;
 	}
 

@@ -1,13 +1,14 @@
 package com.dill.agricola.common;
 
+import java.awt.Point;
 
 public class DirPoint {
 
 	public Point point;
 	public Dir dir;
-	
-	public DirPoint(Point point, Dir dir) {
-		this.point = point;
+
+	public DirPoint(Point pos, Dir dir) {
+		this.point = pos;
 		this.dir = dir;
 	}
 
@@ -36,9 +37,9 @@ public class DirPoint {
 			return false;
 		return true;
 	}
-	
+
 	public String toString() {
 		return dir.toString() + " " + point.toString();
 	}
-	
+
 }
