@@ -28,7 +28,7 @@ public class Farm extends SimpleObservable {
 
 	private final Map<Dir, Stack<Integer>> extensions = new EnumMap<Dir, Stack<Integer>>(Dir.class);
 	private final Animals looseAnimals = new Animals();
-	//	private final Map<Animal, Integer> animals = new EnumMap<Animal, Integer>(Animal.class);
+	// private final Map<Animal, Integer> animals = new EnumMap<Animal, Integer>(Animal.class);
 
 	private final Map<Purchasable, Integer> unusedStuff = new EnumMap<Purchasable, Integer>(Purchasable.class);
 	private final Stack<Building> unusedBuildings = new Stack<Building>();
@@ -109,16 +109,18 @@ public class Farm extends SimpleObservable {
 		return activeSpots.add(pos);
 	}
 
-	private boolean addActiveSpot(Point pos, Dir d) {
-		return activeFenceSpots.add(new DirPoint(pos, d));
+	private void addActiveSpot(Point pos, Dir d) {
+		activeFenceSpots.add(new DirPoint(pos, d));
+		activeFenceSpots.add(new DirPoint(PointUtils.getNext(pos, d), d.opposite()));
 	}
 
-	private boolean removeActiveSpot(Point pos) {
-		return activeSpots.remove(pos);
+	private void removeActiveSpot(Point pos) {
+		activeSpots.remove(pos);
 	}
 
-	private boolean removeActiveSpot(Point pos, Dir d) {
-		return activeFenceSpots.remove(new DirPoint(pos, d));
+	private void removeActiveSpot(Point pos, Dir d) {
+		activeFenceSpots.remove(new DirPoint(pos, d));
+		activeFenceSpots.remove(new DirPoint(PointUtils.getNext(pos, d), d.opposite()));
 	}
 
 	public List<Integer> getExtensions(Dir d) {
@@ -681,10 +683,10 @@ public class Farm extends SimpleObservable {
 			addUnused(type, -1);
 			return true;
 		}
-		int active = activeType == type //
-		? type == Purchasable.FENCE ? activeFenceSpots.size() : activeSpots.size()
-				: 0;
-		if (active > 0) {
+		boolean hasActive = activeType == type
+				? type == Purchasable.FENCE ? !activeFenceSpots.isEmpty() : !activeSpots.isEmpty()
+				: false;
+		if (hasActive) {
 			if (takeLastActive()) {
 				addUnused(type, -1);
 				return true;

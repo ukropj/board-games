@@ -81,7 +81,7 @@ public class ActionPanelFactory {
 			fcost.substract(Material.BORDER, 1);
 			JPanel fen1P = SwingUtils.createResourcesPanel(fcost, null, SwingUtils.X_AXIS);
 			fen1P.add(SwingUtils.createArrowLabel(Dir.E, false));
-			fen1P.add(SwingUtils.createLabel("build", AgriImages.getMaterialIcon(Material.BORDER)));
+			fen1P.add(SwingUtils.createLabel(Msg.get("build"), AgriImages.getMaterialIcon(Material.BORDER)));
 			fenP.add(fen1P);
 			actionButton.add(fenP);
 			c.gridx = 1;
@@ -90,13 +90,16 @@ public class ActionPanelFactory {
 			break;
 		case WALLS:
 			JPanel walP = SwingUtils.createVerticalPanel();
-			walP.add(SwingUtils.createLabel("2x build", AgriImages.getMaterialIcon(Material.BORDER)), 0);
+			JPanel freeP = SwingUtils.createHorizontalPanel();
+			freeP.add(SwingUtils.createLabel("2\u00D7 "));
+			freeP.add(SwingUtils.createLabel(Msg.get("build"), AgriImages.getMaterialIcon(Material.BORDER)));
+			walP.add(freeP);
 			walP.add(SwingUtils.createLabel(Msg.get("alsoUnlimited")));
 			Materials wcost = new Materials(Walls.COST);
 			wcost.substract(Material.BORDER, 1);
 			JPanel wal1P = SwingUtils.createResourcesPanel(wcost, null, SwingUtils.X_AXIS);
 			wal1P.add(SwingUtils.createArrowLabel(Dir.E, false));
-			wal1P.add(SwingUtils.createLabel("build", AgriImages.getMaterialIcon(Material.BORDER)));
+			wal1P.add(SwingUtils.createLabel(Msg.get("build"), AgriImages.getMaterialIcon(Material.BORDER)));
 			walP.add(wal1P);
 			actionButton.add(walP);
 			c.gridx = 1;
@@ -138,7 +141,7 @@ public class ActionPanelFactory {
 			staP.add(SwingUtils.createLabel(Msg.get("unlimited")));
 			JPanel costP = SwingUtils.createHorizontalPanel();
 			costP.add(SwingUtils.createResourcesPanel(Stables.COST_WOOD, null, SwingUtils.X_AXIS));
-			costP.add(SwingUtils.createLabel("/"));
+			costP.add(SwingUtils.createLabel(" / "));
 			costP.add(SwingUtils.createResourcesPanel(Stables.COST_STONE, null, SwingUtils.X_AXIS));
 			staP.add(costP);
 			staP.add(SwingUtils.createArrowLabel(Dir.S, false));

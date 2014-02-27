@@ -46,7 +46,7 @@ public class PlayerBoard extends JPanel implements Observer {
 		setLayout(new GridBagLayout());
 		setBorder(new LineBorder(Color.GRAY, 1));
 
-		initPurchasePanel();
+		initTopPanel();
 		initFarmPanel();
 		initFirstPanel();
 		initMaterialPanel();
@@ -69,9 +69,10 @@ public class PlayerBoard extends JPanel implements Observer {
 		//		add(farmPanel, BorderLayout.EAST);
 	}
 
-	private void initPurchasePanel() {
+	private void initTopPanel() {
 		PlayerColor color = player.getColor();
 		playerLabel = SwingUtils.createLabel(Msg.get("player", color.ordinal() + 1));
+		playerLabel.setFont(playerLabel.getFont().deriveFont(20.0f));
 		playerLabel.setOpaque(true);
 
 		GridBagConstraints c = new GridBagConstraints();

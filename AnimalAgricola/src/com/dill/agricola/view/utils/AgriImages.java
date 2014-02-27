@@ -15,8 +15,8 @@ import com.dill.agricola.model.types.Material;
 public class AgriImages {
 
 	private final static int MISC_U_FENCE = 0;
-//	private final static int MISC_TROUGH = 1;
-//	private final static int MISC_U_TROUGH = 2;
+	// private final static int MISC_TROUGH = 1;
+	// private final static int MISC_U_TROUGH = 2;
 
 	private final static Map<BuildingType, BufferedImage> buildings = new EnumMap<BuildingType, BufferedImage>(BuildingType.class);
 	private final static Map<Animal, BufferedImage> animalsSmall = new EnumMap<Animal, BufferedImage>(Animal.class);
@@ -88,7 +88,7 @@ public class AgriImages {
 	public static BufferedImage getTroughImage(ImgSize size) {
 		if (troughs[size.ordinal()] == null) {
 			BufferedImage img = Images.createImage("trough");
-			img = Images.getBestScaledInstance(img, size == ImgSize.BIG ? 0.5f : 0.3f);
+			img = Images.getBestScaledInstance(img, size == ImgSize.BIG ? 0.6f : 0.5f);
 			troughs[size.ordinal()] = img;
 		}
 		return troughs[size.ordinal()];
@@ -98,12 +98,14 @@ public class AgriImages {
 		return new ImageIcon(AgriImages.getTroughImage(ImgSize.MEDIUM));
 	}
 
-	/*public static BufferedImage getUnusedTroughImage() {
-		if (misc[MISC_U_TROUGH] == null) {
-			misc[MISC_U_TROUGH] = Images.createImage("trough-unused");
-		}
-		return misc[MISC_U_TROUGH];
-	}*/
+	/*
+	 * public static BufferedImage getUnusedTroughImage() {
+	 * if (misc[MISC_U_TROUGH] == null) {
+	 * misc[MISC_U_TROUGH] = Images.createImage("trough-unused");
+	 * }
+	 * return misc[MISC_U_TROUGH];
+	 * }
+	 */
 
 	public static BufferedImage getFenceImage(Dir d) {
 		if (fences[d.ordinal()] == null) {
@@ -118,7 +120,7 @@ public class AgriImages {
 				img = Images.createImage("border2");
 				break;
 			}
-			// TODO scale
+			img = Images.getBestScaledInstance(img, 0.8f);
 			fences[d.ordinal()] = img;
 			fences[d.opposite().ordinal()] = img;
 		}
@@ -167,7 +169,7 @@ public class AgriImages {
 	public static BufferedImage getMaterialImage(Material type) {
 		if (materials[type.ordinal()] == null) {
 			BufferedImage img = Images.createImage(type.toString().toLowerCase());
-			img = Images.getBestScaledInstance(img, 0.5f);
+			img = Images.getBestScaledInstance(img, 0.4f);
 			materials[type.ordinal()] = img;
 			return img;
 		}
@@ -209,6 +211,7 @@ public class AgriImages {
 				img = Images.createImage("open-stables");
 				break;
 			}
+			img = Images.getBestScaledInstance(img, 0.5f);
 			buildings.put(type, img);
 			return img;
 		}
@@ -236,10 +239,10 @@ public class AgriImages {
 			img = Images.getBestScaledInstance(img, 0.25f);
 			break;
 		case MEDIUM:
-			img = Images.getBestScaledInstance(img, 0.3f);
+			img = Images.getBestScaledInstance(img, 0.6f);
 			break;
 		case BIG:
-			img = Images.getBestScaledInstance(img, 0.5f);
+//			img = Images.getBestScaledInstance(img, 0.6f);
 			break;
 		}
 		return new ImageIcon(img);
@@ -252,7 +255,7 @@ public class AgriImages {
 		case SMALL:
 		case MEDIUM:
 			map = red ? redArrowsMedium : arrowsMedium;
-			ratio = 0.3f;
+			ratio = 0.2f;
 			break;
 		case BIG:
 			map = red ? redArrowsBig : arrowsBig;

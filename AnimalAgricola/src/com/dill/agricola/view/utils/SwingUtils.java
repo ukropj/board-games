@@ -2,6 +2,7 @@ package com.dill.agricola.view.utils;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,21 +37,21 @@ public class SwingUtils {
 
 	private SwingUtils() {
 	}
-	
+
 	public static JPanel createFlowPanel() {
 		return createFlowPanel(0, 0);
 	}
-	
+
 	public static JPanel createFlowPanel(int hgap, int vgap) {
 		JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER, hgap, vgap));
 		p.setOpaque(false);
 		return p;
 	}
-	
+
 	public static JPanel createBorderPanel() {
 		return createBorderPanel(0, 0);
 	}
-	
+
 	public static JPanel createBorderPanel(int hgap, int vgap) {
 		JPanel p = new JPanel(new BorderLayout(hgap, vgap));
 		p.setOpaque(false);
@@ -58,14 +59,14 @@ public class SwingUtils {
 	}
 
 	public static JPanel createVerticalPanel() {
-		JPanel p = new JPanel(/*BoxLayout*/);
+		JPanel p = new JPanel(/* BoxLayout */);
 		p.setOpaque(false);
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
 		return p;
 	}
-	
+
 	public static JPanel createHorizontalPanel() {
-		JPanel p = new JPanel(/*BoxLayout*/);
+		JPanel p = new JPanel(/* BoxLayout */);
 		p.setOpaque(false);
 		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
 		return p;
@@ -83,14 +84,14 @@ public class SwingUtils {
 
 	private static JLabel createGeneralLabel(int count, Icon icon, int labelStyle) {
 		String text = null;
-		switch(labelStyle) {
+		switch (labelStyle) {
 		case NO_NUMBER:
 			text = null;
 			break;
 		case ICON_LAST_PLUS:
 			text = "+" + String.valueOf(count);
 			break;
-		default :
+		default:
 			text = String.valueOf(count);
 			break;
 		}
@@ -142,7 +143,7 @@ public class SwingUtils {
 	public static JLabel createLabel(String text) {
 		return createLabel(text, null);
 	}
-	
+
 	public static JLabel createLabel(ImageIcon icon) {
 		return createLabel(null, icon);
 	}
@@ -150,13 +151,22 @@ public class SwingUtils {
 	public static JLabel createLabel(String string, Icon icon) {
 		JLabel l = new JLabel(string, icon, JLabel.CENTER);
 		l.setHorizontalTextPosition(JLabel.LEFT);
+		l.setIconTextGap(1);
 		l.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 		l.setAlignmentY(JLabel.CENTER_ALIGNMENT);
-//		l.setOpaque(true);
-//		l.setBackground(Color.RED);
+		// l.setOpaque(true);
+		// l.setBackground(Color.RED);
+		if (string != null) {
+			if (string.matches("[^a-z]+")) {
+				l.setFont(new Font("Calibri", Font.BOLD, 18)); // TODO load from file
+			} else {
+				l.setFont(new Font("Calibri", Font.BOLD, 12));
+//				l.setFont(new Font("Dominican", Font.PLAIN, 18));
+			}
+		}
 		return l;
 	}
-	
+
 	public static int showOptionDialog(String message, String title, Icon icon, List<JComponent> opts) {
 		final JOptionPane pane = new JOptionPane(message, JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION, icon);
 		JButton[] buttons = new JButton[opts.size()];

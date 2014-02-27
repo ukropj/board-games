@@ -69,6 +69,7 @@ public class Player extends SimpleObservable {
 			farm.putFence(pos, Dir.S);
 			farm.putFence(pos, Dir.E);
 		}
+		Fencer.calculateFences(farm);
 	}
 
 	public String toString() {
