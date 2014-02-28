@@ -10,11 +10,14 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
+import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.util.EnumMap;
 import java.util.List;
@@ -46,13 +49,37 @@ public class FarmPanel extends JPanel {
 	static int H = (int) (S * 3.7f);
 	// static int Y2 = H - Y1 - 3 * S;
 
-	private final static Area animalArea = new Area(new Rectangle(S / 3 - M, S / 3 - M, S / 3 + 2 * M, S / 3 + 2 * M));
-	private final static Rectangle[] animalRects = new Rectangle[] {
-			new Rectangle(S / 3 - M, S / 3 - M, S / 6 + M + 1, S / 6 + M + 1),
-			new Rectangle(S / 2, S / 3 - M, S / 6 + M + 1, S / 6 + M + 1),
-			new Rectangle(S / 3 - M, S / 2, S / 6 + M + 1, S / 6 + M + 1),
-			new Rectangle(S / 2, S / 2, S / 6 + M + 1, S / 6 + M + 1)
+//	private final static Area animalArea = new Area(new Rectangle(S / 3 - M, S / 3 - M, S / 3 + 2 * M, S / 3 + 2 * M));
+	private final static Area animalArea = new Area(/*new Polygon(
+			new int[] { S / 2 - M, S / 2 + M, 2 * S / 3 + M, 2 * S / 3 + M, S / 2 + M, S / 2 - M, S / 3 - M, S / 3 - M },
+			new int[] { S / 3 - M, S / 3 - M, S / 2 - M, S / 2 + M, 2 * S / 3 + M, 2 * S / 3 + M, S / 2 + M, S / 2 - M },
+			8)*/
+			new Ellipse2D.Float(S/3-M, S/3-M, S/3+2*M, S/3+2*M));
+	private final static Area[] animalRects = new Area[] {
+			intersect(animalArea, new Rectangle(S / 3 - M, S / 3 - M, S / 6 + M + 1, S / 6 + M + 1)),
+			intersect(animalArea, new Rectangle(S / 2, S / 3 - M, S / 6 + M + 1, S / 6 + M + 1)),
+			intersect(animalArea, new Rectangle(S / 3 - M, S / 2, S / 6 + M + 1, S / 6 + M + 1)),
+			intersect(animalArea, new Rectangle(S / 2, S / 2, S / 6 + M + 1, S / 6 + M + 1))
 	};
+	/*private final static Polygon[] animalRects = new Polygon[] {
+			new Polygon(
+					new int[] { S / 3 - M, S / 3 - M, S / 2 - M, S / 2, S / 2 },
+					new int[] { S / 2, S / 2 - M, S / 3 - M, S / 3 - M, S / 2 },
+					5),
+			new Polygon(
+					new int[] { S / 2, S / 2, S / 2 + M, 2 * S / 3 + M, 2 * S / 3 + M },
+					new int[] { S / 2, S / 3 - M, S / 3 - M, S / 2 - M, S / 2 },
+					5),
+			new Polygon(
+					new int[] { S / 3 - M, S / 2, S / 2, S / 2 - M, S / 3 - M },
+					new int[] { S / 2, S / 2, 2*S / 3 + M, 2 * S / 3 + M, S / 2 + M },
+					5),
+			new Polygon(
+					new int[] { S / 2, 2 * S / 3 + M, 2 * S / 3 + M, S / 2 + M, S / 2 },
+					new int[] { S / 2, S / 2, S / 2 + M, 2 * S / 3 + M, 2 * S / 3 + M },
+					5)
+	};*/
+
 	private final static Polygon troughShape = new Polygon(
 			new int[] { S - 6 * M, S - 6 * M, S - 4 * M, S - 2 * M, S - 2 * M },
 			new int[] { 7 * M, 4 * M, 2 * M, 4 * M, 7 * M },
@@ -100,6 +127,11 @@ public class FarmPanel extends JPanel {
 
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+
+	private static Area intersect(Area area, Shape shape) {
+		area.intersect(new Area(shape));
+		return area;
 	}
 
 	private static Point toRealPos(Point farmPos) {
@@ -270,14 +302,15 @@ public class FarmPanel extends JPanel {
 							realType = availableAnimals.get(i);
 							break;
 						}
-						Rectangle r = animalRects[i];
-						r.translate(realPos.x, realPos.y);
+//						Polygon r = animalRects[i];
+//						r.translate(realPos.x, realPos.y);
+						Area r = animalRects[i].createTransformedArea(AffineTransform.getTranslateInstance(realPos.x, realPos.y));
 						g.setColor(makeTranslucent(realType.getColor(), 180));
 						g.fill(r);
 						// BufferedImage img = AgriImages.getAnimalImage(realType, ImgSize.SMALL);
 						// int w = img.getWidth(), h = img.getHeight();
 						// g.drawImage(img, r.x, r.y, w, h, null);
-						r.translate(-realPos.x, -realPos.y);
+//						r.translate(-realPos.x, -realPos.y);
 					}
 				}
 			}
@@ -338,10 +371,11 @@ public class FarmPanel extends JPanel {
 
 		if (isActive(pos, Purchasable.BUILDING, building != null)) {
 			g.setColor(makeTranslucent(player.getColor().getRealColor(), 120));
-			Area a = new Area(r);
+			Area a = new Area(new Rectangle(buildingRect));
 			if (availableAnimals.size() > 0) {
 				a.subtract(animalArea);
 			}
+			a.transform(AffineTransform.getTranslateInstance(realPos.x, realPos.y));
 			g.fill(a);
 		}
 
