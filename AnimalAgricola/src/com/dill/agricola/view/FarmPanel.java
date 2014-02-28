@@ -14,6 +14,7 @@ import java.awt.Stroke;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 import java.util.EnumMap;
 import java.util.List;
@@ -45,22 +46,20 @@ public class FarmPanel extends JPanel {
 	static int H = (int) (S * 3.7f);
 	// static int Y2 = H - Y1 - 3 * S;
 
-	// private final static Rectangle animalArea = new Rectangle(S / 3 - M, S / 3 - M, S / 3 + 2 * M, S / 3 + 2 * M);
-	private final static Map<Animal, Rectangle> animalAreas = new EnumMap<Animal, Rectangle>(Animal.class) {
-		{
-			put(Animal.SHEEP, new Rectangle(S / 3 - M, S / 3 - M, S / 6 + M + 1, S / 6 + M + 1));
-			put(Animal.PIG, new Rectangle(S / 2, S / 3 - M, S / 6 + M + 1, S / 6 + M + 1));
-			put(Animal.COW, new Rectangle(S / 3 - M, S / 2, S / 6 + M + 1, S / 6 + M + 1));
-			put(Animal.HORSE, new Rectangle(S / 2, S / 2, S / 6 + M + 1, S / 6 + M + 1));
-		}
+	private final static Area animalArea = new Area(new Rectangle(S / 3 - M, S / 3 - M, S / 3 + 2 * M, S / 3 + 2 * M));
+	private final static Rectangle[] animalRects = new Rectangle[] {
+			new Rectangle(S / 3 - M, S / 3 - M, S / 6 + M + 1, S / 6 + M + 1),
+			new Rectangle(S / 2, S / 3 - M, S / 6 + M + 1, S / 6 + M + 1),
+			new Rectangle(S / 3 - M, S / 2, S / 6 + M + 1, S / 6 + M + 1),
+			new Rectangle(S / 2, S / 2, S / 6 + M + 1, S / 6 + M + 1)
 	};
-	private final static Polygon troughArea = new Polygon(
+	private final static Polygon troughShape = new Polygon(
 			new int[] { S - 6 * M, S - 6 * M, S - 4 * M, S - 2 * M, S - 2 * M },
 			new int[] { 7 * M, 4 * M, 2 * M, 4 * M, 7 * M },
 			5);
-	private final static Rectangle buildingArea = new Rectangle(M, M, L, L);
-	private final static Rectangle extArea = new Rectangle(M, Y1 + M, L, 3 * S - 2 * M);
-	private final static Map<Dir, Rectangle> fenceAreas = new EnumMap<Dir, Rectangle>(Dir.class) {
+	private final static Rectangle buildingRect = new Rectangle(M, M, L, L);
+	private final static Rectangle extRect = new Rectangle(M, Y1 + M, L, 3 * S - 2 * M);
+	private final static Map<Dir, Rectangle> fenceRects = new EnumMap<Dir, Rectangle>(Dir.class) {
 		{
 			put(Dir.N, new Rectangle(M, -M, L, 2 * M));
 			put(Dir.W, new Rectangle(-M, M, 2 * M, L));
@@ -68,10 +67,10 @@ public class FarmPanel extends JPanel {
 			put(Dir.E, new Rectangle(S - M, M, 2 * M, L));
 		}
 	};
-	private final static Map<Dir, Rectangle> fenceClickAreas = new EnumMap<Dir, Rectangle>(Dir.class) {
+	private final static Map<Dir, Rectangle> fenceClickRects = new EnumMap<Dir, Rectangle>(Dir.class) {
 		private final static int O = 8;
 		{
-			for (java.util.Map.Entry<Dir, Rectangle> dirRect : fenceAreas.entrySet()) {
+			for (java.util.Map.Entry<Dir, Rectangle> dirRect : fenceRects.entrySet()) {
 				Rectangle r = new Rectangle(dirRect.getValue());
 				r.setBounds(r.x - O, r.y - O, r.width + 2 * O, r.height + 2 * O);
 				put(dirRect.getKey(), r);
@@ -109,6 +108,13 @@ public class FarmPanel extends JPanel {
 
 	private static Point toFarmPos(int x, int y) {
 		return new Point(x >= X1 ? (x - X1) / S : -1, y >= Y1 ? (y - Y1) / S : -1);
+	}
+
+	private static Point toRealRelativePos(int x, int y) {
+		Point pos = toFarmPos(x, y);
+		int dx = Math.abs(pos.x * S - (x - X1));
+		int dy = Math.abs(pos.y * S - (y - Y1));
+		return new Point(dx, dy);
 	}
 
 	public void paintComponent(Graphics g0) {
@@ -172,7 +178,7 @@ public class FarmPanel extends JPanel {
 
 		if (farm.getActiveType() == Purchasable.EXTENSION) {
 			g.setColor(makeTranslucent(player.getColor().getRealColor(), 140));
-			Rectangle r = extArea;
+			Rectangle r = extRect;
 			if (!farm.isActiveSpot(new Point(0, 0), Purchasable.EXTENSION)) {
 				r.translate(X1 - S, 0);
 				g.fill(r);
@@ -201,8 +207,10 @@ public class FarmPanel extends JPanel {
 		// g.drawRect(x + M, y + M, L, L);
 		// }
 
+		List<Animal> availableAnimals = farm.guessAnimalTypesToPut(pos);
+
 		// building
-		drawBuilding(g, pos, farm.getBuilding(pos));
+		drawBuilding(g, pos, farm.getBuilding(pos), availableAnimals);
 
 		// fences
 		for (Dir d : Dir.values()) {
@@ -213,10 +221,10 @@ public class FarmPanel extends JPanel {
 		drawTrough(g, pos, space);
 
 		// animals
-		drawAnimal(g, pos, space);
+		drawAnimal(g, pos, space, availableAnimals);
 	}
 
-	private void drawAnimal(Graphics2D g, Point pos, Space space) {
+	private void drawAnimal(Graphics2D g, Point pos, Space space, List<Animal> availableAnimals) {
 		Point realPos = toRealPos(pos);
 		Animal type = space.getAnimalType();
 		int count = space.getAnimals();
@@ -244,26 +252,25 @@ public class FarmPanel extends JPanel {
 			if (count == 0 && farm.getLooseAnimals().size() > 0) {
 				g.setColor(Color.BLACK);
 				g.setStroke(MOVABLE_STROKE);
-				List<Animal> types = farm.guessAnimalTypesToPut(pos);
-				int typeCount = types.size();
+				int typeCount = availableAnimals.size();
 				if (typeCount > 0) {
-					for (Animal a : Animal.values()) {
+					for (int i = 0; i < animalRects.length; i++) {
 						Animal realType = null;
 						switch (typeCount) {
 						case 1:
-							realType = types.get(0);
+							realType = availableAnimals.get(0);
 							break;
 						case 2:
-							realType = types.get(a.ordinal() < 2 ? 0 : 1);
+							realType = availableAnimals.get(i < 2 ? 0 : 1);
 							break;
 						case 3:
-							realType = types.get(a.ordinal() < 2 ? 0 : a.ordinal() - 1);
+							realType = availableAnimals.get(i < 2 ? 0 : i - 1);
 							break;
 						case 4:
-							realType = a;
+							realType = availableAnimals.get(i);
 							break;
 						}
-						Rectangle r = animalAreas.get(a);
+						Rectangle r = animalRects[i];
 						r.translate(realPos.x, realPos.y);
 						g.setColor(makeTranslucent(realType.getColor(), 180));
 						g.fill(r);
@@ -287,16 +294,16 @@ public class FarmPanel extends JPanel {
 		}
 
 		if (isActive(pos, Purchasable.TROUGH, hasTrough)) {
-			troughArea.translate(realPos.x, realPos.y);
+			troughShape.translate(realPos.x, realPos.y);
 			g.setColor(makeTranslucent(player.getColor().getRealColor(), 140));
-			g.fill(troughArea);
-			troughArea.translate(-realPos.x, -realPos.y);
+			g.fill(troughShape);
+			troughShape.translate(-realPos.x, -realPos.y);
 		}
 	}
 
-	private void drawBuilding(Graphics2D g, Point pos, Building building) {
+	private void drawBuilding(Graphics2D g, Point pos, Building building, List<Animal> availableAnimals) {
 		Point realPos = toRealPos(pos);
-		Rectangle r = new Rectangle(buildingArea);
+		Rectangle r = new Rectangle(buildingRect);
 		r.translate(realPos.x, realPos.y);
 
 		if (building != null) {
@@ -331,7 +338,11 @@ public class FarmPanel extends JPanel {
 
 		if (isActive(pos, Purchasable.BUILDING, building != null)) {
 			g.setColor(makeTranslucent(player.getColor().getRealColor(), 120));
-			g.fill(r);
+			Area a = new Area(r);
+			if (availableAnimals.size() > 0) {
+				a.subtract(animalArea);
+			}
+			g.fill(a);
 		}
 
 	}
@@ -345,7 +356,7 @@ public class FarmPanel extends JPanel {
 		Point realPos = toRealPos(pos);
 		boolean hasBorder = space.hasBorder(d);
 
-		Rectangle r = new Rectangle(fenceAreas.get(d));
+		Rectangle r = new Rectangle(fenceRects.get(d));
 		r.translate(realPos.x, realPos.y);
 
 		if (hasBorder) {
@@ -386,7 +397,7 @@ public class FarmPanel extends JPanel {
 						g.drawImage(img, x - j * l, y - img.getHeight(), img.getWidth(), img.getHeight(), null);
 						j++;
 					}
-					j++;					
+					j++;
 				}
 			}
 
@@ -454,19 +465,19 @@ public class FarmPanel extends JPanel {
 
 		private Animal getAnimalType(List<Animal> types, Point relativePoint) {
 			int typeCount = types.size();
-			for (Animal a : Animal.values()) {
-				if (animalAreas.get(a).contains(relativePoint)) {
+			for (int i = 0; i < animalRects.length; i++) {
+				if (animalRects[i].contains(relativePoint)) {
 					switch (typeCount) {
 					case 0:
 						return null;
 					case 1:
 						return types.get(0);
 					case 2:
-						return types.get(a.ordinal() < 2 ? 0 : 1);
+						return types.get(i < 2 ? 0 : 1);
 					case 3:
-						return types.get(a.ordinal() < 2 ? 0 : a.ordinal() - 1);
+						return types.get(i < 2 ? 0 : i - 1);
 					case 4:
-						return a;
+						return types.get(i);
 					}
 				}
 			}
@@ -478,15 +489,18 @@ public class FarmPanel extends JPanel {
 				return;
 			}
 			ChangeType changeType = ChangeType.FARM_CLICK;
+
 			Point pos = toFarmPos(e.getX(), e.getY());
+			Point relativePoint = toRealRelativePos(e.getX(), e.getY());
+
 			boolean leftClick = e.getButton() == MouseEvent.BUTTON1;
 			boolean multiClick = e.getClickCount() > 1;
 
-			int dx = Math.abs(pos.x * S - (e.getX() - X1));
-			int dy = Math.abs(pos.y * S - (e.getY() - Y1));
-			Point relativePoint = new Point(dx, dy);
+			List<Animal> availableAnimals = null;
+
 			boolean done = false;
 			Purchasable active = farm.getActiveType();
+
 			if (active != null) {
 				switch (active) {
 				case EXTENSION:
@@ -509,7 +523,7 @@ public class FarmPanel extends JPanel {
 				case FENCE:
 					Dir fenceDir = null;
 					for (Dir d : Dir.values()) {
-						if (fenceClickAreas.get(d).contains(relativePoint)) {
+						if (fenceClickRects.get(d).contains(relativePoint)) {
 							fenceDir = d;
 							break;
 						}
@@ -520,15 +534,21 @@ public class FarmPanel extends JPanel {
 					}
 					break;
 				case TROUGH:
-					if (troughArea.contains(relativePoint)) {
+					if (troughShape.contains(relativePoint)) {
 						farm.toggleTrough(pos);
 						done = true;
 					}
 					break;
 				case BUILDING:
-					if (buildingArea.contains(relativePoint)) {
-						farm.toggleBuilding(pos);
-						done = true;
+					if (buildingRect.contains(relativePoint)) {
+						availableAnimals = farm.guessAnimalTypesToPut(pos);
+						if (!animalArea.contains(relativePoint) // not clicked in animal area
+								|| (leftClick && availableAnimals.size() == 0) // OR left-clicked but no animals available
+								|| (!leftClick && farm.getSpace(pos).getAnimals() == 0)) { // OR right-clicked clicked but no animals present
+
+							farm.toggleBuilding(pos);
+							done = true;
+						}
 					}
 					break;
 				}
@@ -537,7 +557,8 @@ public class FarmPanel extends JPanel {
 			if (!done) {
 				if (leftClick) {
 					if (farm.getLooseAnimals().size() > 0) {
-						Animal type = getAnimalType(farm.guessAnimalTypesToPut(pos), relativePoint);
+						availableAnimals = availableAnimals != null ? availableAnimals : farm.guessAnimalTypesToPut(pos);
+						Animal type = getAnimalType(availableAnimals, relativePoint);
 						if (type != null) {
 							farm.putAnimals(pos, type, multiClick ? Integer.MAX_VALUE : 1);
 							done = true;
@@ -556,15 +577,14 @@ public class FarmPanel extends JPanel {
 
 		public void mouseWheelMoved(MouseWheelEvent e) {
 			Point pos = toFarmPos(e.getX(), e.getY());
+			Point relativePoint = toRealRelativePos(e.getX(), e.getY());
 			int count = -e.getWheelRotation();
 
 			if (count > 0) {
-				List<Animal> types = farm.guessAnimalTypesToPut(pos);
-				if (types.size() != 1) {
-					// wheel can be used only when animal type is determined before
-					return;
+				Animal type = getAnimalType(farm.guessAnimalTypesToPut(pos), relativePoint);
+				if (type != null) {
+					farm.putAnimals(pos, type, count);
 				}
-				farm.putAnimals(pos, types.get(0), count);
 			} else {
 				farm.takeAnimals(pos, -count);
 			}

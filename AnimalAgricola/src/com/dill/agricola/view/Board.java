@@ -132,7 +132,7 @@ public class Board extends JFrame implements Observer{
 		mainPane.add(debugPanel, BorderLayout.SOUTH);
 	}
 
-	public void reset() {
+	public void start() {
 		actionBoard.resetActions();
 	}
 

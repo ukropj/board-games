@@ -1,5 +1,6 @@
 package com.dill.agricola.model.buildings;
 
+import com.dill.agricola.GeneralSupply;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Building;
 import com.dill.agricola.model.Space;
@@ -20,4 +21,22 @@ public class OpenStables extends Building {
 	public boolean canBuildAt(Space building) {
 		return building instanceof Stall;
 	}
+	
+	public void buildAt(Space space) {
+		super.buildAt(space);
+		
+		Stall stall = (Stall)removeIntermediary();
+		if (stall != null) {
+			// original stall "under" Open Stables will be returned to supply
+			GeneralSupply.unuseStall(stall);			
+		}
+	}
+	
+	public Space unbuild() {
+		// original stall "under" Open Stables will be taken from supply
+		insertIntermediary(GeneralSupply.useStall());
+		
+		return super.unbuild();
+	}
+
 }

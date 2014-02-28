@@ -113,7 +113,6 @@ public class Game {
 		for (Player p : players) {
 			p.init();
 		}
-		board.reset();
 		turn = 0;
 		round = 0;
 		workPhase = false;
@@ -121,6 +120,7 @@ public class Game {
 		setStartingPlayer(chooseStaringPlayer());
 		initialStartingPlayer = startingPlayer.getColor();
 		GeneralSupply.reset();
+		board.start();
 
 		startRound();
 	}

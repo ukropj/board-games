@@ -24,8 +24,8 @@ import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.view.utils.AgriImages;
-import com.dill.agricola.view.utils.SwingUtils;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
+import com.dill.agricola.view.utils.SwingUtils;
 
 public class BuildSpecial extends AbstractAction {
 

@@ -104,6 +104,23 @@ public abstract class Building extends Space {
 		animals = 0;
 	}
 	
+	protected void insertIntermediary(Building intermediary) {
+		if (intermediary != null) {
+			intermediary.buildSpace = this.buildSpace;
+			this.buildSpace = intermediary;			
+		}
+	}
+	
+	protected Building removeIntermediary() {
+		if (buildSpace != null && buildSpace instanceof Building) {
+			Building intermediary = (Building)buildSpace;
+			this.buildSpace = intermediary.buildSpace;
+			intermediary.reset();
+			return intermediary;
+		}
+		return null;
+	}
+	
 	public String toString() {
 		return Namer.getShortName(this) + " " + super.toString();
 	}

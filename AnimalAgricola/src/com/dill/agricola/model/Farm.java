@@ -16,6 +16,7 @@ import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.PointUtils;
 
 import java.awt.Point;
+
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.Purchasable;
 
