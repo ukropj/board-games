@@ -10,7 +10,6 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -18,6 +17,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.util.EnumMap;
 import java.util.List;
@@ -49,42 +49,92 @@ public class FarmPanel extends JPanel {
 	static int H = (int) (S * 3.7f);
 	// static int Y2 = H - Y1 - 3 * S;
 
-//	private final static Area animalArea = new Area(new Rectangle(S / 3 - M, S / 3 - M, S / 3 + 2 * M, S / 3 + 2 * M));
-	private final static Area animalArea = new Area(/*new Polygon(
-			new int[] { S / 2 - M, S / 2 + M, 2 * S / 3 + M, 2 * S / 3 + M, S / 2 + M, S / 2 - M, S / 3 - M, S / 3 - M },
-			new int[] { S / 3 - M, S / 3 - M, S / 2 - M, S / 2 + M, 2 * S / 3 + M, 2 * S / 3 + M, S / 2 + M, S / 2 - M },
-			8)*/
-			new Ellipse2D.Float(S/3-M, S/3-M, S/3+2*M, S/3+2*M));
-	private final static Area[] animalRects = new Area[] {
-			intersect(animalArea, new Rectangle(S / 3 - M, S / 3 - M, S / 6 + M + 1, S / 6 + M + 1)),
-			intersect(animalArea, new Rectangle(S / 2, S / 3 - M, S / 6 + M + 1, S / 6 + M + 1)),
-			intersect(animalArea, new Rectangle(S / 3 - M, S / 2, S / 6 + M + 1, S / 6 + M + 1)),
-			intersect(animalArea, new Rectangle(S / 2, S / 2, S / 6 + M + 1, S / 6 + M + 1))
+	private final static Area animalArea = new Area(new Ellipse2D.Float(S / 4 - M, S / 4 - M, S / 2 + 2 * M, S / 2 + 2 * M));
+	private final static int AR = S / 6 + M;
+	private final static Point[][] animalPositions = new Point[][] {
+			new Point[] {
+					new Point(S / 2, S / 2) },
+			new Point[] {
+					new Point(S / 2 + AR / 2, S / 2 - AR / 2),
+					new Point(S / 2 - AR / 2, S / 2 + AR / 2) },
+			new Point[] {
+					new Point(S / 2, S / 2 + M + AR / 2),
+					new Point(S / 2 + M + AR / 2, S / 2 - M),
+					new Point(S / 2 - M - AR / 2, S / 2 - M) },
+			new Point[] {
+					new Point(S / 2, S / 2 - AR +M),
+					new Point(S / 2, S / 2 + AR),
+					new Point(S / 2 + AR, S / 2),
+					new Point(S / 2 - AR, S / 2+M/2) }
 	};
-	/*private final static Polygon[] animalRects = new Polygon[] {
-			new Polygon(
-					new int[] { S / 3 - M, S / 3 - M, S / 2 - M, S / 2, S / 2 },
-					new int[] { S / 2, S / 2 - M, S / 3 - M, S / 3 - M, S / 2 },
-					5),
-			new Polygon(
-					new int[] { S / 2, S / 2, S / 2 + M, 2 * S / 3 + M, 2 * S / 3 + M },
-					new int[] { S / 2, S / 3 - M, S / 3 - M, S / 2 - M, S / 2 },
-					5),
-			new Polygon(
-					new int[] { S / 3 - M, S / 2, S / 2, S / 2 - M, S / 3 - M },
-					new int[] { S / 2, S / 2, 2*S / 3 + M, 2 * S / 3 + M, S / 2 + M },
-					5),
-			new Polygon(
-					new int[] { S / 2, 2 * S / 3 + M, 2 * S / 3 + M, S / 2 + M, S / 2 },
-					new int[] { S / 2, S / 2, S / 2 + M, 2 * S / 3 + M, 2 * S / 3 + M },
-					5)
-	};*/
+	private final static Line2D[][] animalDividers = new Line2D[][] {
+			new Line2D[] {},
+			new Line2D[] { new Line2D.Float(new Point(S / 4, S / 4), new Point(3 * S / 4, 3 * S / 4)) },
+			new Line2D[] {
+					new Line2D.Float(new Point(S / 2, S / 2), new Point(S / 2, S / 4 - M)),
+					new Line2D.Float(new Point(S / 2, S / 2), new Point(3 * S / 4, 3 * S / 4)),
+					new Line2D.Float(new Point(S / 2, S / 2), new Point(S / 4, 3 * S / 4)) },
+			new Line2D[] {
+					new Line2D.Float(new Point(S / 4, S / 4), new Point(3 * S / 4, 3 * S / 4)),
+					new Line2D.Float(new Point(S / 4, 3 * S / 4), new Point(3 * S / 4, S / 4)) }
+	};
+	private final static Area[][] animalAreas = new Area[][] {
+			new Area[] { animalArea },
+			new Area[] {
+					intersect(new Area(new Polygon(new int[] { 0, S, S }, new int[] { 0, 0, S }, 3)), animalArea),
+					intersect(new Area(new Polygon(new int[] { 0, 0, S }, new int[] { 0, S, S }, 3)), animalArea) },
+			new Area[] {
+					intersect(new Area(new Polygon(new int[] { 0, S / 2, S }, new int[] { S + 1, S / 2, S }, 3)), animalArea),
+					intersect(new Area(new Polygon(new int[] { S / 2, S / 2, S, S }, new int[] { 0, S / 2, S, 0 }, 4)), animalArea),
+					intersect(new Area(new Polygon(new int[] { 0, S / 2, S / 2, 0 }, new int[] { 0, 0, S / 2, S + 1 }, 4)), animalArea)
+			},
+			new Area[] {
+					intersect(new Area(new Polygon(new int[] { 0, S / 2, S + 1 }, new int[] { 0, S / 2, 0 }, 3)), animalArea),
+					intersect(new Area(new Polygon(new int[] { 0, S / 2, S + 1 }, new int[] { S + 1, S / 2, S }, 3)), animalArea),
+					intersect(new Area(new Polygon(new int[] { S + 1, S / 2, S + 1 }, new int[] { 0, S / 2, S }, 3)), animalArea),
+					intersect(new Area(new Polygon(new int[] { 0, S / 2, 0 }, new int[] { 0, S / 2, S + 1 }, 3)), animalArea)
+			}
+			/*new Rectangle[] {
+					new Rectangle(S / 2 - AR / 2, S / 2 - AR / 2, AR, AR) },
+			new Rectangle[] {
+					new Rectangle(S / 2, S / 3 - M, AR, AR),
+					new Rectangle(S / 3 - M, S / 2, AR, AR) },
+			new Rectangle[] {
+					new Rectangle(S / 2 - M - AR, S / 2 - AR, AR, AR),
+					new Rectangle(S / 2 + M, S / 2 - AR, AR, AR),
+					new Rectangle(S / 2 - AR / 2, S / 2 + M, AR, AR) },
+			new Rectangle[] {
+					new Rectangle(S / 2 - AR/2, S / 2 - 3*AR/2, AR, AR),
+					new Rectangle(S / 2 - AR/2, S / 2 + AR/2, AR, AR),
+					new Rectangle(S / 2 + AR/2, S / 2 - AR/2, AR, AR),
+					new Rectangle(S / 2 - 3*AR/2, S / 2 - AR/2, AR, AR) }*/
+
+			/*new Rectangle[] {
+					new Rectangle(S / 2 - AR / 2, S / 3 - M, AR, AR),
+					new Rectangle(S / 2 - AR / 2, S / 2, AR, AR) },
+			new Rectangle[] {
+					new Rectangle(S / 3 - M, S / 3 - M, AR, AR),
+					new Rectangle(S / 3 - M, S / 2, AR, AR),
+					new Rectangle(S / 2, S / 2 - AR / 2, AR, AR) },
+			new Rectangle[] {
+					new Rectangle(S / 3 - M, S / 3 - M, AR, AR),
+					new Rectangle(S / 3 - M, S / 2, AR, AR),
+					new Rectangle(S / 2, S / 3 - M, AR, AR),
+					new Rectangle(S / 2, S / 2, AR, AR) }*/
+	};
+	// private final static Area[] animalRects = new Area[] {
+	// intersect(new Area(new Rectangle(S / 3 - M, S / 3 - M, AR, AR)), animalArea),
+	// intersect(new Area(new Rectangle(S / 2, S / 3 - M, AR, AR)), animalArea),
+	// intersect(new Area(new Rectangle(S / 3 - M, S / 2, AR, AR)), animalArea),
+	// intersect(new Area(new Rectangle(S / 2, S / 2, AR, AR)), animalArea)
+	// };
 
 	private final static Polygon troughShape = new Polygon(
 			new int[] { S - 6 * M, S - 6 * M, S - 4 * M, S - 2 * M, S - 2 * M },
 			new int[] { 7 * M, 4 * M, 2 * M, 4 * M, 7 * M },
 			5);
 	private final static Rectangle buildingRect = new Rectangle(M, M, L, L);
+	private final static Area buildingSansAnimalRect = subtract(new Area(buildingRect), animalArea);
 	private final static Rectangle extRect = new Rectangle(M, Y1 + M, L, 3 * S - 2 * M);
 	private final static Map<Dir, Rectangle> fenceRects = new EnumMap<Dir, Rectangle>(Dir.class) {
 		{
@@ -129,8 +179,13 @@ public class FarmPanel extends JPanel {
 		this.active = active;
 	}
 
-	private static Area intersect(Area area, Shape shape) {
-		area.intersect(new Area(shape));
+	private static Area intersect(Area area, Area intersector) {
+		area.intersect(intersector);
+		return area;
+	}
+
+	private static Area subtract(Area area, Area subtractor) {
+		area.subtract(subtractor);
 		return area;
 	}
 
@@ -239,7 +294,7 @@ public class FarmPanel extends JPanel {
 		// g.drawRect(x + M, y + M, L, L);
 		// }
 
-		List<Animal> availableAnimals = farm.guessAnimalTypesToPut(pos);
+		List<Animal> availableAnimals = farm.guessAnimalTypesToPut(pos, true);
 
 		// building
 		drawBuilding(g, pos, farm.getBuilding(pos), availableAnimals);
@@ -258,17 +313,13 @@ public class FarmPanel extends JPanel {
 
 	private void drawAnimal(Graphics2D g, Point pos, Space space, List<Animal> availableAnimals) {
 		Point realPos = toRealPos(pos);
+
 		Animal type = space.getAnimalType();
 		int count = space.getAnimals();
 		if (count > 0) {
 			BufferedImage img = AgriImages.getAnimalImage(type, ImgSize.BIG);
 			int w = img.getWidth(), h = img.getHeight();
 			g.drawImage(img, realPos.x + (S - w) / 2, realPos.y + (S - h) / 2, w, h, null);
-
-			// Rectangle r = new Rectangle(animalArea);
-			// r.translate(realPos.x, realPos.y);
-			// g.setColor(makeTranslucent(type.getColor(), 150));
-			// g.fill(r);
 		}
 		if (space.getMaxCapacity() > 0) {
 			g.setStroke(NORMAL_STROKE);
@@ -286,31 +337,26 @@ public class FarmPanel extends JPanel {
 				g.setStroke(MOVABLE_STROKE);
 				int typeCount = availableAnimals.size();
 				if (typeCount > 0) {
-					for (int i = 0; i < animalRects.length; i++) {
-						Animal realType = null;
-						switch (typeCount) {
-						case 1:
-							realType = availableAnimals.get(0);
-							break;
-						case 2:
-							realType = availableAnimals.get(i < 2 ? 0 : 1);
-							break;
-						case 3:
-							realType = availableAnimals.get(i < 2 ? 0 : i - 1);
-							break;
-						case 4:
-							realType = availableAnimals.get(i);
-							break;
+					AffineTransform tr = AffineTransform.getTranslateInstance(realPos.x, realPos.y);
+					for (int i = 0; i < typeCount; i++) {
+						Animal t = availableAnimals.get(i);
+						
+//						Area r = animalAreas[typeCount - 1][i].createTransformedArea(tr);
+//						g.setColor(makeTranslucent(t.getColor(), 180));
+//						g.fill(r);
+
+						Point p = new Point(animalPositions[typeCount - 1][i]);
+						p.translate(realPos.x, realPos.y);
+						BufferedImage img = AgriImages.getAnimalImage(t, ImgSize.MEDIUM);
+//						BufferedImage img = AgriImages.getAnimalOutlineImage(t);
+						int w = img.getWidth(), h = img.getHeight();
+						g.drawImage(img, p.x - w / 2, p.y - h / 2, w, h, null);
+
+						g.setColor(Color.BLACK);
+						g.setStroke(NORMAL_STROKE);
+						for (Line2D line : animalDividers[typeCount - 1]) {
+							g.draw(tr.createTransformedShape(line));
 						}
-//						Polygon r = animalRects[i];
-//						r.translate(realPos.x, realPos.y);
-						Area r = animalRects[i].createTransformedArea(AffineTransform.getTranslateInstance(realPos.x, realPos.y));
-						g.setColor(makeTranslucent(realType.getColor(), 180));
-						g.fill(r);
-						// BufferedImage img = AgriImages.getAnimalImage(realType, ImgSize.SMALL);
-						// int w = img.getWidth(), h = img.getHeight();
-						// g.drawImage(img, r.x, r.y, w, h, null);
-//						r.translate(-realPos.x, -realPos.y);
 					}
 				}
 			}
@@ -371,12 +417,11 @@ public class FarmPanel extends JPanel {
 
 		if (isActive(pos, Purchasable.BUILDING, building != null)) {
 			g.setColor(makeTranslucent(player.getColor().getRealColor(), 120));
-			Area a = new Area(new Rectangle(buildingRect));
 			if (availableAnimals.size() > 0) {
-				a.subtract(animalArea);
+				g.fill(buildingSansAnimalRect.createTransformedArea(AffineTransform.getTranslateInstance(realPos.x, realPos.y)));
+			} else {
+				g.fill(r);
 			}
-			a.transform(AffineTransform.getTranslateInstance(realPos.x, realPos.y));
-			g.fill(a);
 		}
 
 	}
@@ -499,20 +544,9 @@ public class FarmPanel extends JPanel {
 
 		private Animal getAnimalType(List<Animal> types, Point relativePoint) {
 			int typeCount = types.size();
-			for (int i = 0; i < animalRects.length; i++) {
-				if (animalRects[i].contains(relativePoint)) {
-					switch (typeCount) {
-					case 0:
-						return null;
-					case 1:
-						return types.get(0);
-					case 2:
-						return types.get(i < 2 ? 0 : 1);
-					case 3:
-						return types.get(i < 2 ? 0 : i - 1);
-					case 4:
-						return types.get(i);
-					}
+			for (int i = 0; i < animalAreas[typeCount - 1].length; i++) {
+				if (animalAreas[typeCount - 1][i].contains(relativePoint)) {
+					return types.get(i);
 				}
 			}
 			return null;
@@ -575,7 +609,7 @@ public class FarmPanel extends JPanel {
 					break;
 				case BUILDING:
 					if (buildingRect.contains(relativePoint)) {
-						availableAnimals = farm.guessAnimalTypesToPut(pos);
+						availableAnimals = farm.guessAnimalTypesToPut(pos, true);
 						if (!animalArea.contains(relativePoint) // not clicked in animal area
 								|| (leftClick && availableAnimals.size() == 0) // OR left-clicked but no animals available
 								|| (!leftClick && farm.getSpace(pos).getAnimals() == 0)) { // OR right-clicked clicked but no animals present
@@ -590,13 +624,11 @@ public class FarmPanel extends JPanel {
 
 			if (!done) {
 				if (leftClick) {
-					if (farm.getLooseAnimals().size() > 0) {
-						availableAnimals = availableAnimals != null ? availableAnimals : farm.guessAnimalTypesToPut(pos);
-						Animal type = getAnimalType(availableAnimals, relativePoint);
-						if (type != null) {
-							farm.putAnimals(pos, type, multiClick ? Integer.MAX_VALUE : 1);
-							done = true;
-						}
+					availableAnimals = availableAnimals != null ? availableAnimals : farm.guessAnimalTypesToPut(pos, true);
+					Animal type = getAnimalType(availableAnimals, relativePoint);
+					if (type != null) {
+						farm.putAnimals(pos, type, multiClick ? Integer.MAX_VALUE : 1);
+						done = true;
 					}
 				} else {
 					farm.takeAnimals(pos, multiClick ? Integer.MAX_VALUE : 1);
@@ -615,7 +647,7 @@ public class FarmPanel extends JPanel {
 			int count = -e.getWheelRotation();
 
 			if (count > 0) {
-				Animal type = getAnimalType(farm.guessAnimalTypesToPut(pos), relativePoint);
+				Animal type = getAnimalType(farm.guessAnimalTypesToPut(pos, true), relativePoint);
 				if (type != null) {
 					farm.putAnimals(pos, type, count);
 				}

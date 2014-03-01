@@ -1,6 +1,8 @@
 package com.dill.agricola.model;
 
+import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
@@ -14,9 +16,6 @@ import com.dill.agricola.common.Animals;
 import com.dill.agricola.common.Dir;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.PointUtils;
-
-import java.awt.Point;
-
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.Purchasable;
 
@@ -593,10 +592,10 @@ public class Farm extends SimpleObservable {
 		return false;
 	}
 
-	public List<Animal> guessAnimalTypesToPut(Point pos) {
+	public List<Animal> guessAnimalTypesToPut(Point pos, boolean onlyWhenUnused) {
 		List<Animal> types = new ArrayList<Animal>();
 		Space space = getSpace(pos);
-		if (space != null) {
+		if (space != null && space.getMaxCapacity() > 0 && (!onlyWhenUnused || looseAnimals.size() > 0)) {
 			if (space.getAnimals() > 0) {
 				// if animals are present on space use their type
 				types.add(space.getAnimalType());
@@ -606,11 +605,15 @@ public class Farm extends SimpleObservable {
 				if (!pastureTypes.isEmpty()) {
 					types.addAll(pastureTypes);
 				} else {
-					// if farm has unused animals use their types
-					for (Animal type : Animal.values()) {
-						if (getLooseAnimals(type) > 0) {
-							types.add(type);
-						}
+					// if no animals anywhere use all types 
+					types.addAll(Arrays.asList(Animal.values()));
+				}
+			}
+			if (onlyWhenUnused) {
+				// use only types of present unused animals
+				for (Animal type : Animal.values()) {
+					if (getLooseAnimals(type) == 0) {
+						types.remove(type);
 					}
 				}
 			}

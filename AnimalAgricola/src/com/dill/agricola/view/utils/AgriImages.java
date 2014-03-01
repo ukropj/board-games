@@ -22,6 +22,7 @@ public class AgriImages {
 	private final static Map<Animal, BufferedImage> animalsSmall = new EnumMap<Animal, BufferedImage>(Animal.class);
 	private final static Map<Animal, BufferedImage> animalsMedium = new EnumMap<Animal, BufferedImage>(Animal.class);
 	private final static Map<Animal, BufferedImage> animalsBig = new EnumMap<Animal, BufferedImage>(Animal.class);
+	private final static Map<Animal, BufferedImage> animalOutlinesMedium = new EnumMap<Animal, BufferedImage>(Animal.class);
 	private final static BufferedImage[] materials = new BufferedImage[Material.values().length];
 	private final static BufferedImage[] fences = new BufferedImage[Dir.values().length];
 	private final static BufferedImage[] troughs = new BufferedImage[ImgSize.values().length];
@@ -158,6 +159,17 @@ public class AgriImages {
 			BufferedImage img = Images.createImage(type.toString().toLowerCase());
 			img = Images.getBestScaledInstance(img, ratio);
 			map.put(type, img);
+			return img;
+		}
+	}
+	
+	public static BufferedImage getAnimalOutlineImage(Animal type) {
+		if (animalOutlinesMedium.containsKey(type)) {
+			return animalOutlinesMedium.get(type);
+		} else {
+			BufferedImage img = Images.createImage(type.toString().toLowerCase() + "-o");
+			img = Images.getBestScaledInstance(img, 0.3f);
+			animalOutlinesMedium.put(type, img);
 			return img;
 		}
 	}

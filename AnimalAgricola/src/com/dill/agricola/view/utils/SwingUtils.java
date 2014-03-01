@@ -96,6 +96,9 @@ public class SwingUtils {
 			break;
 		}
 		JLabel l = createLabel(text, icon);
+		if (labelStyle == ICON_FIRST) {
+			l.setIconTextGap(4);
+		}
 		l.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 		l.setHorizontalTextPosition(labelStyle != ICON_FIRST ? JLabel.LEFT : JLabel.RIGHT);
 		return l;

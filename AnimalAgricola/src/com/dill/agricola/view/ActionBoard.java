@@ -3,7 +3,6 @@ package com.dill.agricola.view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -31,6 +30,7 @@ public class ActionBoard extends JPanel {
 	private final JPanel actionPanel;
 	private final JPanel controlPanel;
 	private final Color defaultColor;
+//	private final Border defaultBorder;
 
 	private JButton moreB;
 	private JButton lessB;
@@ -43,12 +43,7 @@ public class ActionBoard extends JPanel {
 
 		setLayout(new BorderLayout());
 
-//		actionPanel = SwingUtils.createVerticalPanel();
 		actionPanel = new JPanel(new GridBagLayout());
-//		JPanel rowPanel = null;
-//		int i = 0;
-
-//		List<Integer> rowStarts = Arrays.asList(new Integer[] { 0, 2, 4, 5, 7, 9, 11, 13 });
 
 		for (final Action action : actions) {
 			final ActionType type = action.getType();
@@ -61,22 +56,14 @@ public class ActionBoard extends JPanel {
 						if (ap.doAction(action)) {
 							switchToControl(true);
 							b.setBackground(ap.getPlayer().getColor().getRealColor());
+//							b.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
 						}
 					}
 				}
 			});
 			
 			actionButtons.put(type, b);
-//			if (rowStarts.contains(i)) {
-//				rowPanel = new JPanel(new GridLayout(1, 0, 0, 0));
-//				actionPanel.add(rowPanel);
-//			}
-			/*JComponent actionPanel = */ActionPanelFactory.createActionPanel(actionPanel, action, b);
-			/*if (actionPanel != null) {
-				rowPanel.add(actionPanel);				
-				rowPanel.add(actionPanel);				
-			}
-			i++;*/
+			ActionPanelFactory.createActionPanel(actionPanel, action, b);
 		}
 
 		controlPanel = SwingUtils.createFlowPanel(5, 0);
@@ -86,16 +73,18 @@ public class ActionBoard extends JPanel {
 		add(controlPanel, BorderLayout.SOUTH);
 
 		defaultColor = resetB.getBackground();
+//		defaultBorder = resetB.getBorder();
 	}
 
 	private void buildControlPanel(final ActionListener submitListener) {
 		submitB = createButton(Msg.get("finishAction"), new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (ap.hasAction()) {
-					//					Action action = ap.getAction();
+//					Action action = ap.getAction();
 					if (ap.finishAction()) {
+//						JButton b = actionButtons.get(action.getType());
+//						b.setBorder(defaultBorder);
 						switchToControl(false);
-						//						JButton b = actionButtons.get(action.getType());
 						submitListener.actionPerformed(e);
 					} else {
 						System.out.println("Cannot finish action, player has unused stuff or invalid animals");
@@ -123,6 +112,7 @@ public class ActionBoard extends JPanel {
 				if (ap.undoAction()) {
 					JButton b = actionButtons.get(action.getType());
 					b.setBackground(defaultColor);
+//					b.setBorder(defaultBorder);
 					switchToControl(false);
 				}
 			}
@@ -152,7 +142,7 @@ public class ActionBoard extends JPanel {
 
 	private JButton createButton(String label, ActionListener al) {
 		JButton b = new JButton(label);
-		b.setPreferredSize(new Dimension(50, 30));
+//		b.setPreferredSize(new Dimension(50, 30));
 		b.addActionListener(al);
 		controlPanel.add(b);
 		return b;
