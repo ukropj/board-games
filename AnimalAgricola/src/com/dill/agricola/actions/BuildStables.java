@@ -8,16 +8,14 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
 import com.dill.agricola.common.Materials;
-import com.dill.agricola.model.Building;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.buildings.Stables;
-import com.dill.agricola.model.buildings.Stall;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.view.utils.AgriImages;
-import com.dill.agricola.view.utils.SwingUtils;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
+import com.dill.agricola.view.utils.UiFactory;
 
 public class BuildStables extends AbstractAction {
 
@@ -28,37 +26,29 @@ public class BuildStables extends AbstractAction {
 		super(ActionType.STABLES);
 	}
 
-	private int getStalls(Player player) {
-		int count = 0;
-		for (Building b : player.getFarm().getBuiltBuildings()) {
-			if (b instanceof Stall) {
-				count++;
-			}
-		}
-		return count;
-	}
-
 	public boolean canPerform(Player player) {
-		return super.canPerform(player) && getStalls(player) > 0 && (player.canPay(COSTS[0]) || player.canPay(COSTS[1]));
+		return super.canPerform(player) && player.getBuildingCount(BuildingType.STALL) > 0 && (player.canPay(COSTS[0]) || player.canPay(COSTS[1]));
 	}
 
 	public boolean canPerformMore(Player player, int doneSoFar) {
-		return getStalls(player) > doneSoFar && (player.canPay(COSTS[0]) || player.canPay(COSTS[1]));
+		return player.getBuildingCount(BuildingType.STALL) > doneSoFar && (player.canPay(COSTS[0]) || player.canPay(COSTS[1]));
 	}
 
-	private int chooseStablesCost() {
+	private int chooseStablesCost(Player player) {
 		List<JComponent> opts = new ArrayList<JComponent>();
 		for (Materials cost : COSTS) {
-			opts.add(SwingUtils.createResourcesPanel(cost, null, SwingUtils.X_AXIS));
+			JComponent opt = UiFactory.createResourcesPanel(cost, null, UiFactory.X_AXIS);
+			opt.setEnabled(player.canPay(cost));
+			opts.add(opt);
 		}
 		Icon icon = AgriImages.getBuildingIcon(BuildingType.OPEN_STABLES, ImgSize.MEDIUM);
-		return SwingUtils.showOptionDialog("Choose cost", "Stables", icon, opts);
+		return UiFactory.showOptionDialog("Choose cost", "Stables", icon, opts);
 	}
 
 	public boolean doOnce(Player player) {
-		int costNo = chooseStablesCost();
+		int costNo = chooseStablesCost(player);
 		if (costNo == NONE) {
-			return false;
+			return false; // TODO this will not cancel action becousa still "canDoMore"
 		}
 		boolean done = player.purchaseBuilding(new Stables(), COSTS[costNo]);
 		if (done) {

@@ -24,6 +24,7 @@ public class Expand extends RefillAction {
 			player.setActiveType(Purchasable.EXTENSION);
 			GeneralSupply.useExtension(true);
 			hadExp = true;
+			setChanged();
 		} else {
 			hadExp = false;
 		}

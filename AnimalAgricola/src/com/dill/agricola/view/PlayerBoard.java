@@ -23,7 +23,7 @@ import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
-import com.dill.agricola.view.utils.SwingUtils;
+import com.dill.agricola.view.utils.UiFactory;
 
 @SuppressWarnings("serial")
 public class PlayerBoard extends JPanel implements Observer {
@@ -60,7 +60,7 @@ public class PlayerBoard extends JPanel implements Observer {
 
 	private void initTopPanel() {
 		PlayerColor color = player.getColor();
-		playerLabel = SwingUtils.createLabel(Msg.get("player", color.ordinal() + 1));
+		playerLabel = UiFactory.createLabel(Msg.get("player", color.ordinal() + 1));
 		playerLabel.setFont(playerLabel.getFont().deriveFont(20.0f));
 		playerLabel.setOpaque(true);
 
@@ -86,7 +86,7 @@ public class PlayerBoard extends JPanel implements Observer {
 	private void initFirstPanel() {
 		JPanel p = new JPanel();
 		p.setPreferredSize(new Dimension(50, 0));
-		firstLabel = SwingUtils.createLabel(AgriImages.getFirstTokenIcon(player.getColor().ordinal(), ImgSize.BIG));
+		firstLabel = UiFactory.createLabel(AgriImages.getFirstTokenIcon(player.getColor().ordinal(), ImgSize.BIG));
 		p.add(firstLabel);
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
@@ -99,9 +99,9 @@ public class PlayerBoard extends JPanel implements Observer {
 	}
 
 	private void initMaterialPanel() {
-		JPanel materials = SwingUtils.createFlowPanel(15, 0);
+		JPanel materials = UiFactory.createFlowPanel(15, 0);
 		for (Material m : Material.values()) {
-			JLabel l = SwingUtils.createMaterialLabel(m, 0, SwingUtils.ICON_FIRST);
+			JLabel l = UiFactory.createMaterialLabel(m, 0, UiFactory.ICON_FIRST);
 			materials.add(l);
 			supply.put(m, l);
 		}
@@ -116,9 +116,9 @@ public class PlayerBoard extends JPanel implements Observer {
 	}
 
 	private void initAnimalPanel() {
-		JPanel animals = SwingUtils.createFlowPanel(15, 0);
+		JPanel animals = UiFactory.createFlowPanel(15, 0);
 		for (Animal a : Animal.values()) {
-			JLabel l = SwingUtils.createAnimalLabel(a, 0, SwingUtils.ICON_FIRST);
+			JLabel l = UiFactory.createAnimalLabel(a, 0, UiFactory.ICON_FIRST);
 			animals.add(l);
 			animalSupply.put(a, l);
 		}
@@ -133,10 +133,10 @@ public class PlayerBoard extends JPanel implements Observer {
 	}
 
 	private void initWorkerPanel() {
-		JPanel workers = SwingUtils.createVerticalPanel();
+		JPanel workers = UiFactory.createVerticalPanel();
 		workers.setPreferredSize(new Dimension(50, 0));
 		for (int i = 0; i < workerLabels.length; i++) {
-			workerLabels[i] = SwingUtils.createLabel(AgriImages.getWorkerIcon(player.getColor().ordinal()));
+			workerLabels[i] = UiFactory.createLabel(AgriImages.getWorkerIcon(player.getColor().ordinal()));
 			workers.add(workerLabels[i]);
 		}
 		GridBagConstraints c = new GridBagConstraints();

@@ -23,6 +23,7 @@ public class Millpond extends AnimalAction {
 	public void reset() {
 		super.reset();
 		materials.clear();
+		setChanged();
 	}
 	
 	public void init() {
@@ -38,10 +39,10 @@ public class Millpond extends AnimalAction {
 	}
 
 	public boolean doOnce(Player player) {
-		super.doOnce(player);
 		player.addMaterial(materials);
 		lastTakenMaterials.set(materials);
 		materials.clear();
+		super.doOnce(player);
 		return true;
 	}
 
@@ -50,7 +51,8 @@ public class Millpond extends AnimalAction {
 		if (done) {
 			player.removeMaterial(lastTakenMaterials);
 			materials.set(lastTakenMaterials);
-			lastTakenMaterials.clear();			
+			lastTakenMaterials.clear();
+			setChanged();
 		}
 		return done;
 	}

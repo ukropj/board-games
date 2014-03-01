@@ -8,7 +8,6 @@ import java.util.Map;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import com.dill.agricola.GeneralSupply;
@@ -25,7 +24,7 @@ import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
-import com.dill.agricola.view.utils.SwingUtils;
+import com.dill.agricola.view.utils.UiFactory;
 
 public class BuildSpecial extends AbstractAction {
 
@@ -60,17 +59,23 @@ public class BuildSpecial extends AbstractAction {
 		return super.canPerform(player) && GeneralSupply.getBuildingsLeft().size() > 0;
 	}
 
-	private BuildingType chooseBuilding() {
+	private BuildingType chooseBuilding(Player player) {
 		List<JComponent> opts = new ArrayList<JComponent>();
 		List<BuildingType> types = GeneralSupply.getBuildingsLeft();
 		if (types.size() == 0) {
 			System.out.println("No special buildings available");
 			return null;
 		}
-		for (BuildingType b : types) {
-			opts.add(new JLabel(AgriImages.getBuildingIcon(b, ImgSize.BIG)));			
+		for (BuildingType type : types) {
+			JComponent opt = UiFactory.createLabel(AgriImages.getBuildingIcon(type, ImgSize.BIG));
+			if (type != BuildingType.OPEN_STABLES) {
+				opt.setEnabled(player.canPay(COSTS.get(type)));				
+			} else {
+				opt.setEnabled(player.getBuildingCount(BuildingType.STALL) > 0 && (player.canPay(OS_COSTS[0]) || player.canPay(OS_COSTS[1])));								
+			}
+			opts.add(opt);
 		}
-		int optNo = SwingUtils.showOptionDialog("Choose building", "Special buildings", null, opts);
+		int optNo = UiFactory.showOptionDialog("Choose building", "Special buildings", null, opts);
 		if (optNo == NONE) {
 			return null;
 		} else {
@@ -78,13 +83,15 @@ public class BuildSpecial extends AbstractAction {
 		}
 	}
 
-	private int chooseOpenStablesCost() {
+	private int chooseOpenStablesCost(Player player) {
 		List<JComponent> opts = new ArrayList<JComponent>();
 		for (Materials cost : OS_COSTS) {
-			opts.add(SwingUtils.createResourcesPanel(cost, null, SwingUtils.X_AXIS));
+			JComponent opt = UiFactory.createResourcesPanel(cost, null, UiFactory.X_AXIS);
+			opt.setEnabled(player.canPay(cost));
+			opts.add(opt);
 		}
 		Icon icon = AgriImages.getBuildingIcon(BuildingType.OPEN_STABLES, ImgSize.MEDIUM);
-		return SwingUtils.showOptionDialog("Choose cost", "Open Stables", icon, opts);
+		return UiFactory.showOptionDialog("Choose cost", "Open Stables", icon, opts);
 	}
 
 	private Animal chooseReward(Building building) {
@@ -102,14 +109,14 @@ public class BuildSpecial extends AbstractAction {
 	}
 
 	public boolean doOnce(Player player) {
-		toBuild = chooseBuilding();
+		toBuild = chooseBuilding(player);
 		if (toBuild == null) {
 			return false;
 		} else {
 			boolean done;
 			Building building = GeneralSupply.getSpecialBuilding(toBuild);
 			if (toBuild == BuildingType.OPEN_STABLES) {
-				int toPay = chooseOpenStablesCost();
+				int toPay = chooseOpenStablesCost(player);
 				if (toPay == NONE) {
 					return false;
 				} else {

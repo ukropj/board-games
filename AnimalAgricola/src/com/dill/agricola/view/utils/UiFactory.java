@@ -26,7 +26,7 @@ import com.dill.agricola.model.types.Material;
 import com.dill.agricola.support.Fonts;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
 
-public class SwingUtils {
+public class UiFactory {
 
 	public static final int ICON_LAST = 1;
 	public static final int ICON_FIRST = 2;
@@ -35,7 +35,7 @@ public class SwingUtils {
 	public static final int X_AXIS = 3;
 	public static final int Y_AXIS = 4;
 
-	private SwingUtils() {
+	private UiFactory() {
 	}
 
 	public static JPanel createFlowPanel() {
@@ -111,7 +111,7 @@ public class SwingUtils {
 	}
 
 	public static JPanel createResourcesPanel(Materials materials, Animals animals, int orientation) {
-		JPanel p = orientation == Y_AXIS ? SwingUtils.createVerticalPanel() : SwingUtils.createHorizontalPanel();
+		JPanel p = orientation == Y_AXIS ? UiFactory.createVerticalPanel() : UiFactory.createHorizontalPanel();
 		p.setOpaque(false);
 		updateResourcePanel(p, materials, animals, false);
 		return p;
@@ -177,6 +177,8 @@ public class SwingUtils {
 			final JButton button = new JButton();
 			button.setMargin(new Insets(2, 2, 2, 2));
 			button.add(opt);
+			button.setEnabled(opt.isEnabled());
+			opt.setEnabled(true);
 			final int value = i;
 			button.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {

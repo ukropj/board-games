@@ -23,19 +23,19 @@ public class Fonts {
 		FontMetrics fm = g.getFontMetrics();
 		int size = font.getSize();
 		String[] lines = text.split("[\r\n]+");
+		// find longest line
 		String longestLine = lines[0];
 		for (String line : lines) {
 			if (line.length() > longestLine.length()) {
 				longestLine = line;
 			}
 		}
-
+		// decrease font size until longest line is shorter than desired width
 		while (fm.stringWidth(longestLine) > width) {
 			size--;
 			font = font.deriveFont((float)size);
 			fm = g.getFontMetrics(font);
 		}
-		System.out.println(size);
 		g.setFont(font);
 	}
 	

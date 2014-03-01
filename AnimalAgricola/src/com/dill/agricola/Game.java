@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
@@ -34,7 +33,7 @@ import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.view.Board;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
-import com.dill.agricola.view.utils.SwingUtils;
+import com.dill.agricola.view.utils.UiFactory;
 
 public class Game {
 
@@ -91,20 +90,19 @@ public class Game {
 		};
 	}
 
-	private Player chooseStaringPlayer() {
+	private Player chooseStartingPlayer() {
 		if (Main.DEBUG) {
 			return players[0];			
 		} else {			
 			List<JComponent> opts = new ArrayList<JComponent>();
 			for (PlayerColor color : PlayerColor.values()) {
-				Icon icon = AgriImages.getFirstTokenIcon(color.ordinal(), ImgSize.BIG);
-				JLabel l = new JLabel(icon);
+				JLabel l = UiFactory.createLabel(AgriImages.getFirstTokenIcon(color.ordinal(), ImgSize.BIG));
 				l.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 				l.setOpaque(true);
 				l.setBackground(color.getRealColor());
 				opts.add(l);	
 			}
-			int result = SwingUtils.showOptionDialog("Choose starting player", "Game starts", null, opts);
+			int result = UiFactory.showOptionDialog("Choose starting player", "Game starts", null, opts);
 			return players[Math.max(0, result)];
 		}
 	}
@@ -117,7 +115,7 @@ public class Game {
 		round = 0;
 		workPhase = false;
 
-		setStartingPlayer(chooseStaringPlayer());
+		setStartingPlayer(chooseStartingPlayer());
 		initialStartingPlayer = startingPlayer.getColor();
 		GeneralSupply.reset();
 		board.start();

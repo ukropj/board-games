@@ -36,7 +36,7 @@ import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Material;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.AgriImages;
-import com.dill.agricola.view.utils.SwingUtils;
+import com.dill.agricola.view.utils.UiFactory;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
 
 public class ActionPanelFactory {
@@ -51,7 +51,7 @@ public class ActionPanelFactory {
 		c.weighty = 0.5;
 		switch (action.getType()) {
 		case STARTING_ONE_WOOD:
-			JLabel firstL = SwingUtils.createLabel(AgriImages.getFirstTokenIcon(0, ImgSize.MEDIUM));
+			JLabel firstL = UiFactory.createLabel(AgriImages.getFirstTokenIcon(0, ImgSize.MEDIUM));
 			firstL.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
 			firstL.setOpaque(false);
 			createRefillPanel(parent, 0, 0, action, actionButton, firstL, StartOneWood.REFILL);
@@ -66,8 +66,8 @@ public class ActionPanelFactory {
 			createRefillPanel(parent, 1, 1, action, actionButton, null, OneStone.REFILL);
 			return;
 		case BUILDING_MATERIAL:
-			JPanel bmP = SwingUtils.createVerticalPanel();
-			SwingUtils.updateResourcePanel(bmP, BuildingMaterial.MATERIALS, null, true);
+			JPanel bmP = UiFactory.createVerticalPanel();
+			UiFactory.updateResourcePanel(bmP, BuildingMaterial.MATERIALS, null, true);
 			actionButton.add(bmP);
 			c.gridx = 0;
 			c.gridy = 3;
@@ -75,13 +75,13 @@ public class ActionPanelFactory {
 			c.gridheight = 2;
 			break;
 		case FENCES:
-			JPanel fenP = SwingUtils.createVerticalPanel();
-			fenP.add(SwingUtils.createLabel(Msg.get("unlimited")));
+			JPanel fenP = UiFactory.createVerticalPanel();
+			fenP.add(UiFactory.createLabel(Msg.get("unlimited")));
 			Materials fcost = new Materials(Fences.COST);
 			fcost.substract(Material.BORDER, 1);
-			JPanel fen1P = SwingUtils.createResourcesPanel(fcost, null, SwingUtils.X_AXIS);
-			fen1P.add(SwingUtils.createArrowLabel(Dir.E, false));
-			fen1P.add(SwingUtils.createLabel(Msg.get("build"), AgriImages.getMaterialIcon(Material.BORDER)));
+			JPanel fen1P = UiFactory.createResourcesPanel(fcost, null, UiFactory.X_AXIS);
+			fen1P.add(UiFactory.createArrowLabel(Dir.E, false));
+			fen1P.add(UiFactory.createLabel(Msg.get("build"), AgriImages.getMaterialIcon(Material.BORDER)));
 			fenP.add(fen1P);
 			actionButton.add(fenP);
 			c.gridx = 1;
@@ -89,17 +89,17 @@ public class ActionPanelFactory {
 			c.gridwidth = 2;
 			break;
 		case WALLS:
-			JPanel walP = SwingUtils.createVerticalPanel();
-			JPanel freeP = SwingUtils.createHorizontalPanel();
-			freeP.add(SwingUtils.createLabel("2\u00D7 "));
-			freeP.add(SwingUtils.createLabel(Msg.get("build"), AgriImages.getMaterialIcon(Material.BORDER)));
+			JPanel walP = UiFactory.createVerticalPanel();
+			JPanel freeP = UiFactory.createHorizontalPanel();
+			freeP.add(UiFactory.createLabel("2\u00D7 "));
+			freeP.add(UiFactory.createLabel(Msg.get("build"), AgriImages.getMaterialIcon(Material.BORDER)));
 			walP.add(freeP);
-			walP.add(SwingUtils.createLabel(Msg.get("alsoUnlimited")));
+			walP.add(UiFactory.createLabel(Msg.get("alsoUnlimited")));
 			Materials wcost = new Materials(Walls.COST);
 			wcost.substract(Material.BORDER, 1);
-			JPanel wal1P = SwingUtils.createResourcesPanel(wcost, null, SwingUtils.X_AXIS);
-			wal1P.add(SwingUtils.createArrowLabel(Dir.E, false));
-			wal1P.add(SwingUtils.createLabel(Msg.get("build"), AgriImages.getMaterialIcon(Material.BORDER)));
+			JPanel wal1P = UiFactory.createResourcesPanel(wcost, null, UiFactory.X_AXIS);
+			wal1P.add(UiFactory.createArrowLabel(Dir.E, false));
+			wal1P.add(UiFactory.createLabel(Msg.get("build"), AgriImages.getMaterialIcon(Material.BORDER)));
 			walP.add(wal1P);
 			actionButton.add(walP);
 			c.gridx = 1;
@@ -107,27 +107,27 @@ public class ActionPanelFactory {
 			c.gridwidth = 2;
 			break;
 		case EXPAND:
-			JLabel extP = SwingUtils.createLabel("+", AgriImages.getExtensionIcon(0));
+			JLabel extP = UiFactory.createLabel("+", AgriImages.getExtensionIcon(0));
 			createRefillPanel(parent, 1, 3, action, actionButton, extP, Expand.REFILL);
 			return;
 		case TROUGHS:
-			JPanel troP = SwingUtils.createVerticalPanel();
-			troP.add(SwingUtils.createLabel("+1", AgriImages.getTroughIcon()));
-			troP.add(SwingUtils.createLabel(Msg.get("alsoUnlimited")));
-			JPanel tro1P = SwingUtils.createResourcesPanel(BuildTrough.COST, null, SwingUtils.X_AXIS);
-			tro1P.add(SwingUtils.createArrowLabel(Dir.E, false));
-			tro1P.add(SwingUtils.createLabel(AgriImages.getTroughIcon()));
+			JPanel troP = UiFactory.createVerticalPanel();
+			troP.add(UiFactory.createLabel("+1", AgriImages.getTroughIcon()));
+			troP.add(UiFactory.createLabel(Msg.get("alsoUnlimited")));
+			JPanel tro1P = UiFactory.createResourcesPanel(BuildTrough.COST, null, UiFactory.X_AXIS);
+			tro1P.add(UiFactory.createArrowLabel(Dir.E, false));
+			tro1P.add(UiFactory.createLabel(AgriImages.getTroughIcon()));
 			troP.add(tro1P);
 			actionButton.add(troP);
 			c.gridx = 3;
 			c.gridy = 4;
 			break;
 		case STALLS:
-			JPanel stallP = SwingUtils.createVerticalPanel();
-			stallP.add(SwingUtils.createLabel(Msg.get("once")));
-			stallP.add(SwingUtils.createResourcesPanel(Stall.COST, null, SwingUtils.X_AXIS));
-			stallP.add(SwingUtils.createArrowLabel(Dir.S, false));
-			stallP.add(SwingUtils.createLabel(AgriImages.getBuildingIcon(BuildingType.STALL, ImgSize.MEDIUM)));
+			JPanel stallP = UiFactory.createVerticalPanel();
+			stallP.add(UiFactory.createLabel(Msg.get("once")));
+			stallP.add(UiFactory.createResourcesPanel(Stall.COST, null, UiFactory.X_AXIS));
+			stallP.add(UiFactory.createArrowLabel(Dir.S, false));
+			stallP.add(UiFactory.createLabel(AgriImages.getBuildingIcon(BuildingType.STALL, ImgSize.MEDIUM)));
 			stallP.add(Box.createVerticalGlue());
 			actionButton.add(stallP);
 			c.gridx = 0;
@@ -137,15 +137,15 @@ public class ActionPanelFactory {
 			c.weightx = 0.5;
 			break;
 		case STABLES:
-			JPanel staP = SwingUtils.createVerticalPanel();
-			staP.add(SwingUtils.createLabel(Msg.get("unlimited")));
-			JPanel costP = SwingUtils.createHorizontalPanel();
-			costP.add(SwingUtils.createResourcesPanel(Stables.COST_WOOD, null, SwingUtils.X_AXIS));
-			costP.add(SwingUtils.createLabel(" / "));
-			costP.add(SwingUtils.createResourcesPanel(Stables.COST_STONE, null, SwingUtils.X_AXIS));
+			JPanel staP = UiFactory.createVerticalPanel();
+			staP.add(UiFactory.createLabel(Msg.get("unlimited")));
+			JPanel costP = UiFactory.createHorizontalPanel();
+			costP.add(UiFactory.createResourcesPanel(Stables.COST_WOOD, null, UiFactory.X_AXIS));
+			costP.add(UiFactory.createLabel(" / "));
+			costP.add(UiFactory.createResourcesPanel(Stables.COST_STONE, null, UiFactory.X_AXIS));
 			staP.add(costP);
-			staP.add(SwingUtils.createArrowLabel(Dir.S, false));
-			staP.add(SwingUtils.createLabel(AgriImages.getBuildingIcon(BuildingType.STABLES, ImgSize.MEDIUM)));
+			staP.add(UiFactory.createArrowLabel(Dir.S, false));
+			staP.add(UiFactory.createLabel(AgriImages.getBuildingIcon(BuildingType.STABLES, ImgSize.MEDIUM)));
 			staP.add(Box.createVerticalGlue());
 			actionButton.add(staP);
 			c.gridx = 2;
@@ -155,7 +155,7 @@ public class ActionPanelFactory {
 			c.weightx = 0.5;
 			break;
 		case SPECIAL:
-			actionButton.add(SwingUtils.createLabel(Msg.get("specBuildLabel")));
+			actionButton.add(UiFactory.createLabel(Msg.get("specBuildLabel")));
 //			JPanel sbP = SwingUtils.createFlowPanel();
 //			for (BuildingType b : GeneralSupply.getBuildingsLeft()) {
 //				sbP.add(new JLabel(Images.getBuildingIcon(b, ImgSize.MEDIUM)));
@@ -167,7 +167,7 @@ public class ActionPanelFactory {
 			c.gridwidth = 2;
 			break;
 		case SPECIAL2:
-			actionButton.add(SwingUtils.createLabel(Msg.get("specBuildLabel")));
+			actionButton.add(UiFactory.createLabel(Msg.get("specBuildLabel")));
 			c.gridx = 4;
 			c.gridy = 8;
 			c.gridwidth = 2;
@@ -219,26 +219,26 @@ public class ActionPanelFactory {
 	}
 	
 	private static JPanel createPrefixPanel(Materials materials, Animal animal, Animal otherAnimal) {
-		JPanel refillP = SwingUtils.createHorizontalPanel();
+		JPanel refillP = UiFactory.createHorizontalPanel();
 		refillP.add(Box.createHorizontalGlue());
 		refillP.setBorder(BorderFactory.createMatteBorder(1,1,1,0,Color.GRAY));
 		Animals animals = animal == null ? null : new Animals(animal, 1);
-		JPanel main = SwingUtils.createResourcesPanel(materials, animals, SwingUtils.Y_AXIS);
+		JPanel main = UiFactory.createResourcesPanel(materials, animals, UiFactory.Y_AXIS);
 		refillP.add(main);
 		if (otherAnimal != null) {
-			JPanel sub = SwingUtils.createHorizontalPanel();
-			sub.add(SwingUtils.createLabel(" ("));
-			sub.add(SwingUtils.createResourcesPanel(null, new Animals(otherAnimal, 1), SwingUtils.Y_AXIS));
-			sub.add(SwingUtils.createLabel(")"));
+			JPanel sub = UiFactory.createHorizontalPanel();
+			sub.add(UiFactory.createLabel(" ("));
+			sub.add(UiFactory.createResourcesPanel(null, new Animals(otherAnimal, 1), UiFactory.Y_AXIS));
+			sub.add(UiFactory.createLabel(")"));
 			main.add(sub);
 		}
-		refillP.add(SwingUtils.createArrowLabel(Dir.E, true));
+		refillP.add(UiFactory.createArrowLabel(Dir.E, true));
 		return refillP;
 	}
 	
 	private static JButton addSupplyPanel(Action action, JButton button, JComponent extraP) {
-		JPanel actionP = SwingUtils.createHorizontalPanel();
-		JPanel supplyP = SwingUtils.createResourcesPanel(action.getAccumulatedMaterials(), action.getAccumulatedAnimals(), SwingUtils.Y_AXIS);
+		JPanel actionP = UiFactory.createHorizontalPanel();
+		JPanel supplyP = UiFactory.createResourcesPanel(action.getAccumulatedMaterials(), action.getAccumulatedAnimals(), UiFactory.Y_AXIS);
 		actionP.add(supplyP);
 		if (extraP != null) {
 			actionP.add(extraP);
@@ -257,7 +257,7 @@ public class ActionPanelFactory {
 		}
 
 		public void stateChanges(Action action) {
-			SwingUtils.updateResourcePanel(materialPanel, action.getAccumulatedMaterials(), action.getAccumulatedAnimals(), true);
+			UiFactory.updateResourcePanel(materialPanel, action.getAccumulatedMaterials(), action.getAccumulatedAnimals(), true);
 		}
 
 	}

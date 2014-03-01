@@ -9,6 +9,7 @@ import com.dill.agricola.common.Dir;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.buildings.Cottage;
 import com.dill.agricola.model.types.Animal;
+import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Material;
 import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.model.types.Purchasable;
@@ -37,7 +38,7 @@ public class Player extends SimpleObservable {
 		this.farm = new Farm();
 		init();
 	}
-	
+
 	public void init() {
 		workers = MAX_WORKERS;
 		starting = false;
@@ -50,9 +51,9 @@ public class Player extends SimpleObservable {
 
 		if (Main.DEBUG) {
 			addMaterial(new Materials(Material.WOOD, 20));
-			addMaterial(new Materials(Material.STONE, 20));
-			addMaterial(new Materials(Material.REED, 20));
-			
+//			addMaterial(new Materials(Material.STONE, 20));
+//			addMaterial(new Materials(Material.REED, 20));
+
 //			purchase(Purchasable.EXTENSION);
 //			purchase(Purchasable.EXTENSION);
 //			purchase(Purchasable.EXTENSION);
@@ -63,7 +64,7 @@ public class Player extends SimpleObservable {
 			purchase(Purchasable.FENCE);
 			purchase(Purchasable.FENCE);
 			purchase(Purchasable.FENCE);
-			Point pos = new Point(1,1);
+			Point pos = new Point(1, 1);
 			farm.putFence(pos, Dir.N);
 			farm.putFence(pos, Dir.W);
 			farm.putFence(pos, Dir.S);
@@ -130,7 +131,7 @@ public class Player extends SimpleObservable {
 	public void setActiveType(Purchasable type) {
 		farm.setActiveType(type);
 	}
-	
+
 	public Purchasable getActiveType() {
 		return farm.getActiveType();
 	}
@@ -172,7 +173,7 @@ public class Player extends SimpleObservable {
 		}
 		return false;
 	}
-	
+
 	public int getAnimal(Animal type) {
 		return animals.get(type);
 	}
@@ -183,14 +184,14 @@ public class Player extends SimpleObservable {
 		farm.addAnimals(type, count);
 		return true;
 	}
-	
+
 	public boolean purchaseAnimals(Animals newAnimals) {
 		animals.add(newAnimals);
 		// TODO refactor, add farm methods
 		for (Animal a : Animal.values()) {
 			int count = newAnimals.get(a);
 			if (count > 0) {
-				farm.addAnimals(a, count);							
+				farm.addAnimals(a, count);
 			}
 		}
 		return true;
@@ -205,13 +206,13 @@ public class Player extends SimpleObservable {
 		}
 		return false;
 	}
-	
+
 	public boolean unpurchaseAnimals(Animals newAnimals) {
 		if (animals.isSuperset(newAnimals)) {
 			for (Animal a : Animal.values()) {
 				int count = newAnimals.get(a);
 				if (count > 0) {
-					farm.removeAnimals(a, count);							
+					farm.removeAnimals(a, count);
 				}
 			}
 			animals.substract(newAnimals);
@@ -245,6 +246,16 @@ public class Player extends SimpleObservable {
 			return b;
 		}
 		return null;
+	}
+
+	public int getBuildingCount(BuildingType type) {
+		int count = 0;
+		for (Building b : farm.getBuiltBuildings()) {
+			if (b.getType() == type) {
+				count++;
+			}
+		}
+		return count;
 	}
 
 	public boolean validate() {
@@ -295,16 +306,16 @@ public class Player extends SimpleObservable {
 		workers = MAX_WORKERS;
 		setChanged();
 	}
-	
+
 	public int getAnimalScore(Animal type) {
 		int count = getAnimal(type);
 		return count + type.getBonusPoints(count);
 	}
-	
+
 	public int getExtensionsScore() {
 		return farm.getUsedExtensions() * USED_EXT_VP;
 	}
-	
+
 	public float getBuildingScore() {
 		float score = 0;
 		for (Building b : farm.getBuiltBuildings()) {

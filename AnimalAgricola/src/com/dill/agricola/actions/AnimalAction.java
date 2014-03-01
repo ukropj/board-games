@@ -22,6 +22,7 @@ public abstract class AnimalAction extends AbstractAction {
 	public void reset() {
 		super.reset();
 		animals.clear();
+		setChanged();
 	}
 
 	public void init() {

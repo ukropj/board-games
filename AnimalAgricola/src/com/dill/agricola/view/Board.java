@@ -35,7 +35,7 @@ import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.AgriImages;
-import com.dill.agricola.view.utils.SwingUtils;
+import com.dill.agricola.view.utils.UiFactory;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
 
 @SuppressWarnings("serial")
@@ -109,7 +109,7 @@ public class Board extends JFrame implements Observer{
 	}
 
 	private void initStatusBar() {
-		statusL = new JLabel(Msg.get("round", 0, Game.ROUNDS));
+		statusL = UiFactory.createLabel(Msg.get("round", 0, Game.ROUNDS));
 		mainPane.add(statusL, BorderLayout.NORTH);
 	}
 
@@ -167,35 +167,35 @@ public class Board extends JFrame implements Observer{
 		// heading
 		p.add(new JPanel());
 		for (Player player : players) {
-			JLabel playerL = SwingUtils.createLabel(Msg.get("player", player.getColor().ordinal() + 1));
+			JLabel playerL = UiFactory.createLabel(Msg.get("player", player.getColor().ordinal() + 1));
 			playerL.setOpaque(true);
 			playerL.setBackground(player.getColor().getRealColor());
 			p.add(addBorder(playerL));			
 		}
 		// animals
 		for (Animal a : Animal.values()) {
-			p.add(addBorder(SwingUtils.createAnimalLabel(a, 0, SwingUtils.NO_NUMBER)));
-			p.add(addBorder(SwingUtils.createLabel(players[0].getAnimalScore(a) + " [" + players[0].getAnimal(a) + "]")));
-			p.add(addBorder(SwingUtils.createLabel(players[1].getAnimalScore(a) + " [" + players[1].getAnimal(a) + "]")));
+			p.add(addBorder(UiFactory.createAnimalLabel(a, 0, UiFactory.NO_NUMBER)));
+			p.add(addBorder(UiFactory.createLabel(players[0].getAnimalScore(a) + " [" + players[0].getAnimal(a) + "]")));
+			p.add(addBorder(UiFactory.createLabel(players[1].getAnimalScore(a) + " [" + players[1].getAnimal(a) + "]")));
 		}
 		// extensions
-		p.add(addBorder(SwingUtils.createLabel(AgriImages.getExtensionIcon(0))));
-		p.add(addBorder(SwingUtils.createLabel(String.valueOf(players[0].getExtensionsScore()))));
-		p.add(addBorder(SwingUtils.createLabel(String.valueOf(players[1].getExtensionsScore()))));
+		p.add(addBorder(UiFactory.createLabel(AgriImages.getExtensionIcon(0))));
+		p.add(addBorder(UiFactory.createLabel(String.valueOf(players[0].getExtensionsScore()))));
+		p.add(addBorder(UiFactory.createLabel(String.valueOf(players[1].getExtensionsScore()))));
 		// buildings
-		p.add(addBorder(SwingUtils.createLabel(AgriImages.getBuildingIcon(BuildingType.HALF_TIMBERED_HOUSE, ImgSize.SMALL))));
-		p.add(addBorder(SwingUtils.createLabel(String.valueOf(players[0].getBuildingScore()))));
-		p.add(addBorder(SwingUtils.createLabel(String.valueOf(players[1].getBuildingScore()))));
+		p.add(addBorder(UiFactory.createLabel(AgriImages.getBuildingIcon(BuildingType.HALF_TIMBERED_HOUSE, ImgSize.SMALL))));
+		p.add(addBorder(UiFactory.createLabel(String.valueOf(players[0].getBuildingScore()))));
+		p.add(addBorder(UiFactory.createLabel(String.valueOf(players[1].getBuildingScore()))));
 		// total
-		p.add(addBorder(SwingUtils.createLabel(Msg.get("sum"))));
+		p.add(addBorder(UiFactory.createLabel(Msg.get("sum"))));
 		float blueTotal = players[0].getScore();
 		float redTotal = players[1].getScore();
-		p.add(addBorder(SwingUtils.createLabel(String.valueOf(blueTotal))));
-		p.add(addBorder(SwingUtils.createLabel(String.valueOf(redTotal))));
+		p.add(addBorder(UiFactory.createLabel(String.valueOf(blueTotal))));
+		p.add(addBorder(UiFactory.createLabel(String.valueOf(redTotal))));
 
 		d.getContentPane().setLayout(new BorderLayout(5, 5));
 		d.getContentPane().add(p, BorderLayout.CENTER);
-		JLabel winnerLabel = SwingUtils.createLabel(Msg.get("msgWinner", winner.ordinal() + 1));
+		JLabel winnerLabel = UiFactory.createLabel(Msg.get("msgWinner", winner.ordinal() + 1));
 		winnerLabel.setOpaque(true);
 		winnerLabel.setBackground(winner.getRealColor());
 		d.getContentPane().add(winnerLabel, BorderLayout.SOUTH);

@@ -19,7 +19,7 @@ import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.ActionPerformer;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.support.Msg;
-import com.dill.agricola.view.utils.SwingUtils;
+import com.dill.agricola.view.utils.UiFactory;
 
 @SuppressWarnings("serial")
 public class ActionBoard extends JPanel {
@@ -56,17 +56,18 @@ public class ActionBoard extends JPanel {
 						if (ap.doAction(action)) {
 							switchToControl(true);
 							b.setBackground(ap.getPlayer().getColor().getRealColor());
+							b.setEnabled(false);
 //							b.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
 						}
 					}
 				}
 			});
-			
+
 			actionButtons.put(type, b);
 			ActionPanelFactory.createActionPanel(actionPanel, action, b);
 		}
 
-		controlPanel = SwingUtils.createFlowPanel(5, 0);
+		controlPanel = UiFactory.createFlowPanel(5, 0);
 		buildControlPanel(submitListener);
 
 		add(actionPanel, BorderLayout.CENTER);
@@ -112,6 +113,7 @@ public class ActionBoard extends JPanel {
 				if (ap.undoAction()) {
 					JButton b = actionButtons.get(action.getType());
 					b.setBackground(defaultColor);
+					b.setEnabled(true);
 //					b.setBorder(defaultBorder);
 					switchToControl(false);
 				}
@@ -162,8 +164,9 @@ public class ActionBoard extends JPanel {
 	}
 
 	public void clearActions() {
-		for (Entry<ActionType, JButton> btnEntry : actionButtons.entrySet()) {
-			btnEntry.getValue().setBackground(defaultColor);
+		for (JButton btn : actionButtons.values()) {
+			btn.setBackground(defaultColor);
+			btn.setEnabled(true);
 		}
 	}
 
