@@ -65,8 +65,8 @@ public class Images {
 			// Use multi-step technique: start with original size, then
 			// scale down in multiple passes with drawImage()
 			// until the target size is reached
-			w = img.getWidth();
-			h = img.getHeight();
+			w = Math.max(img.getWidth(), targetWidth);
+			h = Math.max(img.getHeight(),targetHeight);
 		} else {
 			// Use one-step technique: scale directly from original
 			// size to target size with a single drawImage() call

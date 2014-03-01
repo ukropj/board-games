@@ -3,7 +3,6 @@ package com.dill.agricola.view;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -37,6 +36,7 @@ import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.model.types.Purchasable;
+import com.dill.agricola.support.Fonts;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
 
@@ -158,7 +158,6 @@ public class FarmPanel extends JPanel {
 	public final static Stroke NORMAL_STROKE = new BasicStroke();
 	public final static Stroke THICK_STROKE = new BasicStroke(2.0f);
 	public final static Stroke MOVABLE_STROKE = new BasicStroke(1.0f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL, 10.0f, new float[] { 2, 2 }, 1.0f);
-	public final static Font FONT = new Font("Calibri", Font.PLAIN, 15);
 	public final static Color PASTURE_COLOR = new Color(153, 178, 97);
 
 	private final Player player;
@@ -209,7 +208,7 @@ public class FarmPanel extends JPanel {
 		Graphics2D g = (Graphics2D) g0;
 		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
-		g.setFont(FONT);
+		g.setFont(Fonts.FARM_FONT);
 
 		// background (should not be seen)
 		g.setColor(Color.WHITE);
@@ -396,6 +395,7 @@ public class FarmPanel extends JPanel {
 			BufferedImage img = null;
 			switch (type) {
 			case COTTAGE:
+				img = AgriImages.getCottageImage(player.getColor().ordinal());
 				break;
 			case STALL:
 				img = AgriImages.getStallImage(((MultiImaged) building).getId());
@@ -409,15 +409,6 @@ public class FarmPanel extends JPanel {
 			if (img != null) {
 				g.drawImage(img, r.x, r.y, r.width, r.height, null);
 			}
-			/*if (type.isHouse()) {
-				g.setColor(player.getColor().getRealColor());
-				g.fillOval(realPos.x + 2 * M, realPos.y + L / 2, L / 3, L / 3);
-				g.setColor(Color.BLACK);
-				g.setStroke(THICK_STROKE);
-				g.drawOval(realPos.x + 2 * M, realPos.y + L / 2, L / 3, L / 3);
-				g.drawString(String.valueOf(player.getWorkers()), realPos.x + 3 * M + 3, realPos.y + 3 * L / 4);
-				g.setStroke(NORMAL_STROKE);
-			}*/
 		}
 
 		if (isActive(pos, Purchasable.BUILDING, building != null)) {
@@ -618,7 +609,7 @@ public class FarmPanel extends JPanel {
 					if (buildingRect.contains(relativePoint)) {
 						availableAnimals = farm.guessAnimalTypesToPut(pos, true);
 						if (!animalArea.contains(relativePoint) // not clicked in animal area OR
-								|| (availableAnimals.size() == 0 && farm.getSpace(pos).getAnimals() == 0)) {// no animals available AND no animals present
+								|| (availableAnimals.size() == 0 && farm.getAnimals(pos) == 0)) {// no animals available AND no animals present
 							farm.toggleBuilding(pos);
 							done = true;
 						}

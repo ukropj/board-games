@@ -1,6 +1,6 @@
 #TODO#
 
-	building labels
+	building texts
 	building display
 	remaining stuff count
 	nicer +/- buttons
@@ -8,7 +8,6 @@
 	animal count font+position
 	embed fonts
 	round meter
-	worker meter
 	animal breeding notification
 	game ending
 	

@@ -446,6 +446,11 @@ public class Farm extends SimpleObservable {
 		}
 	}
 
+	public int getAnimals(Point pos) {
+		Space space = getSpace(pos);
+		return space != null ? space.getAnimals() : 0;
+	}
+	
 	public void addAnimals(Animal type, int count) {
 		Main.asrtPositive(count, "Cannot add negative amount of animals");
 		addLooseAnimals(type, count);

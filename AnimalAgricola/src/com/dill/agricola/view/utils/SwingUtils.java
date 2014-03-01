@@ -2,7 +2,6 @@ package com.dill.agricola.view.utils;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,6 +23,7 @@ import com.dill.agricola.common.Dir;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.Material;
+import com.dill.agricola.support.Fonts;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
 
 public class SwingUtils {
@@ -161,10 +161,9 @@ public class SwingUtils {
 		// l.setBackground(Color.RED);
 		if (string != null) {
 			if (string.matches("[^a-z]+")) {
-				l.setFont(new Font("Calibri", Font.BOLD, 18)); // TODO load from file
+				l.setFont(Fonts.ACTION_NUMBER_FONT);
 			} else {
-				l.setFont(new Font("Calibri", Font.BOLD, 12));
-//				l.setFont(new Font("Dominican", Font.PLAIN, 18));
+				l.setFont(Fonts.ACTION_TEXT_FONT);
 			}
 		}
 		return l;

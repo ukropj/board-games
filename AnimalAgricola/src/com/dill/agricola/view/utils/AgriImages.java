@@ -1,5 +1,8 @@
 package com.dill.agricola.view.utils;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.EnumMap;
 import java.util.Map;
@@ -12,6 +15,7 @@ import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Material;
 import com.dill.agricola.model.types.PlayerColor;
+import com.dill.agricola.support.Fonts;
 
 public class AgriImages {
 
@@ -31,6 +35,7 @@ public class AgriImages {
 	private final static BufferedImage[] farmsAndMargins = new BufferedImage[4];
 	private final static BufferedImage[] workers = new BufferedImage[PlayerColor.values().length];
 	private final static BufferedImage[] misc = new BufferedImage[4];
+	private static BufferedImage[] cottages = new BufferedImage[PlayerColor.values().length];
 	private static BufferedImage[] stallsAndStables = new BufferedImage[8];
 	private static BufferedImage[] exts = new BufferedImage[4];
 
@@ -58,7 +63,7 @@ public class AgriImages {
 	public static ImageIcon getFirstTokenIcon(int id, ImgSize size) {
 		return new ImageIcon(getFirstTokenImage(id, size));
 	}
-	
+
 	public static BufferedImage getWorkerImage(int id) {
 		Main.asrtInRange(id, 0, workers.length, "Invalid img id");
 		if (workers[id] != null) {
@@ -70,7 +75,7 @@ public class AgriImages {
 			return img;
 		}
 	}
-	
+
 	public static ImageIcon getWorkerIcon(int id) {
 		return new ImageIcon(getWorkerImage(id));
 	}
@@ -180,7 +185,7 @@ public class AgriImages {
 			return img;
 		}
 	}
-	
+
 	public static BufferedImage getAnimalOutlineImage(Animal type) {
 		if (animalOutlinesMedium.containsKey(type)) {
 			return animalOutlinesMedium.get(type);
@@ -216,9 +221,9 @@ public class AgriImages {
 		} else {
 			BufferedImage img = null;
 			switch (type) {
-			case BUILDING:
+			/*case BUILDING:
 				img = Images.createImage("special");
-				break;
+				break;*/
 			case STALL:
 				img = Images.createImage("stall1");
 				break;
@@ -241,15 +246,26 @@ public class AgriImages {
 				img = Images.createImage("open-stables");
 				break;
 			}
-			img = Images.getBestScaledInstance(img, 0.5f);
+			addBuildingText(type, img);
 			buildings.put(type, img);
 			return img;
 		}
 	}
 
+	public static BufferedImage getCottageImage(int id) {
+		if (cottages[id] == null) {
+			BufferedImage img = Images.createImage("cottage" + (id + 1));
+			addBuildingText(BuildingType.COTTAGE, img);
+			cottages[id] = img;
+		}
+		return cottages[id];
+	}
+	
 	public static BufferedImage getStallImage(int id) {
 		if (stallsAndStables[id] == null) {
-			stallsAndStables[id] = Images.createImage("stall" + (id + 1));
+			BufferedImage img = Images.createImage("stall" + (id + 1));
+			addBuildingText(BuildingType.STALL, img);
+			stallsAndStables[id] = img;
 		}
 		return stallsAndStables[id];
 	}
@@ -257,22 +273,38 @@ public class AgriImages {
 	public static BufferedImage getStableImage(int id) {
 		int arrId = id + 4;
 		if (stallsAndStables[arrId] == null) {
-			stallsAndStables[arrId] = Images.createImage("stables" + (id + 1));
+			BufferedImage img = Images.createImage("stables" + (id + 1));
+			addBuildingText(BuildingType.STABLES, img);
+			//			img = Images.getBestScaledInstance(img, 0.5f);
+			stallsAndStables[arrId] = img;
 		}
 		return stallsAndStables[arrId];
+	}
+
+	private static void addBuildingText(BuildingType type, BufferedImage img) {
+		Graphics2D g = img.createGraphics();
+		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+		g.setFont(Fonts.BUILDING_FONT);
+		g.setColor(Color.BLACK);
+		String text = type.name;
+		int x = 46, y = 78, maxw = 160;
+		Fonts.updateFontToFit(g, text, maxw);
+		int w = g.getFontMetrics().stringWidth(text);
+		g.drawString(type.name, x + (maxw - w) / 2, y);
+		g.dispose();
 	}
 
 	public static ImageIcon getBuildingIcon(BuildingType type, ImgSize size) {
 		BufferedImage img = getBuildingImage(type);
 		switch (size) {
 		case SMALL:
-			img = Images.getBestScaledInstance(img, 0.25f);
+			img = Images.getBestScaledInstance(img, 0.1f);
 			break;
 		case MEDIUM:
-			img = Images.getBestScaledInstance(img, 0.6f);
+			img = Images.getBestScaledInstance(img, 0.3f);
 			break;
 		case BIG:
-//			img = Images.getBestScaledInstance(img, 0.6f);
+			img = Images.getBestScaledInstance(img, 0.8f);
 			break;
 		}
 		return new ImageIcon(img);
