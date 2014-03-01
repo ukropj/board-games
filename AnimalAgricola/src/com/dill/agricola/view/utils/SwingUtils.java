@@ -189,7 +189,7 @@ public class SwingUtils {
 		}
 		pane.setOptions(buttons);
 		JDialog dialog = pane.createDialog(title);
-		// dialog.setUndecorated(true);
+//		dialog.setUndecorated(true);
 		dialog.setVisible(true);
 		Object retVal = pane.getValue();
 		return retVal == null ? JOptionPane.CLOSED_OPTION : (int) retVal;

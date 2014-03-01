@@ -62,16 +62,16 @@ public class FarmPanel extends JPanel {
 					new Point(S / 2 + M + AR / 2, S / 2 - M),
 					new Point(S / 2 - M - AR / 2, S / 2 - M) },
 			new Point[] {
-					new Point(S / 2, S / 2 - AR +M),
+					new Point(S / 2, S / 2 - AR + M),
 					new Point(S / 2, S / 2 + AR),
 					new Point(S / 2 + AR, S / 2),
-					new Point(S / 2 - AR, S / 2+M/2) }
+					new Point(S / 2 - AR, S / 2 + M / 2) }
 	};
 	private final static Line2D[][] animalDividers = new Line2D[][] {
 			new Line2D[] {},
 			new Line2D[] { new Line2D.Float(new Point(S / 4, S / 4), new Point(3 * S / 4, 3 * S / 4)) },
 			new Line2D[] {
-					new Line2D.Float(new Point(S / 2, S / 2), new Point(S / 2, S / 4 - M)),
+					new Line2D.Float(new Point(S / 2, S / 2), new Point(S / 2, S / 4 - 2 * M)),
 					new Line2D.Float(new Point(S / 2, S / 2), new Point(3 * S / 4, 3 * S / 4)),
 					new Line2D.Float(new Point(S / 2, S / 2), new Point(S / 4, 3 * S / 4)) },
 			new Line2D[] {
@@ -134,7 +134,7 @@ public class FarmPanel extends JPanel {
 			new int[] { 7 * M, 4 * M, 2 * M, 4 * M, 7 * M },
 			5);
 	private final static Rectangle buildingRect = new Rectangle(M, M, L, L);
-	private final static Area buildingSansAnimalRect = subtract(new Area(buildingRect), animalArea);
+	//	private final static Area buildingSansAnimalRect = subtract(new Area(buildingRect), animalArea);
 	private final static Rectangle extRect = new Rectangle(M, Y1 + M, L, 3 * S - 2 * M);
 	private final static Map<Dir, Rectangle> fenceRects = new EnumMap<Dir, Rectangle>(Dir.class) {
 		{
@@ -158,7 +158,8 @@ public class FarmPanel extends JPanel {
 	public final static Stroke NORMAL_STROKE = new BasicStroke();
 	public final static Stroke THICK_STROKE = new BasicStroke(2.0f);
 	public final static Stroke MOVABLE_STROKE = new BasicStroke(1.0f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL, 10.0f, new float[] { 2, 2 }, 1.0f);
-	public final static Font FONT = new Font("Calibri", Font.PLAIN, 12);
+	public final static Font FONT = new Font("Calibri", Font.PLAIN, 15);
+	public final static Color PASTURE_COLOR = new Color(153, 178, 97);
 
 	private final Player player;
 	private final Farm farm;
@@ -184,10 +185,10 @@ public class FarmPanel extends JPanel {
 		return area;
 	}
 
-	private static Area subtract(Area area, Area subtractor) {
+	/*private static Area subtract(Area area, Area subtractor) {
 		area.subtract(subtractor);
 		return area;
-	}
+	}*/
 
 	private static Point toRealPos(Point farmPos) {
 		return new Point(X1 + S * farmPos.x, Y1 + S * farmPos.y);
@@ -206,8 +207,9 @@ public class FarmPanel extends JPanel {
 
 	public void paintComponent(Graphics g0) {
 		Graphics2D g = (Graphics2D) g0;
-		g.setFont(FONT);
 		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+		g.setFont(FONT);
 
 		// background (should not be seen)
 		g.setColor(Color.WHITE);
@@ -321,14 +323,14 @@ public class FarmPanel extends JPanel {
 			int w = img.getWidth(), h = img.getHeight();
 			g.drawImage(img, realPos.x + (S - w) / 2, realPos.y + (S - h) / 2, w, h, null);
 		}
-		if (space.getMaxCapacity() > 0) {
+		if (space.getMaxCapacity() > 0 || count > 0) {
 			g.setStroke(NORMAL_STROKE);
-			g.setColor(makeTranslucent(type != null ? (space.isValid() ? type.getColor() : Color.RED) : new Color(153, 178, 97), 200));
+			g.setColor(makeTranslucent(type != null ? (space.isValid() ? type.getColor() : PASTURE_COLOR) : PASTURE_COLOR, 200));
 			g.setClip(realPos.x + M, realPos.y + M, L + 1, L + 1);
 			g.fillOval(realPos.x + S - 6 * M, realPos.y + S - 6 * M, 8 * M, 8 * M);
 			g.setClip(null);
 
-			g.setColor(type != null ? (space.isValid() ? type.getContrastingColor() : Color.BLACK) : Color.BLACK);
+			g.setColor(type != null ? (space.isValid() ? type.getContrastingColor() : Color.RED) : Color.BLACK);
 			String text = count + "/" + space.getMaxCapacity();
 			g.drawString(text, realPos.x + S - 5 * M, realPos.y + S - 2 * M);
 
@@ -338,17 +340,20 @@ public class FarmPanel extends JPanel {
 				int typeCount = availableAnimals.size();
 				if (typeCount > 0) {
 					AffineTransform tr = AffineTransform.getTranslateInstance(realPos.x, realPos.y);
+					Area r = animalArea.createTransformedArea(tr);
+					g.setColor(makeTranslucent(player.getColor().getRealColor(), 120));
+					g.fill(r);
 					for (int i = 0; i < typeCount; i++) {
 						Animal t = availableAnimals.get(i);
-						
-//						Area r = animalAreas[typeCount - 1][i].createTransformedArea(tr);
-//						g.setColor(makeTranslucent(t.getColor(), 180));
-//						g.fill(r);
+
+						//						Area r = animalAreas[typeCount - 1][i].createTransformedArea(tr);
+						//						g.setColor(makeTranslucent(t.getColor(), 180));
+						//						g.fill(r);
 
 						Point p = new Point(animalPositions[typeCount - 1][i]);
 						p.translate(realPos.x, realPos.y);
 						BufferedImage img = AgriImages.getAnimalImage(t, ImgSize.MEDIUM);
-//						BufferedImage img = AgriImages.getAnimalOutlineImage(t);
+						//						BufferedImage img = AgriImages.getAnimalOutlineImage(t);
 						int w = img.getWidth(), h = img.getHeight();
 						g.drawImage(img, p.x - w / 2, p.y - h / 2, w, h, null);
 
@@ -404,7 +409,7 @@ public class FarmPanel extends JPanel {
 			if (img != null) {
 				g.drawImage(img, r.x, r.y, r.width, r.height, null);
 			}
-			if (type.isHouse()) {
+			/*if (type.isHouse()) {
 				g.setColor(player.getColor().getRealColor());
 				g.fillOval(realPos.x + 2 * M, realPos.y + L / 2, L / 3, L / 3);
 				g.setColor(Color.BLACK);
@@ -412,13 +417,13 @@ public class FarmPanel extends JPanel {
 				g.drawOval(realPos.x + 2 * M, realPos.y + L / 2, L / 3, L / 3);
 				g.drawString(String.valueOf(player.getWorkers()), realPos.x + 3 * M + 3, realPos.y + 3 * L / 4);
 				g.setStroke(NORMAL_STROKE);
-			}
+			}*/
 		}
 
 		if (isActive(pos, Purchasable.BUILDING, building != null)) {
 			g.setColor(makeTranslucent(player.getColor().getRealColor(), 120));
 			if (availableAnimals.size() > 0) {
-				g.fill(buildingSansAnimalRect.createTransformedArea(AffineTransform.getTranslateInstance(realPos.x, realPos.y)));
+				g.fill(AffineTransform.getTranslateInstance(realPos.x, realPos.y).createTransformedShape(buildingRect));
 			} else {
 				g.fill(r);
 			}
@@ -544,9 +549,11 @@ public class FarmPanel extends JPanel {
 
 		private Animal getAnimalType(List<Animal> types, Point relativePoint) {
 			int typeCount = types.size();
-			for (int i = 0; i < animalAreas[typeCount - 1].length; i++) {
-				if (animalAreas[typeCount - 1][i].contains(relativePoint)) {
-					return types.get(i);
+			if (typeCount != 0) {
+				for (int i = 0; i < animalAreas[typeCount - 1].length; i++) {
+					if (animalAreas[typeCount - 1][i].contains(relativePoint)) {
+						return types.get(i);
+					}
 				}
 			}
 			return null;
@@ -610,10 +617,8 @@ public class FarmPanel extends JPanel {
 				case BUILDING:
 					if (buildingRect.contains(relativePoint)) {
 						availableAnimals = farm.guessAnimalTypesToPut(pos, true);
-						if (!animalArea.contains(relativePoint) // not clicked in animal area
-								|| (leftClick && availableAnimals.size() == 0) // OR left-clicked but no animals available
-								|| (!leftClick && farm.getSpace(pos).getAnimals() == 0)) { // OR right-clicked clicked but no animals present
-
+						if (!animalArea.contains(relativePoint) // not clicked in animal area OR
+								|| (availableAnimals.size() == 0 && farm.getSpace(pos).getAnimals() == 0)) {// no animals available AND no animals present
 							farm.toggleBuilding(pos);
 							done = true;
 						}

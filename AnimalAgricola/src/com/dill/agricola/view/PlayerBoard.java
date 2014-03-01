@@ -32,10 +32,11 @@ public class PlayerBoard extends JPanel implements Observer {
 	private final Farm farm;
 
 	private JLabel playerLabel;
-	private JLabel firstLabel;
 	private FarmPanel farmPanel;
+	private JLabel firstLabel;
 	private Map<Material, JLabel> supply = new EnumMap<Material, JLabel>(Material.class);
 	private Map<Animal, JLabel> animalSupply = new EnumMap<Animal, JLabel>(Animal.class);
+	private JLabel[] workerLabels = new JLabel[Player.MAX_WORKERS];
 
 	public PlayerBoard(Player player) {
 		this.player = player;
@@ -51,22 +52,10 @@ public class PlayerBoard extends JPanel implements Observer {
 		initFirstPanel();
 		initMaterialPanel();
 		initAnimalPanel();
-		initAbcPanel();
+		initWorkerPanel();
 
 		updatePlayer();
 		updateFarm();
-	}
-
-	private void initFarmPanel() {
-		farmPanel = new FarmPanel(player);
-		// farmPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		//		addBorder(farmPanel);
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridy = 1;
-		c.gridwidth = 3;
-		//		c.fill = GridBagConstraints.BOTH;
-		add(farmPanel, c);
-		//		add(farmPanel, BorderLayout.EAST);
 	}
 
 	private void initTopPanel() {
@@ -83,13 +72,21 @@ public class PlayerBoard extends JPanel implements Observer {
 		c.gridwidth = 3;
 		add(playerLabel, c);
 	}
+	
+	private void initFarmPanel() {
+		farmPanel = new FarmPanel(player);
+		// farmPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		//		addBorder(farmPanel);
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridy = 1;
+		c.gridwidth = 3;
+		add(farmPanel, c);
+	}
 
 	private void initFirstPanel() {
 		JPanel p = new JPanel();
 		p.setPreferredSize(new Dimension(50, 0));
 		firstLabel = SwingUtils.createLabel(AgriImages.getFirstTokenIcon(player.getColor().ordinal(), ImgSize.BIG));
-		firstLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
-		firstLabel.setVisible(false);
 		p.add(firstLabel);
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
@@ -129,22 +126,27 @@ public class PlayerBoard extends JPanel implements Observer {
 		c.insets = new Insets(5, 0, 5, 0);
 		c.gridx = 1;
 		c.gridy = 3;
-		c.fill = GridBagConstraints.BOTH;
-		//		c.anchor = GridBagConstraints.PAGE_START;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.weighty = 1.0;
+		c.anchor = GridBagConstraints.PAGE_START;
 		add(animals, c);
 	}
 
-	private void initAbcPanel() {
-		JLabel l = new JLabel();
-		l.setPreferredSize(new Dimension(50, 0));
+	private void initWorkerPanel() {
+		JPanel workers = SwingUtils.createVerticalPanel();
+		workers.setPreferredSize(new Dimension(50, 0));
+		for (int i = 0; i < workerLabels.length; i++) {
+			workerLabels[i] = SwingUtils.createLabel(AgriImages.getWorkerIcon(player.getColor().ordinal()));
+			workers.add(workerLabels[i]);
+		}
 		GridBagConstraints c = new GridBagConstraints();
-		c.insets = new Insets(5, 0, 5, 0);
+		c.insets = new Insets(5, 0, 5, 5);
 		c.gridx = 2;
 		c.gridy = 2;
 		c.gridheight = 2;
-		c.fill = GridBagConstraints.BOTH;
 		c.weightx = 1.0;
-		add(l, c);
+		c.fill = GridBagConstraints.BOTH;
+		add(workers, c);
 	}
 
 	public void setActive(boolean active) {
@@ -161,6 +163,7 @@ public class PlayerBoard extends JPanel implements Observer {
 	}
 
 	public void updatePlayer() {
+		firstLabel.setVisible(player.isStarting());
 		for (Material m : Material.values()) {
 			supply.get(m).setText(String.valueOf(player.getMaterial(m)));
 		}
@@ -168,7 +171,9 @@ public class PlayerBoard extends JPanel implements Observer {
 			animalSupply.get(a).setText(String.valueOf(player.getAnimal(a)));
 		}
 
-		firstLabel.setVisible(player.isStarting());
+		for (int i = 0; i < workerLabels.length; i++) {
+			workerLabels[i].setVisible(player.getWorkers() > i);
+		}
 	}
 
 	private void updateFarm() {

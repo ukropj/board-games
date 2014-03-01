@@ -11,6 +11,7 @@ import com.dill.agricola.common.Dir;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Material;
+import com.dill.agricola.model.types.PlayerColor;
 
 public class AgriImages {
 
@@ -26,8 +27,9 @@ public class AgriImages {
 	private final static BufferedImage[] materials = new BufferedImage[Material.values().length];
 	private final static BufferedImage[] fences = new BufferedImage[Dir.values().length];
 	private final static BufferedImage[] troughs = new BufferedImage[ImgSize.values().length];
-	private final static BufferedImage[] firstTokens = new BufferedImage[6];
+	private final static BufferedImage[] firstTokens = new BufferedImage[ImgSize.values().length * PlayerColor.values().length];
 	private final static BufferedImage[] farmsAndMargins = new BufferedImage[4];
+	private final static BufferedImage[] workers = new BufferedImage[PlayerColor.values().length];
 	private final static BufferedImage[] misc = new BufferedImage[4];
 	private static BufferedImage[] stallsAndStables = new BufferedImage[8];
 	private static BufferedImage[] exts = new BufferedImage[4];
@@ -55,6 +57,22 @@ public class AgriImages {
 
 	public static ImageIcon getFirstTokenIcon(int id, ImgSize size) {
 		return new ImageIcon(getFirstTokenImage(id, size));
+	}
+	
+	public static BufferedImage getWorkerImage(int id) {
+		Main.asrtInRange(id, 0, workers.length, "Invalid img id");
+		if (workers[id] != null) {
+			return workers[id];
+		} else {
+			BufferedImage img = Images.createImage("worker" + (id + 1));
+			img = Images.getBestScaledInstance(img, 0.3f);
+			workers[id] = img;
+			return img;
+		}
+	}
+	
+	public static ImageIcon getWorkerIcon(int id) {
+		return new ImageIcon(getWorkerImage(id));
 	}
 
 	public static BufferedImage getFarmImage(int id) {

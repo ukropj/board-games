@@ -1,0 +1,24 @@
+#TODO#
+
+	building labels
+	building display
+	remaining stuff count
+	nicer +/- buttons
+	nicer done/undo buttons
+	animal count font+position
+	embed fonts
+	round meter
+	worker meter
+	animal breeding notification
+	game ending
+	
+#Bugs#
+
+	rewards dialog can be closed without animal 
+
+#Nice to have#
+
+	sk localization
+	language picker
+	single player
+	action tooltips
