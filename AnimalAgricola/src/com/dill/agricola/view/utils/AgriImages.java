@@ -51,7 +51,7 @@ public class AgriImages {
 		int arrId = id + size.ordinal() * 2;
 		Main.asrtInRange(arrId, 0, firstTokens.length, "Invalid img id");
 		if (firstTokens[arrId] != null) {
-			return firstTokens[id];
+			return firstTokens[arrId];
 		} else {
 			BufferedImage img = Images.createImage("first" + (id + 1));
 			img = Images.getBestScaledInstance(img, size == ImgSize.BIG ? 0.3f : 0.2f);
@@ -284,13 +284,23 @@ public class AgriImages {
 	private static void addBuildingText(BuildingType type, BufferedImage img) {
 		Graphics2D g = img.createGraphics();
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
-		g.setFont(Fonts.BUILDING_FONT);
+		g.setFont(Fonts.BUILDING_FONT2);
 		g.setColor(Color.BLACK);
-		String text = type.name;
+		// name
 		int x = 46, y = 78, maxw = 160;
-		Fonts.updateFontToFit(g, text, maxw);
-		int w = g.getFontMetrics().stringWidth(text);
+		Fonts.updateFontToFit(g, type.name, maxw);
+		int w = g.getFontMetrics().stringWidth(type.name);
 		g.drawString(type.name, x + (maxw - w) / 2, y);
+		// text
+		if (type.text != null) {
+			g.setFont(Fonts.BUILDING_FONT2);
+			Fonts.updateFontToFit(g, type.text, type.textWidth);
+			int ty = type.textPos.y, h = g.getFontMetrics().getHeight();
+			for (String line : type.text.split("[\r\n]+")) {
+				g.drawString(line, type.textPos.x, ty);
+				ty += h;
+			}
+		}
 		g.dispose();
 	}
 

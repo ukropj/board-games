@@ -18,8 +18,8 @@ public class OpenStables extends Building {
 		super(BuildingType.OPEN_STABLES, 2, 5, new Animal[]{Animal.COW, Animal.HORSE});
 	}
 
-	public boolean canBuildAt(Space building) {
-		return building instanceof Stall;
+	public boolean canBuildAt(Space space) {
+		return space instanceof Stall;
 	}
 	
 	public void buildAt(Space space) {

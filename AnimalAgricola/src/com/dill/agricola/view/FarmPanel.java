@@ -217,17 +217,17 @@ public class FarmPanel extends JPanel {
 		// farm
 		drawFarm(g);
 
-		// loose animals
-		drawLooseAnimals(g);
-
-		// unused stuff
-		drawUnused(g);
-
 		// spaces
 		List<Point> grid = PointUtils.createGridRange(farm.getWidth(), farm.getHeight());
 		for (Point pos : grid) {
 			drawSpace(g, pos, farm.getSpace(pos));
 		}
+
+		// loose animals
+		drawLooseAnimals(g);
+
+		// unused stuff
+		drawUnused(g);
 	}
 
 	public Dimension getPreferredSize() {
@@ -298,7 +298,7 @@ public class FarmPanel extends JPanel {
 		List<Animal> availableAnimals = farm.guessAnimalTypesToPut(pos, true);
 
 		// building
-		drawBuilding(g, pos, farm.getBuilding(pos), availableAnimals);
+		drawBuilding(g, pos, space, farm.getBuilding(pos), availableAnimals);
 
 		// fences
 		for (Dir d : Dir.values()) {
@@ -317,11 +317,6 @@ public class FarmPanel extends JPanel {
 
 		Animal type = space.getAnimalType();
 		int count = space.getAnimals();
-		if (count > 0) {
-			BufferedImage img = AgriImages.getAnimalImage(type, ImgSize.BIG);
-			int w = img.getWidth(), h = img.getHeight();
-			g.drawImage(img, realPos.x + (S - w) / 2, realPos.y + (S - h) / 2, w, h, null);
-		}
 		if (space.getMaxCapacity() > 0 || count > 0) {
 			g.setStroke(NORMAL_STROKE);
 			g.setColor(makeTranslucent(type != null ? (space.isValid() ? type.getColor() : PASTURE_COLOR) : PASTURE_COLOR, 200));
@@ -332,38 +327,39 @@ public class FarmPanel extends JPanel {
 			g.setColor(type != null ? (space.isValid() ? type.getContrastingColor() : Color.RED) : Color.BLACK);
 			String text = count + "/" + space.getMaxCapacity();
 			g.drawString(text, realPos.x + S - 5 * M, realPos.y + S - 2 * M);
+		}
 
-			if (count == 0 && farm.getLooseAnimals().size() > 0) {
-				g.setColor(Color.BLACK);
-				g.setStroke(MOVABLE_STROKE);
+		if (space.getMaxCapacity() > count && availableAnimals.size() > 0) {
+			// can add more - show "area"
+			AffineTransform tr = AffineTransform.getTranslateInstance(realPos.x, realPos.y);
+			Area r = animalArea.createTransformedArea(tr);
+			g.setColor(makeTranslucent(player.getColor().getRealColor(), 120));
+			g.fill(r);
+			if (count == 0) {
+				// no animals present - show options
 				int typeCount = availableAnimals.size();
-				if (typeCount > 0) {
-					AffineTransform tr = AffineTransform.getTranslateInstance(realPos.x, realPos.y);
-					Area r = animalArea.createTransformedArea(tr);
-					g.setColor(makeTranslucent(player.getColor().getRealColor(), 120));
-					g.fill(r);
-					for (int i = 0; i < typeCount; i++) {
-						Animal t = availableAnimals.get(i);
-
-						//						Area r = animalAreas[typeCount - 1][i].createTransformedArea(tr);
-						//						g.setColor(makeTranslucent(t.getColor(), 180));
-						//						g.fill(r);
-
-						Point p = new Point(animalPositions[typeCount - 1][i]);
-						p.translate(realPos.x, realPos.y);
-						BufferedImage img = AgriImages.getAnimalImage(t, ImgSize.MEDIUM);
-						//						BufferedImage img = AgriImages.getAnimalOutlineImage(t);
-						int w = img.getWidth(), h = img.getHeight();
-						g.drawImage(img, p.x - w / 2, p.y - h / 2, w, h, null);
-
-						g.setColor(Color.BLACK);
-						g.setStroke(NORMAL_STROKE);
-						for (Line2D line : animalDividers[typeCount - 1]) {
-							g.draw(tr.createTransformedShape(line));
-						}
+				for (int i = 0; i < typeCount; i++) {
+					Animal t = availableAnimals.get(i);
+					Point p = new Point(animalPositions[typeCount - 1][i]);
+					p.translate(realPos.x, realPos.y);
+					BufferedImage img = AgriImages.getAnimalImage(t, ImgSize.MEDIUM);
+					//						BufferedImage img = AgriImages.getAnimalOutlineImage(t);
+					int w = img.getWidth(), h = img.getHeight();
+					g.drawImage(img, p.x - w / 2, p.y - h / 2, w, h, null);
+					
+					g.setColor(Color.BLACK);
+					g.setStroke(NORMAL_STROKE);
+					for (Line2D line : animalDividers[typeCount - 1]) {
+						g.draw(tr.createTransformedShape(line));
 					}
-				}
+				}				
 			}
+		}
+		if (count > 0) {
+			// show present animals
+			BufferedImage img = AgriImages.getAnimalImage(type, ImgSize.BIG);
+			int w = img.getWidth(), h = img.getHeight();
+			g.drawImage(img, realPos.x + (S - w) / 2, realPos.y + (S - h) / 2, w, h, null);
 		}
 	}
 
@@ -376,7 +372,7 @@ public class FarmPanel extends JPanel {
 			g.drawImage(img, realPos.x + S - 6 * M, realPos.y + 2 * M + 2, img.getWidth(), img.getHeight(), null);
 		}
 
-		if (isActive(pos, Purchasable.TROUGH, hasTrough)) {
+		if (isActiveTrough(pos, hasTrough)) {
 			troughShape.translate(realPos.x, realPos.y);
 			g.setColor(makeTranslucent(player.getColor().getRealColor(), 140));
 			g.fill(troughShape);
@@ -384,14 +380,13 @@ public class FarmPanel extends JPanel {
 		}
 	}
 
-	private void drawBuilding(Graphics2D g, Point pos, Building building, List<Animal> availableAnimals) {
+	private void drawBuilding(Graphics2D g, Point pos, Space space, Building building, List<Animal> availableAnimals) {
 		Point realPos = toRealPos(pos);
 		Rectangle r = new Rectangle(buildingRect);
 		r.translate(realPos.x, realPos.y);
 
 		if (building != null) {
 			BuildingType type = building.getType();
-
 			BufferedImage img = null;
 			switch (type) {
 			case COTTAGE:
@@ -411,13 +406,13 @@ public class FarmPanel extends JPanel {
 			}
 		}
 
-		if (isActive(pos, Purchasable.BUILDING, building != null)) {
+		if (isActiveBuilding(pos, space)) {
 			g.setColor(makeTranslucent(player.getColor().getRealColor(), 120));
-			if (availableAnimals.size() > 0) {
-				g.fill(AffineTransform.getTranslateInstance(realPos.x, realPos.y).createTransformedShape(buildingRect));
-			} else {
-				g.fill(r);
-			}
+//			if (availableAnimals.size() > 0) {
+//				g.fill(AffineTransform.getTranslateInstance(realPos.x, realPos.y).createTransformedShape(buildingRect));
+//			} else {
+			g.fill(r);
+//			}
 		}
 
 	}
@@ -445,14 +440,20 @@ public class FarmPanel extends JPanel {
 		}
 	}
 
-	private boolean isActive(Point pos, Purchasable type, boolean occupied) {
-		return active && farm.getActiveType() == type
-				&& ((!occupied && farm.getUnused(type) > 0) || farm.isActiveSpot(pos, type));
+	private boolean isActiveTrough(Point pos, boolean hasTrough) {
+		return active && farm.getActiveType() == Purchasable.TROUGH
+				&& ((!hasTrough && farm.getUnused(Purchasable.TROUGH) > 0) || farm.isActiveSpot(pos, Purchasable.TROUGH));
 	}
 
-	private boolean isActiveFence(Point pos, Dir d, boolean occupied) {
+	private boolean isActiveBuilding(Point pos, Space space) {
+		Building topUnused = farm.getUnusedBuildings().isEmpty() ? null : farm.getUnusedBuildings().peek();
+		return active && farm.getActiveType() == Purchasable.BUILDING
+				&& ((topUnused != null && topUnused.canBuildAt(space)) || farm.isActiveSpot(pos, Purchasable.BUILDING));
+	}
+
+	private boolean isActiveFence(Point pos, Dir d, boolean hasBorder) {
 		return active && farm.getActiveType() == Purchasable.FENCE
-				&& ((!occupied && farm.getUnused(Purchasable.FENCE) > 0) || farm.isActiveSpotForFence(pos, d));
+				&& ((!hasBorder && farm.getUnused(Purchasable.FENCE) > 0) || farm.isActiveSpotForFence(pos, d));
 	}
 
 	private void drawLooseAnimals(Graphics2D g) {

@@ -17,6 +17,8 @@
 
 #Nice to have#
 
+	show real quantities of action resources
+	show real quantities of farm animals
 	sk localization
 	language picker
 	single player

@@ -63,9 +63,9 @@ public abstract class Building extends Space {
 		return true;
 	}
 
-	public boolean canBuildAt(Space building) {
+	public boolean canBuildAt(Space space) {
 		// override for buildings that can be only upgraded
-		return building instanceof Pasture;
+		return space instanceof Pasture;
 	}
 
 	public void buildAt(Space space) {

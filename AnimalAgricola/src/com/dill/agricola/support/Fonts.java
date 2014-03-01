@@ -15,15 +15,22 @@ public class Fonts {
 	public static final Font ACTION_NUMBER_FONT = CALIBRI.deriveFont(18f);
 	public static final Font ACTION_TEXT_FONT = CALIBRI.deriveFont(12f);
 	
-//	public static final Font BUILDING_FONT = CALIBRI.deriveFont(Font.PLAIN).deriveFont(20f);
 	public static final Font BUILDING_FONT = DOMNICAN.deriveFont(Font.PLAIN).deriveFont(20f);
+	public static final Font BUILDING_FONT2 = CALIBRI.deriveFont(Font.PLAIN).deriveFont(20f);
 	
 	public static void updateFontToFit(Graphics2D g, String text, int width) {
 		Font font = g.getFont();
 		FontMetrics fm = g.getFontMetrics();
 		int size = font.getSize();
+		String[] lines = text.split("[\r\n]+");
+		String longestLine = lines[0];
+		for (String line : lines) {
+			if (line.length() > longestLine.length()) {
+				longestLine = line;
+			}
+		}
 
-		while (fm.stringWidth(text) > width) {
+		while (fm.stringWidth(longestLine) > width) {
 			size--;
 			font = font.deriveFont((float)size);
 			fm = g.getFontMetrics(font);

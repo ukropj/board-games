@@ -360,7 +360,7 @@ public class Farm extends SimpleObservable {
 		return null;
 	}
 
-	public List<Building> getUnusedBuildings() {
+	public Stack<Building> getUnusedBuildings() {
 		return unusedBuildings;
 	}
 

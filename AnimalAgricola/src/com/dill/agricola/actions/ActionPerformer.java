@@ -45,12 +45,12 @@ public class ActionPerformer {
 		}
 		
 		onceDone = action.doOnce(player);
-		if (onceDone) {
+		if (onceDone || canDoMore()) {
 			player.spendWorker();
 			player.notifyObservers(ChangeType.ACTION_DO);
 			return true;
 		}
-		return canDoMore();
+		return false;
 	}
 	
 	public boolean canDoMore() {

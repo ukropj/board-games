@@ -14,7 +14,7 @@ public class HalfTimberedHouse extends Building {
 		super(BuildingType.HALF_TIMBERED_HOUSE, 5, 2);
 	}
 
-	public boolean canBuildAt(Space building) {
-		return building instanceof Cottage;
+	public boolean canBuildAt(Space space) {
+		return space instanceof Cottage;
 	}
 }
