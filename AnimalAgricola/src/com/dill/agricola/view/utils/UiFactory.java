@@ -23,6 +23,7 @@ import com.dill.agricola.common.Dir;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.Material;
+import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.support.Fonts;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
 
@@ -81,8 +82,13 @@ public class UiFactory {
 		Icon icon = AgriImages.getMaterialIcon(type);
 		return createGeneralLabel(count, icon, labelStyle);
 	}
+	
+	public static JLabel createPurchasableLabel(Purchasable type, int count, int labelStyle) {
+		Icon icon = AgriImages.getPurchasableIcon(type);
+		return createGeneralLabel(count, icon, labelStyle);
+	}
 
-	private static JLabel createGeneralLabel(int count, Icon icon, int labelStyle) {
+	public static JLabel createGeneralLabel(int count, Icon icon, int labelStyle) {
 		String text = null;
 		switch (labelStyle) {
 		case NO_NUMBER:

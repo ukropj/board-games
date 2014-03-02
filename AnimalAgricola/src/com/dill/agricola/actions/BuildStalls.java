@@ -1,6 +1,7 @@
 package com.dill.agricola.actions;
 
 import com.dill.agricola.GeneralSupply;
+import com.dill.agricola.GeneralSupply.Supplyable;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.buildings.Stall;
 import com.dill.agricola.model.types.ActionType;
@@ -13,11 +14,11 @@ public class BuildStalls extends AbstractAction {
 	}
 	
 	public boolean canPerform(Player player) {
-		return super.canPerform(player) && GeneralSupply.getStallsLeft() > 0 && player.canPay(Stall.COST);
+		return super.canPerform(player) && GeneralSupply.getLeft(Supplyable.STALL) > 0 && player.canPay(Stall.COST);
 	}
 
 	public boolean doOnce(Player player) {
-		if (GeneralSupply.getStallsLeft() > 0) {
+		if (GeneralSupply.getLeft(Supplyable.STALL) > 0) {
 			Stall stall = GeneralSupply.useStall();
 			boolean done = player.purchaseBuilding(stall, Stall.COST);
 			if (done) {
@@ -42,6 +43,6 @@ public class BuildStalls extends AbstractAction {
 	}
 
 	public String toString() {
-		return super.toString() + " (" + GeneralSupply.getStallsLeft() + " left)<br>max 1 for " + Stall.COST;
+		return super.toString() + " (" + GeneralSupply.getLeft(Supplyable.STALL) + " left)<br>max 1 for " + Stall.COST;
 	}
 }

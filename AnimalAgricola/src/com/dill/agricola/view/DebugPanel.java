@@ -17,20 +17,23 @@ import com.dill.agricola.model.buildings.Stall;
 import com.dill.agricola.model.buildings.StorageBuilding;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.Material;
+import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.model.types.Purchasable;
 
 @SuppressWarnings("serial")
 public class DebugPanel extends JPanel {
 
+	private Player[] players;
 	private Player currentPlayer;
 	
-	public DebugPanel() {
+	public DebugPanel(Player[] players) {
+		this.players = players;
 		setLayout(new GridLayout(2, 0));
 		initDebugActions();
 	}
 	
-	public void setCurrentPlayer(Player currentPlayer) {
-		this.currentPlayer = currentPlayer;
+	public void setCurrentPlayer(PlayerColor currentPlayer) {
+		this.currentPlayer = players[currentPlayer.ordinal()];
 	}
 	
 	private void initDebugActions() {
@@ -159,7 +162,8 @@ public class DebugPanel extends JPanel {
 		});
 		createDebugButton("*Score*", new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(currentPlayer.getColor() + " score: " + currentPlayer.getScore());
+				ScoreDialog sd = new ScoreDialog(players, null);
+				sd.setVisible(true);
 			}
 		});
 	}

@@ -57,6 +57,12 @@ public class Game {
 		players[PlayerColor.RED.ordinal()] = new Player(PlayerColor.RED);
 
 		board.init(this);
+		if (Main.DEBUG) {
+			board.buildDebugPanel(players);
+		}
+		board.pack();
+		board.setVisible(true);
+		board.setLocationRelativeTo(null);
 	}
 
 	public Player getPlayer(PlayerColor color) {

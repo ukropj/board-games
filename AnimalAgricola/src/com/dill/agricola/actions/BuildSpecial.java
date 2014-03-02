@@ -11,6 +11,7 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
 import com.dill.agricola.GeneralSupply;
+import com.dill.agricola.GeneralSupply.Supplyable;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Building;
 import com.dill.agricola.model.Player;
@@ -56,7 +57,7 @@ public class BuildSpecial extends AbstractAction {
 	}
 
 	public boolean canPerform(Player player) {
-		return super.canPerform(player) && GeneralSupply.getBuildingsLeft().size() > 0;
+		return super.canPerform(player) && GeneralSupply.getLeft(Supplyable.SPECIAL_BUILDING) > 0;
 	}
 
 	private BuildingType chooseBuilding(Player player) {

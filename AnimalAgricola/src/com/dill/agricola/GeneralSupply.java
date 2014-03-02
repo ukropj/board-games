@@ -17,12 +17,16 @@ import com.dill.agricola.model.types.BuildingType;
 
 public class GeneralSupply {
 
+	public static enum Supplyable {
+		TROUGH, EXTENSION, STALL, SPECIAL_BUILDING;
+	}
+
 	public final static int MAX_TROUGHS = 10;
-	public final static Integer[] EXTS = {0,1,2,3};
-	public final static Stall[] STALLS = {new Stall(0), new Stall(1), new Stall(2), new Stall(3)};
-	
-	private final static List<BuildingType> SPECIAL_BUILDINGS_TYPES = Arrays.asList(new BuildingType[]{BuildingType.HALF_TIMBERED_HOUSE, 
-			BuildingType.STORAGE_BUILDING, BuildingType.SHELTER, BuildingType.OPEN_STABLES});
+	public final static Integer[] EXTS = { 0, 1, 2, 3 };
+	public final static Stall[] STALLS = { new Stall(0), new Stall(1), new Stall(2), new Stall(3) };
+
+	private final static List<BuildingType> SPECIAL_BUILDINGS_TYPES = Arrays.asList(new BuildingType[] { BuildingType.HALF_TIMBERED_HOUSE,
+			BuildingType.STORAGE_BUILDING, BuildingType.SHELTER, BuildingType.OPEN_STABLES });
 	private final static Map<BuildingType, Building> SPECIAL_BUILDINGS = new EnumMap<BuildingType, Building>(BuildingType.class);
 
 	private static final Stack<Stall> stallsLeft = new Stack<Stall>();
@@ -30,7 +34,7 @@ public class GeneralSupply {
 	private static final Stack<Integer> extsLeft = new Stack<Integer>();
 	private static int lastUsedExt = 0;
 	private static final List<BuildingType> buildingsLeft = new ArrayList<BuildingType>();
-	
+
 	static {
 		SPECIAL_BUILDINGS.put(BuildingType.HALF_TIMBERED_HOUSE, new HalfTimberedHouse());
 		SPECIAL_BUILDINGS.put(BuildingType.STORAGE_BUILDING, new StorageBuilding());
@@ -48,16 +52,19 @@ public class GeneralSupply {
 		buildingsLeft.addAll(SPECIAL_BUILDINGS_TYPES);
 	}
 
-	public static int getTroughsLeft() {
-		return troughsLeft;
-	}
-	
-	public static int getStallsLeft() {
-		return stallsLeft.size();
-	}
-
-	public static int getExpansionsLeft() {
-		return extsLeft.size();
+	public static int getLeft(Supplyable type) {
+		switch (type) {
+		case EXTENSION:
+			return extsLeft.size();
+		case TROUGH:
+			return troughsLeft;
+		case STALL:
+			return stallsLeft.size();
+		case SPECIAL_BUILDING:
+			return buildingsLeft.size();
+		default:
+			throw new IllegalArgumentException();
+		}
 	}
 
 	public static List<BuildingType> getBuildingsLeft() {
@@ -65,9 +72,9 @@ public class GeneralSupply {
 	}
 
 	public static void useTrough(boolean use) {
-		troughsLeft += use ? 1 : -1;
+		troughsLeft += use ? -1 : 1;
 	}
-	
+
 	public static Stall useStall() {
 		return stallsLeft.pop();
 	}
@@ -80,7 +87,7 @@ public class GeneralSupply {
 		if (use) {
 			lastUsedExt = extsLeft.pop();
 		} else {
-			extsLeft.push(lastUsedExt);			
+			extsLeft.push(lastUsedExt);
 		}
 	}
 

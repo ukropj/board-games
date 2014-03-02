@@ -47,18 +47,18 @@ public class PlayerBoard extends JPanel implements Observer {
 		setLayout(new GridBagLayout());
 		setBorder(new LineBorder(Color.GRAY, 1));
 
-		initTopPanel();
-		initFarmPanel();
-		initFirstPanel();
-		initMaterialPanel();
-		initAnimalPanel();
-		initWorkerPanel();
+		buildTopPanel();
+		buildFarmPanel();
+		buildFirstPanel();
+		buildMaterialPanel();
+		buildAnimalPanel();
+		buildWorkerPanel();
 
 		updatePlayer();
 		updateFarm();
 	}
 
-	private void initTopPanel() {
+	private void buildTopPanel() {
 		PlayerColor color = player.getColor();
 		playerLabel = UiFactory.createLabel(Msg.get("player", color.ordinal() + 1));
 		playerLabel.setFont(playerLabel.getFont().deriveFont(20.0f));
@@ -73,7 +73,7 @@ public class PlayerBoard extends JPanel implements Observer {
 		add(playerLabel, c);
 	}
 	
-	private void initFarmPanel() {
+	private void buildFarmPanel() {
 		farmPanel = new FarmPanel(player);
 		// farmPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		//		addBorder(farmPanel);
@@ -83,7 +83,7 @@ public class PlayerBoard extends JPanel implements Observer {
 		add(farmPanel, c);
 	}
 
-	private void initFirstPanel() {
+	private void buildFirstPanel() {
 		JPanel p = new JPanel();
 		p.setPreferredSize(new Dimension(50, 0));
 		firstLabel = UiFactory.createLabel(AgriImages.getFirstTokenIcon(player.getColor().ordinal(), ImgSize.BIG));
@@ -98,7 +98,7 @@ public class PlayerBoard extends JPanel implements Observer {
 		add(p, c);
 	}
 
-	private void initMaterialPanel() {
+	private void buildMaterialPanel() {
 		JPanel materials = UiFactory.createFlowPanel(15, 0);
 		for (Material m : Material.values()) {
 			JLabel l = UiFactory.createMaterialLabel(m, 0, UiFactory.ICON_FIRST);
@@ -115,7 +115,7 @@ public class PlayerBoard extends JPanel implements Observer {
 		add(materials, c);
 	}
 
-	private void initAnimalPanel() {
+	private void buildAnimalPanel() {
 		JPanel animals = UiFactory.createFlowPanel(15, 0);
 		for (Animal a : Animal.values()) {
 			JLabel l = UiFactory.createAnimalLabel(a, 0, UiFactory.ICON_FIRST);
@@ -132,7 +132,7 @@ public class PlayerBoard extends JPanel implements Observer {
 		add(animals, c);
 	}
 
-	private void initWorkerPanel() {
+	private void buildWorkerPanel() {
 		JPanel workers = UiFactory.createVerticalPanel();
 		workers.setPreferredSize(new Dimension(50, 0));
 		for (int i = 0; i < workerLabels.length; i++) {

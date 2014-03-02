@@ -1,6 +1,7 @@
 package com.dill.agricola.actions;
 
 import com.dill.agricola.GeneralSupply;
+import com.dill.agricola.GeneralSupply.Supplyable;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
@@ -16,11 +17,11 @@ public class BuildTrough extends PurchaseAction {
 	}
 	
 	public boolean canPerform(Player player) {
-		return !isUsed() && GeneralSupply.getTroughsLeft() > 0;
+		return !isUsed() && GeneralSupply.getLeft(Supplyable.TROUGH) > 0;
 	}
 
 	public boolean doOnce(Player player) {
-		if (GeneralSupply.getTroughsLeft() > 0) {
+		if (GeneralSupply.getLeft(Supplyable.TROUGH) > 0) {
 			player.purchase(Purchasable.TROUGH);
 			player.setActiveType(Purchasable.TROUGH);
 			GeneralSupply.useTrough(true);
@@ -38,9 +39,17 @@ public class BuildTrough extends PurchaseAction {
 		}
 		return false;
 	}
+	
+	public boolean doo(Player player) {
+		return doOnce(player);
+	}
+
+	public boolean undo(Player player) {
+		return undoOnce(player);
+	}
 
 	public String toString() {
-		return "<html>BuildTrough" + " (" + GeneralSupply.getTroughsLeft() + " left)<br>1 free, unlimited 1 for " + COST;
+		return "<html>BuildTrough" + " (" + GeneralSupply.getLeft(Supplyable.TROUGH) + " left)<br>1 free, unlimited 1 for " + COST;
 	}
 
 }

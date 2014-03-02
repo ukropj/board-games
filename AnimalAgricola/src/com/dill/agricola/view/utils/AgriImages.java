@@ -15,6 +15,7 @@ import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Material;
 import com.dill.agricola.model.types.PlayerColor;
+import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.support.Fonts;
 
 public class AgriImages {
@@ -105,10 +106,6 @@ public class AgriImages {
 		return exts[id];
 	}
 
-	public static ImageIcon getExtensionIcon(int id) {
-		return new ImageIcon(Images.getBestScaledInstance(getExtensionImage(0), 0.03f));
-	}
-
 	public static BufferedImage getTroughImage(ImgSize size) {
 		if (troughs[size.ordinal()] == null) {
 			BufferedImage img = Images.createImage("trough");
@@ -116,10 +113,6 @@ public class AgriImages {
 			troughs[size.ordinal()] = img;
 		}
 		return troughs[size.ordinal()];
-	}
-
-	public static ImageIcon getTroughIcon() {
-		return new ImageIcon(AgriImages.getTroughImage(ImgSize.MEDIUM));
 	}
 
 	/*
@@ -308,7 +301,7 @@ public class AgriImages {
 		BufferedImage img = getBuildingImage(type);
 		switch (size) {
 		case SMALL:
-			img = Images.getBestScaledInstance(img, 0.1f);
+			img = Images.getBestScaledInstance(img, 0.15f);
 			break;
 		case MEDIUM:
 			img = Images.getBestScaledInstance(img, 0.3f);
@@ -320,6 +313,21 @@ public class AgriImages {
 		return new ImageIcon(img);
 	}
 
+	public static ImageIcon getPurchasableIcon(Purchasable type) {
+		switch (type) {
+		case BUILDING:
+			return getBuildingIcon(BuildingType.HALF_TIMBERED_HOUSE, ImgSize.SMALL);
+		case EXTENSION:
+			return new ImageIcon(Images.getBestScaledInstance(getExtensionImage(0), 0.03f));
+		case FENCE:
+			return new ImageIcon(Images.getBestScaledInstance(AgriImages.getFenceImage(Dir.N), 0.5f));
+		case TROUGH:
+			return new ImageIcon(AgriImages.getTroughImage(ImgSize.MEDIUM));
+		default:
+			return null;
+		}
+	}
+	
 	public static BufferedImage getArrowImage(Dir d, boolean red, ImgSize size) {
 		Map<Dir, BufferedImage> map = null;
 		float ratio = 1.0f;

@@ -1,6 +1,5 @@
 #TODO#
 
-	building texts
 	building display
 	remaining stuff count
 	nicer +/- buttons
@@ -10,6 +9,7 @@
 	round meter
 	animal breeding notification
 	game ending
+	investicate "serial"
 	
 #Bugs#
 

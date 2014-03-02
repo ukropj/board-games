@@ -1,6 +1,7 @@
 package com.dill.agricola.actions;
 
 import com.dill.agricola.GeneralSupply;
+import com.dill.agricola.GeneralSupply.Supplyable;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
@@ -19,7 +20,7 @@ public class Expand extends RefillAction {
 
 	public boolean doOnce(Player player) {
 		super.doOnce(player);
-		if (GeneralSupply.getExpansionsLeft() > 0) {
+		if (GeneralSupply.getLeft(Supplyable.EXTENSION) > 0) {
 			player.purchase(Purchasable.EXTENSION);
 			player.setActiveType(Purchasable.EXTENSION);
 			GeneralSupply.useExtension(true);
@@ -45,7 +46,7 @@ public class Expand extends RefillAction {
 	}
 
 	public String toString() {
-		return "<html>" + Namer.getName(this) + " (" + GeneralSupply.getExpansionsLeft() + " left)" + "<br>+" + materials;
+		return "<html>" + Namer.getName(this) + " (" + GeneralSupply.getLeft(Supplyable.EXTENSION) + " left)" + "<br>+" + materials;
 	}
 
 }

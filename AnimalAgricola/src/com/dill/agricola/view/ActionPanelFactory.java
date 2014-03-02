@@ -34,6 +34,7 @@ import com.dill.agricola.model.buildings.Stall;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Material;
+import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.UiFactory;
@@ -59,11 +60,11 @@ public class ActionPanelFactory {
 		case THREE_WOOD:
 			createRefillPanel(parent, 1, 0, action, actionButton, null, ThreeWood.REFILL);
 			return;
-		case TWO_STONE:
-			createRefillPanel(parent, 0, 1, action, actionButton, null, TwoStone.REFILL);
-			return;
 		case ONE_STONE:
-			createRefillPanel(parent, 1, 1, action, actionButton, null, OneStone.REFILL);
+			createRefillPanel(parent, 0, 1, action, actionButton, null, OneStone.REFILL);
+			return;
+		case TWO_STONE:
+			createRefillPanel(parent, 1, 1, action, actionButton, null, TwoStone.REFILL);
 			return;
 		case BUILDING_MATERIAL:
 			JPanel bmP = UiFactory.createVerticalPanel();
@@ -81,7 +82,7 @@ public class ActionPanelFactory {
 			fcost.substract(Material.BORDER, 1);
 			JPanel fen1P = UiFactory.createResourcesPanel(fcost, null, UiFactory.X_AXIS);
 			fen1P.add(UiFactory.createArrowLabel(Dir.E, false));
-			fen1P.add(UiFactory.createLabel(Msg.get("build"), AgriImages.getMaterialIcon(Material.BORDER)));
+			fen1P.add(UiFactory.createLabel(AgriImages.getPurchasableIcon(Purchasable.FENCE)));
 			fenP.add(fen1P);
 			actionButton.add(fenP);
 			c.gridx = 1;
@@ -92,14 +93,14 @@ public class ActionPanelFactory {
 			JPanel walP = UiFactory.createVerticalPanel();
 			JPanel freeP = UiFactory.createHorizontalPanel();
 			freeP.add(UiFactory.createLabel("2\u00D7 "));
-			freeP.add(UiFactory.createLabel(Msg.get("build"), AgriImages.getMaterialIcon(Material.BORDER)));
+			freeP.add(UiFactory.createLabel(AgriImages.getPurchasableIcon(Purchasable.FENCE)));
 			walP.add(freeP);
 			walP.add(UiFactory.createLabel(Msg.get("alsoUnlimited")));
 			Materials wcost = new Materials(Walls.COST);
 			wcost.substract(Material.BORDER, 1);
 			JPanel wal1P = UiFactory.createResourcesPanel(wcost, null, UiFactory.X_AXIS);
 			wal1P.add(UiFactory.createArrowLabel(Dir.E, false));
-			wal1P.add(UiFactory.createLabel(Msg.get("build"), AgriImages.getMaterialIcon(Material.BORDER)));
+			wal1P.add(UiFactory.createLabel(AgriImages.getPurchasableIcon(Purchasable.FENCE)));
 			walP.add(wal1P);
 			actionButton.add(walP);
 			c.gridx = 1;
@@ -107,21 +108,33 @@ public class ActionPanelFactory {
 			c.gridwidth = 2;
 			break;
 		case EXPAND:
-			JLabel extP = UiFactory.createLabel("+", AgriImages.getExtensionIcon(0));
+			JLabel extP = UiFactory.createLabel("+", AgriImages.getPurchasableIcon(Purchasable.EXTENSION));
 			createRefillPanel(parent, 1, 3, action, actionButton, extP, Expand.REFILL);
 			return;
 		case TROUGHS:
 			JPanel troP = UiFactory.createVerticalPanel();
-			troP.add(UiFactory.createLabel("+1", AgriImages.getTroughIcon()));
+			troP.add(UiFactory.createLabel("1\u00D7 ", AgriImages.getPurchasableIcon(Purchasable.TROUGH)));
 			troP.add(UiFactory.createLabel(Msg.get("alsoUnlimited")));
 			JPanel tro1P = UiFactory.createResourcesPanel(BuildTrough.COST, null, UiFactory.X_AXIS);
 			tro1P.add(UiFactory.createArrowLabel(Dir.E, false));
-			tro1P.add(UiFactory.createLabel(AgriImages.getTroughIcon()));
+			tro1P.add(UiFactory.createLabel(AgriImages.getPurchasableIcon(Purchasable.TROUGH)));
 			troP.add(tro1P);
 			actionButton.add(troP);
 			c.gridx = 3;
 			c.gridy = 4;
 			break;
+		case MILLPOND:
+			createRefillPanel(parent, 0, 5, action, actionButton, null, Millpond.REFILL, null, Millpond.OTHER_ANIMAL);
+			return;
+		case PIG_AND_SHEEP:
+			createRefillPanel(parent, 1, 5, action, actionButton, null, PigSheep.FIRST_ANIMAL, PigSheep.OTHER_ANIMAL);
+			return;
+		case COW_AND_PIGS:
+			createRefillPanel(parent, 0, 6, action, actionButton, null, CowPigs.FIRST_ANIMAL, CowPigs.OTHER_ANIMAL);
+			return;
+		case HORSE_AND_SHEEP:
+			createRefillPanel(parent, 1, 6, action, actionButton, null, HorseSheep.FIRST_ANIMAL, HorseSheep.OTHER_ANIMAL);
+			return;
 		case STALLS:
 			JPanel stallP = UiFactory.createVerticalPanel();
 			stallP.add(UiFactory.createLabel(Msg.get("once")));
@@ -172,18 +185,6 @@ public class ActionPanelFactory {
 			c.gridy = 8;
 			c.gridwidth = 2;
 			break;
-		case MILLPOND:
-			createRefillPanel(parent, 0, 5, action, actionButton, null, Millpond.REFILL, null, Millpond.OTHER_ANIMAL);
-			return;
-		case PIG_AND_SHEEP:
-			createRefillPanel(parent, 1, 5, action, actionButton, null, PigSheep.FIRST_ANIMAL, PigSheep.OTHER_ANIMAL);
-			return;
-		case COW_AND_PIGS:
-			createRefillPanel(parent, 0, 6, action, actionButton, null, CowPigs.FIRST_ANIMAL, CowPigs.OTHER_ANIMAL);
-			return;
-		case HORSE_AND_SHEEP:
-			createRefillPanel(parent, 1, 6, action, actionButton, null, HorseSheep.FIRST_ANIMAL, HorseSheep.OTHER_ANIMAL);
-			return;
 		default:
 			actionButton.setText(action.toString());
 			return;
@@ -215,7 +216,7 @@ public class ActionPanelFactory {
 		c.gridx = 3*x + 2;
 		c.gridwidth = 1;
 		c.insets = new Insets(5,0,5,5);
-		parent.add(addSupplyPanel(action, button, extraP), c);
+		parent.add(createSupplyPanel(action, button, extraP), c);
 	}
 	
 	private static JPanel createPrefixPanel(Materials materials, Animal animal, Animal otherAnimal) {
@@ -236,7 +237,7 @@ public class ActionPanelFactory {
 		return refillP;
 	}
 	
-	private static JButton addSupplyPanel(Action action, JButton button, JComponent extraP) {
+	private static JButton createSupplyPanel(Action action, JButton button, JComponent extraP) {
 		JPanel actionP = UiFactory.createHorizontalPanel();
 		JPanel supplyP = UiFactory.createResourcesPanel(action.getAccumulatedMaterials(), action.getAccumulatedAnimals(), UiFactory.Y_AXIS);
 		actionP.add(supplyP);
@@ -261,23 +262,5 @@ public class ActionPanelFactory {
 		}
 
 	}
-
-	/*private static class BuildingChangeListener implements StateChangeListener {
-
-		private JPanel buildingPanel;
-
-		public BuildingChangeListener(JPanel buildingPanel) {
-			this.buildingPanel = buildingPanel;
-		}
-
-		public void stateChanges(Action action) {
-			buildingPanel.removeAll();
-			for (BuildingType b : GeneralSupply.getBuildingsLeft()) {
-				buildingPanel.add(new JLabel(Images.getBuildingIcon(b, 40)));
-			}
-
-		}
-
-	}*/
-
+	
 }
