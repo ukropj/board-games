@@ -16,7 +16,8 @@ public class Walls extends PurchaseAction {
 	}
 	
 	public boolean canPerform(Player player) {
-		return !used;
+		// player needs at least one border to do this
+		return !used && player.canPay(new Materials(Material.BORDER)); 
 	}
 
 	public boolean doOnce(Player player) {

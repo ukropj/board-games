@@ -83,7 +83,7 @@ public class AgriImages {
 	public static BufferedImage getFarmImage(int id) {
 		Main.asrtInRange(id, 0, 2, "Invalid img id");
 		if (farmsAndMargins[id] == null) {
-			farmsAndMargins[id] = Images.createImage("farm" + (id + 1));
+			farmsAndMargins[id] = Images.createImage("f_farm" + (id + 1));
 		}
 		return farmsAndMargins[id];
 	}
@@ -92,7 +92,7 @@ public class AgriImages {
 		int id = d == Dir.W ? 0 : 1;
 		int arrId = id + 2;
 		if (farmsAndMargins[arrId] == null) {
-			farmsAndMargins[arrId] = Images.createImage("b" + (id + 1));
+			farmsAndMargins[arrId] = Images.createImage("f_margin" + (id + 1));
 		}
 		return farmsAndMargins[arrId];
 	}
@@ -100,13 +100,13 @@ public class AgriImages {
 	public static BufferedImage getExtensionImage(int id) {
 		Main.asrtInRange(id, 0, exts.length, "Invalid img id");
 		if (exts[id] == null) {
-			exts[id] = Images.createImage("ext" + (id + 1));
+			exts[id] = Images.createImage("f_ext" + (id + 1));
 		}
 		return exts[id];
 	}
 
 	public static ImageIcon getExtensionIcon(int id) {
-		return new ImageIcon(Images.getBestScaledInstance(Images.createImage("ext1"), 0.03f));
+		return new ImageIcon(Images.getBestScaledInstance(getExtensionImage(0), 0.03f));
 	}
 
 	public static BufferedImage getTroughImage(ImgSize size) {
@@ -179,7 +179,7 @@ public class AgriImages {
 		if (map.containsKey(type)) {
 			return map.get(type);
 		} else {
-			BufferedImage img = Images.createImage(type.toString().toLowerCase());
+			BufferedImage img = Images.createImage("a_" + type.toString().toLowerCase());
 			img = Images.getBestScaledInstance(img, ratio);
 			map.put(type, img);
 			return img;
@@ -203,7 +203,7 @@ public class AgriImages {
 
 	public static BufferedImage getMaterialImage(Material type) {
 		if (materials[type.ordinal()] == null) {
-			BufferedImage img = Images.createImage(type.toString().toLowerCase());
+			BufferedImage img = Images.createImage("m_" + type.toString().toLowerCase());
 			img = Images.getBestScaledInstance(img, 0.4f);
 			materials[type.ordinal()] = img;
 			return img;
@@ -225,25 +225,25 @@ public class AgriImages {
 				img = Images.createImage("special");
 				break;*/
 			case STALL:
-				img = Images.createImage("stall1");
+				img = Images.createImage("b_stall1");
 				break;
 			case STABLES:
-				img = Images.createImage("stables1");
+				img = Images.createImage("b_stables1");
 				break;
 			case COTTAGE:
 				img = null;
 				break;
 			case HALF_TIMBERED_HOUSE:
-				img = Images.createImage("half-timbered-house");
+				img = Images.createImage("b_half-timbered-house");
 				break;
 			case STORAGE_BUILDING:
-				img = Images.createImage("storage-building");
+				img = Images.createImage("b_storage-building");
 				break;
 			case SHELTER:
-				img = Images.createImage("shelter");
+				img = Images.createImage("b_shelter");
 				break;
 			case OPEN_STABLES:
-				img = Images.createImage("open-stables");
+				img = Images.createImage("b_open-stables");
 				break;
 			}
 			addBuildingText(type, img);
@@ -254,7 +254,7 @@ public class AgriImages {
 
 	public static BufferedImage getCottageImage(int id) {
 		if (cottages[id] == null) {
-			BufferedImage img = Images.createImage("cottage" + (id + 1));
+			BufferedImage img = Images.createImage("b_cottage" + (id + 1));
 			addBuildingText(BuildingType.COTTAGE, img);
 			cottages[id] = img;
 		}
@@ -263,7 +263,7 @@ public class AgriImages {
 	
 	public static BufferedImage getStallImage(int id) {
 		if (stallsAndStables[id] == null) {
-			BufferedImage img = Images.createImage("stall" + (id + 1));
+			BufferedImage img = Images.createImage("b_stall" + (id + 1));
 			addBuildingText(BuildingType.STALL, img);
 			stallsAndStables[id] = img;
 		}
@@ -273,7 +273,7 @@ public class AgriImages {
 	public static BufferedImage getStableImage(int id) {
 		int arrId = id + 4;
 		if (stallsAndStables[arrId] == null) {
-			BufferedImage img = Images.createImage("stables" + (id + 1));
+			BufferedImage img = Images.createImage("b_stables" + (id + 1));
 			addBuildingText(BuildingType.STABLES, img);
 			//			img = Images.getBestScaledInstance(img, 0.5f);
 			stallsAndStables[arrId] = img;
