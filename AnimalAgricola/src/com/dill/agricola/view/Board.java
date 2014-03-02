@@ -195,7 +195,7 @@ public class Board extends JFrame implements Observer{
 
 	public void update(Observable o, Object arg) {
 		if (arg == ChangeType.FARM_RESIZE && ((getExtendedState() & JFrame.MAXIMIZED_BOTH) != JFrame.MAXIMIZED_BOTH)) {
-			pack();
+			pack(); // TODO not working properly 
 		}
 	}
 

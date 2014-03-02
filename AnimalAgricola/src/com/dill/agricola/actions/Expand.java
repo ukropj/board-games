@@ -17,6 +17,11 @@ public class Expand extends RefillAction {
 	public Expand() {
 		super(ActionType.EXPAND, REFILL);
 	}
+	
+	public void reset() {
+		super.reset();
+		setChanged(); // to update available EXT count
+	}
 
 	public boolean doOnce(Player player) {
 		super.doOnce(player);

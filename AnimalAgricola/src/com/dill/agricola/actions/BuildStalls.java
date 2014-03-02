@@ -13,6 +13,11 @@ public class BuildStalls extends AbstractAction {
 		super(ActionType.STALLS);
 	}
 	
+	public void reset() {
+		super.reset();
+		setChanged();  // to update available stall count
+	}
+	
 	public boolean canPerform(Player player) {
 		return super.canPerform(player) && GeneralSupply.getLeft(Supplyable.STALL) > 0 && player.canPay(Stall.COST);
 	}

@@ -48,6 +48,11 @@ public class BuildSpecial extends AbstractAction {
 	public BuildSpecial() {
 		super(counter++ % 2 == 0 ? ActionType.SPECIAL : ActionType.SPECIAL2);
 	}
+	
+	public void reset() {
+		super.reset();
+		setChanged();  // to update available building count
+	}
 
 	public void init() {
 		super.init();

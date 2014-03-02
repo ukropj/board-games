@@ -16,6 +16,11 @@ public class BuildTrough extends PurchaseAction {
 		super(ActionType.TROUGHS, Purchasable.TROUGH, COST, true);
 	}
 	
+	public void reset() {
+		super.reset();
+		setChanged();  // to update available trough count
+	}
+	
 	public boolean canPerform(Player player) {
 		return !isUsed() && GeneralSupply.getLeft(Supplyable.TROUGH) > 0;
 	}

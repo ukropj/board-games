@@ -18,13 +18,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.dill.agricola.GeneralSupply;
-import com.dill.agricola.GeneralSupply.Supplyable;
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.ActionPerformer;
 import com.dill.agricola.actions.StateChangeListener;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.BuildingType;
-import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
@@ -88,33 +86,19 @@ public class ActionBoard extends JPanel {
 	}
 
 	private void buildGeneralSupplyPanel() {
-		JPanel p = UiFactory.createFlowPanel(15, 0);
-
-		JLabel t = UiFactory.createPurchasableLabel(Purchasable.TROUGH, GeneralSupply.MAX_TROUGHS, UiFactory.ICON_FIRST);
-		actions.get(ActionType.TROUGHS).addChangeListener(new SupplyChangeListener(Supplyable.TROUGH, t));
-		p.add(t);
-		JLabel e = UiFactory.createPurchasableLabel(Purchasable.EXTENSION, GeneralSupply.EXTS.length, UiFactory.ICON_FIRST);
-		actions.get(ActionType.EXPAND).addChangeListener(new SupplyChangeListener(Supplyable.EXTENSION, e));
-		p.add(e);
-		JLabel s = UiFactory.createGeneralLabel(GeneralSupply.STALLS.length, AgriImages.getBuildingIcon(BuildingType.STALL, ImgSize.SMALL),
-				UiFactory.ICON_FIRST);
-		StateChangeListener stallListener = new SupplyChangeListener(Supplyable.STALL, s);
-		actions.get(ActionType.STALLS).addChangeListener(stallListener);
-		actions.get(ActionType.SPECIAL).addChangeListener(stallListener);
-		actions.get(ActionType.SPECIAL2).addChangeListener(stallListener);
-		p.add(s);
-
 		JPanel b = UiFactory.createFlowPanel(5, 0);
+		b.setOpaque(true);
+		b.setBackground(Color.RED);
 		StateChangeListener buildingListener = new BuildingChangeListener(b);
+		buildingListener.stateChanges(null);
 		actions.get(ActionType.SPECIAL).addChangeListener(buildingListener);
 		actions.get(ActionType.SPECIAL2).addChangeListener(buildingListener);
-		p.add(b);
 
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridy = 9;
 		c.gridwidth = 6;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		actionPanel.add(p, c);
+		c.fill = GridBagConstraints.BOTH;
+//		actionPanel.add(b, c);
 	}
 
 	private void buildControlPanel(final ActionListener submitListener) {
@@ -194,6 +178,7 @@ public class ActionBoard extends JPanel {
 		for (Action action : actions.values()) {
 			action.reset();
 		}
+		clearActions();
 	}
 
 	public void initActions() {
@@ -220,22 +205,6 @@ public class ActionBoard extends JPanel {
 		submitB.setEnabled(true);
 	}
 
-	private static class SupplyChangeListener implements StateChangeListener {
-
-		private final Supplyable type;
-		private final JLabel label;
-
-		public SupplyChangeListener(Supplyable type, JLabel label) {
-			this.type = type;
-			this.label = label;
-		}
-
-		public void stateChanges(Action action) {
-			label.setText(String.valueOf(GeneralSupply.getLeft(type)));
-		}
-
-	}
-
 	private static class BuildingChangeListener implements StateChangeListener {
 
 		private JPanel buildingPanel;
@@ -247,7 +216,7 @@ public class ActionBoard extends JPanel {
 		public void stateChanges(Action action) {
 			buildingPanel.removeAll();
 			for (BuildingType b : GeneralSupply.getBuildingsLeft()) {
-				buildingPanel.add(new JLabel(AgriImages.getBuildingIcon(b, ImgSize.SMALL)));
+				buildingPanel.add(new JLabel(AgriImages.getBuildingIcon(b, ImgSize.MEDIUM)));
 			}
 		}
 	}

@@ -1,7 +1,6 @@
 #TODO#
 
 	building display
-	remaining stuff count
 	nicer +/- buttons
 	nicer done/undo buttons
 	animal count font+position
@@ -14,6 +13,7 @@
 #Bugs#
 
 	rewards dialog can be closed without animal 
+	farm resizing after extension is added
 
 #Nice to have#
 
