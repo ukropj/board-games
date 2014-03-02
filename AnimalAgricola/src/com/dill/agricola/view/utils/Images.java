@@ -44,7 +44,7 @@ public class Images {
 				(int) (img.getHeight() * ratio),
 				RenderingHints.VALUE_INTERPOLATION_BILINEAR, higherQuality);
 	}*/
-	
+
 	public static BufferedImage getBestScaledInstance(BufferedImage img, float ratio) {
 		return getScaledInstance(img,
 				(int) (img.getWidth() * ratio),
@@ -57,8 +57,7 @@ public class Images {
 			int targetHeight,
 			Object hint,
 			boolean higherQuality) {
-		int type = (img.getTransparency() == Transparency.OPAQUE) ?
-				BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
+		int type = getImageType(img);
 		BufferedImage ret = (BufferedImage) img;
 		int w, h;
 		if (higherQuality) {
@@ -66,7 +65,7 @@ public class Images {
 			// scale down in multiple passes with drawImage()
 			// until the target size is reached
 			w = Math.max(img.getWidth(), targetWidth);
-			h = Math.max(img.getHeight(),targetHeight);
+			h = Math.max(img.getHeight(), targetHeight);
 		} else {
 			// Use one-step technique: scale directly from original
 			// size to target size with a single drawImage() call
@@ -99,6 +98,11 @@ public class Images {
 		} while (w != targetWidth || h != targetHeight);
 
 		return ret;
+	}
+
+	public static int getImageType(BufferedImage img) {
+		return (img.getTransparency() == Transparency.OPAQUE) ?
+				BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
 	}
 
 }

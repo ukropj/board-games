@@ -31,8 +31,6 @@ import com.dill.agricola.view.utils.UiFactory;
 @SuppressWarnings("serial")
 public class Board extends JFrame implements Observer{
 
-	private final static boolean DEBUG_ON = true;
-
 	private Game game;
 
 	private final ActionPerformer ap = new ActionPerformer();
@@ -88,8 +86,6 @@ public class Board extends JFrame implements Observer{
 		initActionsBoard();
 		initPlayerBoard(PlayerColor.BLUE, BorderLayout.WEST);
 		initPlayerBoard(PlayerColor.RED, BorderLayout.EAST);
-
-		// setExtendedState(JFrame.MAXIMIZED_BOTH);
 	}
 
 	private void initStatusBar() {
@@ -112,7 +108,6 @@ public class Board extends JFrame implements Observer{
 
 	public void buildDebugPanel(Player[] players) {
 		debugPanel = new DebugPanel(players);
-		debugPanel.setVisible(DEBUG_ON);
 		mainPane.add(debugPanel, BorderLayout.SOUTH);
 	}
 
@@ -124,6 +119,8 @@ public class Board extends JFrame implements Observer{
 		statusL.setText(Msg.get("round", roundNo, Game.ROUNDS));
 		actionBoard.initActions();
 		if (Main.DEBUG && roundNo == 1) {
+			actionBoard.initActions();
+			actionBoard.initActions();
 			actionBoard.initActions();
 		}
 	}

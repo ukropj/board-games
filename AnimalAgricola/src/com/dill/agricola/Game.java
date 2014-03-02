@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import com.dill.agricola.actions.Action;
@@ -60,9 +61,10 @@ public class Game {
 		if (Main.DEBUG) {
 			board.buildDebugPanel(players);
 		}
+		board.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		board.pack();
+		//board.setLocationRelativeTo(null);
 		board.setVisible(true);
-		board.setLocationRelativeTo(null);
 	}
 
 	public Player getPlayer(PlayerColor color) {

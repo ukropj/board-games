@@ -1,6 +1,9 @@
 package com.dill.agricola.model.types;
 
 import java.awt.Color;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public enum Animal {
 
@@ -41,6 +44,12 @@ public enum Animal {
 			return 2;
 		}
 		return count - (scoringRanges[2] - 1);
+	}
+
+	public static Animal[] reversedValues() {
+		List<Animal> list = Arrays.asList(Animal.values());
+		Collections.reverse(list);
+		return list.toArray(new Animal[4]);
 	}
 
 	/*public static void main(String[] args) {

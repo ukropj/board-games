@@ -67,7 +67,7 @@ public class BuildSpecial extends AbstractAction {
 
 	private BuildingType chooseBuilding(Player player) {
 		List<JComponent> opts = new ArrayList<JComponent>();
-		List<BuildingType> types = GeneralSupply.getBuildingsLeft();
+		List<BuildingType> types = new ArrayList<BuildingType>(GeneralSupply.getBuildingsLeft());
 		if (types.size() == 0) {
 			System.out.println("No special buildings available");
 			return null;

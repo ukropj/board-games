@@ -39,22 +39,22 @@ import com.dill.agricola.model.types.Material;
 import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.AgriImages;
-import com.dill.agricola.view.utils.UiFactory;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
+import com.dill.agricola.view.utils.UiFactory;
 
 public class ActionPanelFactory {
-	
+
 	// TODO this introduces state, rethink
 	private static JLabel tmpStallSupplyL = null;
 	private static JPanel tmpBuildingSupplyP = null;
-	
+
 	public static void createActionPanel(JPanel parent, Action action, JButton actionButton) {
 		JComponent actionPanel = null;
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
 		c.gridwidth = 3;
 		c.ipadx = c.ipady = 3;
-		c.insets = new Insets(5,5,5,5);
+		c.insets = new Insets(5, 5, 5, 5);
 		c.weighty = 0.5;
 		switch (action.getType()) {
 		case STARTING_ONE_WOOD:
@@ -98,7 +98,7 @@ public class ActionPanelFactory {
 		case WALLS:
 			JPanel walP = UiFactory.createVerticalPanel();
 			JPanel freeP = UiFactory.createHorizontalPanel();
-			freeP.add(UiFactory.createLabel("2\u00D7 "));
+			freeP.add(UiFactory.createLabel(Msg.get("xTimes", 2)));
 			freeP.add(UiFactory.createLabel(AgriImages.getPurchasableIcon(Purchasable.FENCE)));
 			walP.add(freeP);
 			walP.add(UiFactory.createLabel(Msg.get("alsoUnlimited")));
@@ -121,7 +121,7 @@ public class ActionPanelFactory {
 			return;
 		case TROUGHS:
 			JPanel troP = UiFactory.createVerticalPanel();
-			troP.add(UiFactory.createLabel("1\u00D7 ", AgriImages.getPurchasableIcon(Purchasable.TROUGH)));
+			troP.add(UiFactory.createLabel(Msg.get("xTimes", 1), AgriImages.getPurchasableIcon(Purchasable.TROUGH)));
 			troP.add(UiFactory.createLabel(Msg.get("alsoUnlimited")));
 			JPanel tro1P = UiFactory.createResourcesPanel(BuildTrough.COST, null, UiFactory.X_AXIS);
 			tro1P.add(UiFactory.createArrowLabel(Dir.E, false));
@@ -158,7 +158,7 @@ public class ActionPanelFactory {
 			c.gridy = 7;
 			c.gridwidth = 2;
 			c.gridheight = 3;
-			c.weightx = 0.5;
+			c.weightx = 1;
 			break;
 		case STABLES:
 			JPanel staP = UiFactory.createVerticalPanel();
@@ -176,12 +176,13 @@ public class ActionPanelFactory {
 			c.gridy = 7;
 			c.gridwidth = 2;
 			c.gridheight = 3;
-			c.weightx = 0.5;
+			c.weightx = 1;
 			break;
 		case SPECIAL:
 			c.gridx = 4;
 			c.gridy = 8;
-			c.gridwidth = 2;
+//			c.gridwidth = 2;
+			c.weighty = 0;
 //			c.fill = GridBagConstraints.NONE;
 //			c.anchor = GridBagConstraints.CENTER;
 			tmpBuildingSupplyP = UiFactory.createFlowPanel(3, 0);
@@ -193,18 +194,19 @@ public class ActionPanelFactory {
 				action.addChangeListener(new SupplyChangeListener(Supplyable.STALL, tmpStallSupplyL));
 			}
 			c.fill = GridBagConstraints.BOTH;
-			c.weighty = 0;
+			c.weighty = 0.5;
 			c.gridy = 7;
 			break;
 		case SPECIAL2:
 			if (tmpBuildingSupplyP != null) {
-				action.addChangeListener(new BuildingChangeListener(tmpBuildingSupplyP));				
+				action.addChangeListener(new BuildingChangeListener(tmpBuildingSupplyP));
 			}
 			if (tmpStallSupplyL != null) {
 				action.addChangeListener(new SupplyChangeListener(Supplyable.STALL, tmpStallSupplyL));
 			}
 			actionButton.add(UiFactory.createLabel(Msg.get("specBuildLabel")));
-			c.weighty = 0;
+			c.weighty = 0.5;
+			c.gridx = 4;
 			c.gridy = 9;
 			break;
 		default:
@@ -227,24 +229,24 @@ public class ActionPanelFactory {
 			Materials materials, Animal animal, Animal otherAnimal) {
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
-		c.gridx = 3*x;
+		c.gridx = 3 * x;
 		c.gridy = y;
 		c.gridwidth = 2;
 		c.ipadx = c.ipady = 3;
-		c.insets = new Insets(5,5,5,0);
+		c.insets = new Insets(5, 5, 5, 0);
 		c.weightx = 0.6;
 		c.weighty = 0.5;
 		parent.add(createPrefixPanel(materials, animal, otherAnimal), c);
-		c.gridx = 3*x + 2;
+		c.gridx = 3 * x + 2;
 		c.gridwidth = 1;
-		c.insets = new Insets(5,0,5,5);
+		c.insets = new Insets(5, 0, 5, 5);
 		parent.add(createResourcesPanel(action, button, extraP), c);
 	}
-	
+
 	private static JPanel createPrefixPanel(Materials materials, Animal animal, Animal otherAnimal) {
 		JPanel refillP = UiFactory.createHorizontalPanel();
 		refillP.add(Box.createHorizontalGlue());
-		refillP.setBorder(BorderFactory.createMatteBorder(1,1,1,0,Color.GRAY));
+		refillP.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 0, Color.GRAY));
 		Animals animals = animal == null ? null : new Animals(animal, 1);
 		JPanel main = UiFactory.createResourcesPanel(materials, animals, UiFactory.Y_AXIS);
 		refillP.add(main);
@@ -258,7 +260,7 @@ public class ActionPanelFactory {
 		refillP.add(UiFactory.createArrowLabel(Dir.E, true));
 		return refillP;
 	}
-	
+
 	private static JButton createResourcesPanel(Action action, JButton button, JComponent extraP) {
 		JPanel actionP = UiFactory.createHorizontalPanel();
 		JPanel supplyP = UiFactory.createResourcesPanel(action.getAccumulatedMaterials(), action.getAccumulatedAnimals(), UiFactory.Y_AXIS);
@@ -270,7 +272,7 @@ public class ActionPanelFactory {
 		action.addChangeListener(new ResourceChangeListener(supplyP));
 		return button;
 	}
-	
+
 	private static JLabel createSupplyLabel(Action action, Supplyable type) {
 		JLabel l = UiFactory.createLabel(Msg.get("supplyableLeft", GeneralSupply.getLeft(type)));
 //		l.setForeground(Color.GRAY);
@@ -291,7 +293,7 @@ public class ActionPanelFactory {
 		}
 
 	}
-	
+
 	private static class SupplyChangeListener implements StateChangeListener {
 
 		private final Supplyable type;
@@ -307,7 +309,7 @@ public class ActionPanelFactory {
 		}
 
 	}
-	
+
 	private static class BuildingChangeListener implements StateChangeListener {
 
 		private JPanel buildingPanel;
@@ -324,5 +326,4 @@ public class ActionPanelFactory {
 		}
 	}
 
-	
 }

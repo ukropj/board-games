@@ -1,11 +1,13 @@
 package com.dill.agricola;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
+import java.util.TreeSet;
 
 import com.dill.agricola.model.Building;
 import com.dill.agricola.model.buildings.HalfTimberedHouse;
@@ -33,7 +35,7 @@ public class GeneralSupply {
 	private static int troughsLeft;
 	private static final Stack<Integer> extsLeft = new Stack<Integer>();
 	private static int lastUsedExt = 0;
-	private static final List<BuildingType> buildingsLeft = new ArrayList<BuildingType>();
+	private static final Set<BuildingType> buildingsLeft = new TreeSet<BuildingType>();
 
 	static {
 		SPECIAL_BUILDINGS.put(BuildingType.HALF_TIMBERED_HOUSE, new HalfTimberedHouse());
@@ -45,9 +47,11 @@ public class GeneralSupply {
 	public static void reset() {
 		stallsLeft.clear();
 		stallsLeft.addAll(Arrays.asList(STALLS));
+		Collections.shuffle(stallsLeft);
 		troughsLeft = MAX_TROUGHS;
 		extsLeft.clear();
 		extsLeft.addAll(Arrays.asList(EXTS));
+		Collections.shuffle(extsLeft);
 		buildingsLeft.clear();
 		buildingsLeft.addAll(SPECIAL_BUILDINGS_TYPES);
 	}
@@ -67,7 +71,7 @@ public class GeneralSupply {
 		}
 	}
 
-	public static List<BuildingType> getBuildingsLeft() {
+	public static Set<BuildingType> getBuildingsLeft() {
 		return buildingsLeft;
 	}
 

@@ -31,10 +31,11 @@ public class UiFactory {
 
 	public static final int ICON_LAST = 1;
 	public static final int ICON_FIRST = 2;
-	public static final int ICON_LAST_PLUS = 5;
-	public static final int NO_NUMBER = 6;
-	public static final int X_AXIS = 3;
-	public static final int Y_AXIS = 4;
+	public static final int ICON_QUANTITY = 3;
+	public static final int NO_NUMBER = 4;
+	
+	public static final int X_AXIS = 5;
+	public static final int Y_AXIS = 6;
 
 	private UiFactory() {
 	}
@@ -74,12 +75,16 @@ public class UiFactory {
 	}
 
 	public static JLabel createAnimalLabel(Animal type, int count, int labelStyle) {
-		Icon icon = AgriImages.getAnimalIcon(type, ImgSize.MEDIUM);
+		Icon icon = labelStyle == ICON_QUANTITY
+				? AgriImages.getAnimalMultiIcon(type, count, ImgSize.MEDIUM)
+				: AgriImages.getAnimalIcon(type, ImgSize.MEDIUM);
 		return createGeneralLabel(count, icon, labelStyle);
 	}
 
 	public static JLabel createMaterialLabel(Material type, int count, int labelStyle) {
-		Icon icon = AgriImages.getMaterialIcon(type);
+		Icon icon = labelStyle == ICON_QUANTITY
+				? AgriImages.getMaterialMultiIcon(type, count)
+				: AgriImages.getMaterialIcon(type);
 		return createGeneralLabel(count, icon, labelStyle);
 	}
 	
@@ -94,7 +99,7 @@ public class UiFactory {
 		case NO_NUMBER:
 			text = null;
 			break;
-		case ICON_LAST_PLUS:
+		case ICON_QUANTITY:
 			text = "+" + String.valueOf(count);
 			break;
 		default:
@@ -130,16 +135,16 @@ public class UiFactory {
 			for (Material m : Material.values()) {
 				int count = materials.get(m);
 				if (count > 0) {
-					panel.add(createMaterialLabel(m, count, usePlus ? ICON_LAST_PLUS : ICON_LAST));
+					panel.add(createMaterialLabel(m, count, usePlus ? ICON_QUANTITY : ICON_LAST));
 					added++;
 				}
 			}
 		}
 		if (animals != null) {
-			for (Animal a : Animal.values()) {
+			for (Animal a : Animal.reversedValues()) {
 				int count = animals.get(a);
 				if (count > 0) {
-					panel.add(createAnimalLabel(a, count, usePlus ? ICON_LAST_PLUS : ICON_LAST));
+					panel.add(createAnimalLabel(a, count, usePlus ? ICON_QUANTITY : ICON_LAST));
 					added++;
 				}
 			}

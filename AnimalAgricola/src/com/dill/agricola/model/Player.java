@@ -51,8 +51,8 @@ public class Player extends SimpleObservable {
 
 		if (Main.DEBUG) {
 			addMaterial(new Materials(Material.WOOD, 20));
-//			addMaterial(new Materials(Material.STONE, 20));
-//			addMaterial(new Materials(Material.REED, 20));
+			addMaterial(new Materials(Material.STONE, 20));
+			addMaterial(new Materials(Material.REED, 20));
 
 //			purchase(Purchasable.EXTENSION);
 //			purchase(Purchasable.EXTENSION);

@@ -193,6 +193,10 @@ public class AgriImages {
 	public static ImageIcon getAnimalIcon(Animal type, ImgSize size) {
 		return new ImageIcon(getAnimalImage(type, size));
 	}
+	
+	public static ImageIcon getAnimalMultiIcon(Animal type, int count, ImgSize size) {
+		return getMultiIcon(getAnimalImage(type, size), count);
+	}
 
 	public static BufferedImage getMaterialImage(Material type) {
 		if (materials[type.ordinal()] == null) {
@@ -206,6 +210,24 @@ public class AgriImages {
 
 	public static ImageIcon getMaterialIcon(Material type) {
 		return new ImageIcon(getMaterialImage(type));
+	}
+
+	public static ImageIcon getMaterialMultiIcon(Material type, int count) {
+		return getMultiIcon(getMaterialImage(type), count);
+	}
+	
+	public static ImageIcon getMultiIcon(BufferedImage img, int count) {
+		int d = 5;
+		BufferedImage multiImg = new BufferedImage(img.getWidth() + d * (count - 1),
+				img.getHeight(), Images.getImageType(img));
+		Graphics2D g2 = multiImg.createGraphics();
+		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+//		g2.drawImage(img, 0, 0, img.getWidth(), img.getHeight(), null);
+		for (int i = 0; i < count; i++) {
+			g2.drawImage(img, d * (count - 1 - i), 0, img.getWidth(), img.getHeight(), null);
+		}
+		g2.dispose();
+		return new ImageIcon(multiImg);
 	}
 
 	public static BufferedImage getBuildingImage(BuildingType type) {
@@ -253,7 +275,7 @@ public class AgriImages {
 		}
 		return cottages[id];
 	}
-	
+
 	public static BufferedImage getStallImage(int id) {
 		if (stallsAndStables[id] == null) {
 			BufferedImage img = Images.createImage("b_stall" + (id + 1));
@@ -327,7 +349,7 @@ public class AgriImages {
 			return null;
 		}
 	}
-	
+
 	public static BufferedImage getArrowImage(Dir d, boolean red, ImgSize size) {
 		Map<Dir, BufferedImage> map = null;
 		float ratio = 1.0f;
