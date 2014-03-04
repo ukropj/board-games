@@ -1,15 +1,14 @@
 package com.dill.agricola.view;
 
-import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
-import java.util.Observable;
-import java.util.Observer;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
@@ -17,19 +16,19 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 
 import com.dill.agricola.Game;
 import com.dill.agricola.Main;
 import com.dill.agricola.actions.ActionPerformer;
 import com.dill.agricola.model.Player;
-import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.UiFactory;
 
 @SuppressWarnings("serial")
-public class Board extends JFrame implements Observer{
+public class Board extends JFrame/* implements Observer*/{
 
 	private Game game;
 
@@ -49,7 +48,7 @@ public class Board extends JFrame implements Observer{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		mainPane = getContentPane();
-		mainPane.setLayout(new BorderLayout(5, 5));
+		mainPane.setLayout(new GridBagLayout());
 
 		buildMenu();
 	}
@@ -84,31 +83,53 @@ public class Board extends JFrame implements Observer{
 		this.game = game;
 		initStatusBar();
 		initActionsBoard();
-		initPlayerBoard(PlayerColor.BLUE, BorderLayout.WEST);
-		initPlayerBoard(PlayerColor.RED, BorderLayout.EAST);
+		initPlayerBoard(PlayerColor.BLUE, 0);
+		initPlayerBoard(PlayerColor.RED, 2);
 	}
 
 	private void initStatusBar() {
 		statusL = UiFactory.createLabel(Msg.get("round", 0, Game.ROUNDS));
-		mainPane.add(statusL, BorderLayout.NORTH);
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 0;
+		c.gridwidth = 3;
+		c.fill = GridBagConstraints.BOTH;
+		mainPane.add(statusL, c);
 	}
 
-	private void initPlayerBoard(PlayerColor color, String direction) {
+	private void initPlayerBoard(PlayerColor color, int x) {
 		Player player = game.getPlayer(color);
-		player.addObserver(this);
 		PlayerBoard playerBoard = new PlayerBoard(player);
 		playerBoards[color.ordinal()] = playerBoard;
-		mainPane.add(playerBoard, direction);
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = x;
+		c.gridy = 1;
+		c.weightx = 1.0;
+		c.weighty = 1.0;
+		c.fill = GridBagConstraints.BOTH;
+		
+		mainPane.add(new JScrollPane(playerBoard), c);
 	}
 
 	private void initActionsBoard() {
 		actionBoard = new ActionBoard(game.getActions(), ap, game.getSubmitListener());
-		mainPane.add(actionBoard, BorderLayout.CENTER);
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = 1;
+		c.fill = GridBagConstraints.BOTH;
+		
+		mainPane.add(actionBoard, c);
 	}
 
 	public void buildDebugPanel(Player[] players) {
 		debugPanel = new DebugPanel(players);
-		mainPane.add(debugPanel, BorderLayout.SOUTH);
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 2;
+		c.gridwidth = 3;
+		c.fill = GridBagConstraints.BOTH;
+		mainPane.add(debugPanel, c);
 	}
 
 	public void start() {
@@ -119,8 +140,6 @@ public class Board extends JFrame implements Observer{
 		statusL.setText(Msg.get("round", roundNo, Game.ROUNDS));
 		actionBoard.initActions();
 		if (Main.DEBUG && roundNo == 1) {
-			actionBoard.initActions();
-			actionBoard.initActions();
 			actionBoard.initActions();
 		}
 	}
@@ -190,11 +209,14 @@ public class Board extends JFrame implements Observer{
 
 	}
 
-	public void update(Observable o, Object arg) {
+	/*public void update(Observable o, Object arg) {
 		if (arg == ChangeType.FARM_RESIZE && ((getExtendedState() & JFrame.MAXIMIZED_BOTH) != JFrame.MAXIMIZED_BOTH)) {
-			pack(); // TODO not working properly 
+//			pack(); // TODO not working properly 
+			playerBoards[0].revalidate();
+			playerBoards[1].revalidate();
+			System.out.println("revalidated");
 		}
-	}
+	}*/
 
 
 }

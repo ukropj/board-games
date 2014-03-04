@@ -205,7 +205,11 @@ public class FarmPanel extends JPanel {
 	}
 
 	public void paintComponent(Graphics g0) {
+		super.paintComponent(g0);
 		Graphics2D g = (Graphics2D) g0;
+
+//		g.setClip(getVisibleRect());
+
 		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
 		g.setFont(Fonts.FARM_FONT);
@@ -232,6 +236,14 @@ public class FarmPanel extends JPanel {
 
 	public Dimension getPreferredSize() {
 		return new Dimension(X1 + farm.getWidth() * S + X2, H/* Y1 + farm.getHeight() * S + Y2 */);
+	}
+
+	public Dimension getMinimumSize() {
+		return getPreferredSize();
+	}
+
+	public Dimension getMaximumSize() {
+		return getPreferredSize();
 	}
 
 	private void drawFarm(Graphics2D g) {
@@ -346,13 +358,13 @@ public class FarmPanel extends JPanel {
 					//						BufferedImage img = AgriImages.getAnimalOutlineImage(t);
 					int w = img.getWidth(), h = img.getHeight();
 					g.drawImage(img, p.x - w / 2, p.y - h / 2, w, h, null);
-					
+
 					g.setColor(Color.BLACK);
 					g.setStroke(NORMAL_STROKE);
 					for (Line2D line : animalDividers[typeCount - 1]) {
 						g.draw(tr.createTransformedShape(line));
 					}
-				}				
+				}
 			}
 		}
 		if (count > 0) {
@@ -656,10 +668,17 @@ public class FarmPanel extends JPanel {
 
 	}
 
-	/*
-	 * public void showLooseAnimals() { for (JLabel l : looseAnimalLabels) { remove(l); } looseAnimalLabels.clear(); for (Animal type : Animal.values()) { int
-	 * count = farm.getLooseAnimals(type); for (int i = 0; i < count; i++) { looseAnimalLabels.add(SwingUtils.createAnimalLabel(type, 1, SwingUtils.NO_NUMBER));
-	 * } } }
-	 */
+//	public void showLooseAnimals() {
+//		for (JLabel l : looseAnimalLabels) {
+//			remove(l);
+//		}
+//		looseAnimalLabels.clear();
+//		for (Animal type : Animal.values()) {
+//			int count = farm.getLooseAnimals(type);
+//			for (int i = 0; i < count; i++) {
+//				looseAnimalLabels.add(SwingUtils.createAnimalLabel(type, 1, SwingUtils.NO_NUMBER));
+//			}
+//		}
+//	}
 
 }

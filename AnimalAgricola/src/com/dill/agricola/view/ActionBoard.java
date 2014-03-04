@@ -3,7 +3,6 @@ package com.dill.agricola.view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -14,18 +13,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.dill.agricola.GeneralSupply;
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.ActionPerformer;
-import com.dill.agricola.actions.StateChangeListener;
 import com.dill.agricola.model.types.ActionType;
-import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.support.Msg;
-import com.dill.agricola.view.utils.AgriImages;
-import com.dill.agricola.view.utils.AgriImages.ImgSize;
 import com.dill.agricola.view.utils.UiFactory;
 
 @SuppressWarnings("serial")
@@ -74,7 +67,7 @@ public class ActionBoard extends JPanel {
 			ActionPanelFactory.createActionPanel(actionPanel, action, b);
 		}
 
-		buildGeneralSupplyPanel();
+//		buildGeneralSupplyPanel();
 
 		controlPanel = UiFactory.createFlowPanel(5, 0);
 		buildControlPanel(submitListener);
@@ -85,7 +78,7 @@ public class ActionBoard extends JPanel {
 		defaultColor = resetB.getBackground();
 	}
 
-	private void buildGeneralSupplyPanel() {
+	/*private void buildGeneralSupplyPanel() {
 		JPanel b = UiFactory.createFlowPanel(5, 0);
 		b.setOpaque(true);
 		b.setBackground(Color.RED);
@@ -98,8 +91,8 @@ public class ActionBoard extends JPanel {
 		c.gridy = 9;
 		c.gridwidth = 6;
 		c.fill = GridBagConstraints.BOTH;
-//		actionPanel.add(b, c);
-	}
+		actionPanel.add(b, c);
+	}*/
 
 	private void buildControlPanel(final ActionListener submitListener) {
 		submitB = createButton(Msg.get("finishAction"), new ActionListener() {
@@ -204,21 +197,4 @@ public class ActionBoard extends JPanel {
 		}
 		submitB.setEnabled(true);
 	}
-
-	private static class BuildingChangeListener implements StateChangeListener {
-
-		private JPanel buildingPanel;
-
-		public BuildingChangeListener(JPanel buildingPanel) {
-			this.buildingPanel = buildingPanel;
-		}
-
-		public void stateChanges(Action action) {
-			buildingPanel.removeAll();
-			for (BuildingType b : GeneralSupply.getBuildingsLeft()) {
-				buildingPanel.add(new JLabel(AgriImages.getBuildingIcon(b, ImgSize.MEDIUM)));
-			}
-		}
-	}
-
 }
