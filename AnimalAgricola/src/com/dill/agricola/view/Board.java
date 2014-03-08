@@ -99,7 +99,7 @@ public class Board extends JFrame/* implements Observer*/{
 
 	private void initPlayerBoard(PlayerColor color, int x) {
 		Player player = game.getPlayer(color);
-		PlayerBoard playerBoard = new PlayerBoard(player);
+		PlayerBoard playerBoard = new PlayerBoard(player, ap);
 		playerBoards[color.ordinal()] = playerBoard;
 		
 		GridBagConstraints c = new GridBagConstraints();

@@ -13,6 +13,7 @@ import java.util.Observer;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.dill.agricola.actions.ActionPerformer;
 import com.dill.agricola.model.Farm;
 import com.dill.agricola.model.Fencer;
 import com.dill.agricola.model.Player;
@@ -30,6 +31,7 @@ public class PlayerBoard extends JPanel implements Observer {
 
 	private final Player player;
 	private final Farm farm;
+	private final ActionPerformer ap;
 
 	private JLabel playerLabel;
 	private FarmPanel farmPanel;
@@ -38,9 +40,10 @@ public class PlayerBoard extends JPanel implements Observer {
 	private final Map<Animal, JLabel> animalSupply = new EnumMap<Animal, JLabel>(Animal.class);
 	private final JLabel[] workerLabels = new JLabel[Player.MAX_WORKERS];
 
-	public PlayerBoard(Player player) {
+	public PlayerBoard(Player player, ActionPerformer ap) {
 		this.player = player;
 		this.farm = player.getFarm();
+		this.ap = ap;
 		player.addObserver(this);
 
 		setLayout(new GridBagLayout());
@@ -74,7 +77,7 @@ public class PlayerBoard extends JPanel implements Observer {
 	}
 	
 	private void buildFarmPanel() {
-		farmPanel = new FarmPanel(player);
+		farmPanel = new FarmPanel(player, ap);
 
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridy = 1;
@@ -97,8 +100,8 @@ public class PlayerBoard extends JPanel implements Observer {
 		c.weightx = c.weighty = 1.0;
 		c.anchor = GridBagConstraints.LINE_END;
 		c.fill = GridBagConstraints.VERTICAL;
-		first.setOpaque(true);
-		first.setBackground(Color.GREEN);
+//		first.setOpaque(true);
+//		first.setBackground(Color.GREEN);
 		add(first, c);
 	}
 
@@ -117,8 +120,8 @@ public class PlayerBoard extends JPanel implements Observer {
 		c.weightx = c.weighty = 1.0;
 		c.anchor = GridBagConstraints.LINE_START;
 		c.fill = GridBagConstraints.VERTICAL;
-		workers.setOpaque(true);
-		workers.setBackground(Color.BLUE);
+//		workers.setOpaque(true);
+//		workers.setBackground(Color.BLUE);
 		add(workers, c);
 	}
 	

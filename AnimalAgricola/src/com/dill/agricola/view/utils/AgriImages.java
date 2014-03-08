@@ -236,6 +236,8 @@ public class AgriImages {
 		} else {
 			BufferedImage img = null;
 			switch (type) {
+			case EMPTY :
+				return null;
 			/*case BUILDING:
 				img = Images.createImage("special");
 				break;*/
@@ -303,6 +305,9 @@ public class AgriImages {
 		g.setColor(Color.BLACK);
 		// name
 		int x = 46, y = 78, maxw = 160;
+		if (type == BuildingType.COTTAGE) {
+			y -= 2;
+		}
 		Fonts.updateFontToFit(g, type.name, maxw);
 		int w = g.getFontMetrics().stringWidth(type.name);
 		g.drawString(type.name, x + (maxw - w) / 2, y);

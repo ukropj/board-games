@@ -1,10 +1,7 @@
 package com.dill.agricola.common;
 
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
-
-
 
 public class PointUtils {
 	
@@ -12,12 +9,12 @@ public class PointUtils {
 		
 	}
 
-	public static Point getNext(Point point, Dir dir) {
-		if (dir == null) {
-			return point;
+	public static DirPoint getNext(DirPoint pos) {
+		if (pos.dir == null) {
+			return pos;
 		}
-		Point ret = new Point(point);
-		switch (dir) {
+		DirPoint ret = new DirPoint(pos, pos.dir.opposite());
+		switch (pos.dir) {
 		case N:
 			ret.translate(0, -1);
 			break;
@@ -36,25 +33,25 @@ public class PointUtils {
 		return ret;
 	}
 
-	public static List<Point> createGridRange(int minX, int maxX, int minY, int maxY) {
-		List<Point> range = new ArrayList<Point>();
+	public static List<DirPoint> createGridRange(int minX, int maxX, int minY, int maxY) {
+		List<DirPoint> range = new ArrayList<DirPoint>();
 		for (int i = minX; i < maxX; i++) {
 			for (int j = minY; j < maxY; j++) {
-				range.add(new Point(i, j));
+				range.add(new DirPoint(i, j));
 			}
 		}
 		return range;
 	}
 	
-	public static List<Point> createGridRange(int maxX, int maxY) {
+	public static List<DirPoint> createGridRange(int maxX, int maxY) {
 		return createGridRange(0, maxX, 0, maxY);
 	}
 
-	public static boolean isInRange(Point pos, int minX, int maxX, int minY, int maxY) {
+	public static boolean isInRange(DirPoint pos, int minX, int maxX, int minY, int maxY) {
 		return pos!= null && pos.x >= minX && pos.x < maxX && pos.y >= minY && pos.y < maxY;
 	}
 
-	public static boolean isInRange(Point pos, int maxX, int maxY) {
+	public static boolean isInRange(DirPoint pos, int maxX, int maxY) {
 		return isInRange(pos, 0, maxX, 0, maxY);
 	}
 	

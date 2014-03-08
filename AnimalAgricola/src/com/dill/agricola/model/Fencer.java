@@ -1,6 +1,5 @@
 package com.dill.agricola.model;
 
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -8,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.dill.agricola.common.Dir;
+import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.PointUtils;
 
 public class Fencer {
@@ -19,10 +19,10 @@ public class Fencer {
 		int w = farm.getWidth();
 		int h = farm.getHeight();
 		int[][] floodMap = new int[w][h];
-		List<Point> range = PointUtils.createGridRange(w, h);
+		List<DirPoint> range = PointUtils.createGridRange(w, h);
 		List<Dir> dirs = Arrays.asList(Dir.W, Dir.N, Dir.S, Dir.E);
 		// init
-		for (Point pos : range) {
+		for (DirPoint pos : range) {
 			floodMap[pos.x][pos.y] = farm.getSpace(pos).isAlwaysEnclosed() ? 0 : -1;
 		}
 		// calculate pastures and feeders
@@ -32,11 +32,12 @@ public class Fencer {
 		do {
 			changed = false;
 			counter++;
-			for (Point pos : range) {
+			for (DirPoint pos : range) {
 				int current = floodMap[pos.x][pos.y];
 				for (Dir d : dirs) {
-					if (!farm.isClosed(pos, d)) {
-						Point nextPos = PointUtils.getNext(pos, d);
+					DirPoint dpos = new DirPoint(pos, d);
+					if (!farm.isClosed(dpos)) {
+						DirPoint nextPos = PointUtils.getNext(dpos);
 						if (PointUtils.isInRange(nextPos, w, h)) {
 							int next = floodMap[nextPos.x][nextPos.y];
 							if (current < 0) {
@@ -68,7 +69,7 @@ public class Fencer {
 		
 		// one more pass to fill maps
 		Map<Integer, List<Space>> spaceMap = new HashMap<Integer, List<Space>>();
-		for (Point pos : range) {
+		for (DirPoint pos : range) {
 			int pastureNo = floodMap[pos.x][pos.y];
 			if (pastureNo > 0) {
 				Space space = farm.getSpace(pos);
@@ -87,7 +88,7 @@ public class Fencer {
 		
 		// process results
 		boolean farmValid = true;
-		for (Point pos : range) {
+		for (DirPoint pos : range) {
 			int pastureNo = floodMap[pos.x][pos.y];
 			Space space = farm.getSpace(pos);
 			space.setPasture(spaceMap.get(pastureNo));
@@ -98,8 +99,8 @@ public class Fencer {
 	}
 
 	/*private static void print(int[][] map) {
-		List<Point> range = Point.createGridRange(map[0].length, map.length);
-		for (Point pos : range) {
+		List<DirPoint> range = DirPoint.createGridRange(map[0].length, map.length);
+		for (DirPoint pos : range) {
 			System.out.print(map[pos.y][pos.x]);
 			if (pos.y == map.length - 1) {
 				System.out.println();

@@ -39,7 +39,7 @@ public abstract class Building extends Space {
 		this.paidCost = paidCost;
 	}
 	
-	public float getVictoryPoints(Player player) {
+	public float getVictoryDirPoints(Player player) {
 		return vp;
 	}
 

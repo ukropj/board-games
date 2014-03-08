@@ -1,6 +1,5 @@
 package com.dill.agricola.model;
 
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -17,6 +16,7 @@ import com.dill.agricola.common.Dir;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.PointUtils;
 import com.dill.agricola.model.types.Animal;
+import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Purchasable;
 
 public class Farm extends SimpleObservable {
@@ -28,14 +28,9 @@ public class Farm extends SimpleObservable {
 
 	private final Map<Dir, Stack<Integer>> extensions = new EnumMap<Dir, Stack<Integer>>(Dir.class);
 	private final Animals looseAnimals = new Animals();
-	// private final Map<Animal, Integer> animals = new EnumMap<Animal, Integer>(Animal.class);
-
-	private final Map<Purchasable, Integer> unusedStuff = new EnumMap<Purchasable, Integer>(Purchasable.class);
-	private final Stack<Building> unusedBuildings = new Stack<Building>();
 
 	private Purchasable activeType = null;
-	private final Set<Point> activeSpots = new HashSet<Point>();
-	private final Set<DirPoint> activeFenceSpots = new HashSet<DirPoint>();
+	private final Set<DirPoint> activeSpots = new HashSet<DirPoint>();
 
 	private boolean animalsValid = true;
 
@@ -46,14 +41,9 @@ public class Farm extends SimpleObservable {
 		initSpaces(w, h);
 		extensions.put(Dir.E, new Stack<Integer>());
 		extensions.put(Dir.W, new Stack<Integer>());
-		for (Purchasable p : Purchasable.values()) {
-			unusedStuff.put(p, 0);
-		}
-		unusedBuildings.clear();
 		looseAnimals.clear();
 		activeType = null;
 		activeSpots.clear();
-		activeFenceSpots.clear();
 		animalsValid = true;
 	}
 
@@ -87,7 +77,7 @@ public class Farm extends SimpleObservable {
 		if (this.activeType != activeType) {
 			this.activeType = activeType;
 			activeSpots.clear();
-			activeFenceSpots.clear();
+			System.out.println("cleaned " + activeSpots);
 			setChanged();
 		}
 	}
@@ -96,31 +86,135 @@ public class Farm extends SimpleObservable {
 		return activeType;
 	}
 
-	public boolean isActiveSpot(Point pos, Purchasable forType) {
+	public boolean isActiveSpot(DirPoint pos, Purchasable forType) {
 		return activeType == forType && activeSpots.contains(pos);
 	}
 
-	public boolean isActiveSpotForFence(Point pos, Dir dir) {
-		return activeType == Purchasable.FENCE && activeFenceSpots.contains(new DirPoint(pos, dir));
-		// TODO optimize new
+	private void addActiveSpot(DirPoint pos) {
+		activeSpots.add(pos);
+		if (pos.dir != null) {
+			activeSpots.add(PointUtils.getNext(pos));
+		}
+		System.out.println("added " + activeSpots);
 	}
 
-	private boolean addActiveSpot(Point pos) {
-		return activeSpots.add(pos);
-	}
-
-	private void addActiveSpot(Point pos, Dir d) {
-		activeFenceSpots.add(new DirPoint(pos, d));
-		activeFenceSpots.add(new DirPoint(PointUtils.getNext(pos, d), d.opposite()));
-	}
-
-	private void removeActiveSpot(Point pos) {
+	private void removeActiveSpot(DirPoint pos) {
 		activeSpots.remove(pos);
+		if (pos.dir != null) {
+			activeSpots.remove(PointUtils.getNext(pos));
+		}
+		System.out.println("removed " + activeSpots);
 	}
 
-	private void removeActiveSpot(Point pos, Dir d) {
-		activeFenceSpots.remove(new DirPoint(pos, d));
-		activeFenceSpots.remove(new DirPoint(PointUtils.getNext(pos, d), d.opposite()));
+	public boolean has(Purchasable type, DirPoint pos, boolean activeOnly) {
+		if (activeOnly && !isActiveSpot(pos, type)) {
+			return false;
+		}
+		Space space = getSpace(pos);
+
+		switch (type) {
+		case TROUGH:
+			return space != null && space.hasTrough();
+		case FENCE:
+			Space second = getSpace(PointUtils.getNext(pos));
+			return space != null && space.hasBorder(pos.dir) ||
+					second != null && second.hasBorder(pos.dir.opposite());
+		case EXTENSION:
+			return space != null; // not null space is considered farm space i.e. extension
+		case BUILDING:
+			return hasBuilding(pos, null, false); // active already checked
+		}
+		return false;
+	}
+
+	public boolean put(Purchasable type, DirPoint pos) {
+		Space space = getSpace(pos);
+
+		switch (type) {
+		case TROUGH:
+			if (space != null && !has(type, pos, false)) {
+				space.setTrough(true);
+			} else {
+				return false;
+			}
+			break;
+		case FENCE:
+			boolean any = false;
+			if (!has(type, pos, false)) {
+				if (space != null) {
+					space.setBorder(pos.dir, true);
+					any = true;
+				}
+				Space second = getSpace(PointUtils.getNext(pos));
+				if (second != null) {
+					second.setBorder(pos.dir.opposite(), true);
+					any = true;
+				}
+			}
+			if (!any) {
+				return false;
+			}
+			break;
+		case EXTENSION:
+			if (!has(type, pos, false)) {
+				if (!extend(pos.x < 0 ? Dir.W : Dir.E)) {
+					return false;
+				}
+				if (pos.x < 0) {
+					pos.translate(1, 0);
+				}
+			}
+			break;
+		case BUILDING:
+//			return hasBuilding(pos, null, false); // active already checked
+		default:
+			return false;
+		}
+		addActiveSpot(pos);
+		setChanged();
+		return true;
+	}
+
+	public boolean take(Purchasable type, DirPoint pos) {
+		Space space = getSpace(pos);
+
+		switch (type) {
+		case TROUGH:
+			if (has(type, pos, false)) {
+				space.setTrough(false);
+			} else {
+				return false;
+			}
+			break;
+		case FENCE:
+			if (has(type, pos, false)) {
+				if (space != null) {
+					space.setBorder(pos.dir, false);
+				}
+				Space second = getSpace(PointUtils.getNext(pos));
+				if (second != null) {
+					second.setBorder(pos.dir.opposite(), false);
+				}
+			} else {
+				return false;
+			}
+			break;
+		case EXTENSION:
+			if (has(type, pos, false)) {
+				if (!unextend(pos.x == 0 ? Dir.W : Dir.E)) {
+					return false;
+				}
+			}
+			break;
+		case BUILDING:
+//			return hasBuilding(pos, null, false); // active already checked
+		default:
+			return false;
+		}
+
+		removeActiveSpot(pos);
+		setChanged();
+		return true;
 	}
 
 	public List<Integer> getExtensions(Dir d) {
@@ -148,22 +242,18 @@ public class Farm extends SimpleObservable {
 		return used;
 	}
 
-	public boolean moveExtension(Dir target) {
-		Dir source = target.opposite();
-		boolean canUnextend = unextend(source, true);
-		if (canUnextend) {
-			extend(target);
-			return true;
-		} else {
-			return false;
-		}
-	}
+//	public boolean moveExtension(Dir target) {
+//		Dir source = target.opposite();
+//		boolean canUnextend = unextend(source, true);
+//		if (canUnextend) {
+//			extend(target);
+//			return true;
+//		} else {
+//			return false;
+//		}
+//	}
 
-	public boolean extend(Dir d) {
-		if (getUnused(Purchasable.EXTENSION) < 1) {
-			// no extensions available - cannot unextend
-			return false;
-		}
+	private boolean extend(Dir d) {
 		int targetCol;
 		if (d == Dir.E) {
 			// add to right
@@ -172,25 +262,16 @@ public class Farm extends SimpleObservable {
 			// add to left
 			targetCol = 0;
 		} else {
-			throw new IllegalArgumentException("Cannot extend farm in direction" + d);
+			throw new IllegalArgumentException("Cannot extend farm in direction " + d);
 		}
 
 		spaces.add(targetCol, initCol(height));
 		extensions.get(d).push(GeneralSupply.getLastExtensionId());
-		addUnused(Purchasable.EXTENSION, -1);
-		addActiveSpot(new Point(targetCol, 0));
 		width++;
-		// some half fences may need adding
-		/*
-		 * for (Point pos : Point.createGridRange(targetCol, targetCol + 1, 0, height)) { if (hasFence(pos.move(d.opposite()), d)) { putFence(pos,
-		 * d.opposite()); // put again to add new half } }
-		 */
-		setChanged();
-		System.out.println(extensions.get(d));
 		return true;
 	}
 
-	private boolean unextend(Dir d, boolean activeOnly) {
+	private boolean unextend(Dir d) {
 		if (extensions.get(d).isEmpty()) {
 			// no extensions in this direction - cannot unextend
 			return false;
@@ -205,170 +286,45 @@ public class Farm extends SimpleObservable {
 		} else {
 			throw new IllegalArgumentException("Cannot unextend farm in direction" + d);
 		}
-		if (activeOnly && !isActiveSpot(new Point(targetCol, 0), Purchasable.EXTENSION)) {
-			return false;
-		}
 
 		// retrieve fences & animals from removed extension
-		for (Point pos : PointUtils.createGridRange(targetCol, targetCol + 1, 0, height)) {
+		for (DirPoint pos : PointUtils.createGridRange(targetCol, targetCol + 1, 0, height)) {
 			takeAnimals(pos);
 			for (Dir dir : Dir.values()) {
 				if (dir != d.opposite()) { // keep fences on border
-					takeFence(pos, dir, false);
+					take(Purchasable.FENCE, new DirPoint(pos, dir));
 				}
 			}
 		}
 		spaces.remove(targetCol);
 		extensions.get(d).pop();
-		addUnused(Purchasable.EXTENSION, 1);
-		removeActiveSpot(new Point(targetCol, 0));
 		width--;
-
-		setChanged();
 		return true;
 	}
 
-	public boolean hasFence(Point pos, Dir d, boolean activeOnly) {
-		if (activeOnly && !isActiveSpotForFence(pos, d)) {
-			return false;
-		}
+	public boolean isClosed(DirPoint pos) {
 		Space first = getSpace(pos);
-		Space second = getSpace(PointUtils.getNext(pos, d));
-		return first != null && first.hasBorder(d) || second != null && second.hasBorder(d.opposite());
+		Space second = getSpace(PointUtils.getNext(pos));
+		return first != null && (first.isAlwaysEnclosed() || first.hasBorder(pos.dir)) //
+				|| second != null && (second.isAlwaysEnclosed() || second.hasBorder(pos.dir.opposite()));
 	}
 
-	public boolean isClosed(Point pos, Dir d) {
-		Space first = getSpace(pos);
-		Space second = getSpace(PointUtils.getNext(pos, d));
-		return first != null && (first.isAlwaysEnclosed() || first.hasBorder(d)) //
-				|| second != null && (second.isAlwaysEnclosed() || second.hasBorder(d.opposite()));
-	}
-
-	public boolean putFence(Point pos, Dir d) {
-		if (getUnused(Purchasable.FENCE) < 1) {
-			return false;
-		}
-		boolean done = false;
-		Space first = getSpace(pos);
-		if (first != null) {
-			done = first.setBorder(d, true);
-		}
-		Space second = getSpace(PointUtils.getNext(pos, d));
-		if (second != null) {
-			done = second.setBorder(d.opposite(), true) || done;
-		}
-		if (done) {
-			addUnused(Purchasable.FENCE, -1);
-			addActiveSpot(pos, d);
-			setChanged();
-		}
-		return done;
-	}
-
-	public boolean takeFence(Point pos, Dir d, boolean activeOnly) {
-		if (activeOnly && !isActiveSpotForFence(pos, d)) {
-			return false;
-		}
-		boolean done = false;
-		Space first = getSpace(pos);
-		if (first != null) {
-			done = first.setBorder(d, false);
-		}
-		Space second = getSpace(PointUtils.getNext(pos, d));
-		if (second != null) {
-			done = second.setBorder(d.opposite(), false) || done;
-		}
-		if (done) {
-			addUnused(Purchasable.FENCE, 1);
-			removeActiveSpot(pos, d);
-			setChanged();
-		}
-		return done;
-	}
-
-	public void toggleFence(Point pos, Dir d) {
-		if (hasFence(pos, d, true)) {
-			takeFence(pos, d, false); // active already checked
-		} else {
-			putFence(pos, d);
-		}
-	}
-
-	public boolean hasTrough(Point pos, boolean activeOnly) {
-		if (activeOnly && !isActiveSpot(pos, Purchasable.TROUGH)) {
-			return false;
-		}
-		Space space = getSpace(pos);
-		return space != null && space.hasTrough();
-	}
-
-	public boolean putTrough(Point pos) {
-		if (getUnused(Purchasable.TROUGH) < 1) {
-			return false;
-		}
-		Space space = getSpace(pos);
-		if (space != null && !space.hasTrough()) {
-			space.setTrough(true);
-			addUnused(Purchasable.TROUGH, -1);
-			addActiveSpot(pos);
-			setChanged();
-			return true;
-		}
-		return false;
-	}
-
-	public boolean takeTrough(Point pos, boolean activeOnly) {
-		if (activeOnly && !isActiveSpot(pos, Purchasable.TROUGH)) {
-			return false;
-		}
-		Space space = getSpace(pos);
-		if (space != null && space.hasTrough()) {
-			space.setTrough(false);
-			addUnused(Purchasable.TROUGH, 1);
-			removeActiveSpot(pos);
-			setChanged();
-			return true;
-		}
-		return false;
-	}
-
-	public void toggleTrough(Point pos) {
-		if (hasTrough(pos, true)) {
-			takeTrough(pos, false); // active already checked
-		} else {
-			putTrough(pos);
-		}
-	}
-
-	public void addBuilding(Building b) {
-		unusedBuildings.push(b);
-		setChanged();
-	}
+	private Building takenBuilding = null; // TODO ugly
 
 	public Building removeBuilding() {
-		if (!unusedBuildings.isEmpty()) {
-			Building b = unusedBuildings.pop();
-			setChanged();
-			return b;
-		}
-		int active = activeType == Purchasable.BUILDING ? activeSpots.size() : 0;
-		if (active > 0) {
+		if (activeType == Purchasable.BUILDING) {
 			if (takeLastActive()) {
-				return unusedBuildings.pop();
+				return takenBuilding;
 			}
 		}
 		return null;
 	}
 
-	public Stack<Building> getUnusedBuildings() {
-		return unusedBuildings;
-	}
-
-	public List<Building> getBuiltBuildings() {
+	public List<Building> getFarmBuildings() {
 		// TODO keep list
 		List<Building> buildings = new ArrayList<Building>();
-		List<Point> range = PointUtils.createGridRange(width, height);
-		for (Point pos : range) {
+		List<DirPoint> range = PointUtils.createGridRange(width, height);
+		for (DirPoint pos : range) {
 			Building b = getBuilding(pos);
 			if (b != null) {
 				buildings.add(b);
@@ -377,24 +333,25 @@ public class Farm extends SimpleObservable {
 		return buildings;
 	}
 
-	public boolean hasBuilding(Point pos, boolean activeOnly) {
+	public boolean hasBuilding(DirPoint pos, BuildingType type, boolean activeOnly) {
 		if (activeOnly && !isActiveSpot(pos, Purchasable.BUILDING)) {
 			return false;
 		}
 		Space space = getSpace(pos);
-		return space != null && space instanceof Building;
+		return space != null && space instanceof Building && (type == null || ((Building) space).getType() == type);
 	}
 
-	public boolean build(Point pos) {
-		// builds purchased building
-		if (unusedBuildings.isEmpty()) {
-			return false;
-		}
+	public boolean canBuild(DirPoint pos, BuildingType type) {
 		Space space = getSpace(pos);
-		if (space != null && unusedBuildings.peek().canBuildAt(space)) {
-			Building building = unusedBuildings.pop();
-			building.buildAt(space);
-			putSpace(pos, building);
+		return space != null && type.canBuildAt(space.getType());
+	}
+
+	public boolean build(DirPoint pos, Building b) {
+		Main.asrtNotNull(b, "Cannot build null building");
+		Space space = getSpace(pos);
+		if (canBuild(pos, b.getType())) {
+			b.buildAt(space);
+			putSpace(pos, b);
 			addActiveSpot(pos);
 			setChanged();
 			return true;
@@ -402,42 +359,41 @@ public class Farm extends SimpleObservable {
 		return false;
 	}
 
-	public boolean unbuild(Point pos, boolean activeOnly) {
+	public Building unbuild(DirPoint pos, boolean activeOnly) {
 		if (activeOnly && !isActiveSpot(pos, Purchasable.BUILDING)) {
-			return false;
+			return null;
 		}
 		Building building = getBuilding(pos);
 		if (building != null) {
 			Space original = building.unbuild();
 			putSpace(pos, original);
-			unusedBuildings.push(building);
 			removeActiveSpot(pos);
 			setChanged();
-			return true;
+			return building;
 		}
-		return false;
+		return null;
 	}
 
-	public void toggleBuilding(Point pos) {
-		if (hasBuilding(pos, true)) {
-			unbuild(pos, false); // active already checked
-		} else {
-			build(pos);
-		}
-	}
+//	public void toggleBuilding(DirPoint pos, Building b) {
+//		if (canBuild(pos, b)) {
+//			build(pos, b);
+//		} else {
+//			unbuild(pos, true);
+//		}
+//	}
 
-	public Building getBuilding(Point pos) {
+	public Building getBuilding(DirPoint pos) {
 		Space space = getSpace(pos);
 		return space != null && space instanceof Building ? (Building) space : null;
 	}
 
-	private void putSpace(Point pos, Space space) {
+	private void putSpace(DirPoint pos, Space space) {
 		if (PointUtils.isInRange(pos, width, height)) {
 			spaces.get(pos.x).set(pos.y, space);
 		}
 	}
 
-	public Space getSpace(Point pos) {
+	public Space getSpace(DirPoint pos) {
 		Main.asrtNotNull(pos, "Cannot handle null position");
 		if (PointUtils.isInRange(pos, width, height)) {
 			return spaces.get(pos.x).get(pos.y);
@@ -446,11 +402,11 @@ public class Farm extends SimpleObservable {
 		}
 	}
 
-	public int getAnimals(Point pos) {
+	public int getAnimals(DirPoint pos) {
 		Space space = getSpace(pos);
 		return space != null ? space.getAnimals() : 0;
 	}
-	
+
 	public void addAnimals(Animal type, int count) {
 		Main.asrtPositive(count, "Cannot add negative amount of animals");
 		addLooseAnimals(type, count);
@@ -492,10 +448,10 @@ public class Farm extends SimpleObservable {
 	}
 
 	/*
-	 * public int moveAnimals(Point from, Point to, int count) { return putAnimals(to, type, takeAnimals(from, count)); }
+	 * public int moveAnimals(DirPoint from, DirPoint to, int count) { return putAnimals(to, type, takeAnimals(from, count)); }
 	 */
 
-	public int putAnimals(Point to, Animal type, int count) {
+	public int putAnimals(DirPoint to, Animal type, int count) {
 		Space target = getSpace(to);
 		if (target != null) {
 			return putAnimals(target, type, count, false);
@@ -536,12 +492,12 @@ public class Farm extends SimpleObservable {
 		return moved;
 	}
 
-	public int takeAnimals(Point from) {
+	public int takeAnimals(DirPoint from) {
 		// take all animals of one type
 		return takeAnimals(from, Integer.MAX_VALUE);
 	}
 
-	public int takeAnimals(Point from, int count) {
+	public int takeAnimals(DirPoint from, int count) {
 		Space source = getSpace(from);
 		if (source != null) {
 			return takeAnimals(source, count, false);
@@ -584,8 +540,8 @@ public class Farm extends SimpleObservable {
 
 	private boolean takeRandomAnimals(Animal type, int count) {
 		int moved = 0;
-		List<Point> range = PointUtils.createGridRange(width, height);
-		for (Point pos : range) {
+		List<DirPoint> range = PointUtils.createGridRange(width, height);
+		for (DirPoint pos : range) {
 			Space space = getSpace(pos);
 			if (space.getAnimalType() == type) {
 				moved += takeAnimals(space, count - moved, false);
@@ -597,7 +553,7 @@ public class Farm extends SimpleObservable {
 		return false;
 	}
 
-	public List<Animal> guessAnimalTypesToPut(Point pos, boolean onlyWhenUnused) {
+	public List<Animal> guessAnimalTypesToPut(DirPoint pos, boolean onlyWhenUnused) {
 		List<Animal> types = new ArrayList<Animal>();
 		Space space = getSpace(pos);
 		if (space != null && space.getMaxCapacity() > 0 && (!onlyWhenUnused || looseAnimals.size() > 0)) {
@@ -626,31 +582,6 @@ public class Farm extends SimpleObservable {
 		return types;
 	}
 
-	public int addUnused(Purchasable type, int count) {
-		int present = unusedStuff.get(type);
-		if (count < 0) {
-			count = Math.max(count, -present);
-		}
-		unusedStuff.put(type, present + count);
-		setChanged();
-		return count;
-	}
-
-	public int getUnused(Purchasable type) {
-		if (type == Purchasable.BUILDING) {
-			return unusedBuildings.size();
-		}
-		return unusedStuff.get(type);
-	}
-
-	public int getAllUnusedCount() {
-		int count = 0;
-		for (int c : unusedStuff.values()) {
-			count += c;
-		}
-		return count;
-	}
-
 	public void setValidAnimals(boolean valid) {
 		this.animalsValid = valid;
 	}
@@ -663,43 +594,26 @@ public class Farm extends SimpleObservable {
 		if (activeType == null) {
 			return false;
 		}
-		if (activeType != Purchasable.FENCE) {
-			if (!activeSpots.isEmpty()) {
-				Point pos = new ArrayList<Point>(activeSpots).get(0);
-				switch (activeType) {
-				case EXTENSION:
-					return unextend(pos.x == 0 ? Dir.W : Dir.E, false);
-				case TROUGH:
-					return takeTrough(pos, false);
-				case BUILDING:
-					return unbuild(pos, false);
-				default:
-					return false;
-				}
-			}
-		} else {
-			if (!activeFenceSpots.isEmpty()) {
-				DirPoint dpos = new ArrayList<DirPoint>(activeFenceSpots).get(0);
-				return takeFence(dpos.point, dpos.dir, false);
+		if (!activeSpots.isEmpty()) {
+			DirPoint pos = new ArrayList<DirPoint>(activeSpots).get(0);
+			switch (activeType) {
+			case FENCE:
+			case EXTENSION:
+			case TROUGH:
+				return take(activeType, pos);
+			case BUILDING:
+				takenBuilding = unbuild(pos, false);
+				return takenBuilding != null;
+			default:
+				return false;
 			}
 		}
 		return false;
 	}
 
 	public boolean remove(Purchasable type) {
-		int unused = getUnused(type);
-		if (unused > 0) {
-			addUnused(type, -1);
-			return true;
-		}
-		boolean hasActive = activeType == type
-				? type == Purchasable.FENCE ? !activeFenceSpots.isEmpty() : !activeSpots.isEmpty()
-				: false;
-		if (hasActive) {
-			if (takeLastActive()) {
-				addUnused(type, -1);
-				return true;
-			}
+		if (activeType == type) {
+			return takeLastActive();
 		}
 		return false;
 	}

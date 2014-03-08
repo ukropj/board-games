@@ -2,13 +2,27 @@ package com.dill.agricola.common;
 
 import java.awt.Point;
 
-public class DirPoint {
+@SuppressWarnings("serial")
+public class DirPoint extends Point {
 
-	public Point point;
-	public Dir dir;
+	public final Dir dir;
 
-	public DirPoint(Point pos, Dir dir) {
-		this.point = pos;
+	
+	public DirPoint(int x, int y) {
+		this(x, y, null);
+	}
+	
+	public DirPoint(int x, int y, Dir dir) {
+		super(x, y);
+		this.dir = dir;
+	}
+
+	public DirPoint(DirPoint p) {
+		this(p, p.dir);
+	}
+	
+	public DirPoint(DirPoint pos, Dir dir) {
+		super(pos);
 		this.dir = dir;
 	}
 
@@ -16,7 +30,7 @@ public class DirPoint {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((dir == null) ? 0 : dir.hashCode());
-		result = prime * result + ((point == null) ? 0 : point.hashCode());
+		result = prime * result + ((this == null) ? 0 : super.hashCode());
 		return result;
 	}
 
@@ -30,16 +44,15 @@ public class DirPoint {
 		DirPoint other = (DirPoint) obj;
 		if (dir != other.dir)
 			return false;
-		if (point == null) {
-			if (other.point != null)
-				return false;
-		} else if (!point.equals(other.point))
-			return false;
-		return true;
+		return super.equals(other);
 	}
 
 	public String toString() {
-		return dir.toString() + " " + point.toString();
+		return (dir != null ? dir.toString() : "C") + " " + super.toString();
 	}
 
+	public Point toPoint() {
+		return new Point(x, y);
+	}
+	
 }

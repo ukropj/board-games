@@ -1,4 +1,4 @@
-package com.dill.agricola.actions;
+package com.dill.agricola.actions.simple;
 
 import com.dill.agricola.Game;
 import com.dill.agricola.common.Materials;
@@ -23,16 +23,16 @@ public class StartOneWood extends RefillAction {
 		previousStartingPlayer = null;
 	}
 
-	public boolean doOnce(Player player) {
+	public boolean activate(Player player, int doneSoFar) {
 		previousStartingPlayer = game.getStartingPlayer();
 		game.setStartingPlayer(player);
-		return super.doOnce(player);
+		return super.activate(player, doneSoFar);
 	}
 	
-	public boolean undoOnce(Player player) {
+	public boolean undo(Player player, int doneSoFar) {
 		game.setStartingPlayer(previousStartingPlayer);
 		previousStartingPlayer = null;
-		return super.undoOnce(player);
+		return super.undo(player, doneSoFar);
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.dill.agricola.actions;
 
+import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.support.Namer;
@@ -8,95 +9,109 @@ public class ActionPerformer {
 
 	private Player player = null;
 	private Action action = null;
-	
-	private boolean onceDone = false;
+
 	private int count = 0;
-	
+	private ActionPerfListener perfListener;
+
 	private void checkState() throws IllegalStateException {
 		if (player == null || action == null) {
 			throw new IllegalStateException("Cannot perform action without action or player");
 		}
 	}
-	
+
 	public void setPlayer(Player player) {
 		this.player = player;
 	}
-	
+
 	public Player getPlayer() {
 		return player;
 	}
-	
+
 	public boolean hasAction() {
 		return action != null;
 	}
-	
+
 	public Action getAction() {
 		return action;
 	}
-	
-	public boolean doAction(Action action) {
+
+	public boolean startAction(Action action) {
 		this.action = action;
-		this.onceDone = false;
 		this.count = 0;
 		checkState();
-		
-		if (!action.canPerform(player)) {
-			return false;
+
+		boolean done = action.activate(player, count);
+		if (done) {
+			count++;			
 		}
-		
-		onceDone = action.doOnce(player);
-		if (onceDone || canDoMore()) {
+		if (done || action.isFarmAction()) {
 			player.spendWorker();
 			player.notifyObservers(ChangeType.ACTION_DO);
+			perfListener.stateChanges();
 			return true;
 		}
 		return false;
 	}
 	
-	public boolean canDoMore() {
-		return action.canPerformMore(player, count);
+	public boolean canDoFarmAction(DirPoint pos) {
+		return action.canPerform(player, pos, count) || action.canUnperform(player, pos, count);
 	}
-	
-	public boolean doActionMore() {
+
+	public boolean doFarmAction(DirPoint pos) {
 		checkState();
-		if (canDoMore()) {
-			if (action.doo(player)) {
-				count++;
-				player.notifyObservers(ChangeType.ACTION_MORE);
-				return true;
-			}
+		if (action.canPerform(player, pos, count)) {
+			action.activate(player, pos, count);
+			count++;
+			return true;
+		} else if (action.canUnperform(player, pos, count)){
+			action.undo(player, pos, count);
+			count--;						
+			return true;
 		}
 		return false;
 	}
 
-	public boolean canDoLess() {
-		return count > 0;
-	}
-	
-	public boolean doActionLess() {
-		checkState();
-		if (canDoLess()) {
-			if (action.undo(player)) {
-				count--;
-				player.notifyObservers(ChangeType.ACTION_LESS);
-				return true;
-			}
-		}
-		return false;
-	}
+//	public boolean canDoMore() {
+//		return action.canPerformMore(player, count);
+//	}
 
-	public boolean undoAction() {
+//	public boolean doActionMore() {
+//		checkState();
+//		if (canDoMore()) {
+//			if (action.doo(player)) {
+//				count++;
+//				player.notifyObservers(ChangeType.ACTION_MORE);
+//				return true;
+//			}
+//		}
+//		return false;
+//	}
+
+//	public boolean canDoLess() {
+//		return count > 0;
+//	}
+
+//	public boolean doActionLess() {
+//		checkState();
+//		if (canDoLess()) {
+//			if (action.undo(player)) {
+//				count--;
+//				player.notifyObservers(ChangeType.ACTION_LESS);
+//				return true;
+//			}
+//		}
+//		return false;
+//	}
+
+	public boolean revertAction() {
 		checkState();
 		boolean done = true;
 		while (count > 0) {
-			done = action.undo(player);
+			done = action.undo(player, count);
 			if (!done) {
 				break;
 			}
 			count--;
-		}
-		if (onceDone) {
-			done = action.undoOnce(player) && done;
 		}
 		if (done) {
 			action = null;
@@ -107,24 +122,32 @@ public class ActionPerformer {
 		return done;
 	}
 
+	public boolean canFinish() {
+		return count > 0 && player.validate();
+	}
+	
 	public boolean finishAction() {
 		checkState();
-		if (!onceDone && count == 0) {
-			// never done
-			return false;
-		}
-		if (player.validate()) {
+		if (canFinish()) {
 			player.setActiveType(null);
 			action.setUsed();
 			System.out.println("Action done: " + Namer.getName(action));
 			action = null;
 			player.notifyObservers(ChangeType.ACTION_DONE);
 			return true;
-		} else{
+		} else {
 			return false;
 		}
 	}
+
+	public void setActionPerfListener(ActionPerfListener perfListener) {
+		this.perfListener = perfListener;
+	}
 	
-	
-	
+	public interface ActionPerfListener {
+
+		void stateChanges();// TODO rename
+
+	}
+
 }

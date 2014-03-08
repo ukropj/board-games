@@ -11,22 +11,22 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 
 import com.dill.agricola.actions.Action;
-import com.dill.agricola.actions.BuildSpecial;
-import com.dill.agricola.actions.BuildStables;
-import com.dill.agricola.actions.BuildStalls;
-import com.dill.agricola.actions.BuildTrough;
-import com.dill.agricola.actions.BuildingMaterial;
-import com.dill.agricola.actions.CowPigs;
-import com.dill.agricola.actions.Expand;
-import com.dill.agricola.actions.Fences;
-import com.dill.agricola.actions.HorseSheep;
-import com.dill.agricola.actions.Millpond;
-import com.dill.agricola.actions.OneStone;
-import com.dill.agricola.actions.PigSheep;
-import com.dill.agricola.actions.StartOneWood;
-import com.dill.agricola.actions.ThreeWood;
-import com.dill.agricola.actions.TwoStone;
-import com.dill.agricola.actions.Walls;
+import com.dill.agricola.actions.farm.BuildSpecial;
+import com.dill.agricola.actions.farm.BuildStables;
+import com.dill.agricola.actions.farm.BuildStalls;
+import com.dill.agricola.actions.farm.Troughs;
+import com.dill.agricola.actions.farm.Expand;
+import com.dill.agricola.actions.farm.Fences;
+import com.dill.agricola.actions.farm.Walls;
+import com.dill.agricola.actions.simple.BuildingMaterial;
+import com.dill.agricola.actions.simple.CowPigs;
+import com.dill.agricola.actions.simple.HorseSheep;
+import com.dill.agricola.actions.simple.Millpond;
+import com.dill.agricola.actions.simple.OneStone;
+import com.dill.agricola.actions.simple.PigSheep;
+import com.dill.agricola.actions.simple.StartOneWood;
+import com.dill.agricola.actions.simple.ThreeWood;
+import com.dill.agricola.actions.simple.TwoStone;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.model.types.PlayerColor;
@@ -99,15 +99,15 @@ public class Game {
 
 	private Player chooseStartingPlayer() {
 		if (Main.DEBUG) {
-			return players[0];			
-		} else {			
+			return players[0];
+		} else {
 			List<JComponent> opts = new ArrayList<JComponent>();
 			for (PlayerColor color : PlayerColor.values()) {
 				JLabel l = UiFactory.createLabel(AgriImages.getFirstTokenIcon(color.ordinal(), ImgSize.BIG));
 				l.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 				l.setOpaque(true);
 				l.setBackground(color.getRealColor());
-				opts.add(l);	
+				opts.add(l);
 			}
 			int result = UiFactory.showOptionDialog("Choose starting player", "Game starts", null, opts);
 			return players[Math.max(0, result)];
@@ -196,7 +196,7 @@ public class Game {
 	}
 
 	private void endGame() {
-		float[] scores = new float[]{players[0].getScore(), players[1].getScore()};
+		float[] scores = new float[] { players[0].getScore(), players[1].getScore() };
 		int winnerNo = scores[0] > scores[1] ? 0 : scores[0] < scores[1] ? 1 : initialStartingPlayer.other().ordinal();
 		board.showScoring(players, players[winnerNo].getColor());
 	}
@@ -214,17 +214,17 @@ public class Game {
 	public List<Action> getActions() {
 		return new ArrayList<Action>(Arrays.asList(//
 				new StartOneWood(this), new ThreeWood(), // 
-				new OneStone(), new TwoStone(), 				
-				new BuildingMaterial(), 
-				
-				new Fences(),new Expand(), //
-				new Walls(), new BuildTrough(), //
-				
+				new OneStone(), new TwoStone(),
+				new BuildingMaterial(),
+
+				new Fences(), new Expand(), //
+				new Walls(), new Troughs(), //
+
 				new Millpond(), new PigSheep(), //
 				new CowPigs(), new HorseSheep(), //
-				
+
 				new BuildStalls(), new BuildStables(),
-				new BuildSpecial(),new BuildSpecial()//
+				new BuildSpecial(), new BuildSpecial()//
 				));
 	}
 

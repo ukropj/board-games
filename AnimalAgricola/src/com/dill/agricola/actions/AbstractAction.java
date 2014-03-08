@@ -5,9 +5,7 @@ import java.util.List;
 
 import com.dill.agricola.common.Animals;
 import com.dill.agricola.common.Materials;
-import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
-import com.dill.agricola.support.Namer;
 
 public abstract class AbstractAction implements Action {
 
@@ -37,34 +35,6 @@ public abstract class AbstractAction implements Action {
 
 	public boolean isUsed() {
 		return used;
-	}
-
-	public boolean canPerform(Player player) {
-		return !used;
-	}
-
-	public boolean canPerformMore(Player player, int doneSoFar) {
-		return false;
-	}
-
-	public boolean doOnce(Player player) {
-		return false;
-	}
-
-	public boolean undoOnce(Player player) {
-		return false;
-	}
-
-	public boolean doo(Player player) {
-		return false;
-	}
-
-	public boolean undo(Player player) {
-		return false;
-	}
-
-	public String toString() {
-		return "<html>" + Namer.getName(this);
 	}
 
 	public Materials getAccumulatedMaterials() {

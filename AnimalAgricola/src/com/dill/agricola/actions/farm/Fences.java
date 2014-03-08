@@ -1,4 +1,4 @@
-package com.dill.agricola.actions;
+package com.dill.agricola.actions.farm;
 
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.types.ActionType;
@@ -10,11 +10,11 @@ public class Fences extends PurchaseAction {
 	public final static Materials COST = new Materials(Material.BORDER, Material.WOOD);
 	
 	public Fences() {
-		super(ActionType.FENCES, Purchasable.FENCE, COST, true);
+		super(ActionType.FENCES, Purchasable.FENCE);
 	}
-	
-	public String toString() {
-		return super.toString() + "<br>unlimited 1 for 1 WOOD";
+
+	protected Materials getCost(int doneSoFar) {
+		return COST;
 	}
 
 }

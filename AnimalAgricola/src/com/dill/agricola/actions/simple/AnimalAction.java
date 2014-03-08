@@ -1,6 +1,8 @@
-package com.dill.agricola.actions;
+package com.dill.agricola.actions.simple;
 
+import com.dill.agricola.actions.AbstractAction;
 import com.dill.agricola.common.Animals;
+import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Animal;
@@ -35,8 +37,20 @@ public abstract class AnimalAction extends AbstractAction {
 		lastTakenAnimals.clear();
 		setChanged();
 	}
+	
+	public boolean isFarmAction() {
+		return false;
+	}
+	
+	public boolean canPerform(Player player, int doneSoFar) {
+		return !isUsed() && doneSoFar == 0;
+	}
 
-	public boolean doOnce(Player player) {
+	public boolean canUnperform(Player player, int doneSoFar) {
+		return doneSoFar > 0;
+	}
+
+	public boolean activate(Player player, int doneSoFar) {
 		player.purchaseAnimals(animals);
 		lastTakenAnimals.set(animals);
 		animals.clear();
@@ -44,7 +58,7 @@ public abstract class AnimalAction extends AbstractAction {
 		return true;
 	}
 
-	public boolean undoOnce(Player player) {
+	public boolean undo(Player player, int doneSoFar) {
 		boolean done = player.unpurchaseAnimals(lastTakenAnimals);
 		if (done) {
 			animals.set(lastTakenAnimals);
@@ -58,8 +72,20 @@ public abstract class AnimalAction extends AbstractAction {
 		return animals;
 	}
 
-	public String toString() {
-		return super.toString() + "<br>+" + animals;
+	public boolean canPerform(Player player, DirPoint pos, int count) {
+		return false;
+	}
+	
+	public boolean canUnperform(Player player, DirPoint pos, int count) {
+		return false;
+	}
+
+	public boolean activate(Player player, DirPoint pos, int count) {
+		return false;
+	}
+
+	public boolean undo(Player player, DirPoint pos, int count) {
+		return false;
 	}
 
 }

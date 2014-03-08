@@ -7,18 +7,10 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Player;
-import com.dill.agricola.model.buildings.HalfTimberedHouse;
-import com.dill.agricola.model.buildings.OpenStables;
-import com.dill.agricola.model.buildings.Shelter;
-import com.dill.agricola.model.buildings.Stables;
-import com.dill.agricola.model.buildings.Stall;
-import com.dill.agricola.model.buildings.StorageBuilding;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.Material;
 import com.dill.agricola.model.types.PlayerColor;
-import com.dill.agricola.model.types.Purchasable;
 
 @SuppressWarnings("serial")
 public class DebugPanel extends JPanel {
@@ -85,23 +77,23 @@ public class DebugPanel extends JPanel {
 				currentPlayer.notifyObservers();
 			}
 		});
-		createDebugButton("Ext", new ActionListener() {
+		/*createDebugButton("Ext", new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				currentPlayer.purchase(Purchasable.EXTENSION);
+				currentPlayer.purchaseExtension(Dir.W);
 				currentPlayer.setActiveType(Purchasable.EXTENSION);
 				currentPlayer.notifyObservers();
 			}
 		});
 		createDebugButton("Fence", new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				currentPlayer.purchase(Purchasable.FENCE, new Materials(Material.BORDER));
+				currentPlayer.purchaseFence(null, pos, d)(Purchasable.FENCE, new Materials(Material.BORDER));
 				currentPlayer.setActiveType(Purchasable.FENCE);
 				currentPlayer.notifyObservers();
 			}
 		});
 		createDebugButton("Trough", new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				currentPlayer.purchase(Purchasable.TROUGH);
+				currentPlayer.purchaseTrough(cost, pos);
 				currentPlayer.setActiveType(Purchasable.TROUGH);
 				currentPlayer.notifyObservers();
 			}
@@ -147,7 +139,7 @@ public class DebugPanel extends JPanel {
 				currentPlayer.setActiveType(Purchasable.BUILDING);
 				currentPlayer.notifyObservers();
 			}
-		});
+		});*/
 		createDebugButton("Do Nothing", new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				currentPlayer.spendWorker();

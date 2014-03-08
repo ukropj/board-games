@@ -1,5 +1,6 @@
-package com.dill.agricola.actions;
+package com.dill.agricola.actions.farm;
 
+//import com.dill.agricola.common.DirPoint;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -12,6 +13,8 @@ import javax.swing.JOptionPane;
 
 import com.dill.agricola.GeneralSupply;
 import com.dill.agricola.GeneralSupply.Supplyable;
+import com.dill.agricola.actions.AbstractAction;
+import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Building;
 import com.dill.agricola.model.Player;
@@ -61,8 +64,24 @@ public class BuildSpecial extends AbstractAction {
 		setChanged();
 	}
 
-	public boolean canPerform(Player player) {
-		return super.canPerform(player) && GeneralSupply.getLeft(Supplyable.SPECIAL_BUILDING) > 0;
+	public boolean isFarmAction() {
+		return true;
+	}
+	
+	public boolean canPerform(Player player, int doneSoFar) {
+		return !isUsed() && GeneralSupply.getLeft(Supplyable.SPECIAL_BUILDING) > 0 && doneSoFar < 1;
+	}
+	
+	public boolean canPerform(Player player, DirPoint pos, int doneSoFar) {
+		return canPerform(player, doneSoFar) && toBuild != null && player.farm.canBuild(pos, toBuild);
+	}
+	
+	public boolean canUnperform(Player player, int doneSoFar) {
+		return toBuild!= null && doneSoFar > 0;
+	}
+	
+	public boolean canUnperform(Player player, DirPoint pos, int doneSoFar) {
+		return canUnperform(player, doneSoFar) && player.farm.hasBuilding(pos, toBuild, true);
 	}
 
 	private BuildingType chooseBuilding(Player player) {
@@ -114,11 +133,19 @@ public class BuildSpecial extends AbstractAction {
 		return result != NONE ? animalRewards[result] : null;
 	}
 
-	public boolean doOnce(Player player) {
-		toBuild = chooseBuilding(player);
-		if (toBuild == null) {
-			return false;
-		} else {
+	public boolean activate(Player player, int doneSoFar) {
+		if (canPerform(player, doneSoFar)) {
+			toBuild = chooseBuilding(player);
+			if (toBuild != null) {
+				player.setActiveType(Purchasable.BUILDING);
+				setChanged();
+			}
+		}
+		return false;
+	}
+	
+	public boolean activate(Player player, DirPoint pos, int doneSoFar) {
+		if (canPerform(player, pos, doneSoFar)) {
 			boolean done;
 			Building building = GeneralSupply.getSpecialBuilding(toBuild);
 			if (toBuild == BuildingType.OPEN_STABLES) {
@@ -126,17 +153,16 @@ public class BuildSpecial extends AbstractAction {
 				if (toPay == NONE) {
 					return false;
 				} else {
-					done = player.purchaseBuilding(building, OS_COSTS[toPay]);
+					done = player.purchaseBuilding(building, OS_COSTS[toPay], pos);
 				}
 			} else {
-				done = player.purchaseBuilding(building, COSTS.get(toBuild));
+				done = player.purchaseBuilding(building, COSTS.get(toBuild), pos);
 			}
 			if (done) {
 				toGive = chooseReward(building);
 				if (toGive != null) {
 					player.purchaseAnimal(toGive, 1);
 				}
-				player.setActiveType(Purchasable.BUILDING);
 				GeneralSupply.useBuilding(toBuild, true);
 				setChanged();
 			} else {
@@ -144,10 +170,11 @@ public class BuildSpecial extends AbstractAction {
 			}
 			return done;
 		}
+		return false;
 	}
 
-	public boolean undoOnce(Player player) {
-		if (toBuild != null) {
+	public boolean undo(Player player, int doneSoFar) {
+		if (canUnperform(player, doneSoFar)) {
 			boolean done = player.unpurchaseBuilding() != null;
 			if (toGive != null) {
 				done = player.unpurchaseAnimal(toGive, 1) && done;
@@ -159,6 +186,21 @@ public class BuildSpecial extends AbstractAction {
 				setChanged();
 			}
 			return done;
+		}
+		return false;
+	}
+	
+	public boolean undo(Player player, DirPoint pos, int doneSoFar) {
+		if (canUnperform(player, pos, doneSoFar)) {
+			Building b = player.farm.unbuild(pos, true);
+			player.unpay(b.getPaidCost());
+			b.setPaidCost(null);
+			
+			GeneralSupply.useBuilding(toBuild, false);
+			toBuild = null;
+			toGive = null;
+			setChanged();
+			return true;
 		}
 		return false;
 	}

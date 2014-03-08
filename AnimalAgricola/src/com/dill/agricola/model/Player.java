@@ -1,11 +1,11 @@
 package com.dill.agricola.model;
 
-import java.awt.Point;
 import java.util.Observer;
 
 import com.dill.agricola.Main;
 import com.dill.agricola.common.Animals;
 import com.dill.agricola.common.Dir;
+import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.buildings.Cottage;
 import com.dill.agricola.model.types.Animal;
@@ -22,10 +22,10 @@ public class Player extends SimpleObservable {
 
 	public static final int USED_EXT_VP = 4;
 
-	public static final int MAX_WORKERS = Main.DEBUG ? 2 : 3;
+	public static final int MAX_WORKERS = Main.DEBUG ? 1 : 3;
 
 	private final PlayerColor color;
-	private final Farm farm;
+	public final Farm farm;
 
 	private final Materials material = new Materials();
 	private final Animals animals = new Animals();
@@ -45,30 +45,22 @@ public class Player extends SimpleObservable {
 		material.clear();
 		animals.clear();
 		farm.init(FARM_W, FARM_H);
-		purchaseFreeBuilding(new Cottage());
-		farm.build(new Point(0, 2));
+		farm.build(new DirPoint(0, 2), new Cottage());
 		addMaterial(Material.BORDER, INIT_BORDERS);
 
 		if (Main.DEBUG) {
-			addMaterial(new Materials(Material.WOOD, 20));
+			addMaterial(new Materials(Material.WOOD, 10));
 			addMaterial(new Materials(Material.STONE, 20));
 			addMaterial(new Materials(Material.REED, 20));
 
-//			purchase(Purchasable.EXTENSION);
-//			purchase(Purchasable.EXTENSION);
-//			purchase(Purchasable.EXTENSION);
 //			farm.extend(Dir.W);
 //			farm.extend(Dir.E);
 //			farm.extend(Dir.E);
-			purchase(Purchasable.FENCE);
-			purchase(Purchasable.FENCE);
-			purchase(Purchasable.FENCE);
-			purchase(Purchasable.FENCE);
-			Point pos = new Point(1, 1);
-			farm.putFence(pos, Dir.N);
-			farm.putFence(pos, Dir.W);
-			farm.putFence(pos, Dir.S);
-			farm.putFence(pos, Dir.E);
+			DirPoint pos = new DirPoint(1, 1);
+			farm.put(Purchasable.FENCE, new DirPoint(pos, Dir.N));
+			farm.put(Purchasable.FENCE, new DirPoint(pos, Dir.W));
+			farm.put(Purchasable.FENCE, new DirPoint(pos, Dir.S));
+			farm.put(Purchasable.FENCE, new DirPoint(pos, Dir.E));
 		}
 		Fencer.calculateFences(farm);
 	}
@@ -130,6 +122,7 @@ public class Player extends SimpleObservable {
 
 	public void setActiveType(Purchasable type) {
 		farm.setActiveType(type);
+		System.out.println("active: " + type);
 	}
 
 	public Purchasable getActiveType() {
@@ -137,41 +130,50 @@ public class Player extends SimpleObservable {
 	}
 
 	public boolean canPay(Materials cost) {
-		if (material.isSuperset(cost)) {
-			return true;
-		} else {
-			System.out.println(getColor() + ": cannot pay " + cost);
-			return false;
-		}
+		return material.isSuperset(cost);
 	}
-
-	public boolean purchase(Purchasable type, Materials cost) {
-		if (canPay(cost)) {
+	
+	public void pay(Materials cost) {
+		material.substract(cost);
+	}
+	
+	public void unpay(Materials cost) {
+		material.add(cost);
+	}
+	
+	public boolean canPurchase(Purchasable type, Materials cost, DirPoint pos) {
+		return canPay(cost) && (pos == null || !farm.has(type, pos, false));
+	}
+	
+	public boolean canUnpurchase(Purchasable type, DirPoint pos) {
+		return farm.has(type, pos, true);
+	}
+	
+	public boolean purchase(Purchasable type, Materials cost, DirPoint pos) {
+		if (canPay(cost) && !farm.has(type, pos, false) && farm.put(type, pos)) {
 			material.substract(cost);
-			return purchase(type);
+			return true;
 		}
 		return false;
 	}
-
-	public boolean purchase(Purchasable type) {
-		farm.addUnused(type, 1);
-		return true;
-	}
-
-	public boolean unpurchase(Purchasable type, Materials cost) {
-		if (unpurchase(type)) {
+	
+	public boolean unpurchase(Purchasable type, Materials cost, DirPoint pos) {
+		if (farm.has(type, pos, true) && farm.take(type, pos)) {
 			material.add(cost);
 			return true;
 		}
 		return false;
-
 	}
 
-	public boolean unpurchase(Purchasable type) {
+	public boolean unpurchase(Purchasable type, Materials cost) {
 		if (farm.remove(type)) {
+			if (cost != null) {
+				material.add(cost);				
+			}
 			return true;
 		}
 		return false;
+
 	}
 
 	public int getAnimal(Animal type) {
@@ -221,21 +223,15 @@ public class Player extends SimpleObservable {
 		return false;
 	}
 
-	public boolean purchaseBuilding(Building building, Materials cost) {
-		if (canPay(cost)) {
+	public boolean purchaseBuilding(Building building, Materials cost, DirPoint pos) {
+		if (canPay(cost) && farm.canBuild(pos, building.getType())) {
 			material.substract(cost);
 			building.setPaidCost(cost);
-			farm.addBuilding(building);
+			farm.build(pos, building);
 			return true;
 		} else {
 			return false;
 		}
-	}
-
-	public boolean purchaseFreeBuilding(Building building) {
-		building.setPaidCost(new Materials());
-		farm.addBuilding(building);
-		return true;
 	}
 
 	public Building unpurchaseBuilding() {
@@ -250,7 +246,7 @@ public class Player extends SimpleObservable {
 
 	public int getBuildingCount(BuildingType type) {
 		int count = 0;
-		for (Building b : farm.getBuiltBuildings()) {
+		for (Building b : farm.getFarmBuildings()) {
 			if (b.getType() == type) {
 				count++;
 			}
@@ -259,7 +255,7 @@ public class Player extends SimpleObservable {
 	}
 
 	public boolean validate() {
-		return farm.getAllUnusedCount() == 0 && farm.getUnusedBuildings().size() == 0 && farm.hasValidAnimals();
+		return farm.hasValidAnimals();
 	}
 
 	public int breedAnimals() {
@@ -309,7 +305,7 @@ public class Player extends SimpleObservable {
 
 	public int getAnimalScore(Animal type) {
 		int count = getAnimal(type);
-		return count + type.getBonusPoints(count);
+		return count + type.getBonusDirPoints(count);
 	}
 
 	public int getExtensionsScore() {
@@ -318,8 +314,8 @@ public class Player extends SimpleObservable {
 
 	public float getBuildingScore() {
 		float score = 0;
-		for (Building b : farm.getBuiltBuildings()) {
-			score += b.getVictoryPoints(this);
+		for (Building b : farm.getFarmBuildings()) {
+			score += b.getVictoryDirPoints(this);
 		}
 		return score;
 	}

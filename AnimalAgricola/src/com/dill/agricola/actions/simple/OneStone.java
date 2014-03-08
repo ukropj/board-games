@@ -1,4 +1,4 @@
-package com.dill.agricola.actions;
+package com.dill.agricola.actions.simple;
 
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.types.ActionType;

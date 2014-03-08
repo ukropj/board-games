@@ -30,7 +30,7 @@ public enum Animal {
 		return color2;
 	}
 
-	public int getBonusPoints(int count) {
+	public int getBonusDirPoints(int count) {
 		if (count < scoringRanges[0]) {
 			return -3;
 		}
@@ -57,7 +57,7 @@ public enum Animal {
 		for (Animal a : Animal.values()) {
 			System.out.println(a);
 			for (int i = 0; i < 20; i++) {
-				System.out.printf("%2d,", i + a.getBonusPoints(i));
+				System.out.printf("%2d,", i + a.getBonusDirPoints(i));
 			}
 			System.out.println();
 		}

@@ -1,11 +1,10 @@
-package com.dill.agricola.actions;
+package com.dill.agricola.actions.simple;
 
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.Material;
-import com.dill.agricola.support.Namer;
 
 public class Millpond extends AnimalAction {
 
@@ -38,16 +37,15 @@ public class Millpond extends AnimalAction {
 		setChanged();
 	}
 
-	public boolean doOnce(Player player) {
+	public boolean activate(Player player, int doneSoFar) {
 		player.addMaterial(materials);
 		lastTakenMaterials.set(materials);
 		materials.clear();
-		super.doOnce(player);
-		return true;
+		return super.activate(player, doneSoFar);
 	}
 
-	public boolean undoOnce(Player player) {
-		boolean done = super.undoOnce(player);
+	public boolean undo(Player player, int doneSoFar) {
+		boolean done = super.undo(player, doneSoFar);
 		if (done) {
 			player.removeMaterial(lastTakenMaterials);
 			materials.set(lastTakenMaterials);
@@ -61,7 +59,4 @@ public class Millpond extends AnimalAction {
 		return materials;
 	}
 	
-	public String toString() {
-		return "<html>" + Namer.getName(this) + "<br>+" + materials + animals;
-	}
 }

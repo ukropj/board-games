@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.ActionPerformer;
+import com.dill.agricola.actions.ActionPerformer.ActionPerfListener;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.UiFactory;
@@ -32,8 +33,8 @@ public class ActionBoard extends JPanel {
 	private final Color defaultColor;
 //	private final Border defaultBorder;
 
-	private JButton moreB;
-	private JButton lessB;
+//	private JButton moreB;
+//	private JButton lessB;
 	private JButton submitB;
 	private JButton resetB;
 
@@ -53,7 +54,7 @@ public class ActionBoard extends JPanel {
 			b.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if (!action.isUsed()) {
-						if (ap.doAction(action)) {
+						if (ap.startAction(action)) {
 							switchToControl(true);
 							b.setBackground(ap.getPlayer().getColor().getRealColor());
 							b.setEnabled(false);
@@ -112,7 +113,8 @@ public class ActionBoard extends JPanel {
 				}
 			}
 		});
-		moreB = createButton(Msg.get("doMoreAction"), new ActionListener() {
+		
+		/*moreB = createButton(Msg.get("doMoreAction"), new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ap.doActionMore();
 				updateControls();
@@ -123,17 +125,23 @@ public class ActionBoard extends JPanel {
 				ap.doActionLess();
 				updateControls();
 			}
-		});
+		});*/
 		resetB = createButton(Msg.get("undoAction"), new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Action action = ap.getAction();
-				if (ap.undoAction()) {
+				if (ap.revertAction()) {
 					JButton b = actionButtons.get(action.getType());
 					b.setBackground(defaultColor);
 					b.setEnabled(true);
 //					b.setBorder(defaultBorder);
 					switchToControl(false);
 				}
+			}
+		});
+		
+		ap.setActionPerfListener(new ActionPerfListener() {
+			public void stateChanges() {
+				updateControls();
 			}
 		});
 	}
@@ -149,14 +157,13 @@ public class ActionBoard extends JPanel {
 		for (Component c : controlPanel.getComponents()) {
 			c.setEnabled(on);
 		}
-		if (on) {
-			updateControls();
-		}
+//		if (on) {
+//			updateControls();
+//		}
 	}
 
 	private void updateControls() {
-		moreB.setEnabled(ap.canDoMore());
-		lessB.setEnabled(ap.canDoLess());
+		submitB.setEnabled(ap.canFinish());
 	}
 
 	private JButton createButton(String label, ActionListener al) {

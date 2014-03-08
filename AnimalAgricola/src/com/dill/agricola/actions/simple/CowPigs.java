@@ -1,4 +1,4 @@
-package com.dill.agricola.actions;
+package com.dill.agricola.actions.simple;
 
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Animal;

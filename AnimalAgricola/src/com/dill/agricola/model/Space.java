@@ -7,6 +7,7 @@ import java.util.Set;
 import com.dill.agricola.Main;
 import com.dill.agricola.common.Dir;
 import com.dill.agricola.model.types.Animal;
+import com.dill.agricola.model.types.BuildingType;
 
 public abstract class Space {
 
@@ -28,6 +29,10 @@ public abstract class Space {
 		if (isAlwaysEnclosed()) {
 			enclosed = true;
 		}
+	}
+	
+	public BuildingType getType() {
+		return BuildingType.EMPTY;
 	}
 
 	public boolean setBorder(Dir d, boolean add) {

@@ -14,7 +14,7 @@ public class StorageBuilding extends Building {
 		super(BuildingType.STORAGE_BUILDING, 0, 0);
 	}
 
-	public float getVictoryPoints(Player player) {
+	public float getVictoryDirPoints(Player player) {
 		int material = 0;
 		for (Material type : Material.values()) {
 			if (type != Material.BORDER) {
