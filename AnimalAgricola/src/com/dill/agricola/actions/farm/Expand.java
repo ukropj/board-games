@@ -73,21 +73,10 @@ public class Expand extends PurchaseAction {
 		return false;
 	}
 
-	public boolean activate(Player player, DirPoint pos, int doneSoFar) {
-		if (super.activate(player, pos, doneSoFar)) {
-			hadExp = true;
-			GeneralSupply.useExtension(true);
-			setChanged();
-			return true;
-		}
-		return false;
-	}
-
 	public boolean undo(Player player, int doneSoFar) {
 		if (hadExp) {
 			if (super.undo(player, doneSoFar)) {
-				GeneralSupply.useExtension(false);
-				hadExp = false;
+				postUndo();
 				return true;
 			} else {
 				return false;
@@ -104,13 +93,22 @@ public class Expand extends PurchaseAction {
 	public boolean undo(Player player, DirPoint pos, int doneSoFar) {
 		if (hadExp) {
 			if (super.undo(player, pos, doneSoFar)) {
-				GeneralSupply.useExtension(false);
-				hadExp = false;
+				postUndo();
 			} else {
 				return false;
 			}
 		}
 		return true;
+	}
+	
+	protected void postActivate() {
+		GeneralSupply.useExtension(true);
+		hadExp = true;
+	}
+	
+	protected void postUndo() {
+		GeneralSupply.useExtension(false);
+		hadExp = false;
 	}
 
 	public Materials getAccumulatedMaterials() {

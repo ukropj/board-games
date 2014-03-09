@@ -77,7 +77,6 @@ public class Farm extends SimpleObservable {
 		if (this.activeType != activeType) {
 			this.activeType = activeType;
 			activeSpots.clear();
-			System.out.println("cleaned " + activeSpots);
 			setChanged();
 		}
 	}
@@ -95,7 +94,6 @@ public class Farm extends SimpleObservable {
 		if (pos.dir != null) {
 			activeSpots.add(PointUtils.getNext(pos));
 		}
-		System.out.println("added " + activeSpots);
 	}
 
 	private void removeActiveSpot(DirPoint pos) {
@@ -103,7 +101,6 @@ public class Farm extends SimpleObservable {
 		if (pos.dir != null) {
 			activeSpots.remove(PointUtils.getNext(pos));
 		}
-		System.out.println("removed " + activeSpots);
 	}
 
 	public boolean has(Purchasable type, DirPoint pos, boolean activeOnly) {
@@ -176,6 +173,12 @@ public class Farm extends SimpleObservable {
 	}
 
 	public boolean take(Purchasable type, DirPoint pos) {
+		if (pos == null) {
+			if (activeType == type) {
+				return takeLastActive();
+			}
+			return false;
+		}
 		Space space = getSpace(pos);
 
 		switch (type) {
@@ -309,17 +312,6 @@ public class Farm extends SimpleObservable {
 				|| second != null && (second.isAlwaysEnclosed() || second.hasBorder(pos.dir.opposite()));
 	}
 
-	private Building takenBuilding = null; // TODO ugly
-
-	public Building removeBuilding() {
-		if (activeType == Purchasable.BUILDING) {
-			if (takeLastActive()) {
-				return takenBuilding;
-			}
-		}
-		return null;
-	}
-
 	public List<Building> getFarmBuildings() {
 		// TODO keep list
 		List<Building> buildings = new ArrayList<Building>();
@@ -341,15 +333,29 @@ public class Farm extends SimpleObservable {
 		return space != null && space instanceof Building && (type == null || ((Building) space).getType() == type);
 	}
 
-	public boolean canBuild(DirPoint pos, BuildingType type) {
+	public boolean canBuild(BuildingType type, DirPoint pos) {
+		if (pos == null) {
+			return canBuildAnywhere(type);
+		}
 		Space space = getSpace(pos);
-		return space != null && type.canBuildAt(space.getType());
+		return space != null && type.canBuildAt(space.getType()); 
 	}
 
-	public boolean build(DirPoint pos, Building b) {
+	private boolean canBuildAnywhere(BuildingType type) {
+		List<DirPoint> range = PointUtils.createGridRange(width, height);
+		for (DirPoint pos : range) {
+			Space space = getSpace(pos);
+			if (space != null && type.canBuildAt(space.getType())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean build(Building b, DirPoint pos) {
 		Main.asrtNotNull(b, "Cannot build null building");
 		Space space = getSpace(pos);
-		if (canBuild(pos, b.getType())) {
+		if (space != null && b.getType().canBuildAt(space.getType())) {
 			b.buildAt(space);
 			putSpace(pos, b);
 			addActiveSpot(pos);
@@ -359,8 +365,15 @@ public class Farm extends SimpleObservable {
 		return false;
 	}
 
-	public Building unbuild(DirPoint pos, boolean activeOnly) {
-		if (activeOnly && !isActiveSpot(pos, Purchasable.BUILDING)) {
+	private Building takenBuilding = null; // TODO ugly
+
+	public Building unbuild(DirPoint pos) {
+		if (pos == null) {
+			if (activeType == Purchasable.BUILDING) {
+				if (takeLastActive()) {
+					return takenBuilding;
+				}
+			}
 			return null;
 		}
 		Building building = getBuilding(pos);
@@ -373,14 +386,7 @@ public class Farm extends SimpleObservable {
 		}
 		return null;
 	}
-
-//	public void toggleBuilding(DirPoint pos, Building b) {
-//		if (canBuild(pos, b)) {
-//			build(pos, b);
-//		} else {
-//			unbuild(pos, true);
-//		}
-//	}
+	
 
 	public Building getBuilding(DirPoint pos) {
 		Space space = getSpace(pos);
@@ -602,18 +608,11 @@ public class Farm extends SimpleObservable {
 			case TROUGH:
 				return take(activeType, pos);
 			case BUILDING:
-				takenBuilding = unbuild(pos, false);
+				takenBuilding = unbuild(pos);
 				return takenBuilding != null;
 			default:
 				return false;
 			}
-		}
-		return false;
-	}
-
-	public boolean remove(Purchasable type) {
-		if (activeType == type) {
-			return takeLastActive();
 		}
 		return false;
 	}

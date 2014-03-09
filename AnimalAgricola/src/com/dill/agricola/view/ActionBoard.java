@@ -106,7 +106,7 @@ public class ActionBoard extends JPanel {
 						switchToControl(false);
 						submitListener.actionPerformed(e);
 					} else {
-						System.out.println("Cannot finish action, player has unused stuff or invalid animals");
+						System.out.println("Cannot finish action");
 					}
 				} else {
 					submitListener.actionPerformed(e);

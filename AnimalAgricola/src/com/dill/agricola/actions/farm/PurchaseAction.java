@@ -9,15 +9,15 @@ import com.dill.agricola.model.types.Purchasable;
 
 public abstract class PurchaseAction extends AbstractAction {
 
-	protected final Purchasable thing;	
-	
+	protected final Purchasable thing;
+
 	public PurchaseAction(ActionType type, Purchasable thing) {
 		super(type);
 		this.thing = thing;
 	}
-	
+
 	abstract protected Materials getCost(int doneSoFar);
-	
+
 	protected boolean isAnyLeft() {
 		return true;
 	}
@@ -52,7 +52,8 @@ public abstract class PurchaseAction extends AbstractAction {
 	public boolean activate(Player player, DirPoint pos, int doneSoFar) {
 		if (canPerform(player, pos, doneSoFar)) {
 			player.purchase(thing, getCost(doneSoFar), pos);
-			setChanged();			
+			postActivate();
+			setChanged();
 			return true;
 		}
 		return false;
@@ -60,7 +61,8 @@ public abstract class PurchaseAction extends AbstractAction {
 
 	public boolean undo(Player player, int doneSoFar) {
 		if (canUnperform(player, doneSoFar)) {
-			player.unpurchase(thing, getCost(doneSoFar));
+			player.unpurchase(thing, getCost(doneSoFar - 1), null);
+			postUndo();
 			setChanged();
 			return true;
 		}
@@ -69,10 +71,17 @@ public abstract class PurchaseAction extends AbstractAction {
 
 	public boolean undo(Player player, DirPoint pos, int doneSoFar) {
 		if (canUnperform(player, pos, doneSoFar)) {
-			player.unpurchase(thing, getCost(doneSoFar), pos);
+			player.unpurchase(thing, getCost(doneSoFar - 1), pos);
+			postUndo();
 			return true;
 		}
 		return false;
+	}
+
+	protected void postActivate() {
+	}
+
+	protected void postUndo() {
 	}
 
 }

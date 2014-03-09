@@ -45,7 +45,7 @@ public class Player extends SimpleObservable {
 		material.clear();
 		animals.clear();
 		farm.init(FARM_W, FARM_H);
-		farm.build(new DirPoint(0, 2), new Cottage());
+		farm.build(new Cottage(), new DirPoint(0, 2));
 		addMaterial(Material.BORDER, INIT_BORDERS);
 
 		if (Main.DEBUG) {
@@ -132,48 +132,64 @@ public class Player extends SimpleObservable {
 	public boolean canPay(Materials cost) {
 		return material.isSuperset(cost);
 	}
-	
+
 	public void pay(Materials cost) {
 		material.substract(cost);
 	}
-	
+
 	public void unpay(Materials cost) {
 		material.add(cost);
 	}
-	
+
 	public boolean canPurchase(Purchasable type, Materials cost, DirPoint pos) {
 		return canPay(cost) && (pos == null || !farm.has(type, pos, false));
 	}
-	
+
 	public boolean canUnpurchase(Purchasable type, DirPoint pos) {
-		return farm.has(type, pos, true);
+		return pos == null || farm.has(type, pos, true);
 	}
-	
+
 	public boolean purchase(Purchasable type, Materials cost, DirPoint pos) {
-		if (canPay(cost) && !farm.has(type, pos, false) && farm.put(type, pos)) {
+		if (canPurchase(type, cost, pos) && farm.put(type, pos)) {
 			material.substract(cost);
 			return true;
 		}
 		return false;
 	}
-	
+
 	public boolean unpurchase(Purchasable type, Materials cost, DirPoint pos) {
-		if (farm.has(type, pos, true) && farm.take(type, pos)) {
+		if (canUnpurchase(type, pos) && farm.take(type, pos)) {
 			material.add(cost);
 			return true;
 		}
 		return false;
 	}
 
-	public boolean unpurchase(Purchasable type, Materials cost) {
-		if (farm.remove(type)) {
-			if (cost != null) {
-				material.add(cost);				
-			}
+	public boolean canPurchase(BuildingType type, Materials cost, DirPoint pos) {
+		return canPay(cost) && farm.canBuild(type, pos);
+	}
+
+	public boolean canUnpurchase(BuildingType type, DirPoint pos) {
+		return pos == null || farm.hasBuilding(pos, type, true);
+	}
+
+	public boolean purchase(Building building, Materials cost, DirPoint pos) {
+		if (canPurchase(building.getType(), cost, pos) && farm.build(building, pos)) {
+			material.substract(cost);
+			building.setPaidCost(cost);
 			return true;
 		}
 		return false;
+	}
 
+	public Building unpurchase(BuildingType type, DirPoint pos) {
+		Building b = null;
+		if (canUnpurchase(type, pos) && (b = farm.unbuild(pos)) != null) {
+			material.add(b.getPaidCost());
+			b.setPaidCost(null);
+			return b;
+		}
+		return null;
 	}
 
 	public int getAnimal(Animal type) {
@@ -221,27 +237,6 @@ public class Player extends SimpleObservable {
 			return true;
 		}
 		return false;
-	}
-
-	public boolean purchaseBuilding(Building building, Materials cost, DirPoint pos) {
-		if (canPay(cost) && farm.canBuild(pos, building.getType())) {
-			material.substract(cost);
-			building.setPaidCost(cost);
-			farm.build(pos, building);
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	public Building unpurchaseBuilding() {
-		Building b = farm.removeBuilding();
-		if (b != null) {
-			material.add(b.getPaidCost());
-			b.setPaidCost(null);
-			return b;
-		}
-		return null;
 	}
 
 	public int getBuildingCount(BuildingType type) {

@@ -1,6 +1,7 @@
 package com.dill.agricola.model.buildings;
 
 import com.dill.agricola.GeneralSupply;
+import com.dill.agricola.common.Animals;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Building;
 import com.dill.agricola.model.Space;
@@ -15,7 +16,7 @@ public class OpenStables extends Building {
 	public static final Materials COST_STONE = new Materials(Material.STONE, 3);
 	
 	public OpenStables() {
-		super(BuildingType.OPEN_STABLES, 2, 5, new Animal[]{Animal.COW, Animal.HORSE});
+		super(BuildingType.OPEN_STABLES, 2, 5, new Animals[]{new Animals(Animal.COW), new Animals(Animal.HORSE)});
 	}
 
 	public boolean canBuildAt(Space space) {

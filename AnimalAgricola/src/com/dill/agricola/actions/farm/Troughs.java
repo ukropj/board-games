@@ -1,11 +1,8 @@
 package com.dill.agricola.actions.farm;
 
-import com.dill.agricola.common.DirPoint;
-
 import com.dill.agricola.GeneralSupply;
 import com.dill.agricola.GeneralSupply.Supplyable;
 import com.dill.agricola.common.Materials;
-import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Material;
 import com.dill.agricola.model.types.Purchasable;
@@ -25,38 +22,20 @@ public class Troughs extends PurchaseAction {
 	}
 
 	protected Materials getCost(int doneSoFar) {
-		return doneSoFar == 0 ? FIRST_COST : COST;
+		return doneSoFar < 1 ? FIRST_COST : COST;
 	}
 	
 	protected boolean isAnyLeft() {
 		return GeneralSupply.getLeft(Supplyable.TROUGH) > 0;
 	}
-
-	public boolean activate(Player player, DirPoint pos, int doneSoFar) {
-		if (super.activate(player, pos, doneSoFar)) {
-			GeneralSupply.useTrough(true);
-			setChanged();
-			return true;
-		}
-		return false;
+	
+	protected void postActivate() {
+		GeneralSupply.useTrough(true);
+	}
+	
+	protected void postUndo() {
+		GeneralSupply.useTrough(false);
 	}
 
-	public boolean undo(Player player, int doneSoFar) {
-		if (super.undo(player, doneSoFar)) {
-			GeneralSupply.useTrough(false);
-			setChanged();
-			return true;
-		}
-		return false;
-	}
-
-	public boolean undo(Player player, DirPoint pos, int doneSoFar) {
-		if (super.undo(player, pos, doneSoFar)) {
-			GeneralSupply.useTrough(false);
-			setChanged();
-			return true;
-		}
-		return false;
-	}
 
 }

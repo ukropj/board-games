@@ -1,8 +1,8 @@
 package com.dill.agricola.model;
 
 import com.dill.agricola.Main;
+import com.dill.agricola.common.Animals;
 import com.dill.agricola.common.Materials;
-import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.support.Namer;
 
@@ -11,7 +11,7 @@ public abstract class Building extends Space {
 	private final BuildingType type;
 	private final int cap;
 	private final int vp;
-	private final Animal[] rewards;
+	private final Animals[] rewards;
 	
 	protected Space buildSpace = null;
 	protected Materials paidCost; // actual cost payed for this building instance
@@ -20,7 +20,7 @@ public abstract class Building extends Space {
 		this(type, vp, cap, null);
 	}
 	
-	public Building(BuildingType type, int vp, int cap, Animal[] rewards) {
+	public Building(BuildingType type, int vp, int cap, Animals[] rewards) {
 		this.type = type;
 		this.vp = vp;
 		this.cap = cap;
@@ -47,7 +47,7 @@ public abstract class Building extends Space {
 		return hasTrough() ? cap * FEEDER_MULTI : cap;
 	}
 	
-	public Animal[] getAnimalRewards() {
+	public Animals[] getAnimalRewards() {
 		return rewards;
 	}
 	

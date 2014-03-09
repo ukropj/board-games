@@ -44,7 +44,7 @@ public class ActionPerformer {
 		if (done) {
 			count++;			
 		}
-		if (done || action.isFarmAction()) {
+		if (done || action.canPerform(player, count)) {
 			player.spendWorker();
 			player.notifyObservers(ChangeType.ACTION_DO);
 			perfListener.stateChanges();
