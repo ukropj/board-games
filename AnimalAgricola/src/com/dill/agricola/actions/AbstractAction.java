@@ -36,6 +36,10 @@ public abstract class AbstractAction implements Action {
 	public boolean isUsed() {
 		return used;
 	}
+	
+	public int getMinimalCount() {
+		return 1;
+	}
 
 	public Materials getAccumulatedMaterials() {
 		return null;

@@ -157,7 +157,7 @@ public class Board extends JFrame/* implements Observer*/{
 		playerBoards[0].setActive(true);
 		playerBoards[1].setActive(true);
 		actionBoard.clearActions();
-		actionBoard.enableSubmitOnly();
+		actionBoard.enableFinishOnly();
 	}
 
 	public void showScoring(Player[] players, PlayerColor winner) {

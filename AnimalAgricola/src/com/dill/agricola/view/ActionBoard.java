@@ -33,10 +33,8 @@ public class ActionBoard extends JPanel {
 	private final Color defaultColor;
 //	private final Border defaultBorder;
 
-//	private JButton moreB;
-//	private JButton lessB;
-	private JButton submitB;
-	private JButton resetB;
+	private JButton finishB;
+	private JButton revertB;
 
 	public ActionBoard(List<Action> actions, final ActionPerformer ap, ActionListener submitListener) {
 		this.ap = ap;
@@ -76,7 +74,7 @@ public class ActionBoard extends JPanel {
 		add(actionPanel, BorderLayout.CENTER);
 		add(controlPanel, BorderLayout.SOUTH);
 
-		defaultColor = resetB.getBackground();
+		defaultColor = revertB.getBackground();
 	}
 
 	/*private void buildGeneralSupplyPanel() {
@@ -96,7 +94,7 @@ public class ActionBoard extends JPanel {
 	}*/
 
 	private void buildControlPanel(final ActionListener submitListener) {
-		submitB = createButton(Msg.get("finishAction"), new ActionListener() {
+		finishB = createButton(Msg.get("finishAction"), new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (ap.hasAction()) {
 //					Action action = ap.getAction();
@@ -126,7 +124,7 @@ public class ActionBoard extends JPanel {
 				updateControls();
 			}
 		});*/
-		resetB = createButton(Msg.get("undoAction"), new ActionListener() {
+		revertB = createButton(Msg.get("undoAction"), new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Action action = ap.getAction();
 				if (ap.revertAction()) {
@@ -145,31 +143,23 @@ public class ActionBoard extends JPanel {
 			}
 		});
 	}
-
-	public JButton getSubmitButton() {
-		return submitB;
-	}
-
+	
 	private void switchToControl(boolean on) {
 		for (Entry<ActionType, JButton> btnEntry : actionButtons.entrySet()) {
 			btnEntry.getValue().setEnabled(!on);
 		}
-		for (Component c : controlPanel.getComponents()) {
-			c.setEnabled(on);
-		}
-//		if (on) {
-//			updateControls();
-//		}
+		updateControls();
 	}
 
 	private void updateControls() {
-		submitB.setEnabled(ap.canFinish());
+		finishB.setEnabled(ap.canFinish());
+		revertB.setEnabled(ap.canRevert());
 	}
 
 	private JButton createButton(String label, ActionListener al) {
 		JButton b = new JButton(label);
-//		b.setPreferredSize(new Dimension(50, 30));
 		b.addActionListener(al);
+		b.setEnabled(false);
 		controlPanel.add(b);
 		return b;
 	}
@@ -195,13 +185,13 @@ public class ActionBoard extends JPanel {
 		}
 	}
 
-	public void enableSubmitOnly() {
+	public void enableFinishOnly() {
 		for (Component c : actionPanel.getComponents()) {
 			c.setEnabled(false);
 		}
 		for (Component c : controlPanel.getComponents()) {
 			c.setEnabled(false);
 		}
-		submitB.setEnabled(true);
+		finishB.setEnabled(true);
 	}
 }

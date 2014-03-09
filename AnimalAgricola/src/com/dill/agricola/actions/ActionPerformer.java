@@ -42,17 +42,17 @@ public class ActionPerformer {
 
 		boolean done = action.activate(player, count);
 		if (done) {
-			count++;			
+			count++;
 		}
 		if (done || action.canPerform(player, count)) {
 			player.spendWorker();
 			player.notifyObservers(ChangeType.ACTION_DO);
-			perfListener.stateChanges();
+			setChanged();
 			return true;
 		}
 		return false;
 	}
-	
+
 	public boolean canDoFarmAction(DirPoint pos) {
 		return action.canPerform(player, pos, count) || action.canUnperform(player, pos, count);
 	}
@@ -62,10 +62,12 @@ public class ActionPerformer {
 		if (action.canPerform(player, pos, count)) {
 			action.activate(player, pos, count);
 			count++;
+			setChanged();
 			return true;
-		} else if (action.canUnperform(player, pos, count)){
+		} else if (action.canUnperform(player, pos, count)) {
 			action.undo(player, pos, count);
-			count--;						
+			count--;
+			setChanged();
 			return true;
 		}
 		return false;
@@ -103,31 +105,38 @@ public class ActionPerformer {
 //		return false;
 //	}
 
+	public boolean canRevert() {
+		return action!= null && player != null;
+	}
+	
 	public boolean revertAction() {
-		checkState();
-		boolean done = true;
-		while (count > 0) {
-			done = action.undo(player, count);
-			if (!done) {
-				break;
+		if (canRevert()) {
+			boolean done = true;
+			while (count > 0) {
+				done = action.undo(player, count);
+				if (!done) {
+					break;
+				}
+				count--;
 			}
-			count--;
+			setChanged();
+			if (done) {
+				action = null;
+				player.returnWorker();
+				player.setActiveType(null);
+			}
+			player.notifyObservers(ChangeType.ACTION_UNDO);
+			return done;			
 		}
-		if (done) {
-			action = null;
-			player.returnWorker();
-			player.setActiveType(null);
-		}
-		player.notifyObservers(ChangeType.ACTION_UNDO);
-		return done;
+		return false;
 	}
 
 	public boolean canFinish() {
-		return count > 0 && player.validate();
+		return action!= null && player != null 
+				&& count >= action.getMinimalCount() && player.validate();
 	}
-	
+
 	public boolean finishAction() {
-		checkState();
 		if (canFinish()) {
 			player.setActiveType(null);
 			action.setUsed();
@@ -135,15 +144,20 @@ public class ActionPerformer {
 			action = null;
 			player.notifyObservers(ChangeType.ACTION_DONE);
 			return true;
-		} else {
-			return false;
+		}
+		return false;
+	}
+
+	private void setChanged() {
+		if (perfListener != null) {
+			perfListener.stateChanges();
 		}
 	}
 
 	public void setActionPerfListener(ActionPerfListener perfListener) {
 		this.perfListener = perfListener;
 	}
-	
+
 	public interface ActionPerfListener {
 
 		void stateChanges();// TODO rename

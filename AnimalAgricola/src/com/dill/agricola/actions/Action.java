@@ -20,6 +20,7 @@ public interface Action {
 
 	boolean isFarmAction();
 
+	int getMinimalCount();
 	
 	boolean canPerform(Player player, int count);
 
@@ -43,5 +44,6 @@ public interface Action {
 	Animals getAccumulatedAnimals();
 
 	void addChangeListener(StateChangeListener changeListener);
+
 
 }

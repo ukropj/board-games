@@ -26,7 +26,6 @@ public class Expand extends PurchaseAction {
 	public void reset() {
 		super.reset();
 		materials.clear();
-		setChanged();
 	}
 
 	public void init() {
@@ -35,6 +34,11 @@ public class Expand extends PurchaseAction {
 		lastTakenMaterials.clear();
 		hadExp = false;
 		setChanged();
+	}
+	
+	public int getMinimalCount() {
+		return (hadExp || isAnyLeft()) ? 2 : 1; 
+		// first is fences, second is extension (that may not happen if not any left)
 	}
 
 	protected Materials getCost(int doneSoFar) {
