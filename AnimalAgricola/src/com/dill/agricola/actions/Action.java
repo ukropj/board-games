@@ -18,7 +18,9 @@ public interface Action {
 
 	boolean isUsed();
 
-	boolean isFarmAction();
+	boolean isPurchaseAction();
+	
+	boolean isResourceAction();
 
 	int getMinimalCount();
 	

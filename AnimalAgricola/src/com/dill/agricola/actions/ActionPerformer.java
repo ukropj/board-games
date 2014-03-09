@@ -155,7 +155,7 @@ public class ActionPerformer {
 
 	private void setChanged() {
 		if (perfListener != null) {
-			perfListener.stateChanges();
+			perfListener.stateChanges(action);
 		}
 	}
 
@@ -165,7 +165,7 @@ public class ActionPerformer {
 
 	public interface ActionPerfListener {
 
-		void stateChanges();// TODO rename
+		void stateChanges(Action action);// TODO rename
 
 	}
 

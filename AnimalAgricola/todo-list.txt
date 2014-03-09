@@ -1,7 +1,6 @@
 #TODO#
 
-	building display
-	nicer +/- buttons
+	better building display
 	nicer done/undo buttons
 	animal count font+position
 	embed fonts
@@ -12,14 +11,12 @@
 	
 #Bugs#
 
-	rewards dialog can be closed without animal 
 	farm resizing after extension is added
 
 #Nice to have#
 
-	show real quantities of action resources
-	show real quantities of farm animals
-	sk localization
+	cz/sk localization
 	language picker
 	single player
 	action tooltips
+	farm cursors

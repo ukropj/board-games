@@ -22,8 +22,12 @@ public abstract class PurchaseAction extends AbstractAction {
 		return true;
 	}
 
-	public boolean isFarmAction() {
+	public boolean isPurchaseAction() {
 		return true;
+	}
+	
+	public boolean isResourceAction() {
+		return false;
 	}
 
 	public boolean canDo(Player player, int doneSoFar) {

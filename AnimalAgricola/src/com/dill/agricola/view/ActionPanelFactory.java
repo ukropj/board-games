@@ -181,7 +181,7 @@ public class ActionPanelFactory {
 		case SPECIAL:
 			c.gridx = 4;
 			c.gridy = 8;
-//			c.gridwidth = 2;
+			c.gridwidth = 2;
 			c.weighty = 0;
 //			c.fill = GridBagConstraints.NONE;
 //			c.anchor = GridBagConstraints.CENTER;
@@ -208,6 +208,7 @@ public class ActionPanelFactory {
 			c.weighty = 0.5;
 			c.gridx = 4;
 			c.gridy = 9;
+			c.gridwidth = 2;
 			break;
 		default:
 			actionButton.setText(action.toString());

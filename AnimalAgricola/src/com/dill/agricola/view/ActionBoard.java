@@ -3,6 +3,8 @@ package com.dill.agricola.view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -12,7 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.dill.agricola.actions.Action;
@@ -29,7 +33,7 @@ public class ActionBoard extends JPanel {
 	private final Map<ActionType, Action> actions = new EnumMap<ActionType, Action>(ActionType.class);
 	private final Map<ActionType, JButton> actionButtons = new EnumMap<ActionType, JButton>(ActionType.class);
 	private final JPanel actionPanel;
-	private final JPanel controlPanel;
+	private final JLabel hintLabel;
 	private final Color defaultColor;
 //	private final Border defaultBorder;
 
@@ -49,6 +53,7 @@ public class ActionBoard extends JPanel {
 			final JButton b = new JButton();
 			b.setMargin(new Insets(1, 1, 1, 1));
 			b.setAlignmentX(JButton.CENTER_ALIGNMENT);
+			b.setCursor(new Cursor(Cursor.HAND_CURSOR));
 			b.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if (!action.isUsed()) {
@@ -63,35 +68,29 @@ public class ActionBoard extends JPanel {
 			actionButtons.put(type, b);
 			ActionPanelFactory.createActionPanel(actionPanel, action, b);
 		}
-
-//		buildGeneralSupplyPanel();
-
-		controlPanel = UiFactory.createFlowPanel(5, 0);
+		
+		hintLabel = UiFactory.createLabel("abbc");
 		buildControlPanel(submitListener);
 
 		add(actionPanel, BorderLayout.CENTER);
-		add(controlPanel, BorderLayout.SOUTH);
 
 		defaultColor = revertB.getBackground();
 	}
 
-	/*private void buildGeneralSupplyPanel() {
-		JPanel b = UiFactory.createFlowPanel(5, 0);
-		b.setOpaque(true);
-		b.setBackground(Color.RED);
-		StateChangeListener buildingListener = new BuildingChangeListener(b);
-		buildingListener.stateChanges(null);
-		actions.get(ActionType.SPECIAL).addChangeListener(buildingListener);
-		actions.get(ActionType.SPECIAL2).addChangeListener(buildingListener);
-
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridy = 9;
-		c.gridwidth = 6;
-		c.fill = GridBagConstraints.BOTH;
-		actionPanel.add(b, c);
-	}*/
-
 	private void buildControlPanel(final ActionListener submitListener) {
+		GridBagConstraints c = new GridBagConstraints();
+		JPanel controlPanel = UiFactory.createBorderPanel(5,5);
+		controlPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+		controlPanel.add(hintLabel, BorderLayout.CENTER);
+		c.gridy = 10;
+		c.gridwidth = 6;
+		c.gridheight = 2;
+		c.ipadx = c.ipady = 3;
+		c.insets = new Insets(5, 5, 5, 5);
+		c.fill = GridBagConstraints.BOTH;
+		actionPanel.add(controlPanel, c);
+		
+		JPanel buttons = UiFactory.createFlowPanel(5, 5);
 		finishB = new JButton(Msg.get("finishAction"));
 		finishB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -107,7 +106,8 @@ public class ActionBoard extends JPanel {
 				}
 			}
 		});
-		controlPanel.add(finishB);
+		finishB.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		buttons.add(finishB);
 
 		revertB = new JButton(Msg.get("undoAction"));
 		revertB.addActionListener(new ActionListener() {
@@ -121,11 +121,16 @@ public class ActionBoard extends JPanel {
 				}
 			}
 		});
-		controlPanel.add(revertB);
+		revertB.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		buttons.add(revertB);
+		
+		controlPanel.add(buttons, BorderLayout.SOUTH);
 
 		ap.setActionPerfListener(new ActionPerfListener() {
-			public void stateChanges() {
+
+			public void stateChanges(Action action) {
 				updateControls();
+//				messageLabel
 			}
 		});
 	}
@@ -133,17 +138,31 @@ public class ActionBoard extends JPanel {
 	public void updateActions() {
 		for (Entry<ActionType, JButton> btnEntry : actionButtons.entrySet()) {
 			ActionType type = btnEntry.getKey();
+			Action a = actions.get(type);
 			JButton button = btnEntry.getValue();
 			if (ap.hasAction()) {
 				// when action is being performed, disable everything
 				button.setEnabled(false);
 				if (ap.hasAction(type)) {
 					// TODO mark current action
+					// update hint message
+					StringBuilder text = new StringBuilder("<html>");
+					if (a.isResourceAction()) {
+						text.append( Msg.get("resourcesRecieved"));
+					}
+					if (a.isPurchaseAction()) {
+						if (text.length() > "<html>".length()) {
+							text.append("<br>");
+						}
+						text.append( Msg.get("purchaseExpected"));
+					}
+					hintLabel.setText(text.toString());
 				}
 			} else {
 				// when no action being performed, disable those that cannot be currently performed 
-				Action a = actions.get(type);
 				btnEntry.getValue().setEnabled(ap.getPlayer() != null && a.canDo(ap.getPlayer(), 0));
+				
+				hintLabel.setText(Msg.get("chooseAction"));
 			}
 		}
 		updateControls();
@@ -178,9 +197,7 @@ public class ActionBoard extends JPanel {
 		for (Component c : actionPanel.getComponents()) {
 			c.setEnabled(false);
 		}
-		for (Component c : controlPanel.getComponents()) {
-			c.setEnabled(false);
-		}
+		revertB.setEnabled(true);
 		finishB.setEnabled(true);
 	}
 }

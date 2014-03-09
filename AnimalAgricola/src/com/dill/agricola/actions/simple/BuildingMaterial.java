@@ -15,8 +15,12 @@ public class BuildingMaterial extends AbstractAction {
 		super(ActionType.BUILDING_MATERIAL);
 	}
 	
-	public boolean isFarmAction() {
+	public boolean isPurchaseAction() {
 		return false;
+	}
+	
+	public boolean isResourceAction() {
+		return true;
 	}
 	
 	public boolean doo(Player player, int doneSoFar) {

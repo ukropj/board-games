@@ -36,6 +36,14 @@ public class Expand extends PurchaseAction {
 		setChanged();
 	}
 	
+	public boolean isPurchaseAction() {
+		return hadExp || isAnyLeft();
+	}
+	
+	public boolean isResourceAction() {
+		return true;
+	}
+	
 	public int getMinimalCount() {
 		return (hadExp || isAnyLeft()) ? 2 : 1; 
 		// first is fences, second is extension (that may not happen if not any left)

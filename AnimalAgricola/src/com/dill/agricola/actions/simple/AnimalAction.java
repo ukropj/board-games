@@ -38,8 +38,12 @@ public abstract class AnimalAction extends AbstractAction {
 		setChanged();
 	}
 	
-	public boolean isFarmAction() {
+	public boolean isPurchaseAction() {
 		return false;
+	}
+	
+	public boolean isResourceAction() {
+		return true;
 	}
 	
 	public boolean canDo(Player player, int doneSoFar) {
