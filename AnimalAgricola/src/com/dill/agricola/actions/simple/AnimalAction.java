@@ -42,15 +42,15 @@ public abstract class AnimalAction extends AbstractAction {
 		return false;
 	}
 	
-	public boolean canPerform(Player player, int doneSoFar) {
+	public boolean canDo(Player player, int doneSoFar) {
 		return !isUsed() && doneSoFar == 0;
 	}
 
-	public boolean canUnperform(Player player, int doneSoFar) {
+	public boolean canUndo(Player player, int doneSoFar) {
 		return doneSoFar > 0;
 	}
 
-	public boolean activate(Player player, int doneSoFar) {
+	public boolean doo(Player player, int doneSoFar) {
 		player.purchaseAnimals(animals);
 		lastTakenAnimals.set(animals);
 		animals.clear();
@@ -72,15 +72,15 @@ public abstract class AnimalAction extends AbstractAction {
 		return animals;
 	}
 
-	public boolean canPerform(Player player, DirPoint pos, int count) {
+	public boolean canDo(Player player, DirPoint pos, int count) {
 		return false;
 	}
 	
-	public boolean canUnperform(Player player, DirPoint pos, int count) {
+	public boolean canUndo(Player player, DirPoint pos, int count) {
 		return false;
 	}
 
-	public boolean activate(Player player, DirPoint pos, int count) {
+	public boolean doo(Player player, DirPoint pos, int count) {
 		return false;
 	}
 

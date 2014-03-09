@@ -28,8 +28,8 @@ public class BuildStalls extends BuildAction {
 		return GeneralSupply.useStall();
 	}
 	
-	public boolean canPerform(Player player, DirPoint pos, int doneSoFar) {
-		return doneSoFar < 1 && super.canPerform(player, pos, doneSoFar);
+	public boolean canDo(Player player, DirPoint pos, int doneSoFar) {
+		return doneSoFar < 1 && super.canDo(player, pos, doneSoFar);
 	}
 	
 	protected void postUndo(Player player, Building b) {

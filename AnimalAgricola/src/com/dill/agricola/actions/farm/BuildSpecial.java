@@ -66,11 +66,11 @@ public class BuildSpecial extends BuildAction {
 		return  GeneralSupply.getSpecialBuilding(type);
 	}
 	
-	public boolean canPerform(Player player, int doneSoFar) {
+	public boolean canDo(Player player, int doneSoFar) {
 		return !isUsed() && isAnyLeft(); // currently can perform even if player cannot purchase anything
 	}
 
-	public boolean canPerform(Player player, DirPoint pos, int doneSoFar) {
+	public boolean canDo(Player player, DirPoint pos, int doneSoFar) {
 		// there does not need to be "any left"
 		return !isUsed() && doneSoFar < 1 && toBuild != null && canPurchase(player, toBuild, pos);
 	}
@@ -122,11 +122,11 @@ public class BuildSpecial extends BuildAction {
 		}
 		Icon icon = AgriImages.getBuildingIcon(building.getType(), ImgSize.MEDIUM);
 		int result = UiFactory.showOptionDialog(Msg.get("chooseReward"), building.getType().name, icon, opts);
-		return result != JOptionPane.CLOSED_OPTION ? animalRewards[result] : null;
+		return result != JOptionPane.CLOSED_OPTION ? animalRewards[result] : animalRewards[0];
 	}
 
-	public boolean activate(Player player, int doneSoFar) {
-		if (canPerform(player, doneSoFar)) {
+	public boolean doo(Player player, int doneSoFar) {
+		if (canDo(player, doneSoFar)) {
 			toBuild = chooseBuilding(player);
 			if (toBuild != null) {
 				player.setActiveType(thing);
@@ -136,14 +136,14 @@ public class BuildSpecial extends BuildAction {
 		return false;
 	}
 	
-	public boolean activate(Player player, DirPoint pos, int doneSoFar) {
+	public boolean doo(Player player, DirPoint pos, int doneSoFar) {
 		if (toBuild == BuildingType.OPEN_STABLES) {
 			osCostNo = chooseOpenStablesCost(player);
 			if (osCostNo == JOptionPane.CLOSED_OPTION) {
 				return false;
 			}
 		}
-		return super.activate(player, pos, doneSoFar);
+		return super.doo(player, pos, doneSoFar);
 	}
 	
 	protected void postActivate(Player player, Building b) {

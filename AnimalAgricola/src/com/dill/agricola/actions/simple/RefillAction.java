@@ -31,11 +31,11 @@ public abstract class RefillAction extends AbstractAction {
 		setChanged();
 	}
 
-	public boolean canPerform(Player player, int doneSoFar) {
+	public boolean canDo(Player player, int doneSoFar) {
 		return !isUsed() && !materials.isEmpty();
 	}
 
-	public boolean canUnperform(Player player, int doneSoFar) {
+	public boolean canUndo(Player player, int doneSoFar) {
 		return !lastTakenMaterials.isEmpty();
 	}
 
@@ -43,8 +43,8 @@ public abstract class RefillAction extends AbstractAction {
 		return false;
 	}
 
-	public boolean activate(Player player, int doneSoFar) {
-		if (canPerform(player, doneSoFar)) {
+	public boolean doo(Player player, int doneSoFar) {
+		if (canDo(player, doneSoFar)) {
 			player.addMaterial(materials);
 			lastTakenMaterials.set(materials);
 			materials.clear();
@@ -55,7 +55,7 @@ public abstract class RefillAction extends AbstractAction {
 	}
 
 	public boolean undo(Player player, int doneSoFar) {
-		if (canUnperform(player, doneSoFar)) {
+		if (canUndo(player, doneSoFar)) {
 			player.removeMaterial(lastTakenMaterials);
 			materials.set(lastTakenMaterials);
 			lastTakenMaterials.clear();
@@ -70,15 +70,15 @@ public abstract class RefillAction extends AbstractAction {
 		return materials;
 	}
 
-	public boolean canPerform(Player player, DirPoint pos, int count) {
+	public boolean canDo(Player player, DirPoint pos, int count) {
 		return false;
 	}
 
-	public boolean canUnperform(Player player, DirPoint pos, int count) {
+	public boolean canUndo(Player player, DirPoint pos, int count) {
 		return false;
 	}
 
-	public boolean activate(Player player, DirPoint pos, int count) {
+	public boolean doo(Player player, DirPoint pos, int count) {
 		return false;
 	}
 

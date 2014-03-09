@@ -23,24 +23,24 @@ public abstract class BuildAction extends PurchaseAction {
 
 	abstract protected Building getBuildingInstance(BuildingType type); 
 	
-	public boolean canPerform(Player player, int doneSoFar) {
+	public boolean canDo(Player player, int doneSoFar) {
 		return !isUsed() && isAnyLeft() && (toBuild == null || player.canPurchase(toBuild, getCost(doneSoFar), null));
 	}
 
-	public boolean canPerform(Player player, DirPoint pos, int doneSoFar) {
-		return canPerform(player, doneSoFar) && toBuild != null && player.canPurchase(toBuild, getCost(doneSoFar), pos);
+	public boolean canDo(Player player, DirPoint pos, int doneSoFar) {
+		return canDo(player, doneSoFar) && toBuild != null && player.canPurchase(toBuild, getCost(doneSoFar), pos);
 	}
 
-	public boolean canUnperform(Player player, int doneSoFar) {
+	public boolean canUndo(Player player, int doneSoFar) {
 		return doneSoFar > 0 && toBuild != null;
 	}
 
-	public boolean canUnperform(Player player, DirPoint pos, int doneSoFar) {
-		return canUnperform(player, doneSoFar) && player.canUnpurchase(toBuild, pos);
+	public boolean canUndo(Player player, DirPoint pos, int doneSoFar) {
+		return canUndo(player, doneSoFar) && player.canUnpurchase(toBuild, pos);
 	}
 
-	public boolean activate(Player player, DirPoint pos, int doneSoFar) {
-		if (canPerform(player, pos, doneSoFar)) {
+	public boolean doo(Player player, DirPoint pos, int doneSoFar) {
+		if (canDo(player, pos, doneSoFar)) {
 			Building b = getBuildingInstance(toBuild);
 			player.purchase(b, getCost(doneSoFar), pos);
 			postActivate(player, b);
@@ -51,7 +51,7 @@ public abstract class BuildAction extends PurchaseAction {
 	}
 
 	public boolean undo(Player player, int doneSoFar) {
-		if (canUnperform(player, doneSoFar)) {
+		if (canUndo(player, doneSoFar)) {
 			Building b = player.unpurchase(toBuild, null);
 			postUndo(player, b);
 			setChanged();
@@ -61,7 +61,7 @@ public abstract class BuildAction extends PurchaseAction {
 	}
 
 	public boolean undo(Player player, DirPoint pos, int doneSoFar) {
-		if (canUnperform(player, pos, doneSoFar)) {
+		if (canUndo(player, pos, doneSoFar)) {
 			Building b = player.unpurchase(toBuild, pos);
 			postUndo(player, b);
 			setChanged();

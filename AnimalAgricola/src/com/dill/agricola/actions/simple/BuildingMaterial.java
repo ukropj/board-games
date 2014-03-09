@@ -19,7 +19,7 @@ public class BuildingMaterial extends AbstractAction {
 		return false;
 	}
 	
-	public boolean activate(Player player, int doneSoFar) {
+	public boolean doo(Player player, int doneSoFar) {
 		player.addMaterial(MATERIALS);
 		return true;
 	}
@@ -33,23 +33,23 @@ public class BuildingMaterial extends AbstractAction {
 		return super.toString() + "<br>" + MATERIALS;
 	}
 
-	public boolean canPerform(Player player, int count) {
+	public boolean canDo(Player player, int count) {
 		return !isUsed();
 	}
 
-	public boolean canUnperform(Player player, int count) {
+	public boolean canUndo(Player player, int count) {
 		return count != 0;
 	}
 
-	public boolean canPerform(Player player, DirPoint pos, int count) {
+	public boolean canDo(Player player, DirPoint pos, int count) {
 		return false;
 	}
 
-	public boolean canUnperform(Player player, DirPoint pos, int count) {
+	public boolean canUndo(Player player, DirPoint pos, int count) {
 		return false;
 	}
 
-	public boolean activate(Player player, DirPoint pos, int count) {
+	public boolean doo(Player player, DirPoint pos, int count) {
 		return false;
 	}
 

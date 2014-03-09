@@ -23,10 +23,10 @@ public class StartOneWood extends RefillAction {
 		previousStartingPlayer = null;
 	}
 
-	public boolean activate(Player player, int doneSoFar) {
+	public boolean doo(Player player, int doneSoFar) {
 		previousStartingPlayer = game.getStartingPlayer();
 		game.setStartingPlayer(player);
-		return super.activate(player, doneSoFar);
+		return super.doo(player, doneSoFar);
 	}
 	
 	public boolean undo(Player player, int doneSoFar) {

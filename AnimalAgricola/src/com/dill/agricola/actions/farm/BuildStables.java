@@ -35,13 +35,13 @@ public class BuildStables extends BuildAction {
 		return new Stables();
 	}
 	
-	public boolean canPerform(Player player, int doneSoFar) {
+	public boolean canDo(Player player, int doneSoFar) {
 		return !isUsed() && isAnyLeft() && 
 				(toBuild == null || player.canPurchase(toBuild, COSTS[0], null) || player.canPurchase(toBuild, COSTS[1], null));
 	}
 
-	public boolean canPerform(Player player, DirPoint pos, int doneSoFar) {
-		return canPerform(player, doneSoFar) && toBuild != null && 
+	public boolean canDo(Player player, DirPoint pos, int doneSoFar) {
+		return canDo(player, doneSoFar) && toBuild != null && 
 				(player.canPurchase(toBuild, COSTS[0], pos) || player.canPurchase(toBuild, COSTS[1], pos));
 	}
 
@@ -56,12 +56,12 @@ public class BuildStables extends BuildAction {
 		return UiFactory.showOptionDialog("Choose cost", "Stables", icon, opts);
 	}
 
-	public boolean activate(Player player, DirPoint pos, int doneSoFar) {
+	public boolean doo(Player player, DirPoint pos, int doneSoFar) {
 		costNo = chooseStablesCost(player);
 		if (costNo == JOptionPane.CLOSED_OPTION) {
 			return false;
 		}
-		return super.activate(player, pos, doneSoFar);
+		return super.doo(player, pos, doneSoFar);
 	}
 
 }

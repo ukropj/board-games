@@ -49,25 +49,25 @@ public class Expand extends PurchaseAction {
 		return GeneralSupply.getLeft(Supplyable.EXTENSION) > 0;
 	}
 
-	public boolean canPerform(Player player, int doneSoFar) {
+	public boolean canDo(Player player, int doneSoFar) {
 		return !isUsed() && !materials.isEmpty();
 	}
 
-	public boolean canPerform(Player player, DirPoint pos, int doneSoFar) {
+	public boolean canDo(Player player, DirPoint pos, int doneSoFar) {
 		return !isUsed() && !hadExp && isAnyLeft() && player.canPurchase(thing, getCost(doneSoFar), pos);
 	}
 
-	public boolean canUnperform(Player player, int doneSoFar) {
+	public boolean canUndo(Player player, int doneSoFar) {
 		return !lastTakenMaterials.isEmpty();
 	}
 
-	public boolean canUnperform(Player player, DirPoint pos, int doneSoFar) {
+	public boolean canUndo(Player player, DirPoint pos, int doneSoFar) {
 		return hadExp && player.canUnpurchase(thing, pos);
 	}
 
-	public boolean activate(Player player, int doneSoFar) {
-		if (canPerform(player, doneSoFar)) {
-			super.activate(player, doneSoFar);
+	public boolean doo(Player player, int doneSoFar) {
+		if (canDo(player, doneSoFar)) {
+			super.doo(player, doneSoFar);
 			player.addMaterial(materials);
 			lastTakenMaterials.set(materials);
 			materials.clear();

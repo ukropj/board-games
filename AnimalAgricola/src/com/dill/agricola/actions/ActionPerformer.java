@@ -2,6 +2,7 @@ package com.dill.agricola.actions;
 
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.model.Player;
+import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.support.Namer;
 
@@ -30,6 +31,10 @@ public class ActionPerformer {
 	public boolean hasAction() {
 		return action != null;
 	}
+	
+	public boolean hasAction(ActionType type) {
+		return action != null && action.getType() == type;
+	}
 
 	public Action getAction() {
 		return action;
@@ -40,32 +45,32 @@ public class ActionPerformer {
 		this.count = 0;
 		checkState();
 
-		boolean done = action.activate(player, count);
-		if (done) {
+		boolean done = action.canDo(player, count);
+		if (done && action.doo(player, count)) {
 			count++;
 		}
-		if (done || action.canPerform(player, count)) {
+		if (done) {
 			player.spendWorker();
 			player.notifyObservers(ChangeType.ACTION_DO);
 			setChanged();
 			return true;
+		} else {
+			this.action = null; // action cannot be started
+			return false;
 		}
-		return false;
 	}
 
 	public boolean canDoFarmAction(DirPoint pos) {
-		return action.canPerform(player, pos, count) || action.canUnperform(player, pos, count);
+		return action.canDo(player, pos, count) || action.canUndo(player, pos, count);
 	}
 
 	public boolean doFarmAction(DirPoint pos) {
 		checkState();
-		if (action.canPerform(player, pos, count)) {
-			action.activate(player, pos, count);
+		if (action.canDo(player, pos, count) && action.doo(player, pos, count)) {
 			count++;
 			setChanged();
 			return true;
-		} else if (action.canUnperform(player, pos, count)) {
-			action.undo(player, pos, count);
+		} else if (action.canUndo(player, pos, count) && action.undo(player, pos, count)) {
 			count--;
 			setChanged();
 			return true;

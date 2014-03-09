@@ -26,31 +26,31 @@ public abstract class PurchaseAction extends AbstractAction {
 		return true;
 	}
 
-	public boolean canPerform(Player player, int doneSoFar) {
+	public boolean canDo(Player player, int doneSoFar) {
 		return !isUsed() && isAnyLeft() && player.canPurchase(thing, getCost(doneSoFar), null);
 	}
 
-	public boolean canPerform(Player player, DirPoint pos, int doneSoFar) {
-		return canPerform(player, doneSoFar) && player.canPurchase(thing, getCost(doneSoFar), pos);
+	public boolean canDo(Player player, DirPoint pos, int doneSoFar) {
+		return canDo(player, doneSoFar) && player.canPurchase(thing, getCost(doneSoFar), pos);
 	}
 
-	public boolean canUnperform(Player player, int doneSoFar) {
+	public boolean canUndo(Player player, int doneSoFar) {
 		return doneSoFar > 0;
 	}
 
-	public boolean canUnperform(Player player, DirPoint pos, int doneSoFar) {
-		return canUnperform(player, doneSoFar) && player.canUnpurchase(thing, pos);
+	public boolean canUndo(Player player, DirPoint pos, int doneSoFar) {
+		return canUndo(player, doneSoFar) && player.canUnpurchase(thing, pos);
 	}
 
-	public boolean activate(Player player, int doneSoFar) {
-		if (canPerform(player, doneSoFar)) {
+	public boolean doo(Player player, int doneSoFar) {
+		if (canDo(player, doneSoFar)) {
 			player.setActiveType(thing);
 		}
 		return false;
 	}
 
-	public boolean activate(Player player, DirPoint pos, int doneSoFar) {
-		if (canPerform(player, pos, doneSoFar)) {
+	public boolean doo(Player player, DirPoint pos, int doneSoFar) {
+		if (canDo(player, pos, doneSoFar)) {
 			player.purchase(thing, getCost(doneSoFar), pos);
 			postActivate();
 			setChanged();
@@ -60,7 +60,7 @@ public abstract class PurchaseAction extends AbstractAction {
 	}
 
 	public boolean undo(Player player, int doneSoFar) {
-		if (canUnperform(player, doneSoFar)) {
+		if (canUndo(player, doneSoFar)) {
 			player.unpurchase(thing, getCost(doneSoFar - 1), null);
 			postUndo();
 			setChanged();
@@ -70,7 +70,7 @@ public abstract class PurchaseAction extends AbstractAction {
 	}
 
 	public boolean undo(Player player, DirPoint pos, int doneSoFar) {
-		if (canUnperform(player, pos, doneSoFar)) {
+		if (canUndo(player, pos, doneSoFar)) {
 			player.unpurchase(thing, getCost(doneSoFar - 1), pos);
 			postUndo();
 			return true;

@@ -148,6 +148,7 @@ public class Board extends JFrame/* implements Observer*/{
 		ap.setPlayer(currentPlayer);
 		playerBoards[currentPlayer.getColor().ordinal()].setActive(true);
 		playerBoards[currentPlayer.getColor().other().ordinal()].setActive(false);
+		actionBoard.updateActions();
 		if (Main.DEBUG) {
 			debugPanel.setCurrentPlayer(currentPlayer.getColor());			
 		}

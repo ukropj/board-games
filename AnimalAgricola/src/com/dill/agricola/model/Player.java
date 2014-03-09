@@ -22,7 +22,7 @@ public class Player extends SimpleObservable {
 
 	public static final int USED_EXT_VP = 4;
 
-	public static final int MAX_WORKERS = Main.DEBUG ? 1 : 3;
+	public static final int MAX_WORKERS = Main.DEBUG ? 2 : 3;
 
 	private final PlayerColor color;
 	public final Farm farm;
@@ -53,9 +53,6 @@ public class Player extends SimpleObservable {
 			addMaterial(new Materials(Material.STONE, 20));
 			addMaterial(new Materials(Material.REED, 20));
 
-//			farm.extend(Dir.W);
-//			farm.extend(Dir.E);
-//			farm.extend(Dir.E);
 			DirPoint pos = new DirPoint(1, 1);
 			farm.put(Purchasable.FENCE, new DirPoint(pos, Dir.N));
 			farm.put(Purchasable.FENCE, new DirPoint(pos, Dir.W));

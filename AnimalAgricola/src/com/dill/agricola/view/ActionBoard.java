@@ -53,10 +53,8 @@ public class ActionBoard extends JPanel {
 				public void actionPerformed(ActionEvent e) {
 					if (!action.isUsed()) {
 						if (ap.startAction(action)) {
-							switchToControl(true);
 							b.setBackground(ap.getPlayer().getColor().getRealColor());
-							b.setEnabled(false);
-//							b.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
+							updateActions();
 						}
 					}
 				}
@@ -94,14 +92,12 @@ public class ActionBoard extends JPanel {
 	}*/
 
 	private void buildControlPanel(final ActionListener submitListener) {
-		finishB = createButton(Msg.get("finishAction"), new ActionListener() {
+		finishB = new JButton(Msg.get("finishAction"));
+		finishB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (ap.hasAction()) {
-//					Action action = ap.getAction();
 					if (ap.finishAction()) {
-//						JButton b = actionButtons.get(action.getType());
-//						b.setBorder(defaultBorder);
-						switchToControl(false);
+						updateActions();
 						submitListener.actionPerformed(e);
 					} else {
 						System.out.println("Cannot finish action");
@@ -111,42 +107,44 @@ public class ActionBoard extends JPanel {
 				}
 			}
 		});
-		
-		/*moreB = createButton(Msg.get("doMoreAction"), new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				ap.doActionMore();
-				updateControls();
-			}
-		});
-		lessB = createButton(Msg.get("doLessAction"), new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				ap.doActionLess();
-				updateControls();
-			}
-		});*/
-		revertB = createButton(Msg.get("undoAction"), new ActionListener() {
+		controlPanel.add(finishB);
+
+		revertB = new JButton(Msg.get("undoAction"));
+		revertB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Action action = ap.getAction();
 				if (ap.revertAction()) {
 					JButton b = actionButtons.get(action.getType());
 					b.setBackground(defaultColor);
 					b.setEnabled(true);
-//					b.setBorder(defaultBorder);
-					switchToControl(false);
+					updateActions();
 				}
 			}
 		});
-		
+		controlPanel.add(revertB);
+
 		ap.setActionPerfListener(new ActionPerfListener() {
 			public void stateChanges() {
 				updateControls();
 			}
 		});
 	}
-	
-	private void switchToControl(boolean on) {
+
+	public void updateActions() {
 		for (Entry<ActionType, JButton> btnEntry : actionButtons.entrySet()) {
-			btnEntry.getValue().setEnabled(!on);
+			ActionType type = btnEntry.getKey();
+			JButton button = btnEntry.getValue();
+			if (ap.hasAction()) {
+				// when action is being performed, disable everything
+				button.setEnabled(false);
+				if (ap.hasAction(type)) {
+					// TODO mark current action
+				}
+			} else {
+				// when no action being performed, disable those that cannot be currently performed 
+				Action a = actions.get(type);
+				btnEntry.getValue().setEnabled(ap.getPlayer() != null && a.canDo(ap.getPlayer(), 0));
+			}
 		}
 		updateControls();
 	}
@@ -154,14 +152,6 @@ public class ActionBoard extends JPanel {
 	private void updateControls() {
 		finishB.setEnabled(ap.canFinish());
 		revertB.setEnabled(ap.canRevert());
-	}
-
-	private JButton createButton(String label, ActionListener al) {
-		JButton b = new JButton(label);
-		b.addActionListener(al);
-		b.setEnabled(false);
-		controlPanel.add(b);
-		return b;
 	}
 
 	public void resetActions() {
@@ -175,7 +165,6 @@ public class ActionBoard extends JPanel {
 		for (Action action : actions.values()) {
 			action.init();
 		}
-		switchToControl(false);
 	}
 
 	public void clearActions() {

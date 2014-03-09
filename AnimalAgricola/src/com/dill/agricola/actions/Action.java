@@ -22,19 +22,21 @@ public interface Action {
 
 	int getMinimalCount();
 	
-	boolean canPerform(Player player, int count);
+	
+	boolean canDo(Player player, int count);
 
-	boolean canUnperform(Player player, int count);
+	boolean doo(Player player, int count);
 
-	boolean canPerform(Player player, DirPoint pos, int count);
+	boolean canDo(Player player, DirPoint pos, int count);
 
-	boolean canUnperform(Player player, DirPoint pos, int count);
+	boolean doo(Player player, DirPoint pos, int count);
 
-	boolean activate(Player player, int count);
 
-	boolean activate(Player player, DirPoint pos, int count);
+	boolean canUndo(Player player, int count);
 
 	boolean undo(Player player, int count);
+
+	boolean canUndo(Player player, DirPoint pos, int count);
 
 	boolean undo(Player player, DirPoint pos, int count);
 

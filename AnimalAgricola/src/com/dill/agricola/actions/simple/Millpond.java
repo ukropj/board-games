@@ -37,11 +37,11 @@ public class Millpond extends AnimalAction {
 		setChanged();
 	}
 
-	public boolean activate(Player player, int doneSoFar) {
+	public boolean doo(Player player, int doneSoFar) {
 		player.addMaterial(materials);
 		lastTakenMaterials.set(materials);
 		materials.clear();
-		return super.activate(player, doneSoFar);
+		return super.doo(player, doneSoFar);
 	}
 
 	public boolean undo(Player player, int doneSoFar) {
