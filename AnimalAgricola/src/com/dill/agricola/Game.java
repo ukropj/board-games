@@ -57,9 +57,10 @@ public class Game {
 		players[PlayerColor.RED.ordinal()] = new Player(PlayerColor.RED);
 
 		board.init(this);
-		if (Main.DEBUG) {
-			board.buildDebugPanel(players);
-		}
+//		if (Main.DEBUG) {
+//			board.buildDebugPanel(players);
+//		}
+		
 //		board.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		board.pack();
 		board.setLocationRelativeTo(null);

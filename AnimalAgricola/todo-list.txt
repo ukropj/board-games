@@ -1,7 +1,6 @@
 #TODO#
 
 	better building display
-	nicer done/undo buttons
 	animal count font+position
 	embed fonts
 	round meter
@@ -10,8 +9,6 @@
 	investicate "serial"
 	
 #Bugs#
-
-	farm resizing after extension is added
 
 #Nice to have#
 

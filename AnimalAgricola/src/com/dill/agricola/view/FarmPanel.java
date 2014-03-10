@@ -213,7 +213,6 @@ public class FarmPanel extends JPanel {
 
 		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
-		g.setFont(Fonts.FARM_FONT);
 
 		// background (should not be seen)
 		g.setColor(Color.WHITE);
@@ -348,6 +347,7 @@ public class FarmPanel extends JPanel {
 
 			g.setColor(type != null ? (space.isValid() ? type.getContrastingColor() : Color.RED) : Color.BLACK);
 			String text = count + "/" + space.getMaxCapacity();
+			g.setFont(Fonts.FARM_FONT);
 			g.drawString(text, realPos.x + S - 5 * M, realPos.y + S - 2 * M);
 		}
 
@@ -423,6 +423,28 @@ public class FarmPanel extends JPanel {
 			}
 			if (img != null) {
 				g.drawImage(img, r.x, r.y, r.width, r.height, null);
+				// TODO extract
+				// name
+				g.setColor(Color.BLACK);
+				g.setFont(Fonts.FARM_BUILDING_FONT);
+				int x = 18, y = 31, maxw = 63;
+				if (type == BuildingType.COTTAGE) {
+					y -= 1;
+				}
+				Fonts.updateFontToFit(g, type.name, maxw);
+				int textW = g.getFontMetrics().stringWidth(type.name);
+				g.drawString(type.name, r.x + x + (maxw - textW) / 2, r.y + y);
+				
+				// text
+				if (type.text != null) {
+					g.setFont(Fonts.BUILDING_FONT2);
+					Fonts.updateFontToFit(g, type.text, (int) (r.width * type.textWidth));
+					float ty = r.height * type.y, textH = g.getFontMetrics().getHeight();
+					for (String line : type.text.split("[\r\n]+")) {
+						g.drawString(line, r.x + (r.width * type.x), r.y + ty);
+						ty += textH;
+					}
+				}
 			}
 		}
 
@@ -632,12 +654,16 @@ public class FarmPanel extends JPanel {
 					availableAnimals = availableAnimals != null ? availableAnimals : farm.guessAnimalTypesToPut(pos, true);
 					Animal type = getAnimalType(availableAnimals, relativeDirPoint);
 					if (type != null) {
-						farm.putAnimals(pos, type, multiClick ? Integer.MAX_VALUE : 1);
-						done = true;
+						if (farm.putAnimals(pos, type, multiClick ? Integer.MAX_VALUE : 1) > 0) {
+							done = true;
+							changeType = ChangeType.FARM_ANIMALS;
+						}
 					}
 				} else {
-					farm.takeAnimals(pos, multiClick ? Integer.MAX_VALUE : 1);
-					done = true;
+					if (farm.takeAnimals(pos, multiClick ? Integer.MAX_VALUE : 1) > 0) {
+						done = true;
+						changeType = ChangeType.FARM_ANIMALS;
+					}
 				}
 			}
 
@@ -650,16 +676,23 @@ public class FarmPanel extends JPanel {
 			DirPoint pos = toFarmPos(e.getX(), e.getY());
 			DirPoint relativeDirPoint = toRealRelativePos(e.getX(), e.getY());
 			int count = -e.getWheelRotation();
+			boolean done = false;
 
 			if (count > 0) {
 				Animal type = getAnimalType(farm.guessAnimalTypesToPut(pos, true), relativeDirPoint);
 				if (type != null) {
-					farm.putAnimals(pos, type, count);
+					if (farm.putAnimals(pos, type, count) > 0) {
+						done = true;
+					}
 				}
 			} else {
-				farm.takeAnimals(pos, -count);
+				if (farm.takeAnimals(pos, -count) > 0) {
+					done = true;
+				}
 			}
-			farm.notifyObservers(ChangeType.FARM_CLICK);
+			if (done) {
+				farm.notifyObservers(ChangeType.FARM_ANIMALS);
+			}
 		}
 
 	}

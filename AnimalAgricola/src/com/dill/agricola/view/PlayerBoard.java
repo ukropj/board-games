@@ -195,7 +195,6 @@ public class PlayerBoard extends JPanel implements Observer {
 		updatePlayer();
 		if (arg == ChangeType.FARM_RESIZE) {
 			farmPanel.revalidate();
-			System.out.println("revalidated");
 		}
 		updateFarm();
 	}

@@ -28,7 +28,7 @@ import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.UiFactory;
 
 @SuppressWarnings("serial")
-public class Board extends JFrame/* implements Observer*/{
+public class Board extends JFrame{
 
 	private Game game;
 
@@ -110,6 +110,8 @@ public class Board extends JFrame/* implements Observer*/{
 		c.fill = GridBagConstraints.BOTH;
 		
 		mainPane.add(new JScrollPane(playerBoard), c);
+		
+		player.addObserver(actionBoard);
 	}
 
 	private void initActionsBoard() {
@@ -149,15 +151,16 @@ public class Board extends JFrame/* implements Observer*/{
 		playerBoards[currentPlayer.getColor().ordinal()].setActive(true);
 		playerBoards[currentPlayer.getColor().other().ordinal()].setActive(false);
 		actionBoard.updateActions();
-		if (Main.DEBUG) {
-			debugPanel.setCurrentPlayer(currentPlayer.getColor());			
-		}
+//		if (Main.DEBUG) {
+//			debugPanel.setCurrentPlayer(currentPlayer.getColor());			
+//		}
 	}
 
 	public void endRound() {
 		playerBoards[0].setActive(true);
 		playerBoards[1].setActive(true);
 		actionBoard.clearActions();
+		ap.setPlayer(null);
 		actionBoard.enableFinishOnly();
 	}
 
@@ -209,15 +212,5 @@ public class Board extends JFrame/* implements Observer*/{
 		}
 
 	}
-
-	/*public void update(Observable o, Object arg) {
-		if (arg == ChangeType.FARM_RESIZE && ((getExtendedState() & JFrame.MAXIMIZED_BOTH) != JFrame.MAXIMIZED_BOTH)) {
-//			pack(); // TODO not working properly 
-			playerBoards[0].revalidate();
-			playerBoards[1].revalidate();
-			System.out.println("revalidated");
-		}
-	}*/
-
 
 }

@@ -35,18 +35,30 @@ public class Msg {
 			return msgCode;
 		}
 	}
-	
+
 	public static String get(String msgCode, Object... params) {
 		try {
 			String msg = messages.getString(msgCode);
 			for (int i = 0; i < params.length; i++) {
-				msg = msg.replaceAll("\\$\\{" + i+ "\\}", params[i].toString());
+				msg = msg.replaceAll("\\$\\{" + i + "\\}", params[i].toString());
 			}
 			return msg;
 		} catch (MissingResourceException e) {
 			System.err.println("Message not found: " + msgCode);
 			return msgCode;
 		}
+	}
+
+	public static String getNum(int number, String msgCode, Object... params) {
+		number = Math.abs(number);
+		if (number == 0 || number >= 5) {
+			msgCode += "Many";
+		} else if (number == 1) {
+			msgCode += "One";
+		} else if (number < 5) {
+			msgCode += "Few";
+		}
+		return get(msgCode, params);
 	}
 
 	private static class UnicodeControl extends Control {

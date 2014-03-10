@@ -39,6 +39,10 @@ public class UiFactory {
 
 	private UiFactory() {
 	}
+	
+//	public static String pad(String str, int length) {
+//		return String.format("%1$-" + length + "s", str);
+//	}
 
 	public static JPanel createFlowPanel() {
 		return createFlowPanel(0, 0);

@@ -40,10 +40,11 @@ public class AgriImages {
 	private static BufferedImage[] stallsAndStables = new BufferedImage[8];
 	private static BufferedImage[] exts = new BufferedImage[4];
 
-	private final static Map<Dir, BufferedImage> arrowsMedium = new EnumMap<Dir, BufferedImage>(Dir.class);
-	private final static Map<Dir, BufferedImage> arrowsBig = new EnumMap<Dir, BufferedImage>(Dir.class);
-	private final static Map<Dir, BufferedImage> redArrowsMedium = new EnumMap<Dir, BufferedImage>(Dir.class);
-	private final static Map<Dir, BufferedImage> redArrowsBig = new EnumMap<Dir, BufferedImage>(Dir.class);
+	private final static BufferedImage[] arrowsMedium = new BufferedImage[Dir.values().length];
+	private final static BufferedImage[] arrowsBig = new BufferedImage[Dir.values().length];
+	private final static BufferedImage[] redArrowsMedium = new BufferedImage[Dir.values().length];
+	private final static BufferedImage[] redArrowsBig = new BufferedImage[Dir.values().length];
+	private final static BufferedImage[] symbols = new BufferedImage[4];
 
 	private AgriImages() {
 	}
@@ -193,7 +194,7 @@ public class AgriImages {
 	public static ImageIcon getAnimalIcon(Animal type, ImgSize size) {
 		return new ImageIcon(getAnimalImage(type, size));
 	}
-	
+
 	public static ImageIcon getAnimalMultiIcon(Animal type, int count, ImgSize size) {
 		return getMultiIcon(getAnimalImage(type, size), count);
 	}
@@ -215,7 +216,7 @@ public class AgriImages {
 	public static ImageIcon getMaterialMultiIcon(Material type, int count) {
 		return getMultiIcon(getMaterialImage(type), count);
 	}
-	
+
 	public static ImageIcon getMultiIcon(BufferedImage img, int count) {
 		int d = 5;
 		BufferedImage multiImg = new BufferedImage(img.getWidth() + d * (count - 1),
@@ -236,11 +237,11 @@ public class AgriImages {
 		} else {
 			BufferedImage img = null;
 			switch (type) {
-			case EMPTY :
+			case EMPTY:
 				return null;
-			/*case BUILDING:
-				img = Images.createImage("special");
-				break;*/
+				/*case BUILDING:
+					img = Images.createImage("special");
+					break;*/
 			case STALL:
 				img = Images.createImage("b_stall1");
 				break;
@@ -263,7 +264,6 @@ public class AgriImages {
 				img = Images.createImage("b_open-stables");
 				break;
 			}
-			addBuildingText(type, img);
 			buildings.put(type, img);
 			return img;
 		}
@@ -272,7 +272,7 @@ public class AgriImages {
 	public static BufferedImage getCottageImage(int id) {
 		if (cottages[id] == null) {
 			BufferedImage img = Images.createImage("b_cottage" + (id + 1));
-			addBuildingText(BuildingType.COTTAGE, img);
+//			addBuildingText(BuildingType.COTTAGE, img);
 			cottages[id] = img;
 		}
 		return cottages[id];
@@ -281,7 +281,7 @@ public class AgriImages {
 	public static BufferedImage getStallImage(int id) {
 		if (stallsAndStables[id] == null) {
 			BufferedImage img = Images.createImage("b_stall" + (id + 1));
-			addBuildingText(BuildingType.STALL, img);
+//			addBuildingText(BuildingType.STALL, img);
 			stallsAndStables[id] = img;
 		}
 		return stallsAndStables[id];
@@ -291,16 +291,20 @@ public class AgriImages {
 		int arrId = id + 4;
 		if (stallsAndStables[arrId] == null) {
 			BufferedImage img = Images.createImage("b_stables" + (id + 1));
-			addBuildingText(BuildingType.STABLES, img);
+//			addBuildingText(BuildingType.STABLES, img);
 			//			img = Images.getBestScaledInstance(img, 0.5f);
 			stallsAndStables[arrId] = img;
 		}
 		return stallsAndStables[arrId];
 	}
 
-	private static void addBuildingText(BuildingType type, BufferedImage img) {
+	private static BufferedImage addBuildingText(BuildingType type, BufferedImage orig) {
+		int w = orig.getWidth(), h = orig.getHeight();
+		BufferedImage img = new BufferedImage(w, h, Images.getImageType(orig));
 		Graphics2D g = img.createGraphics();
+		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+		g.drawImage(orig, 0, 0, w, h, null);
 		g.setFont(Fonts.BUILDING_FONT2);
 		g.setColor(Color.BLACK);
 		// name
@@ -309,23 +313,25 @@ public class AgriImages {
 			y -= 2;
 		}
 		Fonts.updateFontToFit(g, type.name, maxw);
-		int w = g.getFontMetrics().stringWidth(type.name);
-		g.drawString(type.name, x + (maxw - w) / 2, y);
+		int nameW = g.getFontMetrics().stringWidth(type.name);
+		g.drawString(type.name, x + (maxw - nameW) / 2, y);
 		// text
 		if (type.text != null) {
 			g.setFont(Fonts.BUILDING_FONT2);
-			Fonts.updateFontToFit(g, type.text, type.textWidth);
-			int ty = type.textPos.y, h = g.getFontMetrics().getHeight();
+			Fonts.updateFontToFit(g, type.text, (int) (w * type.textWidth));
+			float ty = h * type.y, textH = g.getFontMetrics().getHeight();
 			for (String line : type.text.split("[\r\n]+")) {
-				g.drawString(line, type.textPos.x, ty);
-				ty += h;
+				g.drawString(line, w * type.x, ty);
+				ty += textH;
 			}
 		}
 		g.dispose();
+		return img;
 	}
 
 	public static ImageIcon getBuildingIcon(BuildingType type, ImgSize size) {
 		BufferedImage img = getBuildingImage(type);
+		img = addBuildingText(type, img);
 		switch (size) {
 		case SMALL:
 			img = Images.getBestScaledInstance(img, 0.15f);
@@ -356,33 +362,55 @@ public class AgriImages {
 	}
 
 	public static BufferedImage getArrowImage(Dir d, boolean red, ImgSize size) {
-		Map<Dir, BufferedImage> map = null;
+		BufferedImage[] imgs = null;
 		float ratio = 1.0f;
 		switch (size) {
 		case SMALL:
 		case MEDIUM:
-			map = red ? redArrowsMedium : arrowsMedium;
+			imgs = red ? redArrowsMedium : arrowsMedium;
 			ratio = 0.2f;
 			break;
 		case BIG:
-			map = red ? redArrowsBig : arrowsBig;
+			imgs = red ? redArrowsBig : arrowsBig;
 			ratio = 0.5f;
 			break;
 		}
 
-		if (map.containsKey(d)) {
-			return map.get(d);
-		} else {
+		if (imgs[d.ordinal()] == null) {
 			BufferedImage img = Images.createImage("arrow" + (red ? "-red" : "") + (d.ordinal() + 1));
 			img = Images.getBestScaledInstance(img, ratio);
-			map.put(d, img);
-			return img;
+			imgs[d.ordinal()] = img;
 		}
+		return imgs[d.ordinal()];
 	}
 
 	public static ImageIcon getArrowIcon(Dir d, boolean red) {
 		return new ImageIcon(getArrowImage(d, red, ImgSize.MEDIUM));
 	}
+
+	public static BufferedImage getSymbolImage(int id) {
+		if (symbols[id] == null) {
+			BufferedImage img = Images.createImage(id == 0 ? "no" : "yes");
+			img = Images.getBestScaledInstance(img, 0.15f);
+			symbols[id] = img;
+		}
+		return symbols[id];
+	}
+
+	public static ImageIcon getYesIcon() {
+		return new ImageIcon(getSymbolImage(1));
+	}
+
+	public static ImageIcon getNoIcon() {
+		return new ImageIcon(getSymbolImage(0));
+	}
+
+	/*public static ImageIcon getDisabledIcon(ImageIcon icon) {
+		GrayFilter filter = new GrayFilter(true, 40);
+	    ImageProducer prod = new FilteredImageSource(icon.getImage().getSource(), filter);
+	    Image grayImage = Toolkit.getDefaultToolkit().createImage(prod);
+		return new ImageIcon(grayImage);
+	}*/
 
 	public static enum ImgSize {
 		SMALL, MEDIUM, BIG;

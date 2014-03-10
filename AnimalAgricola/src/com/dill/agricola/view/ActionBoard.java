@@ -13,21 +13,28 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.ActionPerformer;
 import com.dill.agricola.actions.ActionPerformer.ActionPerfListener;
+import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
+import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.support.Msg;
+import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.UiFactory;
 
 @SuppressWarnings("serial")
-public class ActionBoard extends JPanel {
+public class ActionBoard extends JPanel implements Observer {
 
 	private final ActionPerformer ap;
 	private final Map<ActionType, Action> actions = new EnumMap<ActionType, Action>(ActionType.class);
@@ -90,8 +97,12 @@ public class ActionBoard extends JPanel {
 		c.fill = GridBagConstraints.BOTH;
 		actionPanel.add(controlPanel, c);
 		
-		JPanel buttons = UiFactory.createFlowPanel(5, 5);
-		finishB = new JButton(Msg.get("finishAction"));
+		JPanel buttons = UiFactory.createHorizontalPanel();
+		buttons.setBorder(new EmptyBorder(new Insets(5, 5, 5, 5)));
+		buttons.add(Box.createHorizontalGlue());
+		finishB = new JButton(Msg.get("finishAction"), AgriImages.getYesIcon());
+		finishB.setToolTipText(Msg.get("finishActionTip"));
+		finishB.setMargin(new Insets(1,2,2,2));
 		finishB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (ap.hasAction()) {
@@ -108,8 +119,11 @@ public class ActionBoard extends JPanel {
 		});
 		finishB.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		buttons.add(finishB);
+		buttons.add(Box.createHorizontalStrut(5));
 
-		revertB = new JButton(Msg.get("undoAction"));
+		revertB = new JButton(Msg.get("revertAction"), AgriImages.getNoIcon());
+		revertB.setToolTipText(Msg.get("revertActionTip"));
+		revertB.setMargin(new Insets(2,2,2,2));
 		revertB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Action action = ap.getAction();
@@ -127,10 +141,9 @@ public class ActionBoard extends JPanel {
 		controlPanel.add(buttons, BorderLayout.SOUTH);
 
 		ap.setActionPerfListener(new ActionPerfListener() {
-
 			public void stateChanges(Action action) {
 				updateControls();
-//				messageLabel
+				updateFinishLabel();
 			}
 		});
 	}
@@ -146,31 +159,42 @@ public class ActionBoard extends JPanel {
 				if (ap.hasAction(type)) {
 					// TODO mark current action
 					// update hint message
-					StringBuilder text = new StringBuilder("<html>");
+					StringBuilder text = new StringBuilder();
 					if (a.isResourceAction()) {
 						text.append( Msg.get("resourcesRecieved"));
 					}
 					if (a.isPurchaseAction()) {
-						if (text.length() > "<html>".length()) {
+						if (text.length() > 0) {
 							text.append("<br>");
 						}
 						text.append( Msg.get("purchaseExpected"));
 					}
-					hintLabel.setText(text.toString());
+					setHint(text.toString());
 				}
 			} else {
 				// when no action being performed, disable those that cannot be currently performed 
 				btnEntry.getValue().setEnabled(ap.getPlayer() != null && a.canDo(ap.getPlayer(), 0));
 				
-				hintLabel.setText(Msg.get("chooseAction"));
+				setHint(Msg.get("chooseAction"));
 			}
 		}
 		updateControls();
 	}
 
 	private void updateControls() {
-		finishB.setEnabled(ap.canFinish());
+		finishB.setEnabled(ap.getPlayer() == null || ap.canFinish());
 		revertB.setEnabled(ap.canRevert());
+	}
+	private void updateFinishLabel() {
+		if (ap.canFinish()) {
+			Player p = ap.getPlayer();
+			int looseAnimals = p != null ? p.getFarm().getLooseAnimals().size() : -1;
+			if (looseAnimals > 0) {
+				finishB.setText(Msg.getNum(looseAnimals, "finishActionRunAway", looseAnimals));				
+				return;
+			}
+		}
+		finishB.setText(Msg.get("finishAction"));
 	}
 
 	public void resetActions() {
@@ -197,7 +221,21 @@ public class ActionBoard extends JPanel {
 		for (Component c : actionPanel.getComponents()) {
 			c.setEnabled(false);
 		}
-		revertB.setEnabled(true);
+		revertB.setEnabled(false);
 		finishB.setEnabled(true);
+		setHint(Msg.get("animalsBreed"));
+	}
+
+	private void setHint(String str) {
+		hintLabel.setText("<html>" + str);
+	}
+
+	public void update(Observable o, Object arg) {
+		if (arg == ChangeType.FARM_CLICK || arg == ChangeType.FARM_ANIMALS) {
+			updateControls();
+		}
+		if (arg == ChangeType.FARM_ANIMALS) {
+			updateFinishLabel();
+		}
 	}
 }

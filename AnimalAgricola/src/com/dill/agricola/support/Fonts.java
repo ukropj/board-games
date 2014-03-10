@@ -12,6 +12,7 @@ public class Fonts {
 	private static final Font DOMNICAN = new Font("Dominican", Font.BOLD, 15);	
 	
 	public static final Font FARM_FONT = CALIBRI.deriveFont(15f);
+	public static final Font FARM_BUILDING_FONT = CALIBRI.deriveFont(10f);
 	public static final Font ACTION_NUMBER_FONT = CALIBRI.deriveFont(18f);
 	public static final Font ACTION_TEXT_FONT = CALIBRI.deriveFont(12f);
 	
