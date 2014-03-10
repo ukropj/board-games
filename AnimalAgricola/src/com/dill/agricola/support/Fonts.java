@@ -9,15 +9,17 @@ public class Fonts {
 	// TODO load fonts from file
 	
 	private static final Font CALIBRI = new Font("Calibri", Font.BOLD, 15);	
-	private static final Font DOMNICAN = new Font("Dominican", Font.BOLD, 15);	
+//	private static final Font DOMNICAN = new Font("Dominican", Font.BOLD, 15);	
 	
 	public static final Font FARM_FONT = CALIBRI.deriveFont(15f);
-	public static final Font FARM_BUILDING_FONT = CALIBRI.deriveFont(10f);
-	public static final Font ACTION_NUMBER_FONT = CALIBRI.deriveFont(18f);
-	public static final Font ACTION_TEXT_FONT = CALIBRI.deriveFont(12f);
+	public static final Font FARM_BUILDING = CALIBRI.deriveFont(10f);
 	
-	public static final Font BUILDING_FONT = DOMNICAN.deriveFont(Font.PLAIN).deriveFont(20f);
-	public static final Font BUILDING_FONT2 = CALIBRI.deriveFont(Font.PLAIN).deriveFont(20f);
+	public static final Font ACTION_NUMBER = CALIBRI.deriveFont(18f);
+	public static final Font ACTION_TEXT = CALIBRI.deriveFont(12f);
+	public static final Font ACTION_HINT = CALIBRI.deriveFont(18f);
+	
+//	public static final Font BUILDING_ICON = DOMNICAN.deriveFont(Font.PLAIN).deriveFont(20f);
+	public static final Font BUILDING_ICON = CALIBRI.deriveFont(Font.PLAIN).deriveFont(20f);
 	
 	public static void updateFontToFit(Graphics2D g, String text, int width) {
 		Font font = g.getFont();

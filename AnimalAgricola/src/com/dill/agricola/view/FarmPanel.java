@@ -426,7 +426,7 @@ public class FarmPanel extends JPanel {
 				// TODO extract
 				// name
 				g.setColor(Color.BLACK);
-				g.setFont(Fonts.FARM_BUILDING_FONT);
+				g.setFont(Fonts.FARM_BUILDING);
 				int x = 18, y = 31, maxw = 63;
 				if (type == BuildingType.COTTAGE) {
 					y -= 1;
@@ -437,7 +437,7 @@ public class FarmPanel extends JPanel {
 				
 				// text
 				if (type.text != null) {
-					g.setFont(Fonts.BUILDING_FONT2);
+					g.setFont(Fonts.FARM_BUILDING);
 					Fonts.updateFontToFit(g, type.text, (int) (r.width * type.textWidth));
 					float ty = r.height * type.y, textH = g.getFontMetrics().getHeight();
 					for (String line : type.text.split("[\r\n]+")) {

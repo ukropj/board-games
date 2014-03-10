@@ -29,6 +29,7 @@ import com.dill.agricola.actions.ActionPerformer.ActionPerfListener;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.ChangeType;
+import com.dill.agricola.support.Fonts;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.UiFactory;
@@ -76,7 +77,8 @@ public class ActionBoard extends JPanel implements Observer {
 			ActionPanelFactory.createActionPanel(actionPanel, action, b);
 		}
 		
-		hintLabel = UiFactory.createLabel("abbc");
+		hintLabel = UiFactory.createLabel("MSG");
+		hintLabel.setFont(Fonts.ACTION_HINT);
 		buildControlPanel(submitListener);
 
 		add(actionPanel, BorderLayout.CENTER);
@@ -93,7 +95,8 @@ public class ActionBoard extends JPanel implements Observer {
 		c.gridwidth = 6;
 		c.gridheight = 2;
 		c.ipadx = c.ipady = 3;
-		c.insets = new Insets(5, 5, 5, 5);
+		c.insets = new Insets(2, 2, 2, 2);
+		c.weighty = 1;
 		c.fill = GridBagConstraints.BOTH;
 		actionPanel.add(controlPanel, c);
 		

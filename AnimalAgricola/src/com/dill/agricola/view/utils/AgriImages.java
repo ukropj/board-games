@@ -305,7 +305,7 @@ public class AgriImages {
 		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
 		g.drawImage(orig, 0, 0, w, h, null);
-		g.setFont(Fonts.BUILDING_FONT2);
+		g.setFont(Fonts.BUILDING_ICON);
 		g.setColor(Color.BLACK);
 		// name
 		int x = 46, y = 78, maxw = 160;
@@ -317,7 +317,7 @@ public class AgriImages {
 		g.drawString(type.name, x + (maxw - nameW) / 2, y);
 		// text
 		if (type.text != null) {
-			g.setFont(Fonts.BUILDING_FONT2);
+			g.setFont(Fonts.BUILDING_ICON);
 			Fonts.updateFontToFit(g, type.text, (int) (w * type.textWidth));
 			float ty = h * type.y, textH = g.getFontMetrics().getHeight();
 			for (String line : type.text.split("[\r\n]+")) {

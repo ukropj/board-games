@@ -54,7 +54,7 @@ public class ActionPanelFactory {
 		c.fill = GridBagConstraints.BOTH;
 		c.gridwidth = 3;
 		c.ipadx = c.ipady = 3;
-		c.insets = new Insets(5, 5, 5, 5);
+		c.insets = new Insets(2, 2, 2, 2);
 		c.weighty = 0.5;
 		switch (action.getType()) {
 		case STARTING_ONE_WOOD:
@@ -234,13 +234,13 @@ public class ActionPanelFactory {
 		c.gridy = y;
 		c.gridwidth = 2;
 		c.ipadx = c.ipady = 3;
-		c.insets = new Insets(5, 5, 5, 0);
+		c.insets = new Insets(2, 2, 2, 0);
 		c.weightx = 0.6;
 		c.weighty = 0.5;
 		parent.add(createPrefixPanel(materials, animal, otherAnimal), c);
 		c.gridx = 3 * x + 2;
 		c.gridwidth = 1;
-		c.insets = new Insets(5, 0, 5, 5);
+		c.insets = new Insets(2, 0, 2, 2);
 		parent.add(createResourcesPanel(action, button, extraP), c);
 	}
 

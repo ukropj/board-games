@@ -7,6 +7,9 @@
 	animal breeding notification
 	game ending
 	investicate "serial"
+	highlight current action
+	about & credits
+	window icon
 	
 #Bugs#
 
@@ -17,3 +20,4 @@
 	single player
 	action tooltips
 	farm cursors
+	actual single animals instead of count

@@ -176,9 +176,9 @@ public class UiFactory {
 		// l.setBackground(Color.RED);
 		if (string != null) {
 			if (string.matches("[^a-z]+")) {
-				l.setFont(Fonts.ACTION_NUMBER_FONT);
+				l.setFont(Fonts.ACTION_NUMBER);
 			} else {
-				l.setFont(Fonts.ACTION_TEXT_FONT);
+				l.setFont(Fonts.ACTION_TEXT);
 			}
 		}
 		return l;
