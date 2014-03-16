@@ -262,7 +262,7 @@ public class FarmPanel extends JPanel {
 			i++;
 		}
 		// farm
-		img = AgriImages.getFarmImage(player.getColor().ordinal());
+		img = AgriImages.getFarmImage(player.getColor());
 		g.drawImage(img, X1 + westExts * S, 0, farmCore * S, H, null);
 		// east extensions
 		i = 0;
@@ -379,7 +379,7 @@ public class FarmPanel extends JPanel {
 		}
 		if (count > 0) {
 			// show present animals
-			BufferedImage img = AgriImages.getAnimalImage(type, ImgSize.BIG);
+			BufferedImage img = AgriImages.getAnimalImage(type, ImgSize.BIG, 1);
 			int w = img.getWidth(), h = img.getHeight();
 			g.drawImage(img, realPos.x + (S - w) / 2, realPos.y + (S - h) / 2, w, h, null);
 		}
@@ -410,7 +410,7 @@ public class FarmPanel extends JPanel {
 			BufferedImage img = null;
 			switch (type) {
 			case COTTAGE:
-				img = AgriImages.getCottageImage(player.getColor().ordinal());
+				img = AgriImages.getCottageImage(player.getColor());
 				break;
 			case STALL:
 				img = AgriImages.getStallImage(((MultiImaged) building).getId());
@@ -498,7 +498,7 @@ public class FarmPanel extends JPanel {
 			for (Animal type : Animal.values()) {
 				int count = loose.get(type);
 				if (count > 0) {
-					BufferedImage img = AgriImages.getAnimalImage(type, ImgSize.BIG);
+					BufferedImage img = AgriImages.getAnimalImage(type, ImgSize.BIG, 1);
 					for (int i = 0; i < count; i++) {
 						g.drawImage(img, x - j * l, y - img.getHeight(), img.getWidth(), img.getHeight(), null);
 						j++;

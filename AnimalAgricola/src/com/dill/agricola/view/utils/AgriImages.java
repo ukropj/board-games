@@ -4,8 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.util.EnumMap;
-import java.util.Map;
 
 import javax.swing.ImageIcon;
 
@@ -20,22 +18,19 @@ import com.dill.agricola.support.Fonts;
 
 public class AgriImages {
 
-	private final static int MISC_U_FENCE = 0;
+//	private final static int MISC_U_FENCE = 0;
 	// private final static int MISC_TROUGH = 1;
 	// private final static int MISC_U_TROUGH = 2;
 
-	private final static Map<BuildingType, BufferedImage> buildings = new EnumMap<BuildingType, BufferedImage>(BuildingType.class);
-	private final static Map<Animal, BufferedImage> animalsSmall = new EnumMap<Animal, BufferedImage>(Animal.class);
-	private final static Map<Animal, BufferedImage> animalsMedium = new EnumMap<Animal, BufferedImage>(Animal.class);
-	private final static Map<Animal, BufferedImage> animalsBig = new EnumMap<Animal, BufferedImage>(Animal.class);
-	private final static Map<Animal, BufferedImage> animalOutlinesMedium = new EnumMap<Animal, BufferedImage>(Animal.class);
+	private final static BufferedImage[] buildings = new BufferedImage[BuildingType.values().length];
+	private final static BufferedImage[] animals = new BufferedImage[2 * ImgSize.values().length * Animal.values().length];
 	private final static BufferedImage[] materials = new BufferedImage[Material.values().length];
 	private final static BufferedImage[] fences = new BufferedImage[Dir.values().length];
 	private final static BufferedImage[] troughs = new BufferedImage[ImgSize.values().length];
 	private final static BufferedImage[] firstTokens = new BufferedImage[ImgSize.values().length * PlayerColor.values().length];
 	private final static BufferedImage[] farmsAndMargins = new BufferedImage[4];
 	private final static BufferedImage[] workers = new BufferedImage[PlayerColor.values().length];
-	private final static BufferedImage[] misc = new BufferedImage[4];
+//	private final static BufferedImage[] misc = new BufferedImage[4];
 	private static BufferedImage[] cottages = new BufferedImage[PlayerColor.values().length];
 	private static BufferedImage[] stallsAndStables = new BufferedImage[8];
 	private static BufferedImage[] exts = new BufferedImage[4];
@@ -50,7 +45,7 @@ public class AgriImages {
 	}
 
 	public static BufferedImage getFirstTokenImage(int id, ImgSize size) {
-		int arrId = id + size.ordinal() * 2;
+		int arrId = id + size.ordinal() * PlayerColor.values().length;
 		Main.asrtInRange(arrId, 0, firstTokens.length, "Invalid img id");
 		if (firstTokens[arrId] != null) {
 			return firstTokens[arrId];
@@ -66,28 +61,28 @@ public class AgriImages {
 		return new ImageIcon(getFirstTokenImage(id, size));
 	}
 
-	public static BufferedImage getWorkerImage(int id) {
-		Main.asrtInRange(id, 0, workers.length, "Invalid img id");
-		if (workers[id] != null) {
-			return workers[id];
-		} else {
-			BufferedImage img = Images.createImage("worker" + (id + 1));
+	public static BufferedImage getWorkerImage(PlayerColor color) {
+		int i = color.ordinal();
+		if (workers[i] == null) {
+			BufferedImage img = Images.createImage("worker" + (i + 1));
 			img = Images.getBestScaledInstance(img, 0.3f);
-			workers[id] = img;
+			workers[i] = img;
 			return img;
 		}
+		return workers[i];
 	}
 
-	public static ImageIcon getWorkerIcon(int id) {
-		return new ImageIcon(getWorkerImage(id));
+	public static ImageIcon getWorkerIcon(PlayerColor color) {
+		return new ImageIcon(getWorkerImage(color));
 	}
 
-	public static BufferedImage getFarmImage(int id) {
-		Main.asrtInRange(id, 0, 2, "Invalid img id");
-		if (farmsAndMargins[id] == null) {
-			farmsAndMargins[id] = Images.createImage("f_farm" + (id + 1));
+	public static BufferedImage getFarmImage(PlayerColor color) {
+		int i = color.ordinal();
+		Main.asrtInRange(i, 0, 2, "Invalid img id");
+		if (farmsAndMargins[i] == null) {
+			farmsAndMargins[i] = Images.createImage("f_farm" + (i + 1));
 		}
-		return farmsAndMargins[id];
+		return farmsAndMargins[i];
 	}
 
 	public static BufferedImage getFarmMarginImage(Dir d) {
@@ -145,50 +140,26 @@ public class AgriImages {
 		return fences[d.ordinal()];
 	}
 
-	public static BufferedImage getUnusedFenceImage() {
+	/*public static BufferedImage getUnusedFenceImage() {
 		if (misc[MISC_U_FENCE] == null) {
 			misc[MISC_U_FENCE] = Images.createImage("border-unused");
 		}
 		return misc[MISC_U_FENCE];
-	}
+	}*/
 
 	public static BufferedImage getAnimalImage(Animal type, ImgSize size) {
-		Map<Animal, BufferedImage> map = null;
-		float ratio = 1.0f;
-		switch (size) {
-		case SMALL:
-			map = animalsSmall;
-			ratio = 0.25f;
-			break;
-		case MEDIUM:
-			map = animalsMedium;
-			ratio = 0.3f;
-			break;
-		case BIG:
-			map = animalsBig;
-			ratio = 0.5f;
-			break;
-		}
-
-		if (map.containsKey(type)) {
-			return map.get(type);
-		} else {
-			BufferedImage img = Images.createImage("a_" + type.toString().toLowerCase());
-			img = Images.getBestScaledInstance(img, ratio);
-			map.put(type, img);
-			return img;
-		}
+		return getAnimalImage(type, size, 0);
 	}
-
-	public static BufferedImage getAnimalOutlineImage(Animal type) {
-		if (animalOutlinesMedium.containsKey(type)) {
-			return animalOutlinesMedium.get(type);
-		} else {
-			BufferedImage img = Images.createImage(type.toString().toLowerCase() + "-o");
-			img = Images.getBestScaledInstance(img, 0.3f);
-			animalOutlinesMedium.put(type, img);
-			return img;
+	
+	public static BufferedImage getAnimalImage(Animal type, ImgSize size, int variant) {
+		int index = type.ordinal() + size.ordinal() * ImgSize.values().length + variant * ImgSize.values().length * Animal.values().length;
+		float[] ratios = new float[]{0.25f,0.3f, 0.5f}; 
+		if (animals[index] == null) {
+			BufferedImage img = Images.createImage("a_" + type.toString().toLowerCase() + (variant > 0 ? variant : ""));
+			img = Images.getBestScaledInstance(img, ratios[size.ordinal()]);
+			animals[index] = img;
 		}
+		return animals[index];
 	}
 
 	public static ImageIcon getAnimalIcon(Animal type, ImgSize size) {
@@ -196,7 +167,7 @@ public class AgriImages {
 	}
 
 	public static ImageIcon getAnimalMultiIcon(Animal type, int count, ImgSize size) {
-		return getMultiIcon(getAnimalImage(type, size), count);
+		return new ImageIcon(getMultiImage(getAnimalImage(type, size), count));
 	}
 
 	public static BufferedImage getMaterialImage(Material type) {
@@ -214,34 +185,32 @@ public class AgriImages {
 	}
 
 	public static ImageIcon getMaterialMultiIcon(Material type, int count) {
-		return getMultiIcon(getMaterialImage(type), count);
+		return new ImageIcon(getMultiImage(getMaterialImage(type), count));
 	}
 
-	public static ImageIcon getMultiIcon(BufferedImage img, int count) {
+	public static BufferedImage getMultiImage(BufferedImage img, int count) {
+		if (count < 2) {
+			return img;
+		}
 		int d = 5;
 		BufferedImage multiImg = new BufferedImage(img.getWidth() + d * (count - 1),
 				img.getHeight(), Images.getImageType(img));
 		Graphics2D g2 = multiImg.createGraphics();
 		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-//		g2.drawImage(img, 0, 0, img.getWidth(), img.getHeight(), null);
 		for (int i = 0; i < count; i++) {
 			g2.drawImage(img, d * (count - 1 - i), 0, img.getWidth(), img.getHeight(), null);
 		}
 		g2.dispose();
-		return new ImageIcon(multiImg);
+		return multiImg;
 	}
 
 	public static BufferedImage getBuildingImage(BuildingType type) {
-		if (buildings.containsKey(type)) {
-			return buildings.get(type);
-		} else {
+		int i = type.ordinal();
+		if (buildings[i] == null) {
 			BufferedImage img = null;
 			switch (type) {
 			case EMPTY:
 				return null;
-				/*case BUILDING:
-					img = Images.createImage("special");
-					break;*/
 			case STALL:
 				img = Images.createImage("b_stall1");
 				break;
@@ -249,7 +218,7 @@ public class AgriImages {
 				img = Images.createImage("b_stables1");
 				break;
 			case COTTAGE:
-				img = null;
+				img = Images.createImage("b_cottage1");
 				break;
 			case HALF_TIMBERED_HOUSE:
 				img = Images.createImage("b_half-timbered-house");
@@ -264,24 +233,23 @@ public class AgriImages {
 				img = Images.createImage("b_open-stables");
 				break;
 			}
-			buildings.put(type, img);
-			return img;
+			buildings[i] = img;
 		}
+		return buildings[i];
 	}
 
-	public static BufferedImage getCottageImage(int id) {
-		if (cottages[id] == null) {
-			BufferedImage img = Images.createImage("b_cottage" + (id + 1));
-//			addBuildingText(BuildingType.COTTAGE, img);
-			cottages[id] = img;
+	public static BufferedImage getCottageImage(PlayerColor color) {
+		int i = color.ordinal();
+		if (cottages[i] == null) {
+			BufferedImage img = Images.createImage("b_cottage" + (i + 1));
+			cottages[i] = img;
 		}
-		return cottages[id];
+		return cottages[i];
 	}
 
 	public static BufferedImage getStallImage(int id) {
 		if (stallsAndStables[id] == null) {
 			BufferedImage img = Images.createImage("b_stall" + (id + 1));
-//			addBuildingText(BuildingType.STALL, img);
 			stallsAndStables[id] = img;
 		}
 		return stallsAndStables[id];
@@ -291,8 +259,6 @@ public class AgriImages {
 		int arrId = id + 4;
 		if (stallsAndStables[arrId] == null) {
 			BufferedImage img = Images.createImage("b_stables" + (id + 1));
-//			addBuildingText(BuildingType.STABLES, img);
-			//			img = Images.getBestScaledInstance(img, 0.5f);
 			stallsAndStables[arrId] = img;
 		}
 		return stallsAndStables[arrId];

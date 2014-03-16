@@ -109,7 +109,7 @@ public class PlayerBoard extends JPanel implements Observer {
 		JPanel workers = UiFactory.createVerticalPanel();
 		workers.setPreferredSize(new Dimension(50, 0));
 		for (int i = 0; i < workerLabels.length; i++) {
-			workerLabels[i] = UiFactory.createLabel(AgriImages.getWorkerIcon(player.getColor().ordinal()));
+			workerLabels[i] = UiFactory.createLabel(AgriImages.getWorkerIcon(player.getColor()));
 			workers.add(workerLabels[i]);
 		}
 		GridBagConstraints c = new GridBagConstraints();

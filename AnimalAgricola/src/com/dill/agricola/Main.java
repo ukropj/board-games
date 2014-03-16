@@ -9,7 +9,7 @@ import com.dill.agricola.view.Board;
 
 public class Main {
 
-	public static boolean DEBUG = true;
+	public static boolean DEBUG = false;
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
