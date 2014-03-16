@@ -61,9 +61,10 @@ public class PlayerBoard extends JPanel implements Observer {
 
 	private void buildTopPanel() {
 		PlayerColor color = player.getColor();
-		playerLabel = UiFactory.createLabel(Msg.get("player", color.ordinal() + 1));
+		playerLabel = UiFactory.createLabel(Msg.get("player", Msg.get(color.toString().toLowerCase())));
 		playerLabel.setFont(playerLabel.getFont().deriveFont(20.0f));
 		playerLabel.setOpaque(true);
+		playerLabel.setForeground(color.getRealColor());
 
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridy = 0;

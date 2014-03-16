@@ -23,10 +23,13 @@ public class Images {
 //		return new ImageIcon(image.getScaledInstance(width, height, Image.SCALE_SMOOTH));
 //	}
 
+	public static URL getImageUrl(String name) {
+		return Main.class.getResource("images/" + name + ".png");
+	}
+	
 	public static BufferedImage createImage(String name) {
-		String path = "images/" + name + ".png";
+		URL url = getImageUrl(name);
 		BufferedImage img = null;
-		URL url = Main.class.getResource(path);
 		if (url != null)
 			try {
 				img = ImageIO.read(url);
@@ -34,7 +37,7 @@ public class Images {
 				e.printStackTrace();
 			}
 		else
-			System.err.println("Couldn't find file: " + path);
+			System.err.println("Couldn't find file: " + url);
 		return img;
 	}
 

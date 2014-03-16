@@ -1,10 +1,12 @@
 package com.dill.agricola.view.utils;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -25,6 +27,7 @@ import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.Material;
 import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.support.Fonts;
+import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
 
 public class UiFactory {
@@ -33,13 +36,13 @@ public class UiFactory {
 	public static final int ICON_FIRST = 2;
 	public static final int ICON_QUANTITY = 3;
 	public static final int NO_NUMBER = 4;
-	
+
 	public static final int X_AXIS = 5;
 	public static final int Y_AXIS = 6;
 
 	private UiFactory() {
 	}
-	
+
 //	public static String pad(String str, int length) {
 //		return String.format("%1$-" + length + "s", str);
 //	}
@@ -91,7 +94,7 @@ public class UiFactory {
 				: AgriImages.getMaterialIcon(type);
 		return createGeneralLabel(count, icon, labelStyle);
 	}
-	
+
 	public static JLabel createPurchasableLabel(Purchasable type, int count, int labelStyle) {
 		Icon icon = AgriImages.getPurchasableIcon(type);
 		return createGeneralLabel(count, icon, labelStyle);
@@ -114,7 +117,6 @@ public class UiFactory {
 		if (labelStyle == ICON_FIRST) {
 			l.setIconTextGap(4);
 		}
-		l.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 		l.setHorizontalTextPosition(labelStyle != ICON_FIRST ? JLabel.LEFT : JLabel.RIGHT);
 		return l;
 	}
@@ -154,7 +156,7 @@ public class UiFactory {
 			}
 		}
 		if (added == 0) {
-			panel.add(createLabel("empty"));
+			panel.add(createLabel(Msg.get("empty")));
 		}
 	}
 
@@ -164,6 +166,12 @@ public class UiFactory {
 
 	public static JLabel createLabel(ImageIcon icon) {
 		return createLabel(null, icon);
+	}
+
+	public static JLabel createLabel(String string, Icon icon, int width) {
+		JLabel l = createLabel(string, icon);
+		l.setPreferredSize(new Dimension(width, l.getPreferredSize().height));
+		return l;
 	}
 
 	public static JLabel createLabel(String string, Icon icon) {
@@ -182,6 +190,14 @@ public class UiFactory {
 			}
 		}
 		return l;
+	}
+
+	public static boolean showQuestionDialog(String message, String title) {
+		List<JComponent> opts = Arrays.asList(new JComponent[] { 
+			UiFactory.createLabel(Msg.get("yes"), null, 50), 
+			UiFactory.createLabel(Msg.get("no"), null, 50)
+		});
+		return 0 == showOptionDialog(message, title, null, opts);
 	}
 
 	public static int showOptionDialog(String message, String title, Icon icon, List<JComponent> opts) {

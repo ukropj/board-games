@@ -30,6 +30,7 @@ import com.dill.agricola.actions.simple.TwoStone;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.model.types.PlayerColor;
+import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.Board;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
@@ -50,6 +51,8 @@ public class Game {
 
 	private PlayerColor initialStartingPlayer;
 
+	private boolean ended;
+
 	public Game(Board board) {
 		this.board = board;
 		players = new Player[2];
@@ -57,9 +60,9 @@ public class Game {
 		players[PlayerColor.RED.ordinal()] = new Player(PlayerColor.RED);
 
 		board.init(this);
-//		if (Main.DEBUG) {
-//			board.buildDebugPanel(players);
-//		}
+		if (Main.DEBUG) {
+			board.buildDebugPanel(players);
+		}
 		
 //		board.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		board.pack();
@@ -110,15 +113,20 @@ public class Game {
 				l.setBackground(color.getRealColor());
 				opts.add(l);
 			}
-			int result = UiFactory.showOptionDialog("Choose starting player", "Game starts", null, opts);
+			int result = UiFactory.showOptionDialog(Msg.get("chooseStarting"), Msg.get("gameStart"), null, opts);
 			return players[Math.max(0, result)];
 		}
 	}
 
+	public boolean isStarted() {
+		return round > 0 && !ended;
+	}
+	
 	public void start() {
 		for (Player p : players) {
 			p.init();
 		}
+		ended = false;
 		turn = 0;
 		round = 0;
 		workPhase = false;
@@ -197,9 +205,8 @@ public class Game {
 	}
 
 	private void endGame() {
-		float[] scores = new float[] { players[0].getScore(), players[1].getScore() };
-		int winnerNo = scores[0] > scores[1] ? 0 : scores[0] < scores[1] ? 1 : initialStartingPlayer.other().ordinal();
-		board.showScoring(players, players[winnerNo].getColor());
+		ended = true;
+		board.showScoring(players, initialStartingPlayer);
 	}
 
 	private void releaseAnimals() {

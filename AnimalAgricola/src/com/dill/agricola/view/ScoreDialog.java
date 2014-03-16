@@ -21,18 +21,18 @@ import com.dill.agricola.view.utils.UiFactory;
 @SuppressWarnings("serial")
 public class ScoreDialog extends JDialog {
 
-	public ScoreDialog(Player[] players, PlayerColor winner) {
+	public ScoreDialog(Player[] players, PlayerColor initialStartingPlayer) {
 		// TODO make reusable
 		setTitle(Msg.get("scoring"));
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
-		buildScoringGrid(players, winner);
+		buildScoringGrid(players, initialStartingPlayer);
 
 		pack();
 		setSize(300, 400);
 	}
 
-	private void buildScoringGrid(Player[] players, PlayerColor winner) {
+	private void buildScoringGrid(Player[] players, PlayerColor initialStartingPlayer) {
 		JPanel p = new JPanel(new GridLayout(8, 3, 4, 4));
 		// heading
 		p.add(new JPanel());
@@ -65,14 +65,15 @@ public class ScoreDialog extends JDialog {
 
 		getContentPane().setLayout(new BorderLayout(5, 5));
 		getContentPane().add(p, BorderLayout.CENTER);
-		
-		if (winner != null) {
-			// winner
-			JLabel winnerLabel = UiFactory.createLabel(Msg.get("msgWinner", winner.ordinal() + 1));
-			winnerLabel.setOpaque(true);
-			winnerLabel.setBackground(winner.getRealColor());
-			getContentPane().add(winnerLabel, BorderLayout.SOUTH);
-		}
+
+		PlayerColor winner = blueTotal > redTotal ? PlayerColor.BLUE
+				: blueTotal < redTotal ? PlayerColor.BLUE : initialStartingPlayer.other();
+
+		// winner
+		JLabel winnerLabel = UiFactory.createLabel(Msg.get("msgWinner", Msg.get(winner.toString().toLowerCase())));
+		winnerLabel.setOpaque(true);
+		winnerLabel.setBackground(winner.getRealColor());
+		getContentPane().add(winnerLabel, BorderLayout.SOUTH);
 	}
 
 	private JComponent addBorder(JComponent component) {

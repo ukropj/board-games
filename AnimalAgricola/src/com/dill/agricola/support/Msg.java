@@ -27,38 +27,38 @@ public class Msg {
 		}
 	}
 
-	public static String get(String msgCode) {
+	public static String get(String code) {
 		try {
-			return messages.getString(msgCode);
+			return messages.getString(code);
 		} catch (MissingResourceException e) {
-			System.err.println("Message not found: " + msgCode);
-			return msgCode;
+			System.err.println("Message not found: " + code);
+			return code;
 		}
 	}
 
-	public static String get(String msgCode, Object... params) {
+	public static String get(String code, Object... params) {
 		try {
-			String msg = messages.getString(msgCode);
+			String msg = messages.getString(code);
 			for (int i = 0; i < params.length; i++) {
 				msg = msg.replaceAll("\\$\\{" + i + "\\}", params[i].toString());
 			}
 			return msg;
 		} catch (MissingResourceException e) {
-			System.err.println("Message not found: " + msgCode);
-			return msgCode;
+			System.err.println("Message not found: " + code);
+			return code;
 		}
 	}
 
-	public static String getNum(int number, String msgCode, Object... params) {
+	public static String getNum(int number, String code, Object... params) {
 		number = Math.abs(number);
 		if (number == 0 || number >= 5) {
-			msgCode += "Many";
+			code += "Many";
 		} else if (number == 1) {
-			msgCode += "One";
+			code += "One";
 		} else if (number < 5) {
-			msgCode += "Few";
+			code += "Few";
 		}
-		return get(msgCode, params);
+		return get(code, params);
 	}
 
 	private static class UnicodeControl extends Control {

@@ -15,9 +15,9 @@ import com.dill.agricola.GeneralSupply;
 import com.dill.agricola.GeneralSupply.Supplyable;
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.StateChangeListener;
-import com.dill.agricola.actions.farm.Troughs;
 import com.dill.agricola.actions.farm.Expand;
 import com.dill.agricola.actions.farm.Fences;
+import com.dill.agricola.actions.farm.Troughs;
 import com.dill.agricola.actions.farm.Walls;
 import com.dill.agricola.actions.simple.BuildingMaterial;
 import com.dill.agricola.actions.simple.CowPigs;
@@ -114,7 +114,7 @@ public class ActionPanelFactory {
 			c.gridwidth = 2;
 			break;
 		case EXPAND:
-			JPanel extP = UiFactory.createHorizontalPanel();
+			JPanel extP = UiFactory.createVerticalPanel();
 			extP.add(UiFactory.createLabel("+", AgriImages.getPurchasableIcon(Purchasable.EXTENSION)));
 			extP.add(createSupplyLabel(action, Supplyable.EXTENSION));
 			createRefillPanel(parent, 1, 3, action, actionButton, extP, Expand.REFILL);
@@ -322,7 +322,11 @@ public class ActionPanelFactory {
 		public void stateChanges(Action action) {
 			buildingPanel.removeAll();
 			for (BuildingType b : GeneralSupply.getBuildingsLeft()) {
-				buildingPanel.add(new JLabel(AgriImages.getBuildingIcon(b, ImgSize.SMALL)));
+				JLabel bl = new JLabel(AgriImages.getBuildingIcon(b, ImgSize.SMALL));
+//				bl.setToolTipText(String.format(
+//			            "<html><img src=\"%s\">",
+//			            Images.getImageUrl(AgriImages.getBuildingImageName(b))));
+				buildingPanel.add(bl);
 			}
 		}
 	}

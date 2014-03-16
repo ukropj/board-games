@@ -9,6 +9,8 @@ import java.awt.event.InputEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
@@ -28,7 +30,7 @@ import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.UiFactory;
 
 @SuppressWarnings("serial")
-public class Board extends JFrame{
+public class Board extends JFrame {
 
 	private Game game;
 
@@ -45,12 +47,18 @@ public class Board extends JFrame{
 		playerBoards = new PlayerBoard[2];
 
 		setTitle(Msg.get("gameTitle"));
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
 		mainPane = getContentPane();
 		mainPane.setLayout(new GridBagLayout());
 
 		buildMenu();
+
+		addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				endGame();
+			}
+		});
 	}
 
 	private void buildMenu() {
@@ -101,16 +109,16 @@ public class Board extends JFrame{
 		Player player = game.getPlayer(color);
 		PlayerBoard playerBoard = new PlayerBoard(player, ap);
 		playerBoards[color.ordinal()] = playerBoard;
-		
+
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = x;
 		c.gridy = 1;
 		c.weightx = 1.0;
 		c.weighty = 1.0;
 		c.fill = GridBagConstraints.BOTH;
-		
+
 		mainPane.add(new JScrollPane(playerBoard), c);
-		
+
 		player.addObserver(actionBoard);
 	}
 
@@ -120,7 +128,7 @@ public class Board extends JFrame{
 		c.gridx = 1;
 		c.gridy = 1;
 		c.fill = GridBagConstraints.BOTH;
-		
+
 		mainPane.add(actionBoard, c);
 	}
 
@@ -151,9 +159,9 @@ public class Board extends JFrame{
 		playerBoards[currentPlayer.getColor().ordinal()].setActive(true);
 		playerBoards[currentPlayer.getColor().other().ordinal()].setActive(false);
 		actionBoard.updateActions();
-//		if (Main.DEBUG) {
-//			debugPanel.setCurrentPlayer(currentPlayer.getColor());			
-//		}
+		if (Main.DEBUG) {
+			debugPanel.setCurrentPlayer(currentPlayer.getColor());
+		}
 	}
 
 	public void endRound() {
@@ -164,8 +172,8 @@ public class Board extends JFrame{
 		actionBoard.enableFinishOnly();
 	}
 
-	public void showScoring(Player[] players, PlayerColor winner) {
-		ScoreDialog sd = new ScoreDialog(players, winner);
+	public void showScoring(Player[] players, PlayerColor initialStartingPlayer) {
+		ScoreDialog sd = new ScoreDialog(players, initialStartingPlayer);
 		sd.setVisible(true);
 //		sd.setLocation(getLocation());
 		sd.setLocationRelativeTo(null);
@@ -176,6 +184,14 @@ public class Board extends JFrame{
 		playerBoards[1].updatePlayer();
 	}
 	
+	public void endGame() {
+		if (Main.DEBUG
+				|| !game.isStarted()
+				|| UiFactory.showQuestionDialog(Msg.get("endGame"), Msg.get("gameInProgress"))) {
+			System.exit(0);
+		}
+	}
+
 	private static enum MenuCommand {
 		NEW, EXIT;
 	}
@@ -192,10 +208,13 @@ public class Board extends JFrame{
 			MenuCommand command = MenuCommand.valueOf(e.getActionCommand());
 			switch (command) {
 			case NEW:
-				board.game.start();
+				if (!board.game.isStarted()
+						|| UiFactory.showQuestionDialog(Msg.get("restartGame"), Msg.get("gameInProgress"))) {
+					board.game.start();
+				}
 				break;
 			case EXIT:
-				System.exit(0);
+				board.endGame();
 				break;
 			default:
 				break;

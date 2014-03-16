@@ -18,7 +18,7 @@ import com.dill.agricola.support.Fonts;
 
 public class AgriImages {
 
-//	private final static int MISC_U_FENCE = 0;
+//	private final static int MISC_EMPTY = 0;
 	// private final static int MISC_TROUGH = 1;
 	// private final static int MISC_U_TROUGH = 2;
 
@@ -150,10 +150,10 @@ public class AgriImages {
 	public static BufferedImage getAnimalImage(Animal type, ImgSize size) {
 		return getAnimalImage(type, size, 0);
 	}
-	
+
 	public static BufferedImage getAnimalImage(Animal type, ImgSize size, int variant) {
 		int index = type.ordinal() + size.ordinal() * ImgSize.values().length + variant * ImgSize.values().length * Animal.values().length;
-		float[] ratios = new float[]{0.25f,0.3f, 0.5f}; 
+		float[] ratios = new float[] { 0.25f, 0.3f, 0.5f };
 		if (animals[index] == null) {
 			BufferedImage img = Images.createImage("a_" + type.toString().toLowerCase() + (variant > 0 ? variant : ""));
 			img = Images.getBestScaledInstance(img, ratios[size.ordinal()]);
@@ -170,6 +170,7 @@ public class AgriImages {
 		return new ImageIcon(getMultiImage(getAnimalImage(type, size), count));
 	}
 
+	
 	public static BufferedImage getMaterialImage(Material type) {
 		if (materials[type.ordinal()] == null) {
 			BufferedImage img = Images.createImage("m_" + type.toString().toLowerCase());
@@ -204,35 +205,23 @@ public class AgriImages {
 		return multiImg;
 	}
 
+	public static String getBuildingImageName(BuildingType type) {
+		String dashedName = type.toString().toLowerCase().replaceAll("_", "-");
+		switch (type) {
+		case STALL:
+		case STABLES:
+		case COTTAGE:
+			dashedName += "1";
+		default:
+			break;
+		}
+		return "b_" + dashedName;
+	}
+
 	public static BufferedImage getBuildingImage(BuildingType type) {
 		int i = type.ordinal();
 		if (buildings[i] == null) {
-			BufferedImage img = null;
-			switch (type) {
-			case EMPTY:
-				return null;
-			case STALL:
-				img = Images.createImage("b_stall1");
-				break;
-			case STABLES:
-				img = Images.createImage("b_stables1");
-				break;
-			case COTTAGE:
-				img = Images.createImage("b_cottage1");
-				break;
-			case HALF_TIMBERED_HOUSE:
-				img = Images.createImage("b_half-timbered-house");
-				break;
-			case STORAGE_BUILDING:
-				img = Images.createImage("b_storage-building");
-				break;
-			case SHELTER:
-				img = Images.createImage("b_shelter");
-				break;
-			case OPEN_STABLES:
-				img = Images.createImage("b_open-stables");
-				break;
-			}
+			BufferedImage img = Images.createImage(getBuildingImageName(type));
 			buildings[i] = img;
 		}
 		return buildings[i];
@@ -241,16 +230,15 @@ public class AgriImages {
 	public static BufferedImage getCottageImage(PlayerColor color) {
 		int i = color.ordinal();
 		if (cottages[i] == null) {
-			BufferedImage img = Images.createImage("b_cottage" + (i + 1));
-			cottages[i] = img;
+			cottages[i] = Images.createImage("b_cottage" + (i + 1));
 		}
 		return cottages[i];
 	}
 
 	public static BufferedImage getStallImage(int id) {
 		if (stallsAndStables[id] == null) {
-			BufferedImage img = Images.createImage("b_stall" + (id + 1));
-			stallsAndStables[id] = img;
+			stallsAndStables[id] = Images.createImage("b_stall" + (id + 1));
+			;
 		}
 		return stallsAndStables[id];
 	}
@@ -258,8 +246,7 @@ public class AgriImages {
 	public static BufferedImage getStableImage(int id) {
 		int arrId = id + 4;
 		if (stallsAndStables[arrId] == null) {
-			BufferedImage img = Images.createImage("b_stables" + (id + 1));
-			stallsAndStables[arrId] = img;
+			stallsAndStables[arrId] = Images.createImage("b_stables" + (id + 1));
 		}
 		return stallsAndStables[arrId];
 	}

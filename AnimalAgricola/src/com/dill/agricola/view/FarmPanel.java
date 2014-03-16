@@ -450,11 +450,7 @@ public class FarmPanel extends JPanel {
 
 		if (isActive(pos, Purchasable.BUILDING)) {
 			g.setColor(makeTranslucent(player.getColor().getRealColor(), 120));
-//			if (availableAnimals.size() > 0) {
-//				g.fill(AffineTransform.getTranslateInstance(realPos.x, realPos.y).createTransformedShape(buildingRect));
-//			} else {
 			g.fill(r);
-//			}
 		}
 
 	}
@@ -631,18 +627,14 @@ public class FarmPanel extends JPanel {
 				case TROUGH:
 					if (troughShape.contains(relativeDirPoint)) {
 						done = ap.doFarmAction(pos);
-//						farm.toggleTrough(pos);
-//						done = true;
 					}
 					break;
 				case BUILDING:
 					if (buildingRect.contains(relativeDirPoint)) {
 						availableAnimals = farm.guessAnimalTypesToPut(pos, true);
 						if (!animalArea.contains(relativeDirPoint) // not clicked in animal area OR
-								|| (availableAnimals.size() == 0 && farm.getAnimals(pos) == 0)) {// no animals available AND no animals present
+								|| ((availableAnimals.size() == 0 && leftClick) || (farm.getAnimals(pos) == 0 && !leftClick))) {// no animals available AND no animals present
 							done = ap.doFarmAction(pos);
-//							farm.toggleBuilding(pos);
-//							done = true;
 						}
 					}
 					break;

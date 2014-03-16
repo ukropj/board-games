@@ -24,7 +24,7 @@ public class GeneralSupply {
 	}
 
 	public final static int MAX_TROUGHS = 10;
-	public final static Integer[] EXTS = { 0/*, 1, 2, 3*/ };
+	public final static Integer[] EXTS = { 0, 1, 2, 3 };
 	public final static Stall[] STALLS = { new Stall(0), new Stall(1), new Stall(2), new Stall(3) };
 
 	private final static List<BuildingType> SPECIAL_BUILDINGS_TYPES = Arrays.asList(new BuildingType[] { BuildingType.HALF_TIMBERED_HOUSE,

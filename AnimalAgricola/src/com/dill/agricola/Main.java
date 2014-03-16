@@ -9,7 +9,7 @@ import com.dill.agricola.view.Board;
 
 public class Main {
 
-	public static boolean DEBUG = false;
+	public static boolean DEBUG = true;
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
@@ -18,7 +18,9 @@ public class Main {
 				Msg.load(new Locale("en"));
 				
 				Game g = new Game(new Board());
-				g.start();
+				if (DEBUG) {
+					g.start();					
+				}
 			}
 		});
 	}
