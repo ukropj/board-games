@@ -33,7 +33,7 @@ public class Noop implements Action {
 		return false;
 	}
 
-	public boolean doo(Player player) {
+	public UndoableEdit doo(Player player) {
 		return false;
 	}
 

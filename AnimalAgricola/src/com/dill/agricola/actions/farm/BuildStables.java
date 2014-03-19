@@ -6,6 +6,7 @@ import java.util.List;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+import javax.swing.undo.UndoableEdit;
 
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
@@ -56,10 +57,10 @@ public class BuildStables extends BuildAction {
 		return UiFactory.showOptionDialog("Choose cost", "Stables", icon, opts);
 	}
 
-	public boolean doo(Player player, DirPoint pos, int doneSoFar) {
+	public UndoableEdit doo(Player player, DirPoint pos, int doneSoFar) {
 		costNo = chooseStablesCost(player);
 		if (costNo == JOptionPane.CLOSED_OPTION) {
-			return false;
+			return null;
 		}
 		return super.doo(player, pos, doneSoFar);
 	}

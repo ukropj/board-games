@@ -29,8 +29,8 @@ public abstract class AbstractAction implements Action {
 		used = false;
 	}
 
-	public void setUsed() {
-		used = true;
+	public void setUsed(boolean used) {
+		this.used = used;
 	}
 
 	public boolean isUsed() {
@@ -58,4 +58,5 @@ public abstract class AbstractAction implements Action {
 			listener.stateChanges(this);
 		}
 	}
+	
 }

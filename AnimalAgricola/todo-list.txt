@@ -10,6 +10,7 @@
 	highlight current action
 	about & credits
 	window icon
+	undo/redo
 	
 #Bugs#
 

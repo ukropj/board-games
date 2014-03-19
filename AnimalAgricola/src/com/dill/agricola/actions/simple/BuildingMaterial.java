@@ -1,5 +1,8 @@
 package com.dill.agricola.actions.simple;
 
+import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.UndoableEdit;
+
 import com.dill.agricola.actions.AbstractAction;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
@@ -23,9 +26,9 @@ public class BuildingMaterial extends AbstractAction {
 		return true;
 	}
 	
-	public boolean doo(Player player, int doneSoFar) {
+	public UndoableEdit doo(Player player, int doneSoFar) {
 		player.addMaterial(MATERIALS);
-		return true;
+		return new AbstractUndoableEdit();
 	}
 
 	public boolean undo(Player player, int doneSoFar) {
@@ -53,8 +56,8 @@ public class BuildingMaterial extends AbstractAction {
 		return false;
 	}
 
-	public boolean doo(Player player, DirPoint pos, int count) {
-		return false;
+	public UndoableEdit doo(Player player, DirPoint pos, int count) {
+		return null;
 	}
 
 	public boolean undo(Player player, DirPoint pos, int count) {

@@ -1,5 +1,8 @@
 package com.dill.agricola.actions.simple;
 
+import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.UndoableEdit;
+
 import com.dill.agricola.actions.AbstractAction;
 import com.dill.agricola.common.Animals;
 import com.dill.agricola.common.DirPoint;
@@ -54,12 +57,12 @@ public abstract class AnimalAction extends AbstractAction {
 		return doneSoFar > 0;
 	}
 
-	public boolean doo(Player player, int doneSoFar) {
+	public UndoableEdit doo(Player player, int doneSoFar) {
 		player.purchaseAnimals(animals);
 		lastTakenAnimals.set(animals);
 		animals.clear();
 		setChanged();
-		return true;
+		return new AbstractUndoableEdit();
 	}
 
 	public boolean undo(Player player, int doneSoFar) {
@@ -84,8 +87,8 @@ public abstract class AnimalAction extends AbstractAction {
 		return false;
 	}
 
-	public boolean doo(Player player, DirPoint pos, int count) {
-		return false;
+	public UndoableEdit doo(Player player, DirPoint pos, int count) {
+		return null;
 	}
 
 	public boolean undo(Player player, DirPoint pos, int count) {

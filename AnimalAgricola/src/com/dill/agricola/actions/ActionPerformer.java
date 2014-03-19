@@ -1,12 +1,18 @@
 package com.dill.agricola.actions;
 
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoableEdit;
+
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.support.Namer;
+import com.dill.agricola.undo.LoggingUndoableEdit;
+import com.dill.agricola.undo.TurnUndoableEditSupport;
 
-public class ActionPerformer {
+public class ActionPerformer extends TurnUndoableEditSupport {
 
 	private Player player = null;
 	private Action action = null;
@@ -45,11 +51,15 @@ public class ActionPerformer {
 		this.count = 0;
 		checkState();
 
-		boolean done = action.canDo(player, count);
-		if (done && action.doo(player, count)) {
-			count++;
-		}
-		if (done) {
+		boolean canDo = action.canDo(player, count);
+		UndoableEdit edit = null;
+		if (canDo) {
+			postEdit(new StartAction(player));
+			edit = action.doo(player, count);
+			if (edit != null) {
+				count++;
+				postEdit(edit);				
+			}
 			player.spendWorker();
 			player.notifyObservers(ChangeType.ACTION_DO);
 			setChanged();
@@ -66,49 +76,22 @@ public class ActionPerformer {
 
 	public boolean doFarmAction(DirPoint pos) {
 		checkState();
-		if (action.canDo(player, pos, count) && action.doo(player, pos, count)) {
-			count++;
-			setChanged();
-			return true;
-		} else if (action.canUndo(player, pos, count) && action.undo(player, pos, count)) {
+		if (action.canDo(player, pos, count)) {
+			UndoableEdit edit = action.doo(player, pos, count);
+			if (edit != null) {
+				postEdit(edit);
+				count++;
+				setChanged();
+				return true;
+			}
+		}
+		if (action.canUndo(player, pos, count) && action.undo(player, pos, count)) {
 			count--;
 			setChanged();
 			return true;
 		}
 		return false;
 	}
-
-//	public boolean canDoMore() {
-//		return action.canPerformMore(player, count);
-//	}
-
-//	public boolean doActionMore() {
-//		checkState();
-//		if (canDoMore()) {
-//			if (action.doo(player)) {
-//				count++;
-//				player.notifyObservers(ChangeType.ACTION_MORE);
-//				return true;
-//			}
-//		}
-//		return false;
-//	}
-
-//	public boolean canDoLess() {
-//		return count > 0;
-//	}
-
-//	public boolean doActionLess() {
-//		checkState();
-//		if (canDoLess()) {
-//			if (action.undo(player)) {
-//				count--;
-//				player.notifyObservers(ChangeType.ACTION_LESS);
-//				return true;
-//			}
-//		}
-//		return false;
-//	}
 
 	public boolean canRevert() {
 		return action!= null && player != null;
@@ -143,8 +126,9 @@ public class ActionPerformer {
 
 	public boolean finishAction() {
 		if (canFinish()) {
+			postEdit(new EndAction(player, action));
 			player.setActiveType(null);
-			action.setUsed();
+			action.setUsed(true);
 			System.out.println("Action done: " + Namer.getName(action));
 			action = null;
 			player.notifyObservers(ChangeType.ACTION_DONE);
@@ -167,6 +151,60 @@ public class ActionPerformer {
 
 		void stateChanges(Action action);// TODO rename
 
+	}
+	
+	@SuppressWarnings("serial")
+	private class StartAction extends LoggingUndoableEdit {
+
+		private final Player player;
+		
+		public StartAction(Player player) {
+			this.player = player;
+		}
+		
+		public void undo() throws CannotUndoException {
+			super.undo();
+			player.returnWorker();
+		}
+		
+		public void redo() throws CannotRedoException {
+			super.redo();
+			player.spendWorker();
+		}
+		
+		
+		public String getPresentationName() {
+			return Namer.getName(this);
+		}
+		
+	}
+	
+	@SuppressWarnings("serial")
+	private class EndAction extends LoggingUndoableEdit {
+
+//		private final Player player;
+		private final Action action;
+		
+		public EndAction(Player player, Action action) {
+//			this.player = player;
+			this.action = action;
+		}
+		
+		public void undo() throws CannotUndoException {
+			super.undo();
+			action.setUsed(false);
+		}
+		
+		public void redo() throws CannotRedoException {
+			super.redo();
+//			player.setActiveType(null);
+			action.setUsed(true);
+		}
+		
+		public String getPresentationName() {
+			return Namer.getName(this);
+		}
+		
 	}
 
 }

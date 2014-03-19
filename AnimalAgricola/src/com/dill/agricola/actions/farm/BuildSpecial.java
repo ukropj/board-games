@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+import javax.swing.undo.UndoableEdit;
 
 import com.dill.agricola.GeneralSupply;
 import com.dill.agricola.GeneralSupply.Supplyable;
@@ -125,7 +126,7 @@ public class BuildSpecial extends BuildAction {
 		return result != JOptionPane.CLOSED_OPTION ? animalRewards[result] : animalRewards[0];
 	}
 
-	public boolean doo(Player player, int doneSoFar) {
+	public UndoableEdit doo(Player player, int doneSoFar) {
 		if (canDo(player, doneSoFar)) {
 			toBuild = chooseBuilding(player);
 			if (toBuild != null) {
@@ -133,14 +134,14 @@ public class BuildSpecial extends BuildAction {
 				setChanged();
 			}
 		}
-		return false;
+		return null;
 	}
 	
-	public boolean doo(Player player, DirPoint pos, int doneSoFar) {
+	public UndoableEdit doo(Player player, DirPoint pos, int doneSoFar) {
 		if (toBuild == BuildingType.OPEN_STABLES) {
 			osCostNo = chooseOpenStablesCost(player);
 			if (osCostNo == JOptionPane.CLOSED_OPTION) {
-				return false;
+				return null;
 			}
 		}
 		return super.doo(player, pos, doneSoFar);

@@ -1,11 +1,14 @@
 package com.dill.agricola.actions.farm;
 
+import javax.swing.undo.UndoableEdit;
+
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.model.Building;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Purchasable;
+import com.dill.agricola.undo.LoggingUndoableEdit;
 
 public abstract class BuildAction extends PurchaseAction {
 
@@ -39,15 +42,15 @@ public abstract class BuildAction extends PurchaseAction {
 		return canUndo(player, doneSoFar) && player.canUnpurchase(toBuild, pos);
 	}
 
-	public boolean doo(Player player, DirPoint pos, int doneSoFar) {
+	public UndoableEdit doo(Player player, DirPoint pos, int doneSoFar) {
 		if (canDo(player, pos, doneSoFar)) {
 			Building b = getBuildingInstance(toBuild);
 			player.purchase(b, getCost(doneSoFar), pos);
 			postActivate(player, b);
 			setChanged();
-			return true;
+			return new LoggingUndoableEdit();
 		}
-		return false;
+		return null;
 	}
 
 	public boolean undo(Player player, int doneSoFar) {

@@ -9,14 +9,16 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
 
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.farm.BuildSpecial;
 import com.dill.agricola.actions.farm.BuildStables;
 import com.dill.agricola.actions.farm.BuildStalls;
-import com.dill.agricola.actions.farm.Troughs;
 import com.dill.agricola.actions.farm.Expand;
 import com.dill.agricola.actions.farm.Fences;
+import com.dill.agricola.actions.farm.Troughs;
 import com.dill.agricola.actions.farm.Walls;
 import com.dill.agricola.actions.simple.BuildingMaterial;
 import com.dill.agricola.actions.simple.CowPigs;
@@ -31,20 +33,24 @@ import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.support.Msg;
+import com.dill.agricola.support.Namer;
+import com.dill.agricola.undo.LoggingUndoableEdit;
+import com.dill.agricola.undo.TurnUndoManager;
+import com.dill.agricola.undo.TurnUndoableEditSupport;
 import com.dill.agricola.view.Board;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
 import com.dill.agricola.view.utils.UiFactory;
 
-public class Game {
+public class Game extends TurnUndoableEditSupport {
 
 	public final static int ROUNDS = Main.DEBUG ? 5 : 8;
 
 	private final Player[] players;
 	private final Board board;
+	private final TurnUndoManager undoManager;
 
 	private int round = 0;
-	private int turn = 0;
 	private Player startingPlayer;
 	private Player currentPlayer;
 	private boolean workPhase;
@@ -53,17 +59,19 @@ public class Game {
 
 	private boolean ended;
 
-	public Game(Board board) {
-		this.board = board;
+	public Game() {
+		undoManager = new TurnUndoManager();
+		addUndoableEditListener(undoManager);
+		
 		players = new Player[2];
 		players[PlayerColor.BLUE.ordinal()] = new Player(PlayerColor.BLUE);
 		players[PlayerColor.RED.ordinal()] = new Player(PlayerColor.RED);
+		this.board = new Board(this, undoManager);
 
-		board.init(this);
 		if (Main.DEBUG) {
 			board.buildDebugPanel(players);
 		}
-		
+
 //		board.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		board.pack();
 		board.setLocationRelativeTo(null);
@@ -118,18 +126,22 @@ public class Game {
 		}
 	}
 
+	private void switchCurrentPlayer() {
+		currentPlayer = getPlayer(currentPlayer.getColor().other());
+	}
+
 	public boolean isStarted() {
 		return round > 0 && !ended;
 	}
-	
+
 	public void start() {
 		for (Player p : players) {
 			p.init();
 		}
 		ended = false;
-		turn = 0;
 		round = 0;
 		workPhase = false;
+		undoManager.discardAllEdits();
 
 		setStartingPlayer(chooseStartingPlayer());
 		initialStartingPlayer = startingPlayer.getColor();
@@ -142,7 +154,6 @@ public class Game {
 	private void startRound() {
 		round++;
 		System.out.println("Round: " + round + "(" + startingPlayer.getColor() + " is first)");
-		turn = 0;
 		currentPlayer = startingPlayer;
 		// refill
 		board.startRound(round);
@@ -152,8 +163,9 @@ public class Game {
 	}
 
 	private void startTurn() {
-		turn++;
-		System.out.println("Turn: " + turn + " (" + currentPlayer.getColor() + ")");
+		beginUpdate(round, currentPlayer.getColor());
+		postEdit(new StartTurn());
+		System.out.println("Turn: " + currentPlayer.getColor());
 		board.startTurn(currentPlayer);
 	}
 
@@ -161,7 +173,10 @@ public class Game {
 		// animals run away
 		releaseAnimals();
 		// switch player
-		currentPlayer = getPlayer(currentPlayer.getColor().other());
+		postEdit(new EndTurn());
+		endUpdate();
+		
+		switchCurrentPlayer();
 		if (currentPlayer.hasWorkers()) {
 			// if has workers continue with next turn
 			startTurn();
@@ -236,4 +251,41 @@ public class Game {
 				));
 	}
 
+	@SuppressWarnings("serial")
+	private class StartTurn extends LoggingUndoableEdit {
+
+		public void undo() throws CannotUndoException {
+			super.undo();
+			board.startTurn(currentPlayer);
+		}
+
+		public void redo() throws CannotRedoException {
+			super.redo();
+			board.startTurn(currentPlayer);
+		}
+
+		public String getPresentationName() {
+			return Namer.getName(this);
+		}
+
+	}
+
+	@SuppressWarnings("serial")
+	private class EndTurn extends LoggingUndoableEdit {
+
+		public void undo() throws CannotUndoException {
+			super.undo();
+			switchCurrentPlayer();
+		}
+
+		public void redo() throws CannotRedoException {
+			super.redo();
+			switchCurrentPlayer();
+		}
+
+		public String getPresentationName() {
+			return Namer.getName(this);
+		}
+
+	}
 }

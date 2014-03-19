@@ -1,5 +1,7 @@
 package com.dill.agricola.actions.farm;
 
+import javax.swing.undo.UndoableEdit;
+
 import com.dill.agricola.GeneralSupply;
 import com.dill.agricola.GeneralSupply.Supplyable;
 import com.dill.agricola.common.DirPoint;
@@ -8,6 +10,7 @@ import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Material;
 import com.dill.agricola.model.types.Purchasable;
+import com.dill.agricola.undo.LoggingUndoableEdit;
 
 public class Expand extends PurchaseAction {
 
@@ -73,16 +76,16 @@ public class Expand extends PurchaseAction {
 		return hadExp && player.canUnpurchase(thing, pos);
 	}
 
-	public boolean doo(Player player, int doneSoFar) {
+	public UndoableEdit doo(Player player, int doneSoFar) {
 		if (canDo(player, doneSoFar)) {
 			super.doo(player, doneSoFar);
 			player.addMaterial(materials);
 			lastTakenMaterials.set(materials);
 			materials.clear();
 			setChanged();
-			return true;
+			return new LoggingUndoableEdit();
 		}
-		return false;
+		return null;
 	}
 
 	public boolean undo(Player player, int doneSoFar) {

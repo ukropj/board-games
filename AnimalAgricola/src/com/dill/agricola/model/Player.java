@@ -22,7 +22,7 @@ public class Player extends SimpleObservable {
 
 	public static final int USED_EXT_VP = 4;
 
-	public static final int MAX_WORKERS = Main.DEBUG ? 1 : 3;
+	public static final int MAX_WORKERS = Main.DEBUG ? 2 : 3;
 
 	private final PlayerColor color;
 	public final Farm farm;

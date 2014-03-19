@@ -1,5 +1,7 @@
 package com.dill.agricola.actions.simple;
 
+import javax.swing.undo.UndoableEdit;
+
 import com.dill.agricola.Game;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Player;
@@ -23,7 +25,7 @@ public class StartOneWood extends RefillAction {
 		previousStartingPlayer = null;
 	}
 
-	public boolean doo(Player player, int doneSoFar) {
+	public UndoableEdit doo(Player player, int doneSoFar) {
 		previousStartingPlayer = game.getStartingPlayer();
 		game.setStartingPlayer(player);
 		return super.doo(player, doneSoFar);

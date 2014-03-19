@@ -20,6 +20,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 
 import com.dill.agricola.Game;
 import com.dill.agricola.Main;
@@ -27,6 +29,7 @@ import com.dill.agricola.actions.ActionPerformer;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.support.Msg;
+import com.dill.agricola.undo.TurnUndoManager;
 import com.dill.agricola.view.utils.UiFactory;
 
 @SuppressWarnings("serial")
@@ -43,7 +46,13 @@ public class Board extends JFrame {
 	private ActionBoard actionBoard;
 	private DebugPanel debugPanel;
 
-	public Board() {
+	public Board(Game game, TurnUndoManager undoManager) {
+		this.game = game;
+		ap.addUndoableEditListener(undoManager);
+		UndoableEditListener btnUpdater = new UndoButtonUpdater();
+		game.addUndoableEditListener(btnUpdater);
+		ap.addUndoableEditListener(btnUpdater);
+		
 		playerBoards = new PlayerBoard[2];
 
 		setTitle(Msg.get("gameTitle"));
@@ -59,6 +68,11 @@ public class Board extends JFrame {
 				endGame();
 			}
 		});
+		
+		initStatusBar();
+		initActionsBoard(undoManager);
+		initPlayerBoard(PlayerColor.BLUE, 0);
+		initPlayerBoard(PlayerColor.RED, 2);
 	}
 
 	private void buildMenu() {
@@ -85,14 +99,6 @@ public class Board extends JFrame {
 		// mb.add(devM);
 
 		setJMenuBar(mb);
-	}
-
-	public void init(Game game) {
-		this.game = game;
-		initStatusBar();
-		initActionsBoard();
-		initPlayerBoard(PlayerColor.BLUE, 0);
-		initPlayerBoard(PlayerColor.RED, 2);
 	}
 
 	private void initStatusBar() {
@@ -122,8 +128,8 @@ public class Board extends JFrame {
 		player.addObserver(actionBoard);
 	}
 
-	private void initActionsBoard() {
-		actionBoard = new ActionBoard(game.getActions(), ap, game.getSubmitListener());
+	private void initActionsBoard(TurnUndoManager undoManager) {
+		actionBoard = new ActionBoard(game.getActions(), ap, game.getSubmitListener(), undoManager);
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = 1;
@@ -149,6 +155,7 @@ public class Board extends JFrame {
 	public void startRound(int roundNo) {
 		statusL.setText(Msg.get("round", roundNo, Game.ROUNDS));
 		actionBoard.initActions();
+		actionBoard.refreshUndoRedo();
 		if (Main.DEBUG && roundNo == 1) {
 			actionBoard.initActions();
 		}
@@ -159,6 +166,7 @@ public class Board extends JFrame {
 		playerBoards[currentPlayer.getColor().ordinal()].setActive(true);
 		playerBoards[currentPlayer.getColor().other().ordinal()].setActive(false);
 		actionBoard.updateActions();
+		actionBoard.refreshUndoRedo();
 		if (Main.DEBUG) {
 			debugPanel.setCurrentPlayer(currentPlayer.getColor());
 		}
@@ -170,6 +178,7 @@ public class Board extends JFrame {
 		actionBoard.clearActions();
 		ap.setPlayer(null);
 		actionBoard.enableFinishOnly();
+		actionBoard.refreshUndoRedo();
 	}
 
 	public void showScoring(Player[] players, PlayerColor initialStartingPlayer) {
@@ -230,6 +239,12 @@ public class Board extends JFrame {
 			}
 		}
 
+	}
+	
+	private class UndoButtonUpdater implements UndoableEditListener {
+		public void undoableEditHappened(UndoableEditEvent evt) {
+			actionBoard.refreshUndoRedo();
+		}
 	}
 
 }

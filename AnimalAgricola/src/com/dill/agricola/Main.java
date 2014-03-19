@@ -5,7 +5,6 @@ import java.util.Locale;
 import javax.swing.SwingUtilities;
 
 import com.dill.agricola.support.Msg;
-import com.dill.agricola.view.Board;
 
 public class Main {
 
@@ -17,7 +16,7 @@ public class Main {
 				// TODO locale picker
 				Msg.load(new Locale("en"));
 				
-				Game g = new Game(new Board());
+				Game g = new Game();
 				if (DEBUG) {
 					g.start();					
 				}

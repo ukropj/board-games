@@ -31,6 +31,7 @@ import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.support.Fonts;
 import com.dill.agricola.support.Msg;
+import com.dill.agricola.undo.TurnUndoManager;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.UiFactory;
 
@@ -38,18 +39,25 @@ import com.dill.agricola.view.utils.UiFactory;
 public class ActionBoard extends JPanel implements Observer {
 
 	private final ActionPerformer ap;
+	private final TurnUndoManager undoManager;
+
 	private final Map<ActionType, Action> actions = new EnumMap<ActionType, Action>(ActionType.class);
 	private final Map<ActionType, JButton> actionButtons = new EnumMap<ActionType, JButton>(ActionType.class);
 	private final JPanel actionPanel;
 	private final JLabel hintLabel;
 	private final Color defaultColor;
 //	private final Border defaultBorder;
+	
 
 	private JButton finishB;
 	private JButton revertB;
 
-	public ActionBoard(List<Action> actions, final ActionPerformer ap, ActionListener submitListener) {
+	private JButton undoB;
+	private JButton redoB;
+
+	public ActionBoard(List<Action> actions, final ActionPerformer ap, ActionListener submitListener, TurnUndoManager undoManager) {
 		this.ap = ap;
+		this.undoManager = undoManager;
 
 		setLayout(new BorderLayout());
 
@@ -85,6 +93,8 @@ public class ActionBoard extends JPanel implements Observer {
 		add(actionPanel, BorderLayout.CENTER);
 
 		defaultColor = revertB.getBackground();
+
+		refreshUndoRedo();
 	}
 
 	private void buildControlPanel(final ActionListener submitListener) {
@@ -103,6 +113,24 @@ public class ActionBoard extends JPanel implements Observer {
 
 		JPanel buttons = UiFactory.createHorizontalPanel();
 		buttons.setBorder(new EmptyBorder(new Insets(5, 5, 5, 5)));
+
+		undoB = new JButton("Undo");
+		undoB.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				undoManager.undo();
+				refreshUndoRedo();
+			}
+		});
+		buttons.add(undoB);
+		redoB = new JButton("Redo");
+		redoB.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				undoManager.redo();
+				refreshUndoRedo();
+			}
+		});
+		buttons.add(redoB);
+
 		buttons.add(Box.createHorizontalGlue());
 		finishB = new JButton(Msg.get("finishAction"), AgriImages.getYesIcon());
 		finishB.setEnabled(false);
@@ -246,4 +274,15 @@ public class ActionBoard extends JPanel implements Observer {
 			updateFinishLabel();
 		}
 	}
+
+	public void refreshUndoRedo() {
+		// refresh undo
+		undoB.setText(undoManager.getUndoPresentationName());
+		undoB.setEnabled(undoManager.canUndo());
+
+		// refresh redo
+		redoB.setText(undoManager.getRedoPresentationName());
+		redoB.setEnabled(undoManager.canRedo());
+	}
+
 }

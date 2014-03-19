@@ -1,5 +1,7 @@
 package com.dill.agricola.actions;
 
+import javax.swing.undo.UndoableEdit;
+
 import com.dill.agricola.common.Animals;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
@@ -14,7 +16,7 @@ public interface Action {
 
 	void init();
 
-	void setUsed();
+	void setUsed(boolean used);
 
 	boolean isUsed();
 
@@ -27,11 +29,11 @@ public interface Action {
 	
 	boolean canDo(Player player, int count);
 
-	boolean doo(Player player, int count);
+	UndoableEdit doo(Player player, int count);
 
 	boolean canDo(Player player, DirPoint pos, int count);
 
-	boolean doo(Player player, DirPoint pos, int count);
+	UndoableEdit doo(Player player, DirPoint pos, int count);
 
 
 	boolean canUndo(Player player, int count);
@@ -48,6 +50,5 @@ public interface Action {
 	Animals getAccumulatedAnimals();
 
 	void addChangeListener(StateChangeListener changeListener);
-
 
 }
