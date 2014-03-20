@@ -2,6 +2,7 @@ package com.dill.agricola;
 
 import java.util.Locale;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import com.dill.agricola.support.Msg;
@@ -15,10 +16,15 @@ public class Main {
 			public void run() {
 				// TODO locale picker
 				Msg.load(new Locale("en"));
-				
-				Game g = new Game();
-				if (DEBUG) {
-					g.start();					
+				try {
+					Game g = new Game();
+					if (DEBUG) {
+						g.start();					
+					}					
+				} catch(Throwable e) {
+					String msg = e.getMessage();
+					JOptionPane.showMessageDialog(null, msg != null ? msg : Msg.get("unknownError"), Msg.get("error"), JOptionPane.ERROR_MESSAGE);
+					e.printStackTrace();
 				}
 			}
 		});

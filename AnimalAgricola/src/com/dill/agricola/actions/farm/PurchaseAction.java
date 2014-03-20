@@ -24,6 +24,10 @@ public abstract class PurchaseAction extends AbstractAction {
 	protected boolean isAnyLeft() {
 		return true;
 	}
+	
+	public boolean isQuickAction() {
+		return false;
+	}
 
 	public boolean isPurchaseAction() {
 		return true;
@@ -34,7 +38,7 @@ public abstract class PurchaseAction extends AbstractAction {
 	}
 
 	public boolean canDo(Player player, int doneSoFar) {
-		return !isUsed() && isAnyLeft() && player.canPurchase(thing, getCost(doneSoFar), null);
+		return isAnyLeft() && player.canPurchase(thing, getCost(doneSoFar), null);
 	}
 
 	public boolean canDo(Player player, DirPoint pos, int doneSoFar) {

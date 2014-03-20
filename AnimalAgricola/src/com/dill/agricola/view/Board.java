@@ -37,7 +37,7 @@ public class Board extends JFrame {
 
 	private Game game;
 
-	private final ActionPerformer ap = new ActionPerformer();
+	private final ActionPerformer ap;
 
 	private final Container mainPane;
 
@@ -46,13 +46,11 @@ public class Board extends JFrame {
 	private ActionBoard actionBoard;
 	private DebugPanel debugPanel;
 
-	public Board(Game game, TurnUndoManager undoManager) {
+	public Board(Game game, ActionPerformer ap, TurnUndoManager undoManager) {
 		this.game = game;
-		ap.addUndoableEditListener(undoManager);
-		UndoableEditListener btnUpdater = new UndoButtonUpdater();
-		game.addUndoableEditListener(btnUpdater);
-		ap.addUndoableEditListener(btnUpdater);
-		
+		this.ap = ap;
+		ap.addUndoableEditListener(new UndoButtonUpdater());
+
 		playerBoards = new PlayerBoard[2];
 
 		setTitle(Msg.get("gameTitle"));
@@ -68,7 +66,7 @@ public class Board extends JFrame {
 				endGame();
 			}
 		});
-		
+
 		initStatusBar();
 		initActionsBoard(undoManager);
 		initPlayerBoard(PlayerColor.BLUE, 0);
@@ -152,21 +150,23 @@ public class Board extends JFrame {
 		actionBoard.resetActions();
 	}
 
-	public void startRound(int roundNo) {
-		statusL.setText(Msg.get("round", roundNo, Game.ROUNDS));
-		actionBoard.initActions();
-		actionBoard.refreshUndoRedo();
-		if (Main.DEBUG && roundNo == 1) {
-			actionBoard.initActions();
+	public void updateState(int roundNo) {
+		if (roundNo > 0) {
+			statusL.setText(Msg.get("round", roundNo, Game.ROUNDS));			
 		}
+		actionBoard.updateActions();
+		actionBoard.refreshUndoRedo();
+	}
+
+	public void startRound(int roundNo) {
+		actionBoard.initActions();
+		updateState(roundNo);
 	}
 
 	public void startTurn(Player currentPlayer) {
-		ap.setPlayer(currentPlayer);
 		playerBoards[currentPlayer.getColor().ordinal()].setActive(true);
 		playerBoards[currentPlayer.getColor().other().ordinal()].setActive(false);
-		actionBoard.updateActions();
-		actionBoard.refreshUndoRedo();
+		updateState(-1);
 		if (Main.DEBUG) {
 			debugPanel.setCurrentPlayer(currentPlayer.getColor());
 		}
@@ -175,8 +175,7 @@ public class Board extends JFrame {
 	public void endRound() {
 		playerBoards[0].setActive(true);
 		playerBoards[1].setActive(true);
-		actionBoard.clearActions();
-		ap.setPlayer(null);
+//		actionBoard.clearActions();
 		actionBoard.enableFinishOnly();
 		actionBoard.refreshUndoRedo();
 	}
@@ -192,7 +191,7 @@ public class Board extends JFrame {
 		playerBoards[0].updatePlayer();
 		playerBoards[1].updatePlayer();
 	}
-	
+
 	public void endGame() {
 		if (Main.DEBUG
 				|| !game.isStarted()
@@ -240,7 +239,7 @@ public class Board extends JFrame {
 		}
 
 	}
-	
+
 	private class UndoButtonUpdater implements UndoableEditListener {
 		public void undoableEditHappened(UndoableEditEvent evt) {
 			actionBoard.refreshUndoRedo();

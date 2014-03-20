@@ -7,6 +7,7 @@ import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
+import com.dill.agricola.model.types.PlayerColor;
 
 public interface Action {
 
@@ -14,12 +15,16 @@ public interface Action {
 
 	void reset();
 
-	void init();
+	UndoableEdit init();
 
-	void setUsed(boolean used);
+	void setUsed(PlayerColor playerColor);
 
 	boolean isUsed();
+	
+	PlayerColor getUser();
 
+	boolean isQuickAction();
+	
 	boolean isPurchaseAction();
 	
 	boolean isResourceAction();
@@ -49,6 +54,6 @@ public interface Action {
 
 	Animals getAccumulatedAnimals();
 
-	void addChangeListener(StateChangeListener changeListener);
+	void addChangeListener(ActionStateChangeListener changeListener);
 
 }

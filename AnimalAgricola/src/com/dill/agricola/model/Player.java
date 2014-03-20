@@ -250,26 +250,26 @@ public class Player extends SimpleObservable {
 		return farm.hasValidAnimals();
 	}
 
-	public int breedAnimals() {
-		int newAnimals = 0;
+	public Animals breedAnimals() {
+		Animals newAnimals = new Animals();
 		for (Animal type : Animal.values()) {
 			if (animals.get(type) >= 2) {
 				purchaseAnimal(type, 1);
-				newAnimals++;
+				newAnimals.add(type, 1);
 			}
 		}
 		return newAnimals;
 	}
 
-	public int releaseAnimals() {
-		int count = 0;
+	public Animals releaseAnimals() {
+		Animals lostAnimals = new Animals();
 		for (Animal type : Animal.values()) {
 			int loose = farm.getLooseAnimals(type);
 			if (unpurchaseAnimal(type, loose)) {
-				count += loose;
+				lostAnimals.add(type, loose);
 			}
 		}
-		return -count;
+		return lostAnimals;
 	}
 
 	public int getWorkers() {
@@ -290,6 +290,11 @@ public class Player extends SimpleObservable {
 		setChanged();
 	}
 
+	public void spendAllWorkers() {
+		workers = 0;
+		setChanged();
+	}
+	
 	public void returnAllWorkers() {
 		workers = MAX_WORKERS;
 		setChanged();

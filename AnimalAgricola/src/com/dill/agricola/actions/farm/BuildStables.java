@@ -37,7 +37,7 @@ public class BuildStables extends BuildAction {
 	}
 	
 	public boolean canDo(Player player, int doneSoFar) {
-		return !isUsed() && isAnyLeft() && 
+		return isAnyLeft() && 
 				(toBuild == null || player.canPurchase(toBuild, COSTS[0], null) || player.canPurchase(toBuild, COSTS[1], null));
 	}
 

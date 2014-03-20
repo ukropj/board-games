@@ -7,6 +7,20 @@ import javax.swing.undo.CannotUndoException;
 @SuppressWarnings("serial")
 public class LoggingUndoableEdit extends AbstractUndoableEdit {
 
+	private boolean significant;
+
+	public LoggingUndoableEdit() {
+		this(true);
+	}
+	
+	public LoggingUndoableEdit(boolean significant) {
+		this.significant = significant;
+	}
+	
+	public boolean isSignificant() {
+		return significant;
+	}
+	
 	public void undo() throws CannotUndoException {
 		System.out.println("# Atomic " + getUndoPresentationName());
 		super.undo();

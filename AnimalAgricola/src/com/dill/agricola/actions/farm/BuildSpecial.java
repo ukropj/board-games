@@ -48,11 +48,10 @@ public class BuildSpecial extends BuildAction {
 		super(counter++ % 2 == 0 ? ActionType.SPECIAL : ActionType.SPECIAL2);
 	}
 
-	public void init() {
-		super.init();
+	public UndoableEdit init() {
 		toBuild = null;
 		toGive = null;
-		setChanged();
+		return super.init();
 	}
 	
 	protected Materials getCost(int doneSoFar) {
@@ -68,12 +67,12 @@ public class BuildSpecial extends BuildAction {
 	}
 	
 	public boolean canDo(Player player, int doneSoFar) {
-		return !isUsed() && isAnyLeft(); // currently can perform even if player cannot purchase anything
+		return isAnyLeft(); // currently can perform even if player cannot purchase anything
 	}
 
 	public boolean canDo(Player player, DirPoint pos, int doneSoFar) {
 		// there does not need to be "any left"
-		return !isUsed() && doneSoFar < 1 && toBuild != null && canPurchase(player, toBuild, pos);
+		return doneSoFar < 1 && toBuild != null && canPurchase(player, toBuild, pos);
 	}
 
 	private boolean canPurchase(Player player, BuildingType type, DirPoint pos) {

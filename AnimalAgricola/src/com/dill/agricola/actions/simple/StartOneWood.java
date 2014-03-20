@@ -1,5 +1,7 @@
 package com.dill.agricola.actions.simple;
 
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
 
 import com.dill.agricola.Game;
@@ -7,34 +9,56 @@ import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Material;
+import com.dill.agricola.support.Namer;
+import com.dill.agricola.undo.LoggingUndoableEdit;
 
 public class StartOneWood extends RefillAction {
 
 	public final static Materials REFILL = new Materials(Material.WOOD, 1);
 	
 	private final Game game;
-	private Player previousStartingPlayer = null;
 	
 	public StartOneWood(Game game) {
 		super(ActionType.STARTING_ONE_WOOD, REFILL);
 		this.game = game;
 	}
-	
-	public void init() {
-		super.init();
-		previousStartingPlayer = null;
-	}
 
 	public UndoableEdit doo(Player player, int doneSoFar) {
-		previousStartingPlayer = game.getStartingPlayer();
+		Player previousPlayer = game.getStartingPlayer();
 		game.setStartingPlayer(player);
-		return super.doo(player, doneSoFar);
+		return joinEdits(super.doo(player, doneSoFar), new TakeStartPlayer(previousPlayer, player));
 	}
 	
 	public boolean undo(Player player, int doneSoFar) {
-		game.setStartingPlayer(previousStartingPlayer);
-		previousStartingPlayer = null;
-		return super.undo(player, doneSoFar);
+		// TODO remove
+		return false;
+	}
+	
+	@SuppressWarnings("serial")
+	protected class TakeStartPlayer extends LoggingUndoableEdit {
+
+		private final Player previousPlayer;
+		private final Player player;
+		
+		public TakeStartPlayer(Player previousPlayer, Player player) {
+			this.previousPlayer = previousPlayer;
+			this.player = player;
+		}
+		
+		public void undo() throws CannotUndoException {
+			super.undo();
+			game.setStartingPlayer(previousPlayer);
+		}
+		
+		public void redo() throws CannotRedoException {
+			super.redo();
+			game.setStartingPlayer(player);
+		}
+		
+		public String getPresentationName() {
+			return Namer.getName(this);
+		}
+		
 	}
 
 }

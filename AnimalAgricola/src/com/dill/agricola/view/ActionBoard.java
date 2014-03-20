@@ -26,6 +26,7 @@ import javax.swing.border.EmptyBorder;
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.ActionPerformer;
 import com.dill.agricola.actions.ActionPerformer.ActionPerfListener;
+import com.dill.agricola.actions.ActionStateChangeListener;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.ChangeType;
@@ -45,8 +46,9 @@ public class ActionBoard extends JPanel implements Observer {
 	private final Map<ActionType, JButton> actionButtons = new EnumMap<ActionType, JButton>(ActionType.class);
 	private final JPanel actionPanel;
 	private final JLabel hintLabel;
-	private final Color defaultColor;
 //	private final Border defaultBorder;
+	
+	private static final Color defaultColor = (new JButton()).getBackground();
 	
 
 	private JButton finishB;
@@ -55,7 +57,7 @@ public class ActionBoard extends JPanel implements Observer {
 	private JButton undoB;
 	private JButton redoB;
 
-	public ActionBoard(List<Action> actions, final ActionPerformer ap, ActionListener submitListener, TurnUndoManager undoManager) {
+	public ActionBoard(List<Action> actions, final ActionPerformer ap, final ActionListener submitListener, TurnUndoManager undoManager) {
 		this.ap = ap;
 		this.undoManager = undoManager;
 
@@ -77,13 +79,19 @@ public class ActionBoard extends JPanel implements Observer {
 						if (ap.startAction(action)) {
 							b.setBackground(ap.getPlayer().getColor().getRealColor());
 							updateActions();
+							
+							if (ap.isFinished()) {
+								submitListener.actionPerformed(e);
+							}
 						}
 					}
 				}
 			});
+			action.addChangeListener(new ActionUsageListener(b));
 
 			actionButtons.put(type, b);
 			ActionPanelFactory.createActionPanel(actionPanel, action, b);
+			
 		}
 
 		hintLabel = UiFactory.createLabel("");
@@ -91,8 +99,6 @@ public class ActionBoard extends JPanel implements Observer {
 		buildControlPanel(submitListener);
 
 		add(actionPanel, BorderLayout.CENTER);
-
-		defaultColor = revertB.getBackground();
 
 		refreshUndoRedo();
 	}
@@ -160,11 +166,7 @@ public class ActionBoard extends JPanel implements Observer {
 		revertB.setMargin(new Insets(2, 2, 2, 2));
 		revertB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Action action = ap.getAction();
 				if (ap.revertAction()) {
-					JButton b = actionButtons.get(action.getType());
-					b.setBackground(defaultColor);
-					b.setEnabled(true);
 					updateActions();
 				}
 			}
@@ -206,9 +208,8 @@ public class ActionBoard extends JPanel implements Observer {
 					setHint(text.toString());
 				}
 			} else {
-				// when no action being performed, disable those that cannot be currently performed 
-				btnEntry.getValue().setEnabled(ap.getPlayer() != null && a.canDo(ap.getPlayer(), 0));
-
+				// when no action being performed, disable those that cannot be currently performed
+				new ActionUsageListener(button).stateChanges(a);
 				setHint(Msg.get("chooseAction"));
 			}
 		}
@@ -236,22 +237,21 @@ public class ActionBoard extends JPanel implements Observer {
 		for (Action action : actions.values()) {
 			action.reset();
 		}
-		clearActions();
 	}
 
 	public void initActions() {
 		for (Action action : actions.values()) {
-			action.init();
+			ap.postEdit(action.init());
 		}
 		revalidate();
 	}
 
-	public void clearActions() {
-		for (JButton btn : actionButtons.values()) {
-			btn.setBackground(defaultColor);
-			btn.setEnabled(true);
-		}
-	}
+//	public void clearActions() {
+//		for (JButton btn : actionButtons.values()) {
+//			btn.setBackground(defaultColor);
+//			btn.setEnabled(true);
+//		}
+//	}
 
 	public void enableFinishOnly() {
 		for (Component c : actionPanel.getComponents()) {
@@ -283,6 +283,26 @@ public class ActionBoard extends JPanel implements Observer {
 		// refresh redo
 		redoB.setText(undoManager.getRedoPresentationName());
 		redoB.setEnabled(undoManager.canRedo());
+	}
+	
+	private class ActionUsageListener implements ActionStateChangeListener {
+
+		private final JButton actionButtton;
+		
+		
+		public ActionUsageListener(JButton button) {
+			actionButtton = button;
+		}
+
+		public void stateChanges(Action action) {
+			if (!action.isUsed()) {
+				actionButtton.setBackground(defaultColor);
+				actionButtton.setEnabled(ap.getPlayer() != null && action.canDo(ap.getPlayer(), 0));
+			} else {
+				actionButtton.setBackground(action.getUser().getRealColor());
+				actionButtton.setEnabled(false);				
+			}
+		}
 	}
 
 }

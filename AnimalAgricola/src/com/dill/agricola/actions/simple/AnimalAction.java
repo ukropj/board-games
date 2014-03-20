@@ -1,6 +1,7 @@
 package com.dill.agricola.actions.simple;
 
-import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
 
 import com.dill.agricola.actions.AbstractAction;
@@ -9,6 +10,8 @@ import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Animal;
+import com.dill.agricola.support.Namer;
+import com.dill.agricola.undo.LoggingUndoableEdit;
 
 public abstract class AnimalAction extends AbstractAction {
 
@@ -16,7 +19,6 @@ public abstract class AnimalAction extends AbstractAction {
 	protected final Animal other;
 
 	protected final Animals animals = new Animals();
-	protected final Animals lastTakenAnimals = new Animals();	
 
 	public AnimalAction(ActionType type, Animal first, Animal other) {
 		super(type);
@@ -30,51 +32,54 @@ public abstract class AnimalAction extends AbstractAction {
 		setChanged();
 	}
 
-	public void init() {
-		super.init();
+	public UndoableEdit init() {
+		Animal added = null;
 		if (animals.get(first) == 0) {
 			animals.add(first, 1);
+			added = first;
 		} else {
 			animals.add(other, 1);
+			added = other;
 		}
-		lastTakenAnimals.clear();
-		setChanged();
+		return joinEdits(super.init(), new RefillAnimals(new Animals(added)));
 	}
-	
+
+	public boolean isQuickAction() {
+		return false;
+	}
+
 	public boolean isPurchaseAction() {
 		return false;
 	}
-	
+
 	public boolean isResourceAction() {
 		return true;
 	}
-	
+
 	public boolean canDo(Player player, int doneSoFar) {
-		return !isUsed() && doneSoFar == 0;
+		return !animals.isEmpty();
 	}
 
 	public boolean canUndo(Player player, int doneSoFar) {
-		return doneSoFar > 0;
+		return false;
 	}
 
 	public UndoableEdit doo(Player player, int doneSoFar) {
-		player.purchaseAnimals(animals);
-		lastTakenAnimals.set(animals);
-		animals.clear();
-		setChanged();
-		return new AbstractUndoableEdit();
+		if (canDo(player, doneSoFar)) {
+			UndoableEdit edit = new TakeAnimals(player, new Animals(animals));
+			player.purchaseAnimals(animals);
+			animals.clear();
+			setChanged();
+			return edit;
+		}
+		return null;
 	}
 
 	public boolean undo(Player player, int doneSoFar) {
-		boolean done = player.unpurchaseAnimals(lastTakenAnimals);
-		if (done) {
-			animals.set(lastTakenAnimals);
-			lastTakenAnimals.clear();
-			setChanged();
-		}
-		return done;
+		// TODO remove
+		return false;
 	}
-	
+
 	public Animals getAccumulatedAnimals() {
 		return animals;
 	}
@@ -82,7 +87,7 @@ public abstract class AnimalAction extends AbstractAction {
 	public boolean canDo(Player player, DirPoint pos, int count) {
 		return false;
 	}
-	
+
 	public boolean canUndo(Player player, DirPoint pos, int count) {
 		return false;
 	}
@@ -93,6 +98,63 @@ public abstract class AnimalAction extends AbstractAction {
 
 	public boolean undo(Player player, DirPoint pos, int count) {
 		return false;
+	}
+
+	@SuppressWarnings("serial")
+	protected class TakeAnimals extends LoggingUndoableEdit {
+
+		private final Player player;
+		private final Animals takenAnimals;
+
+		public TakeAnimals(Player player, Animals animals) {
+			this.player = player;
+			this.takenAnimals = animals;
+		}
+
+		public void undo() throws CannotUndoException {
+			super.undo();
+			player.unpurchaseAnimals(takenAnimals);
+			animals.add(takenAnimals);
+		}
+
+		public void redo() throws CannotRedoException {
+			super.redo();
+			animals.substract(takenAnimals);
+			setChanged();
+			player.purchaseAnimals(takenAnimals);
+		}
+
+		public String getPresentationName() {
+			return Namer.getName(this);
+		}
+
+	}
+	
+	@SuppressWarnings("serial")
+	protected class RefillAnimals extends LoggingUndoableEdit {
+		
+		private final Animals added;
+		
+		public RefillAnimals(Animals added) {
+			super(false);
+			this.added = added;
+		}
+		
+		public void undo() throws CannotUndoException {
+			super.undo();
+			animals.substract(added);
+			setChanged();
+		}
+		
+		public void redo() throws CannotRedoException {
+			super.redo();
+			animals.add(added);
+			setChanged();
+		}
+		
+		public String getPresentationName() {
+			return Namer.getName(this);
+		}
 	}
 
 }

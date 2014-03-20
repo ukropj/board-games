@@ -21,5 +21,9 @@ public class Animals extends Bag<Animal>{
 	public Animals(Map<Animal, Integer> animals) {
 		super(Animal.class, animals);
 	}
+	
+	public Animals(Animals animals) {
+		super(Animal.class, animals.map);
+	}
 
 }

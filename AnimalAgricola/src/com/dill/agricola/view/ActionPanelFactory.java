@@ -14,7 +14,7 @@ import javax.swing.JPanel;
 import com.dill.agricola.GeneralSupply;
 import com.dill.agricola.GeneralSupply.Supplyable;
 import com.dill.agricola.actions.Action;
-import com.dill.agricola.actions.StateChangeListener;
+import com.dill.agricola.actions.ActionStateChangeListener;
 import com.dill.agricola.actions.farm.Expand;
 import com.dill.agricola.actions.farm.Fences;
 import com.dill.agricola.actions.farm.Troughs;
@@ -281,7 +281,7 @@ public class ActionPanelFactory {
 		return l;
 	}
 
-	private static class ResourceChangeListener implements StateChangeListener {
+	private static class ResourceChangeListener implements ActionStateChangeListener {
 
 		private JPanel materialPanel;
 
@@ -295,7 +295,7 @@ public class ActionPanelFactory {
 
 	}
 
-	private static class SupplyChangeListener implements StateChangeListener {
+	private static class SupplyChangeListener implements ActionStateChangeListener {
 
 		private final Supplyable type;
 		private final JLabel label;
@@ -311,7 +311,7 @@ public class ActionPanelFactory {
 
 	}
 
-	private static class BuildingChangeListener implements StateChangeListener {
+	private static class BuildingChangeListener implements ActionStateChangeListener {
 
 		private JPanel buildingPanel;
 

@@ -4,6 +4,7 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
 
+import com.dill.agricola.Main;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
@@ -21,13 +22,13 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 	private ActionPerfListener perfListener;
 
 	private void checkState() throws IllegalStateException {
-		if (player == null || action == null) {
-			throw new IllegalStateException("Cannot perform action without action or player");
-		}
+		Main.asrtNotNull(player, "Cannot perform action without player");
+		Main.asrtNotNull(action, "Cannot perform action without action");
 	}
 
 	public void setPlayer(Player player) {
 		this.player = player;
+		System.out.println("## AP: " + player);
 	}
 
 	public Player getPlayer() {
@@ -54,13 +55,21 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		boolean canDo = action.canDo(player, count);
 		UndoableEdit edit = null;
 		if (canDo) {
-			postEdit(new StartAction(player));
+			beginUpdate(player.getColor());
+			postEdit(new StartAction(player, action));
+			
+			action.setUsed(player.getColor());
 			edit = action.doo(player, count);
 			if (edit != null) {
 				count++;
 				postEdit(edit);				
 			}
 			player.spendWorker();
+			
+			if (action.isQuickAction()) {
+				return finishAction();
+			}
+			
 			player.notifyObservers(ChangeType.ACTION_DO);
 			setChanged();
 			return true;
@@ -113,7 +122,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 				player.returnWorker();
 				player.setActiveType(null);
 			}
-			player.notifyObservers(ChangeType.ACTION_UNDO);
+			player.notifyObservers(ChangeType.UNDO);
 			return done;			
 		}
 		return false;
@@ -128,13 +137,16 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		if (canFinish()) {
 			postEdit(new EndAction(player, action));
 			player.setActiveType(null);
-			action.setUsed(true);
 			System.out.println("Action done: " + Namer.getName(action));
 			action = null;
 			player.notifyObservers(ChangeType.ACTION_DONE);
 			return true;
 		}
 		return false;
+	}
+	
+	public boolean isFinished() {
+		return action == null;
 	}
 
 	private void setChanged() {
@@ -149,27 +161,33 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 
 	public interface ActionPerfListener {
 
-		void stateChanges(Action action);// TODO rename
+		void stateChanges(Action action);
 
 	}
 	
 	@SuppressWarnings("serial")
 	private class StartAction extends LoggingUndoableEdit {
 
-		private final Player player;
+		private final Player p;
+		private final Action a;
 		
-		public StartAction(Player player) {
-			this.player = player;
+		public StartAction(Player player, Action action) {
+			this.p = player;
+			this.a = action;
 		}
 		
 		public void undo() throws CannotUndoException {
 			super.undo();
-			player.returnWorker();
+			p.setActiveType(null);
+			action = null;
+			p.returnWorker();
+			a.setUsed(null);
 		}
 		
 		public void redo() throws CannotRedoException {
 			super.redo();
-			player.spendWorker();
+			a.setUsed(p.getColor());
+			p.spendWorker();
 		}
 		
 		
@@ -182,23 +200,20 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 	@SuppressWarnings("serial")
 	private class EndAction extends LoggingUndoableEdit {
 
-//		private final Player player;
-		private final Action action;
+//		private final Player p;
+//		private final Action a;
 		
 		public EndAction(Player player, Action action) {
-//			this.player = player;
-			this.action = action;
+//			this.p = player;
+//			this.a = action;
 		}
 		
 		public void undo() throws CannotUndoException {
 			super.undo();
-			action.setUsed(false);
 		}
 		
 		public void redo() throws CannotRedoException {
 			super.redo();
-//			player.setActiveType(null);
-			action.setUsed(true);
 		}
 		
 		public String getPresentationName() {

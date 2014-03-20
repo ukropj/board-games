@@ -27,7 +27,7 @@ public abstract class BuildAction extends PurchaseAction {
 	abstract protected Building getBuildingInstance(BuildingType type); 
 	
 	public boolean canDo(Player player, int doneSoFar) {
-		return !isUsed() && isAnyLeft() && (toBuild == null || player.canPurchase(toBuild, getCost(doneSoFar), null));
+		return isAnyLeft() && (toBuild == null || player.canPurchase(toBuild, getCost(doneSoFar), null));
 	}
 
 	public boolean canDo(Player player, DirPoint pos, int doneSoFar) {

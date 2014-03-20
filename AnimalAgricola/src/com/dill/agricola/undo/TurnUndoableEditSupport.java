@@ -7,33 +7,24 @@ import com.dill.agricola.model.types.PlayerColor;
 
 public class TurnUndoableEditSupport extends UndoableEditSupport {
 
-	/*public synchronized void postEdit(UndoableEdit e) {
+	public synchronized void beginUpdate(PlayerColor currentPlayer) {
 		if (updateLevel == 0) {
-			_postEdit(e);
-		} else {
-			// PENDING(rjrjr) Throw an exception if this fails?
-			compoundEdit.addEdit(e);
-		}
-	}*/
-
-	public synchronized void beginUpdate(int round, PlayerColor currentPlayer) {
-		if (updateLevel == 0) {
-			System.out.println("Turn Edit starts");
-			compoundEdit = createCompoundEdit(round, currentPlayer);
+			compoundEdit = createCompoundEdit(currentPlayer);
+			System.out.println("# Start: " + compoundEdit.getPresentationName());
 			_postEdit(compoundEdit);
 		}
 		updateLevel++;
 	}
 
-	protected CompoundEdit createCompoundEdit(int round, PlayerColor currentPlayer) {
-		return new TurnCompoundEdit(round, currentPlayer);
+	protected CompoundEdit createCompoundEdit(PlayerColor currentPlayer) {
+		return new TurnCompoundEdit(currentPlayer);
 	}
 
 	public synchronized void endUpdate() {
 		updateLevel--;
 		if (updateLevel == 0) {
 			compoundEdit.end();
-			System.out.println("Turn Edit ends");
+			System.out.println("# End: " + compoundEdit.getPresentationName());
 			compoundEdit = null;
 		}
 	}

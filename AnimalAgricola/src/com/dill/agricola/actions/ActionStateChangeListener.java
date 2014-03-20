@@ -1,7 +1,7 @@
 package com.dill.agricola.actions;
 
 
-public interface StateChangeListener {
+public interface ActionStateChangeListener {
 
 	void stateChanges(Action action);
 

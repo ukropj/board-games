@@ -31,12 +31,15 @@ public class Expand extends PurchaseAction {
 		materials.clear();
 	}
 
-	public void init() {
-		super.init();
+	public UndoableEdit init() {
 		materials.add(REFILL);
 		lastTakenMaterials.clear();
 		hadExp = false;
-		setChanged();
+		return super.init();
+	}
+	
+	public boolean isQuickAction() {
+		return !isPurchaseAction();
 	}
 	
 	public boolean isPurchaseAction() {
@@ -61,11 +64,11 @@ public class Expand extends PurchaseAction {
 	}
 
 	public boolean canDo(Player player, int doneSoFar) {
-		return !isUsed() && !materials.isEmpty();
+		return !materials.isEmpty();
 	}
 
 	public boolean canDo(Player player, DirPoint pos, int doneSoFar) {
-		return !isUsed() && !hadExp && isAnyLeft() && player.canPurchase(thing, getCost(doneSoFar), pos);
+		return !hadExp && isAnyLeft() && player.canPurchase(thing, getCost(doneSoFar), pos);
 	}
 
 	public boolean canUndo(Player player, int doneSoFar) {

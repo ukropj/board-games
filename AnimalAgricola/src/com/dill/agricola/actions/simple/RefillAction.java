@@ -9,7 +9,6 @@ import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
-import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.support.Namer;
 import com.dill.agricola.undo.LoggingUndoableEdit;
 
@@ -18,7 +17,6 @@ public abstract class RefillAction extends AbstractAction {
 	protected final Materials refill;
 
 	protected final Materials materials = new Materials();
-	protected final Materials lastTakenMaterials = new Materials();
 
 	public RefillAction(ActionType type, Materials refill) {
 		super(type);
@@ -28,33 +26,27 @@ public abstract class RefillAction extends AbstractAction {
 	public void reset() {
 		super.reset();
 		materials.clear();
+		setChanged();
 	}
 
-	public void init() {
-		super.init();
+	public UndoableEdit init() {
 		materials.add(refill);
-		lastTakenMaterials.clear();
 		setChanged();
-	}
-
-	private void addMaterials(Materials add) {
-		materials.add(add);
-		setChanged();
-	}
-
-	private void takeMaterials(Materials take) {
-		materials.substract(take);
-		setChanged();
+		return joinEdits(super.init(), new RefillMaterials(refill));
 	}
 
 	public boolean canDo(Player player, int doneSoFar) {
-		return !isUsed() && !materials.isEmpty();
+		return !materials.isEmpty();
 	}
 
 	public boolean canUndo(Player player, int doneSoFar) {
-		return !lastTakenMaterials.isEmpty();
+		return false;
 	}
 
+	public boolean isQuickAction() {
+		return true;
+	}
+	
 	public boolean isPurchaseAction() {
 		return false;
 	}
@@ -65,9 +57,8 @@ public abstract class RefillAction extends AbstractAction {
 
 	public UndoableEdit doo(Player player, int doneSoFar) {
 		if (canDo(player, doneSoFar)) {
-			UndoableEdit edit = new TakeResources(player, new Materials(materials));
+			UndoableEdit edit = new TakeMaterials(player, new Materials(materials));
 			player.addMaterial(materials);
-			lastTakenMaterials.set(materials);
 			materials.clear();
 			setChanged();
 			return edit;
@@ -76,13 +67,7 @@ public abstract class RefillAction extends AbstractAction {
 	}
 
 	public boolean undo(Player player, int doneSoFar) {
-		if (canUndo(player, doneSoFar)) {
-			player.removeMaterial(lastTakenMaterials);
-			materials.set(lastTakenMaterials);
-			lastTakenMaterials.clear();
-			setChanged();
-			return true;
-		}
+		// TODO remove
 		return false;
 	}
 
@@ -107,33 +92,59 @@ public abstract class RefillAction extends AbstractAction {
 	}
 
 	@SuppressWarnings("serial")
-	private class TakeResources extends LoggingUndoableEdit {
+	protected class TakeMaterials extends LoggingUndoableEdit {
 
 		private final Player player;
-		private final Materials materials;
+		private final Materials takenMaterials;
 		
-		public TakeResources(Player player, Materials materials) {
+		public TakeMaterials(Player player, Materials materials) {
 			this.player = player;
-			this.materials = materials;
+			this.takenMaterials = materials;
 		}
 		
 		public void undo() throws CannotUndoException {
 			super.undo();
-			player.removeMaterial(materials);
-			addMaterials(materials);
-			player.notifyObservers(ChangeType.ACTION_UNDO);
+			player.removeMaterial(takenMaterials);
+			materials.add(takenMaterials);
 		}
 		
 		public void redo() throws CannotRedoException {
 			super.redo();
-			takeMaterials(materials);
-			player.addMaterial(materials);
-			player.notifyObservers(ChangeType.ACTION_DO);
+			materials.substract(takenMaterials);
+			setChanged();
+			player.addMaterial(takenMaterials);
 		}
 		
 		public String getPresentationName() {
 			return Namer.getName(this);
 		}
 		
+	}
+	
+	@SuppressWarnings("serial")
+	protected class RefillMaterials extends LoggingUndoableEdit {
+		
+		private final Materials added;
+		
+		public RefillMaterials(Materials added) {
+			super(false);
+			this.added = added;
+		}
+		
+		public void undo() throws CannotUndoException {
+			super.undo();
+			materials.substract(added);
+			setChanged();
+		}
+		
+		public void redo() throws CannotRedoException {
+			super.redo();
+			materials.add(added);
+			setChanged();
+		}
+		
+		public String getPresentationName() {
+			return Namer.getName(this);
+		}
 	}
 }
