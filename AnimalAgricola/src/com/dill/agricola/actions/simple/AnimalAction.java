@@ -11,7 +11,7 @@ import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.support.Namer;
-import com.dill.agricola.undo.LoggingUndoableEdit;
+import com.dill.agricola.undo.SimpleEdit;
 
 public abstract class AnimalAction extends AbstractAction {
 
@@ -100,8 +100,8 @@ public abstract class AnimalAction extends AbstractAction {
 		return false;
 	}
 
-	@SuppressWarnings("serial")
-	protected class TakeAnimals extends LoggingUndoableEdit {
+	protected class TakeAnimals extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
 
 		private final Player player;
 		private final Animals takenAnimals;
@@ -130,8 +130,8 @@ public abstract class AnimalAction extends AbstractAction {
 
 	}
 	
-	@SuppressWarnings("serial")
-	protected class RefillAnimals extends LoggingUndoableEdit {
+	protected class RefillAnimals extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
 		
 		private final Animals added;
 		

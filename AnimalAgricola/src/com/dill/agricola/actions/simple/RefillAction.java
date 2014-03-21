@@ -9,8 +9,7 @@ import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
-import com.dill.agricola.support.Namer;
-import com.dill.agricola.undo.LoggingUndoableEdit;
+import com.dill.agricola.undo.SimpleEdit;
 
 public abstract class RefillAction extends AbstractAction {
 
@@ -92,7 +91,7 @@ public abstract class RefillAction extends AbstractAction {
 	}
 
 	@SuppressWarnings("serial")
-	protected class TakeMaterials extends LoggingUndoableEdit {
+	protected class TakeMaterials extends SimpleEdit {
 
 		private final Player player;
 		private final Materials takenMaterials;
@@ -115,14 +114,10 @@ public abstract class RefillAction extends AbstractAction {
 			player.addMaterial(takenMaterials);
 		}
 		
-		public String getPresentationName() {
-			return Namer.getName(this);
-		}
-		
 	}
 	
 	@SuppressWarnings("serial")
-	protected class RefillMaterials extends LoggingUndoableEdit {
+	protected class RefillMaterials extends SimpleEdit {
 		
 		private final Materials added;
 		
@@ -143,8 +138,5 @@ public abstract class RefillAction extends AbstractAction {
 			setChanged();
 		}
 		
-		public String getPresentationName() {
-			return Namer.getName(this);
-		}
 	}
 }

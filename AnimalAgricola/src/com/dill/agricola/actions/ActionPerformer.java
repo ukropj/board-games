@@ -9,8 +9,9 @@ import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.ChangeType;
+import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.support.Namer;
-import com.dill.agricola.undo.LoggingUndoableEdit;
+import com.dill.agricola.undo.SimpleEdit;
 import com.dill.agricola.undo.TurnUndoableEditSupport;
 
 public class ActionPerformer extends TurnUndoableEditSupport {
@@ -55,7 +56,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		boolean canDo = action.canDo(player, count);
 		UndoableEdit edit = null;
 		if (canDo) {
-			beginUpdate(player.getColor());
+			beginUpdate(player.getColor(), action.getType());
 			postEdit(new StartAction(player, action));
 			
 			action.setUsed(player.getColor());
@@ -83,7 +84,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		return action.canDo(player, pos, count) || action.canUndo(player, pos, count);
 	}
 
-	public boolean doFarmAction(DirPoint pos) {
+	public boolean doFarmAction(DirPoint pos, Purchasable thing) {
 		checkState();
 		if (action.canDo(player, pos, count)) {
 			UndoableEdit edit = action.doo(player, pos, count);
@@ -94,7 +95,8 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 				return true;
 			}
 		}
-		if (action.canUndo(player, pos, count) && action.undo(player, pos, count)) {
+		if (undoFarmAction(player, pos, thing)) {
+//		if (action.canUndo(player, pos, count) && action.undo(player, pos, count)) {
 			count--;
 			setChanged();
 			return true;
@@ -166,7 +168,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 	}
 	
 	@SuppressWarnings("serial")
-	private class StartAction extends LoggingUndoableEdit {
+	private class StartAction extends SimpleEdit {
 
 		private final Player p;
 		private final Action a;
@@ -190,15 +192,10 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 			p.spendWorker();
 		}
 		
-		
-		public String getPresentationName() {
-			return Namer.getName(this);
-		}
-		
 	}
 	
 	@SuppressWarnings("serial")
-	private class EndAction extends LoggingUndoableEdit {
+	private class EndAction extends SimpleEdit {
 
 //		private final Player p;
 //		private final Action a;
@@ -214,10 +211,6 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		
 		public void redo() throws CannotRedoException {
 			super.redo();
-		}
-		
-		public String getPresentationName() {
-			return Namer.getName(this);
 		}
 		
 	}

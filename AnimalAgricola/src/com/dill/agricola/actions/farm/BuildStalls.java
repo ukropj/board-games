@@ -1,5 +1,9 @@
 package com.dill.agricola.actions.farm;
 
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoableEdit;
+
 import com.dill.agricola.GeneralSupply;
 import com.dill.agricola.GeneralSupply.Supplyable;
 import com.dill.agricola.common.DirPoint;
@@ -9,6 +13,7 @@ import com.dill.agricola.model.Player;
 import com.dill.agricola.model.buildings.Stall;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.BuildingType;
+import com.dill.agricola.undo.SimpleEdit;
 
 public class BuildStalls extends BuildAction {
 
@@ -32,8 +37,35 @@ public class BuildStalls extends BuildAction {
 		return doneSoFar < 1 && super.canDo(player, pos, doneSoFar);
 	}
 	
+	protected UndoableEdit postActivate(Player player, Building b) {
+		return new UseStall((Stall) b);
+	}
+	
 	protected void postUndo(Player player, Building b) {
 		GeneralSupply.unuseStall((Stall) b);
 	}
 
+	protected class UseStall extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
+
+		private Stall stall;
+
+		public UseStall(Stall stall) {
+			super(false);
+			this.stall = stall;
+		}
+
+		public void undo() throws CannotUndoException {
+			super.undo();
+			GeneralSupply.unuseStall(stall);
+			setChanged();
+		}
+
+		public void redo() throws CannotRedoException {
+			super.redo();
+			stall = GeneralSupply.useStall();
+			setChanged();
+		}
+
+	}
 }

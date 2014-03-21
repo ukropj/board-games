@@ -1,26 +1,43 @@
 package com.dill.agricola.undo;
 
-import javax.swing.undo.CompoundEdit;
+import javax.swing.undo.UndoableEdit;
 import javax.swing.undo.UndoableEditSupport;
 
+import com.dill.agricola.common.DirPoint;
+import com.dill.agricola.model.Player;
+import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.PlayerColor;
+import com.dill.agricola.model.types.Purchasable;
 
 public class TurnUndoableEditSupport extends UndoableEditSupport {
 
-	public synchronized void beginUpdate(PlayerColor currentPlayer) {
+	protected MultiEdit compoundEdit;
+	
+    public synchronized void postEdit(UndoableEdit e) {
+        if (updateLevel == 0) {
+            _postEdit(e);
+        } else {
+            compoundEdit.addEdit(e);
+        }
+    }
+	
+	public synchronized void beginUpdate(PlayerColor currentPlayer, ActionType actionType) {
 		if (updateLevel > 0) {
 			endUpdate();
 		}
 		if (updateLevel == 0) {
-			compoundEdit = createCompoundEdit(currentPlayer);
+			compoundEdit = createCompoundEdit(currentPlayer, actionType);
 			System.out.println("# Start: " + compoundEdit.getPresentationName());
 			_postEdit(compoundEdit);
+			if (currentPlayer == null) {
+				compoundEdit.die();
+			}
 		}
 		updateLevel++;
 	}
 
-	protected CompoundEdit createCompoundEdit(PlayerColor currentPlayer) {
-		return new TurnCompoundEdit(currentPlayer);
+	protected MultiEdit createCompoundEdit(PlayerColor currentPlayer, ActionType actionType) {
+		return new MultiEdit(currentPlayer, actionType);
 	}
 
 	public synchronized void endUpdate() {
@@ -30,6 +47,10 @@ public class TurnUndoableEditSupport extends UndoableEditSupport {
 			System.out.println("# End: " + compoundEdit.getPresentationName());
 			compoundEdit = null;
 		}
+	}
+	
+	protected boolean undoFarmAction(Player player, DirPoint pos, Purchasable thing) {
+		return compoundEdit != null && compoundEdit.undoFarmAction(player.getColor(), pos, thing);
 	}
 
 }

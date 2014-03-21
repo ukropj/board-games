@@ -13,7 +13,7 @@ import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Material;
 import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.support.Namer;
-import com.dill.agricola.undo.LoggingUndoableEdit;
+import com.dill.agricola.undo.SimpleEdit;
 
 public class Expand extends PurchaseAction {
 
@@ -107,9 +107,10 @@ public class Expand extends PurchaseAction {
 		return true;
 	}
 	
-	protected void postActivate() {
+	protected UndoableEdit postActivate() {
 		GeneralSupply.useExtension(true);
 		hadExp = true;
+		return new UseExtension();
 	}
 	
 	protected void postUndo() {
@@ -122,7 +123,7 @@ public class Expand extends PurchaseAction {
 	}
 	
 	@SuppressWarnings("serial")
-	protected class TakeMaterials extends LoggingUndoableEdit {
+	protected class TakeMaterials extends SimpleEdit {
 
 		private final Player player;
 		private final Materials takenMaterials;
@@ -152,7 +153,7 @@ public class Expand extends PurchaseAction {
 	}
 	
 	@SuppressWarnings("serial")
-	protected class RefillMaterials extends LoggingUndoableEdit {
+	protected class RefillMaterials extends SimpleEdit {
 		
 		private final Materials added;
 		
@@ -176,6 +177,27 @@ public class Expand extends PurchaseAction {
 		public String getPresentationName() {
 			return Namer.getName(this);
 		}
+	}
+	
+	protected class UseExtension extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
+		
+		public UseExtension() {
+			super(false);
+		}
+
+		public void undo() throws CannotUndoException {
+			super.undo();
+			GeneralSupply.useExtension(false);
+			setChanged();
+		}
+
+		public void redo() throws CannotRedoException {
+			super.redo();
+			GeneralSupply.useExtension(true);
+			setChanged();
+		}
+
 	}
 
 }

@@ -41,8 +41,8 @@ import com.dill.agricola.support.Fonts;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
 
-@SuppressWarnings("serial")
 public class FarmPanel extends JPanel {
+	private static final long serialVersionUID = 1L;
 
 	public final static int S = 100;
 	public final static int M = S / 16, L = S - 2 * M;
@@ -138,6 +138,7 @@ public class FarmPanel extends JPanel {
 	//	private final static Area buildingSansAnimalRect = subtract(new Area(buildingRect), animalArea);
 	private final static Rectangle extRect = new Rectangle(M, Y1 + M, L, 3 * S - 2 * M);
 	private final static Map<Dir, Rectangle> fenceRects = new EnumMap<Dir, Rectangle>(Dir.class) {
+		private static final long serialVersionUID = 1L;
 		{
 			put(Dir.N, new Rectangle(M, -M, L, 2 * M));
 			put(Dir.W, new Rectangle(-M, M, 2 * M, L));
@@ -146,7 +147,8 @@ public class FarmPanel extends JPanel {
 		}
 	};
 	private final static Map<Dir, Rectangle> fenceClickRects = new EnumMap<Dir, Rectangle>(Dir.class) {
-		private final static int O = 8;
+		private static final long serialVersionUID = 1L;
+		private static final int O = 8;
 		{
 			for (java.util.Map.Entry<Dir, Rectangle> dirRect : fenceRects.entrySet()) {
 				Rectangle r = new Rectangle(dirRect.getValue());
@@ -578,9 +580,6 @@ public class FarmPanel extends JPanel {
 		}
 
 		public void mouseClicked(MouseEvent e) {
-			if (!active) {
-				return;
-			}
 			ChangeType changeType = ChangeType.FARM_CLICK;
 
 			DirPoint pos = toFarmPos(e.getX(), e.getY());
@@ -592,10 +591,10 @@ public class FarmPanel extends JPanel {
 			List<Animal> availableAnimals = null;
 
 			boolean done = false;
-			Purchasable active = farm.getActiveType();
+			Purchasable activeThing = farm.getActiveType();
 
-			if (active != null) {
-				switch (active) {
+			if (active && activeThing != null) {
+				switch (activeThing) {
 				case EXTENSION:
 					Dir extDir = null;
 					if (pos.x < 0 ||
@@ -608,7 +607,7 @@ public class FarmPanel extends JPanel {
 						extDir = Dir.E;
 					}
 					if (extDir != null) {
-						done = ap.doFarmAction(new DirPoint(pos.x, 0));
+						done = ap.doFarmAction(new DirPoint(pos.x, 0), Purchasable.EXTENSION);
 						changeType = ChangeType.FARM_RESIZE;
 					}
 					break;
@@ -621,12 +620,12 @@ public class FarmPanel extends JPanel {
 						}
 					}
 					if (fenceDir != null) {
-						done = ap.doFarmAction(new DirPoint(pos, fenceDir));
+						done = ap.doFarmAction(new DirPoint(pos, fenceDir), Purchasable.FENCE);
 					}
 					break;
 				case TROUGH:
 					if (troughShape.contains(relativeDirPoint)) {
-						done = ap.doFarmAction(pos);
+						done = ap.doFarmAction(pos, Purchasable.TROUGH);
 					}
 					break;
 				case BUILDING:
@@ -634,7 +633,7 @@ public class FarmPanel extends JPanel {
 						availableAnimals = farm.guessAnimalTypesToPut(pos, true);
 						if (!animalArea.contains(relativeDirPoint) // not clicked in animal area OR
 								|| ((availableAnimals.size() == 0 && leftClick) || (farm.getAnimals(pos) == 0 && !leftClick))) {// no animals available AND no animals present
-							done = ap.doFarmAction(pos);
+							done = ap.doFarmAction(pos, Purchasable.BUILDING);
 						}
 					}
 					break;

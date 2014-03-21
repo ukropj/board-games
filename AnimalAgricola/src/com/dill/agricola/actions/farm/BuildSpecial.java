@@ -8,6 +8,8 @@ import java.util.Map;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
 
 import com.dill.agricola.GeneralSupply;
@@ -24,6 +26,7 @@ import com.dill.agricola.model.buildings.StorageBuilding;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.support.Msg;
+import com.dill.agricola.undo.SimpleEdit;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
 import com.dill.agricola.view.utils.UiFactory;
@@ -146,13 +149,15 @@ public class BuildSpecial extends BuildAction {
 		return super.doo(player, pos, doneSoFar);
 	}
 	
-	protected void postActivate(Player player, Building b) {
+	protected UndoableEdit postActivate(Player player, Building b) {
 		GeneralSupply.useBuilding(toBuild, true);
 		// TODO edit for reward
 		toGive = chooseReward(b);
 		if (toGive != null) {
 			player.purchaseAnimals(toGive);
+			return new UseBuilding(toBuild, player, toGive);
 		}
+		return null;
 	}
 	
 	protected void postUndo(Player player, Building b) {
@@ -163,4 +168,33 @@ public class BuildSpecial extends BuildAction {
 		toGive = null;
 	}
 
+	protected class UseBuilding extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
+
+		private final BuildingType built;
+		private final Player player;
+		private final Animals takenAnimals;
+
+		public UseBuilding(BuildingType built, Player player, Animals animals) {
+			super(false);
+			this.built = built;
+			this.player = player;
+			this.takenAnimals = animals;
+		}
+
+		public void undo() throws CannotUndoException {
+			super.undo();
+			player.unpurchaseAnimals(takenAnimals);
+			GeneralSupply.useBuilding(built, false);
+			setChanged();
+		}
+
+		public void redo() throws CannotRedoException {
+			super.redo();
+			GeneralSupply.useBuilding(built, true);
+			player.purchaseAnimals(takenAnimals);
+			setChanged();
+		}
+
+	}
 }

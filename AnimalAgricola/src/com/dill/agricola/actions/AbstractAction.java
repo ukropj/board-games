@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
 import com.dill.agricola.common.Animals;
@@ -13,7 +12,8 @@ import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.support.Namer;
-import com.dill.agricola.undo.LoggingUndoableEdit;
+import com.dill.agricola.undo.MultiEdit;
+import com.dill.agricola.undo.SimpleEdit;
 
 public abstract class AbstractAction implements Action {
 
@@ -65,8 +65,8 @@ public abstract class AbstractAction implements Action {
 		return null;
 	}
 	
-	protected UndoableEdit joinEdits(UndoableEdit... edits) {
-		CompoundEdit edit = new CompoundEdit();
+	protected MultiEdit joinEdits(UndoableEdit... edits) {
+		MultiEdit edit = new MultiEdit();
 		for (UndoableEdit e : edits) {
 			if (e != null) {
 				edit.addEdit(e);				
@@ -87,7 +87,7 @@ public abstract class AbstractAction implements Action {
 	}
 	
 	@SuppressWarnings("serial")
-	protected class ActionInit extends LoggingUndoableEdit {
+	protected class ActionInit extends SimpleEdit {
 		
 		private final PlayerColor lastUser;
 		

@@ -35,8 +35,7 @@ import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.support.Msg;
-import com.dill.agricola.support.Namer;
-import com.dill.agricola.undo.LoggingUndoableEdit;
+import com.dill.agricola.undo.SimpleEdit;
 import com.dill.agricola.undo.TurnUndoManager;
 import com.dill.agricola.undo.TurnUndoManager.UndoRedoListener;
 import com.dill.agricola.view.Board;
@@ -158,7 +157,7 @@ public class Game {
 		round = 0;
 		workPhase = false;
 		undoManager.discardAllEdits();
-		ap.beginUpdate(null);
+		ap.beginUpdate(null, null);
 
 		setStartingPlayer(chooseStartingPlayer());
 		initialStartingPlayer = startingPlayer.getColor();
@@ -182,7 +181,7 @@ public class Game {
 
 	private void startTurn() {
 		ap.postEdit(new StartTurn(ap.getPlayer(), currentPlayer));
-//		ap.endUpdate();
+		ap.endUpdate();
 
 		System.out.println("Turn: " + currentPlayer.getColor());
 		ap.setPlayer(currentPlayer);
@@ -276,8 +275,8 @@ public class Game {
 				));
 	}
 
-	@SuppressWarnings("serial")
-	private class StartRound extends LoggingUndoableEdit {
+	private class StartRound extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
 
 		private final Player curPlayer;
 		private final Player firstPlayer;
@@ -301,14 +300,10 @@ public class Game {
 			currentPlayer = firstPlayer;
 		}
 
-		public String getPresentationName() {
-			return Namer.getName(this);
-		}
-
 	}
 
-	@SuppressWarnings("serial")
-	private class StartTurn extends LoggingUndoableEdit {
+	private class StartTurn extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
 
 		final Player prevPlayer;
 		final Player curPlayer;
@@ -334,14 +329,10 @@ public class Game {
 			board.startTurn(curPlayer);
 		}
 
-		public String getPresentationName() {
-			return Namer.getName(this);
-		}
-
 	}
 
-	@SuppressWarnings("serial")
-	private class EndTurn extends LoggingUndoableEdit {
+	private class EndTurn extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
 
 		public void undo() throws CannotUndoException {
 			super.undo();
@@ -353,14 +344,10 @@ public class Game {
 			switchCurrentPlayer();
 		}
 
-		public String getPresentationName() {
-			return Namer.getName(this);
-		}
-
 	}
 	
-	@SuppressWarnings("serial")
-	private class EndWorkAndBreed extends LoggingUndoableEdit {
+	private class EndWorkAndBreed extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
 		
 		private final Player curPlayer;
 		private final Animals[] newAnimals;
@@ -390,14 +377,10 @@ public class Game {
 			ap.setPlayer(null);
 		}
 		
-		public String getPresentationName() {
-			return Namer.getName(this);
-		}
-		
 	}
 	
 	@SuppressWarnings("serial")
-	private class ReleaseAnimals extends LoggingUndoableEdit {
+	private class ReleaseAnimals extends SimpleEdit {
 		
 		private final Animals[] lostAnimals;
 		
@@ -417,10 +400,6 @@ public class Game {
 			for (Player p : players) {
 				p.unpurchaseAnimals(lostAnimals[p.getColor().ordinal()]);
 			}
-		}
-		
-		public String getPresentationName() {
-			return Namer.getName(this);
 		}
 		
 	}

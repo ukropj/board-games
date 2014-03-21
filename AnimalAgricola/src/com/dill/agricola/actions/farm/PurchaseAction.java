@@ -10,8 +10,7 @@ import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Purchasable;
-import com.dill.agricola.support.Namer;
-import com.dill.agricola.undo.LoggingUndoableEdit;
+import com.dill.agricola.undo.SimpleEdit;
 
 public abstract class PurchaseAction extends AbstractAction {
 
@@ -68,9 +67,9 @@ public abstract class PurchaseAction extends AbstractAction {
 			Materials cost = getCost(doneSoFar);
 			UndoableEdit edit = new PurchaseThing(player, cost, pos);
 			player.purchase(thing, cost, pos);
-			postActivate();
+			UndoableEdit postEdit = postActivate();
 			setChanged();
-			return edit;
+			return joinEdits(edit, postEdit);
 		}
 		return null;
 	}
@@ -94,20 +93,22 @@ public abstract class PurchaseAction extends AbstractAction {
 		return false;
 	}
 
-	protected void postActivate() {
+	protected UndoableEdit postActivate() {
+		return null;
 	}
 
 	protected void postUndo() {
 	}
 	
-	@SuppressWarnings("serial")
-	protected class PurchaseThing extends LoggingUndoableEdit {
+	protected class PurchaseThing extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
 
 		private final Player player;
 		private final Materials cost;
 		private final DirPoint pos;
 		
 		public PurchaseThing(Player player,  Materials cost, DirPoint pos) {
+			super(pos, thing);
 			this.player = player;
 			this.cost = cost;
 			this.pos = pos;
@@ -116,17 +117,13 @@ public abstract class PurchaseAction extends AbstractAction {
 		public void undo() throws CannotUndoException {
 			super.undo();
 			player.unpurchase(thing, cost, pos, false);
-			postUndo();
+//			postUndo();
 		}
 		
 		public void redo() throws CannotRedoException {
 			super.redo();
 			player.purchase(thing, cost, pos);
-			postActivate();
-		}
-		
-		public String getPresentationName() {
-			return Namer.getName(this);
+//			postActivate();
 		}
 		
 	}

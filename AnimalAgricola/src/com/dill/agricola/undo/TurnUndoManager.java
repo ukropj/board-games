@@ -26,6 +26,7 @@ public class TurnUndoManager extends UndoManager {
 		for (UndoRedoListener l : listeners) {
 			l.undoOrRedoPerformed(true);
 		}
+		System.out.println(canRedo());
 	}
 	
 	public synchronized void redo() throws CannotRedoException {

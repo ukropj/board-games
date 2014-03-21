@@ -32,8 +32,8 @@ import com.dill.agricola.support.Msg;
 import com.dill.agricola.undo.TurnUndoManager;
 import com.dill.agricola.view.utils.UiFactory;
 
-@SuppressWarnings("serial")
 public class Board extends JFrame {
+	private static final long serialVersionUID = 1L;
 
 	private Game game;
 

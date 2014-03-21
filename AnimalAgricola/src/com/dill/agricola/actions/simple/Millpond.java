@@ -10,8 +10,7 @@ import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.Material;
-import com.dill.agricola.support.Namer;
-import com.dill.agricola.undo.LoggingUndoableEdit;
+import com.dill.agricola.undo.SimpleEdit;
 
 public class Millpond extends AnimalAction {
 
@@ -44,6 +43,10 @@ public class Millpond extends AnimalAction {
 		setChanged();
 		return edit;
 	}
+	
+	public boolean isQuickAction() {
+		return animals.isEmpty();
+	}
 
 	public boolean canDo(Player player, int doneSoFar) {
 		return !materials.isEmpty() || !animals.isEmpty();
@@ -75,7 +78,7 @@ public class Millpond extends AnimalAction {
 	}
 
 	@SuppressWarnings("serial")
-	public class TakeMaterials extends LoggingUndoableEdit {
+	public class TakeMaterials extends SimpleEdit {
 		private final Player player;
 		private final Materials takenMaterials;
 
@@ -97,13 +100,10 @@ public class Millpond extends AnimalAction {
 			player.addMaterial(takenMaterials);
 		}
 
-		public String getPresentationName() {
-			return Namer.getName(this);
-		}
 	}
 	
 	@SuppressWarnings("serial")
-	protected class RefillMaterials extends LoggingUndoableEdit {
+	protected class RefillMaterials extends SimpleEdit {
 		
 		private final Materials added;
 		
@@ -124,9 +124,6 @@ public class Millpond extends AnimalAction {
 			setChanged();
 		}
 		
-		public String getPresentationName() {
-			return Namer.getName(this);
-		}
 	}
 
 }

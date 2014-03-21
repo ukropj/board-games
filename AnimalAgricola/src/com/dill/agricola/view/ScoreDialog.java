@@ -18,8 +18,8 @@ import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.UiFactory;
 
-@SuppressWarnings("serial")
 public class ScoreDialog extends JDialog {
+	private static final long serialVersionUID = 1L;
 
 	public ScoreDialog(Player[] players, PlayerColor initialStartingPlayer) {
 		// TODO make reusable

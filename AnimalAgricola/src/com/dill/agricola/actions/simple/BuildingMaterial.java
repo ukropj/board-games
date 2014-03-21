@@ -10,8 +10,7 @@ import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Material;
-import com.dill.agricola.support.Namer;
-import com.dill.agricola.undo.LoggingUndoableEdit;
+import com.dill.agricola.undo.SimpleEdit;
 
 public class BuildingMaterial extends AbstractAction {
 
@@ -72,7 +71,7 @@ public class BuildingMaterial extends AbstractAction {
 	}
 	
 	@SuppressWarnings("serial")
-	public class TakeMaterials extends LoggingUndoableEdit {
+	public class TakeMaterials extends SimpleEdit {
 
 		private final Player player;
 		private final Materials takenMaterials;
@@ -90,10 +89,6 @@ public class BuildingMaterial extends AbstractAction {
 		public void redo() throws CannotRedoException {
 			super.redo();
 			player.addMaterial(takenMaterials);
-		}
-		
-		public String getPresentationName() {
-			return Namer.getName(this);
 		}
 		
 	}

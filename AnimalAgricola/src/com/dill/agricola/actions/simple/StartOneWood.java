@@ -10,7 +10,7 @@ import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Material;
 import com.dill.agricola.support.Namer;
-import com.dill.agricola.undo.LoggingUndoableEdit;
+import com.dill.agricola.undo.SimpleEdit;
 
 public class StartOneWood extends RefillAction {
 
@@ -35,7 +35,7 @@ public class StartOneWood extends RefillAction {
 	}
 	
 	@SuppressWarnings("serial")
-	protected class TakeStartPlayer extends LoggingUndoableEdit {
+	protected class TakeStartPlayer extends SimpleEdit {
 
 		private final Player previousPlayer;
 		private final Player player;

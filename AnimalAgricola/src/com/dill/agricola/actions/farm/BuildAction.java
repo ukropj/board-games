@@ -11,8 +11,7 @@ import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Purchasable;
-import com.dill.agricola.support.Namer;
-import com.dill.agricola.undo.LoggingUndoableEdit;
+import com.dill.agricola.undo.SimpleEdit;
 
 public abstract class BuildAction extends PurchaseAction {
 
@@ -52,9 +51,9 @@ public abstract class BuildAction extends PurchaseAction {
 			Materials cost = getCost(doneSoFar);
 			UndoableEdit edit = new PurchaseBuilding(player, b, cost, pos);
 			player.purchase(b, cost, pos);
-			postActivate(player, b);
+			UndoableEdit postEdit = postActivate(player, b);
 			setChanged();
-			return edit;
+			return joinEdits(edit, postEdit);
 		}
 		return null;
 	}
@@ -80,14 +79,15 @@ public abstract class BuildAction extends PurchaseAction {
 		return false;
 	}
 
-	protected void postActivate(Player player, Building b) {
+	protected UndoableEdit postActivate(Player player, Building b) {
+		return null;
 	}
 
 	protected void postUndo(Player player, Building b) {
 	}
 
-	@SuppressWarnings("serial")
-	protected class PurchaseBuilding extends LoggingUndoableEdit {
+	protected class PurchaseBuilding extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
 
 		private final Player player;
 		private final Building building;
@@ -95,6 +95,7 @@ public abstract class BuildAction extends PurchaseAction {
 		private final DirPoint pos;
 
 		public PurchaseBuilding(Player player, Building building, Materials cost, DirPoint pos) {
+			super(pos, Purchasable.BUILDING);
 			this.player = player;
 			this.building = building;
 			this.cost = cost;
@@ -104,18 +105,15 @@ public abstract class BuildAction extends PurchaseAction {
 		public void undo() throws CannotUndoException {
 			super.undo();
 			player.unpurchase(building.getType(), pos, false);
-			postUndo(player, building);
+//			postUndo(player, building);
 		}
 
 		public void redo() throws CannotRedoException {
 			super.redo();
 			player.purchase(building, cost, pos);
-			postActivate(player, building);
-		}
-
-		public String getPresentationName() {
-			return Namer.getName(this);
+//			postActivate(player, building);
 		}
 
 	}
+	
 }
