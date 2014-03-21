@@ -142,8 +142,8 @@ public class Player extends SimpleObservable {
 		return canPay(cost) && (pos == null || !farm.has(type, pos, false));
 	}
 
-	public boolean canUnpurchase(Purchasable type, DirPoint pos) {
-		return pos == null || farm.has(type, pos, true);
+	public boolean canUnpurchase(Purchasable type, DirPoint pos, boolean activeOnly) {
+		return pos == null || farm.has(type, pos, activeOnly);
 	}
 
 	public boolean purchase(Purchasable type, Materials cost, DirPoint pos) {
@@ -154,8 +154,8 @@ public class Player extends SimpleObservable {
 		return false;
 	}
 
-	public boolean unpurchase(Purchasable type, Materials cost, DirPoint pos) {
-		if (canUnpurchase(type, pos) && farm.take(type, pos)) {
+	public boolean unpurchase(Purchasable type, Materials cost, DirPoint pos, boolean activeOnly) {
+		if (canUnpurchase(type, pos, activeOnly) && farm.take(type, pos)) {
 			material.add(cost);
 			return true;
 		}
@@ -166,8 +166,8 @@ public class Player extends SimpleObservable {
 		return canPay(cost) && farm.canBuild(type, pos);
 	}
 
-	public boolean canUnpurchase(BuildingType type, DirPoint pos) {
-		return pos == null || farm.hasBuilding(pos, type, true);
+	public boolean canUnpurchase(BuildingType type, DirPoint pos, boolean activeOnly) {
+		return pos == null || farm.hasBuilding(pos, type, activeOnly);
 	}
 
 	public boolean purchase(Building building, Materials cost, DirPoint pos) {
@@ -179,9 +179,9 @@ public class Player extends SimpleObservable {
 		return false;
 	}
 
-	public Building unpurchase(BuildingType type, DirPoint pos) {
+	public Building unpurchase(BuildingType type, DirPoint pos, boolean activeOnly) {
 		Building b = null;
-		if (canUnpurchase(type, pos) && (b = farm.unbuild(pos)) != null) {
+		if (canUnpurchase(type, pos, activeOnly) && (b = farm.unbuild(pos)) != null) {
 			material.add(b.getPaidCost());
 			b.setPaidCost(null);
 			return b;

@@ -148,6 +148,7 @@ public class BuildSpecial extends BuildAction {
 	
 	protected void postActivate(Player player, Building b) {
 		GeneralSupply.useBuilding(toBuild, true);
+		// TODO edit for reward
 		toGive = chooseReward(b);
 		if (toGive != null) {
 			player.purchaseAnimals(toGive);
@@ -155,7 +156,7 @@ public class BuildSpecial extends BuildAction {
 	}
 	
 	protected void postUndo(Player player, Building b) {
-		GeneralSupply.useBuilding(toBuild, false);
+		GeneralSupply.useBuilding(b.getType(), false);
 		if (toGive != null) {
 			player.unpurchaseAnimals(toGive);
 		}

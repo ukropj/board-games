@@ -182,7 +182,7 @@ public class Game {
 
 	private void startTurn() {
 		ap.postEdit(new StartTurn(ap.getPlayer(), currentPlayer));
-		ap.endUpdate();
+//		ap.endUpdate();
 
 		System.out.println("Turn: " + currentPlayer.getColor());
 		ap.setPlayer(currentPlayer);

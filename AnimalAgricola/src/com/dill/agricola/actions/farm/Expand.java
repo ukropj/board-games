@@ -1,5 +1,7 @@
 package com.dill.agricola.actions.farm;
 
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
 
 import com.dill.agricola.GeneralSupply;
@@ -10,6 +12,7 @@ import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Material;
 import com.dill.agricola.model.types.Purchasable;
+import com.dill.agricola.support.Namer;
 import com.dill.agricola.undo.LoggingUndoableEdit;
 
 public class Expand extends PurchaseAction {
@@ -18,7 +21,6 @@ public class Expand extends PurchaseAction {
 	public final static Materials COST = new Materials();
 
 	protected final Materials materials = new Materials();
-	protected final Materials lastTakenMaterials = new Materials();
 
 	private boolean hadExp = false;
 
@@ -33,9 +35,8 @@ public class Expand extends PurchaseAction {
 
 	public UndoableEdit init() {
 		materials.add(REFILL);
-		lastTakenMaterials.clear();
 		hadExp = false;
-		return super.init();
+		return joinEdits(super.init(), new RefillMaterials(REFILL));
 	}
 	
 	public boolean isQuickAction() {
@@ -72,40 +73,27 @@ public class Expand extends PurchaseAction {
 	}
 
 	public boolean canUndo(Player player, int doneSoFar) {
-		return !lastTakenMaterials.isEmpty();
+		return false;
 	}
 
 	public boolean canUndo(Player player, DirPoint pos, int doneSoFar) {
-		return hadExp && player.canUnpurchase(thing, pos);
+		return hadExp && player.canUnpurchase(thing, pos, true);
 	}
 
 	public UndoableEdit doo(Player player, int doneSoFar) {
 		if (canDo(player, doneSoFar)) {
-			super.doo(player, doneSoFar);
+			UndoableEdit edit = new TakeMaterials(player, new Materials(materials));
 			player.addMaterial(materials);
-			lastTakenMaterials.set(materials);
 			materials.clear();
 			setChanged();
-			return new LoggingUndoableEdit();
+			return edit;
 		}
 		return null;
 	}
 
 	public boolean undo(Player player, int doneSoFar) {
-		if (hadExp) {
-			if (super.undo(player, doneSoFar)) {
-				postUndo();
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			player.removeMaterial(lastTakenMaterials);
-			materials.set(lastTakenMaterials);
-			lastTakenMaterials.clear();
-			setChanged();
-			return true;			
-		}
+		// TODO remove
+		return false;
 	}
 
 	public boolean undo(Player player, DirPoint pos, int doneSoFar) {
@@ -131,6 +119,63 @@ public class Expand extends PurchaseAction {
 
 	public Materials getAccumulatedMaterials() {
 		return materials;
+	}
+	
+	@SuppressWarnings("serial")
+	protected class TakeMaterials extends LoggingUndoableEdit {
+
+		private final Player player;
+		private final Materials takenMaterials;
+		
+		public TakeMaterials(Player player, Materials materials) {
+			this.player = player;
+			this.takenMaterials = materials;
+		}
+		
+		public void undo() throws CannotUndoException {
+			super.undo();
+			player.removeMaterial(takenMaterials);
+			materials.add(takenMaterials);
+		}
+		
+		public void redo() throws CannotRedoException {
+			super.redo();
+			materials.substract(takenMaterials);
+			setChanged();
+			player.addMaterial(takenMaterials);
+		}
+		
+		public String getPresentationName() {
+			return Namer.getName(this);
+		}
+		
+	}
+	
+	@SuppressWarnings("serial")
+	protected class RefillMaterials extends LoggingUndoableEdit {
+		
+		private final Materials added;
+		
+		public RefillMaterials(Materials added) {
+			super(false);
+			this.added = added;
+		}
+		
+		public void undo() throws CannotUndoException {
+			super.undo();
+			materials.substract(added);
+			setChanged();
+		}
+		
+		public void redo() throws CannotRedoException {
+			super.redo();
+			materials.add(added);
+			setChanged();
+		}
+		
+		public String getPresentationName() {
+			return Namer.getName(this);
+		}
 	}
 
 }

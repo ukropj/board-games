@@ -8,6 +8,9 @@ import com.dill.agricola.model.types.PlayerColor;
 public class TurnUndoableEditSupport extends UndoableEditSupport {
 
 	public synchronized void beginUpdate(PlayerColor currentPlayer) {
+		if (updateLevel > 0) {
+			endUpdate();
+		}
 		if (updateLevel == 0) {
 			compoundEdit = createCompoundEdit(currentPlayer);
 			System.out.println("# Start: " + compoundEdit.getPresentationName());
@@ -21,8 +24,8 @@ public class TurnUndoableEditSupport extends UndoableEditSupport {
 	}
 
 	public synchronized void endUpdate() {
-		updateLevel--;
-		if (updateLevel == 0) {
+		if (updateLevel > 0) {
+			updateLevel = 0;
 			compoundEdit.end();
 			System.out.println("# End: " + compoundEdit.getPresentationName());
 			compoundEdit = null;

@@ -40,6 +40,7 @@ public class TurnCompoundEdit extends CompoundEdit {
 		hasBeenDone = false;
 		if (isInProgress()) {
 			die();
+			end();
 		}
 	}
 
