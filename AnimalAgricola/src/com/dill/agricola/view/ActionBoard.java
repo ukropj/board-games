@@ -52,7 +52,6 @@ public class ActionBoard extends JPanel implements Observer {
 	
 
 	private JButton finishB;
-	private JButton revertB;
 
 	private JButton undoB;
 	private JButton redoB;
@@ -73,6 +72,7 @@ public class ActionBoard extends JPanel implements Observer {
 			b.setMargin(new Insets(1, 1, 1, 1));
 			b.setAlignmentX(JButton.CENTER_ALIGNMENT);
 			b.setCursor(new Cursor(Cursor.HAND_CURSOR));
+			b.setToolTipText(type.name); // TODO better tooltip
 			b.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if (!action.isUsed()) {
@@ -121,6 +121,7 @@ public class ActionBoard extends JPanel implements Observer {
 		buttons.setBorder(new EmptyBorder(new Insets(5, 5, 5, 5)));
 
 		undoB = new JButton("Undo");
+		undoB.setMargin(new Insets(1, 1, 1, 1));
 		undoB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				undoManager.undo();
@@ -129,6 +130,7 @@ public class ActionBoard extends JPanel implements Observer {
 		});
 		buttons.add(undoB);
 		redoB = new JButton("Redo");
+		redoB.setMargin(new Insets(1, 1, 1, 1));
 		redoB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				undoManager.redo();
@@ -159,20 +161,6 @@ public class ActionBoard extends JPanel implements Observer {
 		finishB.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		buttons.add(finishB);
 		buttons.add(Box.createHorizontalStrut(5));
-
-		revertB = new JButton(Msg.get("revertAction"), AgriImages.getNoIcon());
-		revertB.setEnabled(false);
-		revertB.setToolTipText(Msg.get("revertActionTip"));
-		revertB.setMargin(new Insets(2, 2, 2, 2));
-		revertB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (ap.revertAction()) {
-					updateActions();
-				}
-			}
-		});
-		revertB.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		buttons.add(revertB);
 
 		controlPanel.add(buttons, BorderLayout.SOUTH);
 
@@ -218,7 +206,6 @@ public class ActionBoard extends JPanel implements Observer {
 
 	private void updateControls() {
 		finishB.setEnabled(ap.getPlayer() == null || ap.canFinish());
-		revertB.setEnabled(ap.canRevert());
 	}
 
 	private void updateFinishLabel() {
@@ -257,7 +244,6 @@ public class ActionBoard extends JPanel implements Observer {
 		for (Component c : actionPanel.getComponents()) {
 			c.setEnabled(false);
 		}
-		revertB.setEnabled(false);
 		finishB.setEnabled(true);
 		setHint(Msg.get("animalsBreed"));
 	}

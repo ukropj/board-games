@@ -89,7 +89,7 @@ public class GeneralSupply {
 
 	public static void useExtension(boolean use) {
 		if (use) {
-			lastUsedExt = extsLeft.pop();
+			lastUsedExt = extsLeft.pop(); // TODO this will not work when undo/redo
 		} else {
 			extsLeft.push(lastUsedExt);
 		}
@@ -97,7 +97,6 @@ public class GeneralSupply {
 
 	public static void useBuilding(BuildingType buildingType, boolean use) {
 		if (use) {
-			// TODO building open stables returns one stall to supply!
 			buildingsLeft.remove(buildingType);
 		} else {
 			buildingsLeft.add(buildingType);

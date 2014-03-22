@@ -47,12 +47,8 @@ public abstract class PurchaseAction extends AbstractAction {
 		return canDo(player, doneSoFar) && player.canPurchase(thing, getCost(doneSoFar), pos);
 	}
 
-	public boolean canUndo(Player player, int doneSoFar) {
-		return false; //doneSoFar > 0;
-	}
-
 	public boolean canUndo(Player player, DirPoint pos, int doneSoFar) {
-		return canUndo(player, doneSoFar) && player.canUnpurchase(thing, pos, true);
+		return player.canUnpurchase(thing, pos, true);
 	}
 
 	public UndoableEdit doo(Player player, int doneSoFar) {
@@ -72,16 +68,6 @@ public abstract class PurchaseAction extends AbstractAction {
 			return joinEdits(edit, postEdit);
 		}
 		return null;
-	}
-
-	public boolean undo(Player player, int doneSoFar) {
-		/*if (canUndo(player, doneSoFar)) {
-			player.unpurchase(thing, getCost(doneSoFar - 1), null, false);
-			postUndo();
-			setChanged();
-			return true;
-		}*/
-		return false;
 	}
 
 	public boolean undo(Player player, DirPoint pos, int doneSoFar) {

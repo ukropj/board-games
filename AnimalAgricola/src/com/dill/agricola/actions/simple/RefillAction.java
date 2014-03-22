@@ -37,11 +37,7 @@ public abstract class RefillAction extends AbstractAction {
 	public boolean canDo(Player player, int doneSoFar) {
 		return !materials.isEmpty();
 	}
-
-	public boolean canUndo(Player player, int doneSoFar) {
-		return false;
-	}
-
+	
 	public boolean isQuickAction() {
 		return true;
 	}
@@ -63,11 +59,6 @@ public abstract class RefillAction extends AbstractAction {
 			return edit;
 		}
 		return null;
-	}
-
-	public boolean undo(Player player, int doneSoFar) {
-		// TODO remove
-		return false;
 	}
 
 	public Materials getAccumulatedMaterials() {

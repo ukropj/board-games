@@ -113,9 +113,10 @@ public class Farm extends SimpleObservable {
 		case TROUGH:
 			return space != null && space.hasTrough();
 		case FENCE:
-			Space second = getSpace(PointUtils.getNext(pos));
+			DirPoint next = PointUtils.getNext(pos);
+			Space second = getSpace(next);
 			return space != null && space.hasBorder(pos.dir) ||
-					second != null && second.hasBorder(pos.dir.opposite());
+					second != null && second.hasBorder(next.dir);
 		case EXTENSION:
 			return space != null; // not null space is considered farm space i.e. extension
 		case BUILDING:
@@ -142,9 +143,10 @@ public class Farm extends SimpleObservable {
 					space.setBorder(pos.dir, true);
 					any = true;
 				}
-				Space second = getSpace(PointUtils.getNext(pos));
+				DirPoint next = PointUtils.getNext(pos);
+				Space second = getSpace(next);
 				if (second != null) {
-					second.setBorder(pos.dir.opposite(), true);
+					second.setBorder(next.dir, true);
 					any = true;
 				}
 			}
@@ -194,9 +196,10 @@ public class Farm extends SimpleObservable {
 				if (space != null) {
 					space.setBorder(pos.dir, false);
 				}
-				Space second = getSpace(PointUtils.getNext(pos));
+				DirPoint next = PointUtils.getNext(pos);
+				Space second = getSpace(next);
 				if (second != null) {
-					second.setBorder(pos.dir.opposite(), false);
+					second.setBorder(next.dir, false);
 				}
 			} else {
 				return false;

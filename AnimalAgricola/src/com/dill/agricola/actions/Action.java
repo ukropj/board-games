@@ -31,7 +31,6 @@ public interface Action {
 
 	int getMinimalCount();
 	
-	
 	boolean canDo(Player player, int count);
 
 	UndoableEdit doo(Player player, int count);
@@ -39,11 +38,6 @@ public interface Action {
 	boolean canDo(Player player, DirPoint pos, int count);
 
 	UndoableEdit doo(Player player, DirPoint pos, int count);
-
-
-	boolean canUndo(Player player, int count);
-
-	boolean undo(Player player, int count);
 
 	boolean canUndo(Player player, DirPoint pos, int count);
 

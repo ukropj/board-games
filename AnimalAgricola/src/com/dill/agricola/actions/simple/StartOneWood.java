@@ -29,13 +29,8 @@ public class StartOneWood extends RefillAction {
 		return joinEdits(super.doo(player, doneSoFar), new TakeStartPlayer(previousPlayer, player));
 	}
 	
-	public boolean undo(Player player, int doneSoFar) {
-		// TODO remove
-		return false;
-	}
-	
-	@SuppressWarnings("serial")
 	protected class TakeStartPlayer extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
 
 		private final Player previousPlayer;
 		private final Player player;

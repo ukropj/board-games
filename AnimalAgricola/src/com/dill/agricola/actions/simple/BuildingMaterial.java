@@ -36,11 +36,6 @@ public class BuildingMaterial extends AbstractAction {
 		player.addMaterial(MATERIALS);
 		return new TakeMaterials(player, MATERIALS);
 	}
-
-	public boolean undo(Player player, int doneSoFar) {
-		// TODO remove
-		return false;
-	}
 	
 	public String toString() {
 		return super.toString() + "<br>" + MATERIALS;
@@ -48,10 +43,6 @@ public class BuildingMaterial extends AbstractAction {
 
 	public boolean canDo(Player player, int count) {
 		return true;
-	}
-
-	public boolean canUndo(Player player, int count) {
-		return count != 0;
 	}
 
 	public boolean canDo(Player player, DirPoint pos, int count) {

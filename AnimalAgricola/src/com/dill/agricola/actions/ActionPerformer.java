@@ -92,40 +92,16 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 				postEdit(edit);
 				count++;
 				setChanged();
+//				if (action.isQuickAction()) {
+//					return finishAction();
+//				}
 				return true;
 			}
 		}
 		if (undoFarmAction(player, pos, thing)) {
-//		if (action.canUndo(player, pos, count) && action.undo(player, pos, count)) {
 			count--;
 			setChanged();
 			return true;
-		}
-		return false;
-	}
-
-	public boolean canRevert() {
-		return action!= null && player != null;
-	}
-	
-	public boolean revertAction() {
-		if (canRevert()) {
-			boolean done = true;
-			while (count > 0) {
-				done = action.undo(player, count);
-				if (!done) {
-					break;
-				}
-				count--;
-			}
-			setChanged();
-			if (done) {
-				action = null;
-				player.returnWorker();
-				player.setActiveType(null);
-			}
-			player.notifyObservers(ChangeType.UNDO);
-			return done;			
 		}
 		return false;
 	}

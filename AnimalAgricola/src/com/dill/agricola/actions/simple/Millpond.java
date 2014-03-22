@@ -45,7 +45,7 @@ public class Millpond extends AnimalAction {
 	}
 	
 	public boolean isQuickAction() {
-		return animals.isEmpty();
+		return false; // TODO animals.isEmpty();
 	}
 
 	public boolean canDo(Player player, int doneSoFar) {
@@ -66,11 +66,6 @@ public class Millpond extends AnimalAction {
 			return edit;
 		}
 		return null;
-	}
-
-	public boolean undo(Player player, int doneSoFar) {
-		// TODO remove
-		return false;
 	}
 
 	public Materials getAccumulatedMaterials() {

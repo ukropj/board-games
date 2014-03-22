@@ -72,10 +72,6 @@ public class Expand extends PurchaseAction {
 		return !hadExp && isAnyLeft() && player.canPurchase(thing, getCost(doneSoFar), pos);
 	}
 
-	public boolean canUndo(Player player, int doneSoFar) {
-		return false;
-	}
-
 	public boolean canUndo(Player player, DirPoint pos, int doneSoFar) {
 		return hadExp && player.canUnpurchase(thing, pos, true);
 	}
@@ -85,15 +81,11 @@ public class Expand extends PurchaseAction {
 			UndoableEdit edit = new TakeMaterials(player, new Materials(materials));
 			player.addMaterial(materials);
 			materials.clear();
+			player.setActiveType(thing);
 			setChanged();
 			return edit;
 		}
 		return null;
-	}
-
-	public boolean undo(Player player, int doneSoFar) {
-		// TODO remove
-		return false;
 	}
 
 	public boolean undo(Player player, DirPoint pos, int doneSoFar) {
@@ -189,12 +181,14 @@ public class Expand extends PurchaseAction {
 		public void undo() throws CannotUndoException {
 			super.undo();
 			GeneralSupply.useExtension(false);
+			hadExp = false;
 			setChanged();
 		}
 
 		public void redo() throws CannotRedoException {
 			super.redo();
 			GeneralSupply.useExtension(true);
+			hadExp = true;
 			setChanged();
 		}
 

@@ -436,7 +436,7 @@ public class FarmPanel extends JPanel {
 				Fonts.updateFontToFit(g, type.name, maxw);
 				int textW = g.getFontMetrics().stringWidth(type.name);
 				g.drawString(type.name, r.x + x + (maxw - textW) / 2, r.y + y);
-				
+
 				// text
 				if (type.text != null) {
 					g.setFont(Fonts.FARM_BUILDING);
@@ -615,12 +615,17 @@ public class FarmPanel extends JPanel {
 					Dir fenceDir = null;
 					for (Dir d : Dir.values()) {
 						if (fenceClickRects.get(d).contains(relativeDirPoint)) {
-							fenceDir = d;
-							break;
+								fenceDir = d;								
+						break;
 						}
 					}
 					if (fenceDir != null) {
-						done = ap.doFarmAction(new DirPoint(pos, fenceDir), Purchasable.FENCE);
+						DirPoint fencePoint = new DirPoint(pos, fenceDir);
+						if (fenceDir.ordinal() >= 2) {
+							// normalize to N/W
+							fencePoint = PointUtils.getNext(fencePoint);
+						}
+						done = ap.doFarmAction(fencePoint, Purchasable.FENCE);
 					}
 					break;
 				case TROUGH:

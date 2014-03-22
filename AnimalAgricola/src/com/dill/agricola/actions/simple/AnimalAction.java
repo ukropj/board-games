@@ -60,10 +60,6 @@ public abstract class AnimalAction extends AbstractAction {
 		return !animals.isEmpty();
 	}
 
-	public boolean canUndo(Player player, int doneSoFar) {
-		return false;
-	}
-
 	public UndoableEdit doo(Player player, int doneSoFar) {
 		if (canDo(player, doneSoFar)) {
 			UndoableEdit edit = new TakeAnimals(player, new Animals(animals));
@@ -73,11 +69,6 @@ public abstract class AnimalAction extends AbstractAction {
 			return edit;
 		}
 		return null;
-	}
-
-	public boolean undo(Player player, int doneSoFar) {
-		// TODO remove
-		return false;
 	}
 
 	public Animals getAccumulatedAnimals() {

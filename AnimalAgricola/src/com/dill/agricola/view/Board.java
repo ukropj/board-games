@@ -160,6 +160,9 @@ public class Board extends JFrame {
 
 	public void startRound(int roundNo) {
 		actionBoard.initActions();
+		if (Main.DEBUG) {
+			actionBoard.initActions();
+		}		
 		updateState(roundNo);
 	}
 

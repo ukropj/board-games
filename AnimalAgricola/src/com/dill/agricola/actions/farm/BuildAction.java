@@ -37,12 +37,8 @@ public abstract class BuildAction extends PurchaseAction {
 		return canDo(player, doneSoFar) && toBuild != null && player.canPurchase(toBuild, getCost(doneSoFar), pos);
 	}
 
-	public boolean canUndo(Player player, int doneSoFar) {
-		return false; //doneSoFar > 0 && toBuild != null;
-	}
-
 	public boolean canUndo(Player player, DirPoint pos, int doneSoFar) {
-		return canUndo(player, doneSoFar) && player.canUnpurchase(toBuild, pos, true);
+		return player.canUnpurchase(toBuild, pos, true);
 	}
 
 	public UndoableEdit doo(Player player, DirPoint pos, int doneSoFar) {
@@ -56,17 +52,6 @@ public abstract class BuildAction extends PurchaseAction {
 			return joinEdits(edit, postEdit);
 		}
 		return null;
-	}
-
-	public boolean undo(Player player, int doneSoFar) {
-		/*if (canUndo(player, doneSoFar)) {
-			Building b = player.unpurchase(toBuild, null);
-			postUndo(player, b);
-			setChanged();
-			return true;
-		}*/
-		// TODO remove
-		return false;
 	}
 
 	public boolean undo(Player player, DirPoint pos, int doneSoFar) {
