@@ -114,13 +114,14 @@ public class Expand extends PurchaseAction {
 		return materials;
 	}
 	
-	@SuppressWarnings("serial")
 	protected class TakeMaterials extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
 
 		private final Player player;
 		private final Materials takenMaterials;
 		
 		public TakeMaterials(Player player, Materials materials) {
+			super(true);
 			this.player = player;
 			this.takenMaterials = materials;
 		}
@@ -144,13 +145,12 @@ public class Expand extends PurchaseAction {
 		
 	}
 	
-	@SuppressWarnings("serial")
 	protected class RefillMaterials extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
 		
 		private final Materials added;
 		
 		public RefillMaterials(Materials added) {
-			super(false);
 			this.added = added;
 		}
 		
@@ -173,10 +173,6 @@ public class Expand extends PurchaseAction {
 	
 	protected class UseExtension extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
-		
-		public UseExtension() {
-			super(false);
-		}
 
 		public void undo() throws CannotUndoException {
 			super.undo();

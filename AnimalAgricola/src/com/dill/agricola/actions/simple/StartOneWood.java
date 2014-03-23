@@ -36,6 +36,7 @@ public class StartOneWood extends RefillAction {
 		private final Player player;
 		
 		public TakeStartPlayer(Player previousPlayer, Player player) {
+			super(true);
 			this.previousPlayer = previousPlayer;
 			this.player = player;
 		}

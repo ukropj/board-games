@@ -456,10 +456,6 @@ public class Farm extends SimpleObservable {
 		return count;
 	}
 
-	/*
-	 * public int moveAnimals(DirPoint from, DirPoint to, int count) { return putAnimals(to, type, takeAnimals(from, count)); }
-	 */
-
 	public int putAnimals(DirPoint to, Animal type, int count) {
 		Space target = getSpace(to);
 		if (target != null) {

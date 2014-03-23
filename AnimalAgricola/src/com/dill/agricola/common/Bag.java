@@ -148,4 +148,12 @@ public class Bag<T extends Enum<T>> {
 		return sb.toString();
 	}
 
+	public static <K extends Enum<K>> int sumSize(Bag<K>[] bags) {
+		int s = 0;
+		for (int i = 0; i < bags.length; i++) {
+			s += bags[i].size();
+		}
+		return s;
+	}
+
 }

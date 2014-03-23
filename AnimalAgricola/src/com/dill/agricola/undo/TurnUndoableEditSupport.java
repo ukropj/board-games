@@ -21,6 +21,10 @@ public class TurnUndoableEditSupport extends UndoableEditSupport {
         }
     }
 	
+    public synchronized void beginUpdate() {
+    	beginUpdate(null, null);
+    }
+    
 	public synchronized void beginUpdate(PlayerColor currentPlayer, ActionType actionType) {
 		if (updateLevel > 0) {
 			endUpdate();
@@ -29,15 +33,12 @@ public class TurnUndoableEditSupport extends UndoableEditSupport {
 			compoundEdit = createCompoundEdit(currentPlayer, actionType);
 			System.out.println("# Start: " + compoundEdit.getPresentationName());
 			_postEdit(compoundEdit);
-			if (currentPlayer == null) {
-				compoundEdit.die();
-			}
 		}
 		updateLevel++;
 	}
-
+	
 	protected MultiEdit createCompoundEdit(PlayerColor currentPlayer, ActionType actionType) {
-		return new MultiEdit(currentPlayer, actionType);
+		return new MultiEdit(currentPlayer, actionType, true);
 	}
 
 	public synchronized void endUpdate() {
@@ -46,6 +47,12 @@ public class TurnUndoableEditSupport extends UndoableEditSupport {
 			compoundEdit.end();
 			System.out.println("# End: " + compoundEdit.getPresentationName());
 			compoundEdit = null;
+		}
+	}
+	
+	public synchronized void invalidateUpdated() {
+		if (compoundEdit != null) {
+			compoundEdit.die();
 		}
 	}
 	

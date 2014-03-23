@@ -7,19 +7,22 @@ import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
 
-@SuppressWarnings("serial")
 public class TurnUndoManager extends UndoManager {
+	private static final long serialVersionUID = 1L;
 
 	Stack<UndoRedoListener> listeners = new Stack<UndoRedoListener>();
-	
+
 	public synchronized boolean addEdit(UndoableEdit anEdit) {
+		if (anEdit == null) {
+			return false;
+		}
 		boolean retVal = super.addEdit(anEdit);
 		if (retVal) {
-			System.out.println("# Edit: " + anEdit.getPresentationName());
+			System.out.println("#" + (anEdit.isSignificant() ? " " : "-") + "Edit: " + anEdit.getPresentationName());
 		}
 		return retVal;
 	}
-	
+
 	public synchronized void undo() throws CannotUndoException {
 		System.out.println("# Undo: " + getUndoPresentationName());
 		super.undo();
@@ -30,15 +33,15 @@ public class TurnUndoManager extends UndoManager {
 	}
 	
 	public synchronized void redo() throws CannotRedoException {
-		System.out.println("# Undo: " + getRedoPresentationName());
+		System.out.println("# Redo: " + getRedoPresentationName());
 		super.redo();
 		for (UndoRedoListener l : listeners) {
 			l.undoOrRedoPerformed(false);
 		}
 	}
-	
+
 	public static interface UndoRedoListener {
-		
+
 		public void undoOrRedoPerformed(boolean isUndo);
 	}
 

@@ -31,6 +31,7 @@ public class Millpond extends AnimalAction {
 	}
 
 	public UndoableEdit init() {
+		UndoableEdit initEdit = isUsed() ? new ActionInit(user) : null;
 		user = null;
 		UndoableEdit edit;
 		if (materials.isEmpty()) {
@@ -41,7 +42,7 @@ public class Millpond extends AnimalAction {
 			edit = new RefillAnimals(new Animals(other));
 		}
 		setChanged();
-		return edit;
+		return joinEdits(initEdit, edit);
 	}
 	
 	public boolean isQuickAction() {
@@ -72,12 +73,14 @@ public class Millpond extends AnimalAction {
 		return materials;
 	}
 
-	@SuppressWarnings("serial")
 	public class TakeMaterials extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
+		
 		private final Player player;
 		private final Materials takenMaterials;
 
 		public TakeMaterials(Player player, Materials materials) {
+			super(true);
 			this.player = player;
 			this.takenMaterials = materials;
 		}
@@ -97,13 +100,12 @@ public class Millpond extends AnimalAction {
 
 	}
 	
-	@SuppressWarnings("serial")
 	protected class RefillMaterials extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
 		
 		private final Materials added;
 		
 		public RefillMaterials(Materials added) {
-			super(false);
 			this.added = added;
 		}
 		

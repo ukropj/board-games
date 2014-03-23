@@ -3,6 +3,7 @@ package com.dill.agricola.view;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -11,7 +12,10 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.util.Arrays;
 
+import javax.swing.BorderFactory;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -30,6 +34,7 @@ import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.undo.TurnUndoManager;
+import com.dill.agricola.view.utils.Images;
 import com.dill.agricola.view.utils.UiFactory;
 
 public class Board extends JFrame {
@@ -45,6 +50,8 @@ public class Board extends JFrame {
 	private final PlayerBoard[] playerBoards;
 	private ActionBoard actionBoard;
 	private DebugPanel debugPanel;
+	
+	private ScoreDialog scoreDialog;
 
 	public Board(Game game, ActionPerformer ap, TurnUndoManager undoManager) {
 		this.game = game;
@@ -54,6 +61,12 @@ public class Board extends JFrame {
 		playerBoards = new PlayerBoard[2];
 
 		setTitle(Msg.get("gameTitle"));
+		BufferedImage img = Images.createImage("a_all");
+		setIconImages(Arrays.asList(new Image[] {
+				Images.getBestScaledInstance(img, 16),
+				Images.getBestScaledInstance(img, 32),
+				Images.getBestScaledInstance(img, 64)
+		}));
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
 		mainPane = getContentPane();
@@ -114,6 +127,9 @@ public class Board extends JFrame {
 		PlayerBoard playerBoard = new PlayerBoard(player, ap);
 		playerBoards[color.ordinal()] = playerBoard;
 
+		JScrollPane scrollPane = new JScrollPane(playerBoard);
+		scrollPane.setBorder(BorderFactory.createEmptyBorder());
+
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = x;
 		c.gridy = 1;
@@ -121,8 +137,7 @@ public class Board extends JFrame {
 		c.weighty = 1.0;
 		c.fill = GridBagConstraints.BOTH;
 
-		mainPane.add(new JScrollPane(playerBoard), c);
-
+		mainPane.add(scrollPane, c);
 		player.addObserver(actionBoard);
 	}
 
@@ -131,6 +146,8 @@ public class Board extends JFrame {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = 1;
+		c.ipadx = 5;
+		c.ipady = 5;
 		c.fill = GridBagConstraints.BOTH;
 
 		mainPane.add(actionBoard, c);
@@ -147,12 +164,13 @@ public class Board extends JFrame {
 	}
 
 	public void start() {
+		scoreDialog = null;
 		actionBoard.resetActions();
 	}
 
 	public void updateState(int roundNo) {
 		if (roundNo > 0) {
-			statusL.setText(Msg.get("round", roundNo, Game.ROUNDS));			
+			statusL.setText(Msg.get("round", roundNo, Game.ROUNDS));
 		}
 		actionBoard.updateActions();
 		actionBoard.refreshUndoRedo();
@@ -160,9 +178,9 @@ public class Board extends JFrame {
 
 	public void startRound(int roundNo) {
 		actionBoard.initActions();
-		if (Main.DEBUG) {
+		if (Main.DEBUG && roundNo == 1) {
 			actionBoard.initActions();
-		}		
+		}
 		updateState(roundNo);
 	}
 
@@ -178,16 +196,17 @@ public class Board extends JFrame {
 	public void endRound() {
 		playerBoards[0].setActive(true);
 		playerBoards[1].setActive(true);
-//		actionBoard.clearActions();
+
+		updateState(-1);
 		actionBoard.enableFinishOnly();
-		actionBoard.refreshUndoRedo();
 	}
 
 	public void showScoring(Player[] players, PlayerColor initialStartingPlayer) {
-		ScoreDialog sd = new ScoreDialog(players, initialStartingPlayer);
-		sd.setVisible(true);
-//		sd.setLocation(getLocation());
-		sd.setLocationRelativeTo(null);
+		if (scoreDialog == null) {
+			scoreDialog = new ScoreDialog(players, initialStartingPlayer);
+		}
+		scoreDialog.setLocationRelativeTo(this);
+		scoreDialog.setVisible(true);
 	}
 
 	public void startingPlayerChanged() {

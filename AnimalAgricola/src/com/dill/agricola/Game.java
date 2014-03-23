@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
@@ -31,6 +32,7 @@ import com.dill.agricola.actions.simple.StartOneWood;
 import com.dill.agricola.actions.simple.ThreeWood;
 import com.dill.agricola.actions.simple.TwoStone;
 import com.dill.agricola.common.Animals;
+import com.dill.agricola.common.Bag;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.model.types.PlayerColor;
@@ -60,6 +62,7 @@ public class Game {
 
 	private PlayerColor initialStartingPlayer;
 
+	private boolean breeding;
 	private boolean ended;
 
 	public Game() {
@@ -85,9 +88,9 @@ public class Game {
 
 		if (Main.DEBUG) {
 			board.buildDebugPanel(players);
+		} else {
+			board.setExtendedState(JFrame.MAXIMIZED_BOTH);			
 		}
-
-//		board.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		board.pack();
 		board.setLocationRelativeTo(null);
 		board.setVisible(true);
@@ -153,11 +156,13 @@ public class Game {
 		for (Player p : players) {
 			p.init();
 		}
+		breeding = false;
 		ended = false;
 		round = 0;
 		workPhase = false;
 		undoManager.discardAllEdits();
-		ap.beginUpdate(null, null);
+		ap.beginUpdate(); // start "initial edit"
+		ap.invalidateUpdated(); // which cannot be undone
 
 		setStartingPlayer(chooseStartingPlayer());
 		initialStartingPlayer = startingPlayer.getColor();
@@ -171,7 +176,6 @@ public class Game {
 		ap.postEdit(new StartRound(round, currentPlayer, startingPlayer));
 		round++;
 		currentPlayer = startingPlayer;
-		System.out.println("Round: " + round + "(" + startingPlayer.getColor() + " is first)");
 		// refill
 		board.startRound(round);
 		// start work
@@ -181,9 +185,8 @@ public class Game {
 
 	private void startTurn() {
 		ap.postEdit(new StartTurn(ap.getPlayer(), currentPlayer));
-		ap.endUpdate();
+		ap.endUpdate(); // end last "action/breeding edit"
 
-		System.out.println("Turn: " + currentPlayer.getColor());
 		ap.setPlayer(currentPlayer);
 		board.startTurn(currentPlayer);
 	}
@@ -192,8 +195,9 @@ public class Game {
 		// animals run away
 		releaseAnimals();
 
-		switchCurrentPlayer();
-		if (currentPlayer.hasWorkers()) {
+		Player otherPlayer = getPlayer(currentPlayer.getColor().other());
+		if (otherPlayer.hasWorkers()) {
+			switchCurrentPlayer();
 			// switch player
 			ap.postEdit(new EndTurn());
 			// if has workers continue with next turn
@@ -208,7 +212,6 @@ public class Game {
 		// end work
 		workPhase = false;
 
-		System.out.println("Animals breed now.");
 		Animals newAnimals[] = new Animals[2];
 		for (Player p : players) {
 			// return workers
@@ -217,17 +220,26 @@ public class Game {
 			newAnimals[p.getColor().ordinal()] = p.breedAnimals();
 			p.notifyObservers(ChangeType.ROUND_END);
 		}
-		ap.postEdit(new EndWorkAndBreed(currentPlayer, newAnimals));
+		ap.postEdit(new EndRound(currentPlayer, newAnimals));
 		ap.setPlayer(null);
 		board.endRound();
-		if (newAnimals[0].size() + newAnimals[1].size() == 0) {
+		if (Bag.sumSize(newAnimals) == 0) {
 			endRound();
-		} // else wait for user confirmation
+		} else {
+			// else wait for user confirmation
+			ap.endUpdate(); // end current "action edit"
+			breeding = true;
+		}
 	}
 
 	private void endRound() {
-		// animals run away after breeding
-		releaseAnimals();
+		if (breeding) {
+			ap.beginUpdate(); // start "breeding edit"
+			ap.postEdit(new BreedingDone());
+			breeding = false;
+			// animals run away after breeding
+			releaseAnimals();
+		}
 		System.out.println("");
 
 		if (round < ROUNDS) {
@@ -240,6 +252,8 @@ public class Game {
 	}
 
 	private void endGame() {
+		ap.endUpdate(); // end last "action/breeding edit"
+		ap.postEdit(new EndGame());
 		ended = true;
 		board.showScoring(players, initialStartingPlayer);
 	}
@@ -247,13 +261,10 @@ public class Game {
 	private void releaseAnimals() {
 		Animals lostAnimals[] = new Animals[2];
 		for (Player p : players) {
-			Animals a = lostAnimals[p.getColor().ordinal()] = p.releaseAnimals();
-			if (a.size() > 0) {
-				System.out.println(p.getColor() + "'s animals run away: " +  a.size());
-			}
+			lostAnimals[p.getColor().ordinal()] = p.releaseAnimals();
 			p.notifyObservers(ChangeType.TURN_END);
 		}
-		if (lostAnimals[0].size() + lostAnimals[1].size() > 0) {
+		if (Bag.sumSize(lostAnimals) > 0) {
 			ap.postEdit(new ReleaseAnimals(lostAnimals));			
 		}
 	}
@@ -316,11 +327,12 @@ public class Game {
 
 		public void undo() throws CannotUndoException {
 			super.undo();
-			if (prevPlayer != null) {
-				// TODO ??
-				board.startTurn(prevPlayer);
-			}
 			ap.setPlayer(prevPlayer);
+			if (prevPlayer != null) {
+				board.startTurn(prevPlayer);
+			} else {
+				board.endRound();
+			}
 		}
 
 		public void redo() throws CannotRedoException {
@@ -343,16 +355,16 @@ public class Game {
 			super.redo();
 			switchCurrentPlayer();
 		}
-
 	}
 	
-	private class EndWorkAndBreed extends SimpleEdit {
+	private class EndRound extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
 		
 		private final Player curPlayer;
 		private final Animals[] newAnimals;
 
-		public EndWorkAndBreed(Player curPlayer, Animals[] newAnimals) {
+		public EndRound(Player curPlayer, Animals[] newAnimals) {
+			super(true);
 			this.curPlayer = curPlayer;
 			this.newAnimals = newAnimals;
 		}
@@ -365,6 +377,7 @@ public class Game {
 				p.unpurchaseAnimals(newAnimals[p.getColor().ordinal()]);
 			}
 			ap.setPlayer(curPlayer);
+			board.startTurn(curPlayer);
 		}
 		
 		public void redo() throws CannotRedoException {
@@ -375,17 +388,35 @@ public class Game {
 				p.breedAnimals();
 			}
 			ap.setPlayer(null);
+			board.endRound();
 		}
-		
 	}
 	
-	@SuppressWarnings("serial")
+	private class BreedingDone extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
+		
+		public BreedingDone() {
+			super(true);
+		}
+		
+		public void undo() throws CannotUndoException {
+			super.undo();
+			breeding = true;
+		}
+		
+		public void redo() throws CannotRedoException {
+			super.redo();
+			breeding = false;
+		}
+	}
+	
 	private class ReleaseAnimals extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
 		
 		private final Animals[] lostAnimals;
 		
-		public ReleaseAnimals(Animals[] newAnimals) {
-			this.lostAnimals = newAnimals;
+		public ReleaseAnimals(Animals[] lostAnimals) {
+			this.lostAnimals = lostAnimals;
 		}
 		
 		public void undo() throws CannotUndoException {
@@ -401,6 +432,24 @@ public class Game {
 				p.unpurchaseAnimals(lostAnimals[p.getColor().ordinal()]);
 			}
 		}
+	}
+	
+	private class EndGame extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
+
+		public EndGame() {
+			super(true);
+		}
 		
+		public void undo() throws CannotUndoException {
+			super.undo();
+			ended = false;
+		}
+
+		public void redo() throws CannotRedoException {
+			super.redo();
+			ended = true;
+		}
+
 	}
 }

@@ -98,6 +98,7 @@ public abstract class AnimalAction extends AbstractAction {
 		private final Animals takenAnimals;
 
 		public TakeAnimals(Player player, Animals animals) {
+			super(true);
 			this.player = player;
 			this.takenAnimals = animals;
 		}
@@ -127,7 +128,6 @@ public abstract class AnimalAction extends AbstractAction {
 		private final Animals added;
 		
 		public RefillAnimals(Animals added) {
-			super(false);
 			this.added = added;
 		}
 		

@@ -22,7 +22,7 @@ public class Player extends SimpleObservable {
 
 	public static final int USED_EXT_VP = 4;
 
-	public static final int MAX_WORKERS = Main.DEBUG ? 2 : 3;
+	public static final int MAX_WORKERS = Main.DEBUG ? 1 : 3;
 
 	private final PlayerColor color;
 	public final Farm farm;
@@ -58,6 +58,9 @@ public class Player extends SimpleObservable {
 			farm.put(Purchasable.FENCE, new DirPoint(pos, Dir.W));
 			farm.put(Purchasable.FENCE, new DirPoint(pos, Dir.S));
 			farm.put(Purchasable.FENCE, new DirPoint(pos, Dir.E));
+			Fencer.calculateFences(farm);
+			purchaseAnimal(Animal.COW, 1);
+			farm.putAnimals(new DirPoint(pos), Animal.COW, 1);
 		}
 		Fencer.calculateFences(farm);
 	}
@@ -119,7 +122,6 @@ public class Player extends SimpleObservable {
 
 	public void setActiveType(Purchasable type) {
 		farm.setActiveType(type);
-		System.out.println("active: " + type);
 	}
 
 	public Purchasable getActiveType() {

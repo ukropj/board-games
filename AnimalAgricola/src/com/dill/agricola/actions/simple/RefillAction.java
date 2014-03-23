@@ -81,13 +81,14 @@ public abstract class RefillAction extends AbstractAction {
 		return false;
 	}
 
-	@SuppressWarnings("serial")
 	protected class TakeMaterials extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
 
 		private final Player player;
 		private final Materials takenMaterials;
 		
 		public TakeMaterials(Player player, Materials materials) {
+			super(true);
 			this.player = player;
 			this.takenMaterials = materials;
 		}
@@ -107,13 +108,12 @@ public abstract class RefillAction extends AbstractAction {
 		
 	}
 	
-	@SuppressWarnings("serial")
 	protected class RefillMaterials extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
 		
 		private final Materials added;
 		
 		public RefillMaterials(Materials added) {
-			super(false);
 			this.added = added;
 		}
 		

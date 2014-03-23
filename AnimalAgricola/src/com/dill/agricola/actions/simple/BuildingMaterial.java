@@ -61,13 +61,14 @@ public class BuildingMaterial extends AbstractAction {
 		return false;
 	}
 	
-	@SuppressWarnings("serial")
-	public class TakeMaterials extends SimpleEdit {
+	private class TakeMaterials extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
 
 		private final Player player;
 		private final Materials takenMaterials;
 		
 		public TakeMaterials(Player player, Materials materials) {
+			super(true);
 			this.player = player;
 			this.takenMaterials = materials;
 		}

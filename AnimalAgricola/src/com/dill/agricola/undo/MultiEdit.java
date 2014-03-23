@@ -10,28 +10,29 @@ import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.model.types.Purchasable;
 
-@SuppressWarnings("serial")
 public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
+	private static final long serialVersionUID = 1L;
 
 	boolean hasBeenDone;
 	boolean alive;
 
 	final PlayerColor currentPlayer;
 	final ActionType actionType;
-	final boolean significant;
+
+//	final boolean significant;
 
 	public MultiEdit() {
-		this(null, null);
+		this(null, null, false);
 	}
 
-	public MultiEdit(PlayerColor currentPlayer, ActionType actionType) {
+	public MultiEdit(PlayerColor currentPlayer, ActionType actionType, boolean significant) {
 		super();
 		this.currentPlayer = currentPlayer;
 		this.actionType = actionType;
+//		this.significant = significant;
 
 		hasBeenDone = true;
 		alive = true;
-		significant = currentPlayer != null;
 	}
 
 	public boolean isFarmEdit() {
@@ -48,13 +49,14 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 			return false;
 		}
 		boolean retVal = super.addEdit(anEdit);
-		if (retVal && isSignificant()) {
+		if (retVal && anEdit.isSignificant() && isSignificant()) {
 			System.out.println("# Atomic Edit: " + anEdit.getPresentationName() + " into " + getPresentationName());
 		}
 		return retVal;
 	}
 
 	public void undo() throws CannotUndoException {
+		System.out.println("#" + (isSignificant() ? " " : "-") + getUndoPresentationName());
 		super.undo();
 		hasBeenDone = false;
 		if (isInProgress()) {
@@ -68,6 +70,7 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 	}
 
 	public void redo() throws CannotRedoException {
+		System.out.println("#" + (isSignificant() ? " " : "-") + getRedoPresentationName());
 		super.redo();
 		hasBeenDone = true;
 	}
@@ -81,21 +84,22 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 		alive = false;
 	}
 
-	public boolean isSignificant() {
-		return significant;
-	}
+	/*public boolean isSignificant() {
+		return significant && super.isSignificant();
+	}*/
 
 	public String getPresentationName() {
-		return !isSignificant() ? super.getPresentationName() :
-				"[" + currentPlayer.toString().substring(0, 1) + "] " + actionType.name;
+		return !isSignificant() ? "Cleanup" : currentPlayer != null
+				? "[" + currentPlayer.toString().substring(0, 1) + "] " + actionType.name
+				: super.getPresentationName();
 	}
 
 	public String getUndoPresentationName() {
-		return !isSignificant() ? super.getUndoPresentationName() : "Undo " + getPresentationName();
+		return !isSignificant() ? super.getUndoPresentationName() + "..." : "Undo " + getPresentationName();
 	}
 
 	public String getRedoPresentationName() {
-		return !isSignificant() ? super.getRedoPresentationName() : "Redo " + getPresentationName();
+		return !isSignificant() ? super.getRedoPresentationName() + "..." : "Redo " + getPresentationName();
 	}
 
 	public boolean matchesFarmAction(PlayerColor player, DirPoint pos, Purchasable thing) {
@@ -135,4 +139,11 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 		return false;
 	}
 
+	public String toString()
+	{
+		return getPresentationName()
+				+ " hasBeenDone: " + hasBeenDone
+				+ " alive: " + alive
+				+ edits.toString();
+	}
 }

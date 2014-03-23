@@ -23,21 +23,27 @@ public class Images {
 //		return new ImageIcon(image.getScaledInstance(width, height, Image.SCALE_SMOOTH));
 //	}
 
-	public static URL getImageUrl(String name) {
-		return Main.class.getResource("images/" + name + ".png");
+	public static String getImagePath(String name) {
+		return "images/" + name + ".png";
 	}
-	
+
+	public static URL getImageUrl(String path) {
+		return Main.class.getResource(path);
+	}
+
 	public static BufferedImage createImage(String name) {
-		URL url = getImageUrl(name);
+		String path = getImagePath(name);
+		URL url = getImageUrl(path);
 		BufferedImage img = null;
-		if (url != null)
+		if (url != null) {
 			try {
 				img = ImageIO.read(url);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		else
-			System.err.println("Couldn't find file: " + url);
+		} else {
+			System.err.println("Couldn't find file: " + path);
+		}
 		return img;
 	}
 
@@ -47,6 +53,11 @@ public class Images {
 				(int) (img.getHeight() * ratio),
 				RenderingHints.VALUE_INTERPOLATION_BILINEAR, higherQuality);
 	}*/
+	
+	public static BufferedImage getBestScaledInstance(BufferedImage img, int maxSize) {
+		float ratio =  1f * maxSize / Math.max(img.getWidth(),  img.getHeight());
+		return getBestScaledInstance(img, ratio);
+	}
 
 	public static BufferedImage getBestScaledInstance(BufferedImage img, float ratio) {
 		return getScaledInstance(img,

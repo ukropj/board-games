@@ -51,7 +51,6 @@ public class BuildStalls extends BuildAction {
 		private Stall stall;
 
 		public UseStall(Stall stall) {
-			super(false);
 			this.stall = stall;
 		}
 

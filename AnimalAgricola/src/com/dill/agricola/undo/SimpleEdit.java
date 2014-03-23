@@ -17,23 +17,23 @@ public class SimpleEdit extends AbstractUndoableEdit implements UndoableFarmEdit
 	private final Purchasable thing;
 
 	public SimpleEdit() {
-		this(true);
+		this(false);
 	}
-	
+
 	public SimpleEdit(boolean significant) {
 		this(significant, null, null);
 	}
-	
+
 	public SimpleEdit(DirPoint pos, Purchasable thing) {
 		this(true, pos, thing);
 	}
-	
+
 	public SimpleEdit(boolean significant, DirPoint pos, Purchasable thing) {
 		this.significant = significant;
 		this.pos = pos;
 		this.thing = thing;
 	}
-	
+
 	public boolean isSignificant() {
 		return significant;
 	}
@@ -41,23 +41,23 @@ public class SimpleEdit extends AbstractUndoableEdit implements UndoableFarmEdit
 	public boolean isFarmEdit() {
 		return pos != null;
 	}
-	
+
 	public boolean matchesFarmAction(PlayerColor player, DirPoint pos, Purchasable thing) {
 		return pos.equals(this.pos) && thing.equals(this.thing);
 	}
-	
+
 	public void undo() throws CannotUndoException {
-		System.out.println("# Atomic " + getUndoPresentationName());
+		System.out.println("#" + (isSignificant() ? " " : "-") + "Atomic " + getUndoPresentationName());
 		super.undo();
 	}
-	
+
 	public void redo() throws CannotRedoException {
-		System.out.println("# Atomic " + getRedoPresentationName());
+		System.out.println("#" + (isSignificant() ? " " : "-") + "Atomic " + getRedoPresentationName());
 		super.redo();
 	}
-	
+
 	public String getPresentationName() {
 		return Namer.getName(this);
 	}
-	
+
 }

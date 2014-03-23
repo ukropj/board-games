@@ -48,11 +48,11 @@ public abstract class AbstractAction implements Action {
 	public boolean isUsed() {
 		return user != null;
 	}
-	
+
 	public PlayerColor getUser() {
 		return user;
 	}
-	
+
 	public int getMinimalCount() {
 		return 1;
 	}
@@ -64,51 +64,50 @@ public abstract class AbstractAction implements Action {
 	public Animals getAccumulatedAnimals() {
 		return null;
 	}
-	
+
 	protected MultiEdit joinEdits(UndoableEdit... edits) {
 		MultiEdit edit = new MultiEdit();
 		for (UndoableEdit e : edits) {
 			if (e != null) {
-				edit.addEdit(e);				
+				edit.addEdit(e);
 			}
 		}
 		edit.end();
 		return edit;
 	}
-	
+
 	public void addChangeListener(ActionStateChangeListener changeListener) {
 		changeListeners.add(changeListener);
 	}
-	
+
 	protected void setChanged() {
 		for (ActionStateChangeListener listener : changeListeners) {
 			listener.stateChanges(this);
 		}
 	}
-	
-	@SuppressWarnings("serial")
+
 	protected class ActionInit extends SimpleEdit {
-		
+		private static final long serialVersionUID = 1L;
+
 		private final PlayerColor lastUser;
-		
+
 		public ActionInit(PlayerColor lastUser) {
-			super(false);
 			this.lastUser = lastUser;
 		}
-		
+
 		public void undo() throws CannotUndoException {
 			super.undo();
 			setUsed(lastUser);
 		}
-		
+
 		public void redo() throws CannotRedoException {
 			super.redo();
 			setUsed(null);
 		}
-		
+
 		public String getPresentationName() {
 			return Namer.getName(this);
 		}
 	}
-	
+
 }

@@ -74,7 +74,7 @@ public class BuildSpecial extends BuildAction {
 	}
 
 	public boolean canDo(Player player, DirPoint pos, int doneSoFar) {
-		// there does not need to be "any left"
+		// there does not need to be "any left", since building was already chosen
 		return doneSoFar < 1 && toBuild != null && canPurchase(player, toBuild, pos);
 	}
 
@@ -151,13 +151,13 @@ public class BuildSpecial extends BuildAction {
 	
 	protected UndoableEdit postActivate(Player player, Building b) {
 		GeneralSupply.useBuilding(toBuild, true);
-		// TODO edit for reward
 		toGive = chooseReward(b);
 		if (toGive != null) {
 			player.purchaseAnimals(toGive);
 			return new UseBuilding(toBuild, player, toGive);
+		} else {
+			return new UseBuilding(toBuild, player);			
 		}
-		return null;
 	}
 	
 	protected void postUndo(Player player, Building b) {
@@ -175,8 +175,11 @@ public class BuildSpecial extends BuildAction {
 		private final Player player;
 		private final Animals takenAnimals;
 
+		public UseBuilding(BuildingType built, Player player) {
+			this(built, player, null);
+		}
+		
 		public UseBuilding(BuildingType built, Player player, Animals animals) {
-			super(false);
 			this.built = built;
 			this.player = player;
 			this.takenAnimals = animals;
@@ -184,7 +187,9 @@ public class BuildSpecial extends BuildAction {
 
 		public void undo() throws CannotUndoException {
 			super.undo();
-			player.unpurchaseAnimals(takenAnimals);
+			if (takenAnimals != null) {
+				player.unpurchaseAnimals(takenAnimals);				
+			}
 			GeneralSupply.useBuilding(built, false);
 			setChanged();
 		}
@@ -192,7 +197,9 @@ public class BuildSpecial extends BuildAction {
 		public void redo() throws CannotRedoException {
 			super.redo();
 			GeneralSupply.useBuilding(built, true);
-			player.purchaseAnimals(takenAnimals);
+			if (takenAnimals != null) {
+				player.purchaseAnimals(takenAnimals);
+			}
 			setChanged();
 		}
 

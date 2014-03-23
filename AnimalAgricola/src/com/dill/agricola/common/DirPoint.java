@@ -2,16 +2,15 @@ package com.dill.agricola.common;
 
 import java.awt.Point;
 
-@SuppressWarnings("serial")
 public class DirPoint extends Point {
+	private static final long serialVersionUID = 1L;
 
 	public final Dir dir;
 
-	
 	public DirPoint(int x, int y) {
 		this(x, y, null);
 	}
-	
+
 	public DirPoint(int x, int y, Dir dir) {
 		super(x, y);
 		this.dir = dir;
@@ -20,7 +19,7 @@ public class DirPoint extends Point {
 	public DirPoint(DirPoint p) {
 		this(p, p.dir);
 	}
-	
+
 	public DirPoint(DirPoint pos, Dir dir) {
 		super(pos);
 		this.dir = dir;
@@ -54,5 +53,5 @@ public class DirPoint extends Point {
 	public Point toPoint() {
 		return new Point(x, y);
 	}
-	
+
 }

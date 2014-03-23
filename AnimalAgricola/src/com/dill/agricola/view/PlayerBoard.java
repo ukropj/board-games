@@ -26,8 +26,8 @@ import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
 import com.dill.agricola.view.utils.UiFactory;
 
-@SuppressWarnings("serial")
 public class PlayerBoard extends JPanel implements Observer {
+	private static final long serialVersionUID = 1L;
 
 	private final Player player;
 	private final Farm farm;
@@ -69,14 +69,14 @@ public class PlayerBoard extends JPanel implements Observer {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridy = 0;
 		c.ipady = 10;
-		c.insets = new Insets(5, 5, 5, 5);
+		c.insets = new Insets(0, 0, 5, 0);
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.anchor = GridBagConstraints.PAGE_START;
 		c.gridwidth = 3;
 		c.weightx = 1.0;
 		add(playerLabel, c);
 	}
-	
+
 	private void buildFarmPanel() {
 		farmPanel = new FarmPanel(player, ap);
 
@@ -84,6 +84,7 @@ public class PlayerBoard extends JPanel implements Observer {
 		c.gridy = 1;
 		c.gridwidth = 3;
 		c.weightx = 1.0;
+		c.insets = new Insets(0, 0, 10, 0);
 		c.anchor = GridBagConstraints.PAGE_START;
 		add(farmPanel, c);
 	}
@@ -125,7 +126,7 @@ public class PlayerBoard extends JPanel implements Observer {
 //		workers.setBackground(Color.BLUE);
 		add(workers, c);
 	}
-	
+
 	private void buildMaterialPanel() {
 		JPanel materials = UiFactory.createFlowPanel(15, 0);
 		for (Material m : Material.values()) {

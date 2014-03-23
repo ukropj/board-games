@@ -10,7 +10,6 @@ import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.model.types.Purchasable;
-import com.dill.agricola.support.Namer;
 import com.dill.agricola.undo.SimpleEdit;
 import com.dill.agricola.undo.TurnUndoableEditSupport;
 
@@ -39,7 +38,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 	public boolean hasAction() {
 		return action != null;
 	}
-	
+
 	public boolean hasAction(ActionType type) {
 		return action != null && action.getType() == type;
 	}
@@ -56,21 +55,21 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		boolean canDo = action.canDo(player, count);
 		UndoableEdit edit = null;
 		if (canDo) {
-			beginUpdate(player.getColor(), action.getType());
+			beginUpdate(player.getColor(), action.getType()); // start "action edit"
 			postEdit(new StartAction(player, action));
-			
+
 			action.setUsed(player.getColor());
 			edit = action.doo(player, count);
 			if (edit != null) {
 				count++;
-				postEdit(edit);				
+				postEdit(edit);
 			}
 			player.spendWorker();
-			
+
 			if (action.isQuickAction()) {
 				return finishAction();
 			}
-			
+
 			player.notifyObservers(ChangeType.ACTION_DO);
 			setChanged();
 			return true;
@@ -92,9 +91,9 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 				postEdit(edit);
 				count++;
 				setChanged();
-//				if (action.isQuickAction()) {
-//					return finishAction();
-//				}
+				if (action.isQuickAction()) {
+					return finishAction();
+				}
 				return true;
 			}
 		}
@@ -107,22 +106,21 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 	}
 
 	public boolean canFinish() {
-		return action!= null && player != null 
+		return action != null && player != null
 				&& count >= action.getMinimalCount() && player.validate();
 	}
 
 	public boolean finishAction() {
 		if (canFinish()) {
-			postEdit(new EndAction(player, action));
+			postEdit(new EndAction());
 			player.setActiveType(null);
-			System.out.println("Action done: " + Namer.getName(action));
 			action = null;
 			player.notifyObservers(ChangeType.ACTION_DONE);
 			return true;
 		}
 		return false;
 	}
-	
+
 	public boolean isFinished() {
 		return action == null;
 	}
@@ -142,18 +140,18 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		void stateChanges(Action action);
 
 	}
-	
-	@SuppressWarnings("serial")
+
 	private class StartAction extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
 
 		private final Player p;
 		private final Action a;
-		
+
 		public StartAction(Player player, Action action) {
 			this.p = player;
 			this.a = action;
 		}
-		
+
 		public void undo() throws CannotUndoException {
 			super.undo();
 			p.setActiveType(null);
@@ -161,34 +159,26 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 			p.returnWorker();
 			a.setUsed(null);
 		}
-		
+
 		public void redo() throws CannotRedoException {
 			super.redo();
 			a.setUsed(p.getColor());
 			p.spendWorker();
 		}
-		
-	}
-	
-	@SuppressWarnings("serial")
-	private class EndAction extends SimpleEdit {
 
-//		private final Player p;
-//		private final Action a;
-		
-		public EndAction(Player player, Action action) {
-//			this.p = player;
-//			this.a = action;
-		}
-		
+	}
+
+	private class EndAction extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
+
 		public void undo() throws CannotUndoException {
 			super.undo();
 		}
-		
+
 		public void redo() throws CannotRedoException {
 			super.redo();
 		}
-		
+
 	}
 
 }

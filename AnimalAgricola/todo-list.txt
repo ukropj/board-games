@@ -11,6 +11,7 @@
 	about & credits
 	window icon
 	undo/redo
+	stables action icon
 	
 #Bugs#
 

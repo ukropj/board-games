@@ -45,10 +45,6 @@ public class Troughs extends PurchaseAction {
 
 	protected class UseTrough extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
-
-		public UseTrough() {
-			super(false);
-		}
 		
 		public void undo() throws CannotUndoException {
 			super.undo();

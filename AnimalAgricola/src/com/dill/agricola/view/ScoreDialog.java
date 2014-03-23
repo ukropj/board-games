@@ -16,7 +16,9 @@ import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.AgriImages;
+import com.dill.agricola.view.utils.Images;
 import com.dill.agricola.view.utils.UiFactory;
+
 
 public class ScoreDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
@@ -24,6 +26,7 @@ public class ScoreDialog extends JDialog {
 	public ScoreDialog(Player[] players, PlayerColor initialStartingPlayer) {
 		// TODO make reusable
 		setTitle(Msg.get("scoring"));
+		setIconImage(Images.createImage("icons/small/application-certificate"));
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
 		buildScoringGrid(players, initialStartingPlayer);
@@ -32,12 +35,12 @@ public class ScoreDialog extends JDialog {
 		setSize(300, 400);
 	}
 
-	private void buildScoringGrid(Player[] players, PlayerColor initialStartingPlayer) {
+	private void buildScoringGrid(Player[] players, PlayerColor initialStartPlayer) {
 		JPanel p = new JPanel(new GridLayout(8, 3, 4, 4));
 		// heading
 		p.add(new JPanel());
 		for (Player player : players) {
-			JLabel playerL = UiFactory.createLabel(Msg.get("player", player.getColor().ordinal() + 1));
+			JLabel playerL = UiFactory.createLabel(Msg.get("player", Msg.get(player.toString().toLowerCase())));
 			playerL.setOpaque(true);
 			playerL.setBackground(player.getColor().getRealColor());
 			p.add(addBorder(playerL));
@@ -63,17 +66,19 @@ public class ScoreDialog extends JDialog {
 		p.add(addBorder(UiFactory.createLabel(String.valueOf(blueTotal))));
 		p.add(addBorder(UiFactory.createLabel(String.valueOf(redTotal))));
 
-		getContentPane().setLayout(new BorderLayout(5, 5));
-		getContentPane().add(p, BorderLayout.CENTER);
-
-		PlayerColor winner = blueTotal > redTotal ? PlayerColor.BLUE
-				: blueTotal < redTotal ? PlayerColor.BLUE : initialStartingPlayer.other();
-
 		// winner
+		PlayerColor winner = blueTotal > redTotal ? PlayerColor.BLUE
+				: blueTotal < redTotal ? PlayerColor.RED : initialStartPlayer.other();
 		JLabel winnerLabel = UiFactory.createLabel(Msg.get("msgWinner", Msg.get(winner.toString().toLowerCase())));
 		winnerLabel.setOpaque(true);
 		winnerLabel.setBackground(winner.getRealColor());
-		getContentPane().add(winnerLabel, BorderLayout.SOUTH);
+
+		JPanel mainP = UiFactory.createBorderPanel(5, 5);
+		mainP.setBorder(BorderFactory.createEmptyBorder(10, 10, 15, 10));
+		mainP.add(p, BorderLayout.CENTER);
+		mainP.add(winnerLabel, BorderLayout.SOUTH);
+
+		getContentPane().add(mainP, BorderLayout.CENTER);
 	}
 
 	private JComponent addBorder(JComponent component) {

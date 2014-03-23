@@ -18,9 +18,11 @@ import java.util.Observer;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
 import com.dill.agricola.actions.Action;
@@ -34,10 +36,11 @@ import com.dill.agricola.support.Fonts;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.undo.TurnUndoManager;
 import com.dill.agricola.view.utils.AgriImages;
+import com.dill.agricola.view.utils.Images;
 import com.dill.agricola.view.utils.UiFactory;
 
-@SuppressWarnings("serial")
 public class ActionBoard extends JPanel implements Observer {
+	private static final long serialVersionUID = 1L;
 
 	private final ActionPerformer ap;
 	private final TurnUndoManager undoManager;
@@ -47,9 +50,9 @@ public class ActionBoard extends JPanel implements Observer {
 	private final JPanel actionPanel;
 	private final JLabel hintLabel;
 //	private final Border defaultBorder;
-	
-	private static final Color defaultColor = (new JButton()).getBackground();
-	
+
+	private static final Color defaultBtnColor = UIManager.getColor("Button.background");
+	private static final Color defaultPanelColor = UIManager.getColor("Panel.background");
 
 	private JButton finishB;
 
@@ -79,7 +82,7 @@ public class ActionBoard extends JPanel implements Observer {
 						if (ap.startAction(action)) {
 							b.setBackground(ap.getPlayer().getColor().getRealColor());
 							updateActions();
-							
+
 							if (ap.isFinished()) {
 								submitListener.actionPerformed(e);
 							}
@@ -91,7 +94,7 @@ public class ActionBoard extends JPanel implements Observer {
 
 			actionButtons.put(type, b);
 			ActionPanelFactory.createActionPanel(actionPanel, action, b);
-			
+
 		}
 
 		hintLabel = UiFactory.createLabel("");
@@ -106,6 +109,7 @@ public class ActionBoard extends JPanel implements Observer {
 	private void buildControlPanel(final ActionListener submitListener) {
 		GridBagConstraints c = new GridBagConstraints();
 		JPanel controlPanel = UiFactory.createBorderPanel(5, 5);
+		controlPanel.setOpaque(true);
 		controlPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
 		controlPanel.add(hintLabel, BorderLayout.CENTER);
 		c.gridy = 10;
@@ -120,7 +124,7 @@ public class ActionBoard extends JPanel implements Observer {
 		JPanel buttons = UiFactory.createHorizontalPanel();
 		buttons.setBorder(new EmptyBorder(new Insets(5, 5, 5, 5)));
 
-		undoB = new JButton("Undo");
+		undoB = new JButton(new ImageIcon(Images.createImage("icons/edit-undo")));
 		undoB.setMargin(new Insets(1, 1, 1, 1));
 		undoB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -129,7 +133,8 @@ public class ActionBoard extends JPanel implements Observer {
 			}
 		});
 		buttons.add(undoB);
-		redoB = new JButton("Redo");
+		buttons.add(Box.createHorizontalStrut(5));
+		redoB = new JButton(new ImageIcon(Images.createImage("icons/edit-redo")));
 		redoB.setMargin(new Insets(1, 1, 1, 1));
 		redoB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -151,7 +156,7 @@ public class ActionBoard extends JPanel implements Observer {
 						updateActions();
 						submitListener.actionPerformed(e);
 					} else {
-						System.out.println("Cannot finish action");
+						System.out.println("Cannot finish action!");
 					}
 				} else {
 					submitListener.actionPerformed(e);
@@ -198,8 +203,15 @@ public class ActionBoard extends JPanel implements Observer {
 			} else {
 				// when no action being performed, disable those that cannot be currently performed
 				new ActionUsageListener(button).stateChanges(a);
+			}
+		}
+		if (ap.getPlayer() != null) {
+			actionPanel.setBackground(ap.getPlayer().getColor().getRealColor());
+			if (!ap.hasAction()) {
 				setHint(Msg.get("chooseAction"));
 			}
+		} else {
+			actionPanel.setBackground(defaultPanelColor);
 		}
 		updateControls();
 	}
@@ -233,13 +245,6 @@ public class ActionBoard extends JPanel implements Observer {
 		revalidate();
 	}
 
-//	public void clearActions() {
-//		for (JButton btn : actionButtons.values()) {
-//			btn.setBackground(defaultColor);
-//			btn.setEnabled(true);
-//		}
-//	}
-
 	public void enableFinishOnly() {
 		for (Component c : actionPanel.getComponents()) {
 			c.setEnabled(false);
@@ -269,24 +274,25 @@ public class ActionBoard extends JPanel implements Observer {
 		// refresh redo
 		redoB.setText(undoManager.getRedoPresentationName());
 		redoB.setEnabled(undoManager.canRedo());
+
+		updateFinishLabel();
 	}
-	
+
 	private class ActionUsageListener implements ActionStateChangeListener {
 
 		private final JButton actionButtton;
-		
-		
+
 		public ActionUsageListener(JButton button) {
 			actionButtton = button;
 		}
 
 		public void stateChanges(Action action) {
 			if (!action.isUsed()) {
-				actionButtton.setBackground(defaultColor);
+				actionButtton.setBackground(defaultBtnColor);
 				actionButtton.setEnabled(ap.getPlayer() != null && action.canDo(ap.getPlayer(), 0));
 			} else {
 				actionButtton.setBackground(action.getUser().getRealColor());
-				actionButtton.setEnabled(false);				
+				actionButtton.setEnabled(false);
 			}
 		}
 	}

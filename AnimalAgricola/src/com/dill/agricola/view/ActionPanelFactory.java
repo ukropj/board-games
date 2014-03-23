@@ -241,11 +241,12 @@ public class ActionPanelFactory {
 		c.gridx = 3 * x + 2;
 		c.gridwidth = 1;
 		c.insets = new Insets(2, 0, 2, 2);
-		parent.add(createResourcesPanel(action, button, extraP), c);
+		parent.add(createResourcesButton(action, button, extraP), c);
 	}
 
 	private static JPanel createPrefixPanel(Materials materials, Animal animal, Animal otherAnimal) {
 		JPanel refillP = UiFactory.createHorizontalPanel();
+		refillP.setOpaque(true);
 		refillP.add(Box.createHorizontalGlue());
 		refillP.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 0, Color.GRAY));
 		Animals animals = animal == null ? null : new Animals(animal, 1);
@@ -262,7 +263,7 @@ public class ActionPanelFactory {
 		return refillP;
 	}
 
-	private static JButton createResourcesPanel(Action action, JButton button, JComponent extraP) {
+	private static JButton createResourcesButton(Action action, JButton button, JComponent extraP) {
 		JPanel actionP = UiFactory.createHorizontalPanel();
 		JPanel supplyP = UiFactory.createResourcesPanel(action.getAccumulatedMaterials(), action.getAccumulatedAnimals(), UiFactory.Y_AXIS);
 		actionP.add(supplyP);
