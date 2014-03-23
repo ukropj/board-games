@@ -2,7 +2,6 @@ package com.dill.agricola.actions.farm;
 
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoableEdit;
 
 import com.dill.agricola.actions.AbstractAction;
 import com.dill.agricola.common.DirPoint;
@@ -11,6 +10,7 @@ import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.undo.SimpleEdit;
+import com.dill.agricola.undo.UndoableFarmEdit;
 
 public abstract class PurchaseAction extends AbstractAction {
 
@@ -39,39 +39,39 @@ public abstract class PurchaseAction extends AbstractAction {
 		return false;
 	}
 
-	public boolean canDo(Player player, int doneSoFar) {
-		return isAnyLeft() && player.canPurchase(thing, getCost(doneSoFar), null);
+	public boolean canDo(Player player) {
+		return isAnyLeft() && player.canPurchase(thing, getCost(0), null);
 	}
 
-	public boolean canDo(Player player, DirPoint pos, int doneSoFar) {
-		return canDo(player, doneSoFar) && player.canPurchase(thing, getCost(doneSoFar), pos);
+	public boolean canDoOnFarm(Player player, DirPoint pos, int doneSoFar) {
+		return isAnyLeft() && player.canPurchase(thing, getCost(doneSoFar), pos);
 	}
 
-	public boolean canUndo(Player player, DirPoint pos, int doneSoFar) {
+	public boolean canUndoOnFarm(Player player, DirPoint pos, int doneSoFar) {
 		return player.canUnpurchase(thing, pos, true);
 	}
 
-	public UndoableEdit doo(Player player, int doneSoFar) {
-		if (canDo(player, doneSoFar)) {
+	public UndoableFarmEdit doo(Player player) {
+		if (canDo(player)) {
 			player.setActiveType(thing);
 		}
 		return null;
 	}
 
-	public UndoableEdit doo(Player player, DirPoint pos, int doneSoFar) {
-		if (canDo(player, pos, doneSoFar)) {
+	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos, int doneSoFar) {
+		if (canDoOnFarm(player, pos, doneSoFar)) {
 			Materials cost = getCost(doneSoFar);
-			UndoableEdit edit = new PurchaseThing(player, cost, pos);
+			UndoableFarmEdit edit = new PurchaseThing(player, cost, pos);
 			player.purchase(thing, cost, pos);
-			UndoableEdit postEdit = postActivate();
+			UndoableFarmEdit postEdit = postActivate();
 			setChanged();
 			return joinEdits(edit, postEdit);
 		}
 		return null;
 	}
 
-	public boolean undo(Player player, DirPoint pos, int doneSoFar) {
-		if (canUndo(player, pos, doneSoFar)) {
+	public boolean undoOnFarm(Player player, DirPoint pos, int doneSoFar) {
+		if (canUndoOnFarm(player, pos, doneSoFar)) {
 			player.unpurchase(thing, getCost(doneSoFar - 1), pos, true);
 			postUndo();
 			return true;
@@ -79,7 +79,7 @@ public abstract class PurchaseAction extends AbstractAction {
 		return false;
 	}
 
-	protected UndoableEdit postActivate() {
+	protected UndoableFarmEdit postActivate() {
 		return null;
 	}
 

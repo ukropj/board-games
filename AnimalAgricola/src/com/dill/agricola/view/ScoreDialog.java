@@ -85,5 +85,4 @@ public class ScoreDialog extends JDialog {
 		component.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
 		return component;
 	}
-
 }

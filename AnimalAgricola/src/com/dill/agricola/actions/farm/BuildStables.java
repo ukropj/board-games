@@ -6,7 +6,6 @@ import java.util.List;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
-import javax.swing.undo.UndoableEdit;
 
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
@@ -15,6 +14,7 @@ import com.dill.agricola.model.Player;
 import com.dill.agricola.model.buildings.Stables;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.BuildingType;
+import com.dill.agricola.undo.UndoableFarmEdit;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
 import com.dill.agricola.view.utils.UiFactory;
@@ -36,14 +36,12 @@ public class BuildStables extends BuildAction {
 		return new Stables();
 	}
 	
-	public boolean canDo(Player player, int doneSoFar) {
-		return isAnyLeft() && 
-				(toBuild == null || player.canPurchase(toBuild, COSTS[0], null) || player.canPurchase(toBuild, COSTS[1], null));
+	public boolean canDo(Player player) {
+		return player.canPurchase(toBuild, COSTS[0], null) || player.canPurchase(toBuild, COSTS[1], null);
 	}
 
-	public boolean canDo(Player player, DirPoint pos, int doneSoFar) {
-		return canDo(player, doneSoFar) && toBuild != null && 
-				(player.canPurchase(toBuild, COSTS[0], pos) || player.canPurchase(toBuild, COSTS[1], pos));
+	public boolean canDoOnFarm(Player player, DirPoint pos, int doneSoFar) {
+		return player.canPurchase(toBuild, COSTS[0], pos) || player.canPurchase(toBuild, COSTS[1], pos);
 	}
 
 	private int chooseStablesCost(Player player) {
@@ -57,12 +55,12 @@ public class BuildStables extends BuildAction {
 		return UiFactory.showOptionDialog("Choose cost", "Stables", icon, opts);
 	}
 
-	public UndoableEdit doo(Player player, DirPoint pos, int doneSoFar) {
+	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos, int doneSoFar) {
 		costNo = chooseStablesCost(player);
 		if (costNo == JOptionPane.CLOSED_OPTION) {
 			return null;
 		}
-		return super.doo(player, pos, doneSoFar);
+		return super.doOnFarm(player, pos, doneSoFar);
 	}
 
 }

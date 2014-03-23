@@ -2,7 +2,6 @@ package com.dill.agricola.actions.simple;
 
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoableEdit;
 
 import com.dill.agricola.actions.AbstractAction;
 import com.dill.agricola.common.Animals;
@@ -12,6 +11,7 @@ import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.support.Namer;
 import com.dill.agricola.undo.SimpleEdit;
+import com.dill.agricola.undo.UndoableFarmEdit;
 
 public abstract class AnimalAction extends AbstractAction {
 
@@ -32,7 +32,7 @@ public abstract class AnimalAction extends AbstractAction {
 		setChanged();
 	}
 
-	public UndoableEdit init() {
+	public UndoableFarmEdit init() {
 		Animal added = null;
 		if (animals.get(first) == 0) {
 			animals.add(first, 1);
@@ -56,13 +56,13 @@ public abstract class AnimalAction extends AbstractAction {
 		return true;
 	}
 
-	public boolean canDo(Player player, int doneSoFar) {
+	public boolean canDo(Player player) {
 		return !animals.isEmpty();
 	}
 
-	public UndoableEdit doo(Player player, int doneSoFar) {
-		if (canDo(player, doneSoFar)) {
-			UndoableEdit edit = new TakeAnimals(player, new Animals(animals));
+	public UndoableFarmEdit doo(Player player) {
+		if (canDo(player)) {
+			UndoableFarmEdit edit = new TakeAnimals(player, new Animals(animals));
 			player.purchaseAnimals(animals);
 			animals.clear();
 			setChanged();
@@ -75,19 +75,19 @@ public abstract class AnimalAction extends AbstractAction {
 		return animals;
 	}
 
-	public boolean canDo(Player player, DirPoint pos, int count) {
+	public boolean canDoOnFarm(Player player, DirPoint pos, int count) {
 		return false;
 	}
 
-	public boolean canUndo(Player player, DirPoint pos, int count) {
+	public boolean canUndoOnFarm(Player player, DirPoint pos, int count) {
 		return false;
 	}
 
-	public UndoableEdit doo(Player player, DirPoint pos, int count) {
+	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos, int count) {
 		return null;
 	}
 
-	public boolean undo(Player player, DirPoint pos, int count) {
+	public boolean undoOnFarm(Player player, DirPoint pos, int count) {
 		return false;
 	}
 
@@ -114,6 +114,10 @@ public abstract class AnimalAction extends AbstractAction {
 			animals.substract(takenAnimals);
 			setChanged();
 			player.purchaseAnimals(takenAnimals);
+		}
+		
+		public boolean isAnimalEdit() {
+			return takenAnimals.size() > 0;
 		}
 
 		public String getPresentationName() {

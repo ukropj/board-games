@@ -2,7 +2,6 @@ package com.dill.agricola.actions.farm;
 
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoableEdit;
 
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
@@ -12,6 +11,7 @@ import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.undo.SimpleEdit;
+import com.dill.agricola.undo.UndoableFarmEdit;
 
 public abstract class BuildAction extends PurchaseAction {
 
@@ -29,33 +29,33 @@ public abstract class BuildAction extends PurchaseAction {
 
 	abstract protected Building getBuildingInstance(BuildingType type);
 
-	public boolean canDo(Player player, int doneSoFar) {
-		return isAnyLeft() && (toBuild == null || player.canPurchase(toBuild, getCost(doneSoFar), null));
+	public boolean canDo(Player player) {
+		return isAnyLeft() && (toBuild == null || player.canPurchase(toBuild, getCost(0), null));
 	}
 
-	public boolean canDo(Player player, DirPoint pos, int doneSoFar) {
-		return canDo(player, doneSoFar) && toBuild != null && player.canPurchase(toBuild, getCost(doneSoFar), pos);
+	public boolean canDoOnFarm(Player player, DirPoint pos, int doneSoFar) {
+		return isAnyLeft() && toBuild != null && player.canPurchase(toBuild, getCost(doneSoFar), pos);
 	}
 
-	public boolean canUndo(Player player, DirPoint pos, int doneSoFar) {
+	public boolean canUndoOnFarm(Player player, DirPoint pos, int doneSoFar) {
 		return player.canUnpurchase(toBuild, pos, true);
 	}
 
-	public UndoableEdit doo(Player player, DirPoint pos, int doneSoFar) {
-		if (canDo(player, pos, doneSoFar)) {
+	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos, int doneSoFar) {
+		if (canDoOnFarm(player, pos, doneSoFar)) {
 			Building b = getBuildingInstance(toBuild);
 			Materials cost = getCost(doneSoFar);
-			UndoableEdit edit = new PurchaseBuilding(player, b, cost, pos);
+			UndoableFarmEdit edit = new PurchaseBuilding(player, b, cost, pos);
 			player.purchase(b, cost, pos);
-			UndoableEdit postEdit = postActivate(player, b);
+			UndoableFarmEdit postEdit = postActivate(player, b);
 			setChanged();
 			return joinEdits(edit, postEdit);
 		}
 		return null;
 	}
 
-	public boolean undo(Player player, DirPoint pos, int doneSoFar) {
-		if (canUndo(player, pos, doneSoFar)) {
+	public boolean undoOnFarm(Player player, DirPoint pos, int doneSoFar) {
+		if (canUndoOnFarm(player, pos, doneSoFar)) {
 			Building b = player.unpurchase(toBuild, pos, true);
 			postUndo(player, b);
 			setChanged();
@@ -64,7 +64,7 @@ public abstract class BuildAction extends PurchaseAction {
 		return false;
 	}
 
-	protected UndoableEdit postActivate(Player player, Building b) {
+	protected UndoableFarmEdit postActivate(Player player, Building b) {
 		return null;
 	}
 

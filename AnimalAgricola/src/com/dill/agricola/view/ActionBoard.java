@@ -18,7 +18,6 @@ import java.util.Observer;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -34,16 +33,13 @@ import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.support.Fonts;
 import com.dill.agricola.support.Msg;
-import com.dill.agricola.undo.TurnUndoManager;
 import com.dill.agricola.view.utils.AgriImages;
-import com.dill.agricola.view.utils.Images;
 import com.dill.agricola.view.utils.UiFactory;
 
 public class ActionBoard extends JPanel implements Observer {
 	private static final long serialVersionUID = 1L;
 
 	private final ActionPerformer ap;
-	private final TurnUndoManager undoManager;
 
 	private final Map<ActionType, Action> actions = new EnumMap<ActionType, Action>(ActionType.class);
 	private final Map<ActionType, JButton> actionButtons = new EnumMap<ActionType, JButton>(ActionType.class);
@@ -55,13 +51,12 @@ public class ActionBoard extends JPanel implements Observer {
 	private static final Color defaultPanelColor = UIManager.getColor("Panel.background");
 
 	private JButton finishB;
+	
+	final ActionListener submitListener;
 
-	private JButton undoB;
-	private JButton redoB;
-
-	public ActionBoard(List<Action> actions, final ActionPerformer ap, final ActionListener submitListener, TurnUndoManager undoManager) {
+	public ActionBoard(List<Action> actions, final ActionPerformer ap, final ActionListener submitListener) {
 		this.ap = ap;
-		this.undoManager = undoManager;
+		this.submitListener = submitListener;
 
 		setLayout(new BorderLayout());
 
@@ -83,9 +78,9 @@ public class ActionBoard extends JPanel implements Observer {
 							b.setBackground(ap.getPlayer().getColor().getRealColor());
 							updateActions();
 
-							if (ap.isFinished()) {
-								submitListener.actionPerformed(e);
-							}
+//							if (ap.isFinished()) {
+//								submitListener.actionPerformed(e);
+//							}
 						}
 					}
 				}
@@ -102,8 +97,6 @@ public class ActionBoard extends JPanel implements Observer {
 		buildControlPanel(submitListener);
 
 		add(actionPanel, BorderLayout.CENTER);
-
-		refreshUndoRedo();
 	}
 
 	private void buildControlPanel(final ActionListener submitListener) {
@@ -124,26 +117,6 @@ public class ActionBoard extends JPanel implements Observer {
 		JPanel buttons = UiFactory.createHorizontalPanel();
 		buttons.setBorder(new EmptyBorder(new Insets(5, 5, 5, 5)));
 
-		undoB = new JButton(new ImageIcon(Images.createImage("icons/edit-undo")));
-		undoB.setMargin(new Insets(1, 1, 1, 1));
-		undoB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				undoManager.undo();
-				refreshUndoRedo();
-			}
-		});
-		buttons.add(undoB);
-		buttons.add(Box.createHorizontalStrut(5));
-		redoB = new JButton(new ImageIcon(Images.createImage("icons/edit-redo")));
-		redoB.setMargin(new Insets(1, 1, 1, 1));
-		redoB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				undoManager.redo();
-				refreshUndoRedo();
-			}
-		});
-		buttons.add(redoB);
-
 		buttons.add(Box.createHorizontalGlue());
 		finishB = new JButton(Msg.get("finishAction"), AgriImages.getYesIcon());
 		finishB.setEnabled(false);
@@ -154,7 +127,7 @@ public class ActionBoard extends JPanel implements Observer {
 				if (ap.hasAction()) {
 					if (ap.finishAction()) {
 						updateActions();
-						submitListener.actionPerformed(e);
+//						submitListener.actionPerformed(e);
 					} else {
 						System.out.println("Cannot finish action!");
 					}
@@ -214,6 +187,7 @@ public class ActionBoard extends JPanel implements Observer {
 			actionPanel.setBackground(defaultPanelColor);
 		}
 		updateControls();
+		updateFinishLabel();
 	}
 
 	private void updateControls() {
@@ -264,18 +238,9 @@ public class ActionBoard extends JPanel implements Observer {
 		if (arg == ChangeType.FARM_ANIMALS) {
 			updateFinishLabel();
 		}
-	}
-
-	public void refreshUndoRedo() {
-		// refresh undo
-		undoB.setText(undoManager.getUndoPresentationName());
-		undoB.setEnabled(undoManager.canUndo());
-
-		// refresh redo
-		redoB.setText(undoManager.getRedoPresentationName());
-		redoB.setEnabled(undoManager.canRedo());
-
-		updateFinishLabel();
+		if (arg == ChangeType.ACTION_DONE) {
+			submitListener.actionPerformed(null);
+		}
 	}
 
 	private class ActionUsageListener implements ActionStateChangeListener {
@@ -289,7 +254,7 @@ public class ActionBoard extends JPanel implements Observer {
 		public void stateChanges(Action action) {
 			if (!action.isUsed()) {
 				actionButtton.setBackground(defaultBtnColor);
-				actionButtton.setEnabled(ap.getPlayer() != null && action.canDo(ap.getPlayer(), 0));
+				actionButtton.setEnabled(ap.getPlayer() != null && action.canDo(ap.getPlayer()));
 			} else {
 				actionButtton.setBackground(action.getUser().getRealColor());
 				actionButtton.setEnabled(false);

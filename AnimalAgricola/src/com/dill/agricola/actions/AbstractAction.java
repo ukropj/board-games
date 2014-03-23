@@ -5,15 +5,16 @@ import java.util.List;
 
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoableEdit;
 
 import com.dill.agricola.common.Animals;
 import com.dill.agricola.common.Materials;
+import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.support.Namer;
 import com.dill.agricola.undo.MultiEdit;
 import com.dill.agricola.undo.SimpleEdit;
+import com.dill.agricola.undo.UndoableFarmEdit;
 
 public abstract class AbstractAction implements Action {
 
@@ -33,8 +34,8 @@ public abstract class AbstractAction implements Action {
 		user = null;
 	}
 
-	public UndoableEdit init() {
-		UndoableEdit edit = isUsed() ? new ActionInit(user) : null;
+	public UndoableFarmEdit init() {
+		UndoableFarmEdit edit = isUsed() ? new ActionInit(user) : null;
 		user = null;
 		setChanged();
 		return edit;
@@ -56,6 +57,10 @@ public abstract class AbstractAction implements Action {
 	public int getMinimalCount() {
 		return 1;
 	}
+	
+	public boolean canDoOnFarm(Player player, int doneSoFar) {
+		return canDoOnFarm(player, null, doneSoFar);
+	}
 
 	public Materials getAccumulatedMaterials() {
 		return null;
@@ -65,9 +70,9 @@ public abstract class AbstractAction implements Action {
 		return null;
 	}
 
-	protected MultiEdit joinEdits(UndoableEdit... edits) {
+	protected MultiEdit joinEdits(UndoableFarmEdit... edits) {
 		MultiEdit edit = new MultiEdit();
-		for (UndoableEdit e : edits) {
+		for (UndoableFarmEdit e : edits) {
 			if (e != null) {
 				edit.addEdit(e);
 			}

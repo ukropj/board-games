@@ -122,6 +122,7 @@ public class Player extends SimpleObservable {
 
 	public void setActiveType(Purchasable type) {
 		farm.setActiveType(type);
+		setChanged();
 	}
 
 	public Purchasable getActiveType() {

@@ -2,7 +2,6 @@ package com.dill.agricola.actions.simple;
 
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoableEdit;
 
 import com.dill.agricola.Game;
 import com.dill.agricola.common.Materials;
@@ -11,6 +10,7 @@ import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Material;
 import com.dill.agricola.support.Namer;
 import com.dill.agricola.undo.SimpleEdit;
+import com.dill.agricola.undo.UndoableFarmEdit;
 
 public class StartOneWood extends RefillAction {
 
@@ -23,10 +23,10 @@ public class StartOneWood extends RefillAction {
 		this.game = game;
 	}
 
-	public UndoableEdit doo(Player player, int doneSoFar) {
+	public UndoableFarmEdit doo(Player player) {
 		Player previousPlayer = game.getStartingPlayer();
 		game.setStartingPlayer(player);
-		return joinEdits(super.doo(player, doneSoFar), new TakeStartPlayer(previousPlayer, player));
+		return joinEdits(super.doo(player), new TakeStartPlayer(previousPlayer, player));
 	}
 	
 	protected class TakeStartPlayer extends SimpleEdit {

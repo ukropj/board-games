@@ -4,6 +4,7 @@ import java.util.Locale;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 import com.dill.agricola.support.Msg;
 
@@ -12,20 +13,41 @@ public class Main {
 	public static boolean DEBUG = true;
 
 	public static void main(String[] args) {
+		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
+				setLookAndFeel();
+				
 				// TODO locale picker
 				Msg.load(new Locale("en"));
 				try {
 					Game g = new Game();
 					if (DEBUG) {
-						g.start();					
-					}					
-				} catch(Throwable e) {
+						g.start();
+					}
+				} catch (Throwable e) {
 					String msg = e.getMessage();
 					JOptionPane.showMessageDialog(null, msg != null ? msg : Msg.get("unknownError"), Msg.get("error"), JOptionPane.ERROR_MESSAGE);
 					e.printStackTrace();
 				}
+			}
+
+			private void setLookAndFeel() {
+				/*try {
+//					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+				    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+				        if ("Nimbus".equals(info.getName())) {
+				            UIManager.setLookAndFeel(info.getClassName());
+				            break;
+				        }
+				    }
+				} catch (Exception e) {*/
+					try {
+						UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+					} catch (Exception e1) {
+						throw new RuntimeException(e1);
+					}
+//				}
 			}
 		});
 	}

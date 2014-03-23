@@ -2,7 +2,6 @@ package com.dill.agricola.actions.farm;
 
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoableEdit;
 
 import com.dill.agricola.GeneralSupply;
 import com.dill.agricola.GeneralSupply.Supplyable;
@@ -14,6 +13,7 @@ import com.dill.agricola.model.types.Material;
 import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.support.Namer;
 import com.dill.agricola.undo.SimpleEdit;
+import com.dill.agricola.undo.UndoableFarmEdit;
 
 public class Expand extends PurchaseAction {
 
@@ -33,7 +33,7 @@ public class Expand extends PurchaseAction {
 		materials.clear();
 	}
 
-	public UndoableEdit init() {
+	public UndoableFarmEdit init() {
 		materials.add(REFILL);
 		hadExp = false;
 		return joinEdits(super.init(), new RefillMaterials(REFILL));
@@ -64,21 +64,21 @@ public class Expand extends PurchaseAction {
 		return GeneralSupply.getLeft(Supplyable.EXTENSION) > 0;
 	}
 
-	public boolean canDo(Player player, int doneSoFar) {
+	public boolean canDo(Player player) {
 		return !materials.isEmpty();
 	}
 
-	public boolean canDo(Player player, DirPoint pos, int doneSoFar) {
-		return !hadExp && isAnyLeft() && player.canPurchase(thing, getCost(doneSoFar), pos);
+	public boolean canDoOnFarm(Player player, DirPoint pos, int doneSoFar) {
+		return doneSoFar == 1 && isAnyLeft() && player.canPurchase(thing, getCost(doneSoFar), pos);
 	}
 
-	public boolean canUndo(Player player, DirPoint pos, int doneSoFar) {
+	public boolean canUndoOnFarm(Player player, DirPoint pos, int doneSoFar) {
 		return hadExp && player.canUnpurchase(thing, pos, true);
 	}
 
-	public UndoableEdit doo(Player player, int doneSoFar) {
-		if (canDo(player, doneSoFar)) {
-			UndoableEdit edit = new TakeMaterials(player, new Materials(materials));
+	public UndoableFarmEdit doo(Player player) {
+		if (canDo(player)) {
+			UndoableFarmEdit edit = new TakeMaterials(player, new Materials(materials));
 			player.addMaterial(materials);
 			materials.clear();
 			player.setActiveType(thing);
@@ -88,9 +88,9 @@ public class Expand extends PurchaseAction {
 		return null;
 	}
 
-	public boolean undo(Player player, DirPoint pos, int doneSoFar) {
+	public boolean undoOnFarm(Player player, DirPoint pos, int doneSoFar) {
 		if (hadExp) {
-			if (super.undo(player, pos, doneSoFar)) {
+			if (super.undoOnFarm(player, pos, doneSoFar)) {
 				postUndo();
 			} else {
 				return false;
@@ -99,7 +99,7 @@ public class Expand extends PurchaseAction {
 		return true;
 	}
 	
-	protected UndoableEdit postActivate() {
+	protected UndoableFarmEdit postActivate() {
 		GeneralSupply.useExtension(true);
 		hadExp = true;
 		return new UseExtension();

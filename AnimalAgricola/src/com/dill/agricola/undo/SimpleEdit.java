@@ -9,7 +9,7 @@ import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.support.Namer;
 
-public class SimpleEdit extends AbstractUndoableEdit implements UndoableFarmEdit {
+public abstract class SimpleEdit extends AbstractUndoableEdit implements UndoableFarmEdit {
 	private static final long serialVersionUID = 1L;
 
 	private boolean significant;
@@ -40,6 +40,10 @@ public class SimpleEdit extends AbstractUndoableEdit implements UndoableFarmEdit
 
 	public boolean isFarmEdit() {
 		return pos != null;
+	}
+
+	public boolean isAnimalEdit() {
+		return false;
 	}
 
 	public boolean matchesFarmAction(PlayerColor player, DirPoint pos, Purchasable thing) {

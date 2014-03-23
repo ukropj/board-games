@@ -2,7 +2,6 @@ package com.dill.agricola.actions;
 
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoableEdit;
 
 import com.dill.agricola.Main;
 import com.dill.agricola.common.DirPoint;
@@ -12,6 +11,7 @@ import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.undo.SimpleEdit;
 import com.dill.agricola.undo.TurnUndoableEditSupport;
+import com.dill.agricola.undo.UndoableFarmEdit;
 
 public class ActionPerformer extends TurnUndoableEditSupport {
 
@@ -52,22 +52,23 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		this.count = 0;
 		checkState();
 
-		boolean canDo = action.canDo(player, count);
-		UndoableEdit edit = null;
+		boolean canDo = action.canDo(player);
+		UndoableFarmEdit edit = null;
 		if (canDo) {
 			beginUpdate(player.getColor(), action.getType()); // start "action edit"
 			postEdit(new StartAction(player, action));
+			player.spendWorker();
 
 			action.setUsed(player.getColor());
-			edit = action.doo(player, count);
+			edit = action.doo(player);
+
 			if (edit != null) {
 				count++;
 				postEdit(edit);
-			}
-			player.spendWorker();
 
-			if (action.isQuickAction()) {
-				return finishAction();
+				if (!action.canDoOnFarm(player, count) && !edit.isAnimalEdit()) {
+					return finishAction();
+				}
 			}
 
 			player.notifyObservers(ChangeType.ACTION_DO);
@@ -80,18 +81,18 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 	}
 
 	public boolean canDoFarmAction(DirPoint pos) {
-		return action.canDo(player, pos, count) || action.canUndo(player, pos, count);
+		return action.canDoOnFarm(player, pos, count) || action.canUndoOnFarm(player, pos, count);
 	}
 
 	public boolean doFarmAction(DirPoint pos, Purchasable thing) {
 		checkState();
-		if (action.canDo(player, pos, count)) {
-			UndoableEdit edit = action.doo(player, pos, count);
+		if (action.canDoOnFarm(player, pos, count)) {
+			UndoableFarmEdit edit = action.doOnFarm(player, pos, count);
 			if (edit != null) {
 				postEdit(edit);
 				count++;
 				setChanged();
-				if (action.isQuickAction()) {
+				if (!action.canDoOnFarm(player, count) && !edit.isAnimalEdit()) {
 					return finishAction();
 				}
 				return true;
@@ -148,6 +149,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		private final Action a;
 
 		public StartAction(Player player, Action action) {
+			super(true);
 			this.p = player;
 			this.a = action;
 		}

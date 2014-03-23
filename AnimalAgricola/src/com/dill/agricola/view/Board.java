@@ -1,29 +1,29 @@
 package com.dill.agricola.view;
 
+import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
-import javax.swing.KeyStroke;
+import javax.swing.JToolBar;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 
@@ -32,6 +32,7 @@ import com.dill.agricola.Main;
 import com.dill.agricola.actions.ActionPerformer;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.PlayerColor;
+import com.dill.agricola.support.Fonts;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.undo.TurnUndoManager;
 import com.dill.agricola.view.utils.Images;
@@ -43,6 +44,7 @@ public class Board extends JFrame {
 	private Game game;
 
 	private final ActionPerformer ap;
+	private final TurnUndoManager undoManager;
 
 	private final Container mainPane;
 
@@ -50,12 +52,15 @@ public class Board extends JFrame {
 	private final PlayerBoard[] playerBoards;
 	private ActionBoard actionBoard;
 	private DebugPanel debugPanel;
+	private JButton undoB;
+	private JButton redoB;
 	
 	private ScoreDialog scoreDialog;
 
 	public Board(Game game, ActionPerformer ap, TurnUndoManager undoManager) {
 		this.game = game;
 		this.ap = ap;
+		this.undoManager = undoManager;
 		ap.addUndoableEditListener(new UndoButtonUpdater());
 
 		playerBoards = new PlayerBoard[2];
@@ -69,10 +74,11 @@ public class Board extends JFrame {
 		}));
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
-		mainPane = getContentPane();
+		mainPane = UiFactory.createFlowPanel();
 		mainPane.setLayout(new GridBagLayout());
+		getContentPane().add(mainPane, BorderLayout.CENTER);
 
-		buildMenu();
+		initToolbar();
 
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
@@ -80,46 +86,38 @@ public class Board extends JFrame {
 			}
 		});
 
-		initStatusBar();
-		initActionsBoard(undoManager);
+		initActionsBoard();
 		initPlayerBoard(PlayerColor.BLUE, 0);
 		initPlayerBoard(PlayerColor.RED, 2);
 	}
 
-	private void buildMenu() {
-		MenuListener bl = new MenuListener(this);
-		JMenuBar mb = new JMenuBar();
-		JMenu fileM = new JMenu(Msg.get("game"));
-		JMenuItem newI = new JMenuItem(Msg.get("new"));
-		newI.setActionCommand(MenuCommand.NEW.toString());
-		newI.addActionListener(bl);
-		fileM.add(newI);
-		JMenuItem exitI = new JMenuItem(Msg.get("exit"));
-		exitI.setActionCommand(MenuCommand.EXIT.toString());
-		exitI.addActionListener(bl);
-		exitI.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_DOWN_MASK));
-		fileM.add(exitI);
-		mb.add(fileM);
+	private void initToolbar() {
+		ToolListener bl = new ToolListener(this);
+		JToolBar toolbar = new JToolBar(JToolBar.HORIZONTAL);
+		toolbar.setMargin(new Insets(0,0,0,0));
+		toolbar.setFloatable(false);
+		toolbar.setRollover(true);
 
-		// JMenu devM = new JMenu("Dev");
-		// JMenuItem debugI = new JCheckBoxMenuItem("Debug");
-		// debugI.setSelected(DEBUG_ON);
-		// debugI.setActionCommand(MenuCommand.DEBUG.toString());
-		// debugI.addItemListener(bl);
-		// devM.add(debugI);
-		// mb.add(devM);
+		JButton newB = UiFactory.createToolbarButton(null, "document-new", "TODO", bl);
+		newB.setActionCommand(MenuCommand.NEW.toString());
+		toolbar.add(newB);
+		toolbar.addSeparator();
+		
+		undoB = UiFactory.createToolbarButton(null, "edit-undo", "TODO", bl);
+		undoB.setActionCommand(MenuCommand.UNDO.toString());
+		toolbar.add(undoB);
+		redoB = UiFactory.createToolbarButton(null, "edit-redo", "TODO", bl);
+		redoB.setActionCommand(MenuCommand.REDO.toString());
+		toolbar.add(redoB);
 
-		setJMenuBar(mb);
-	}
-
-	private void initStatusBar() {
+		toolbar.add(Box.createHorizontalGlue());
+		
 		statusL = UiFactory.createLabel(Msg.get("round", 0, Game.ROUNDS));
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridx = 0;
-		c.gridy = 0;
-		c.gridwidth = 3;
-		c.fill = GridBagConstraints.BOTH;
-		mainPane.add(statusL, c);
+		statusL.setFont(Fonts.ACTION_NUMBER);
+		toolbar.add(statusL);
+		toolbar.addSeparator(new Dimension(2, 0));
+		
+		getContentPane().add(toolbar, BorderLayout.PAGE_START);
 	}
 
 	private void initPlayerBoard(PlayerColor color, int x) {
@@ -132,7 +130,6 @@ public class Board extends JFrame {
 
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = x;
-		c.gridy = 1;
 		c.weightx = 1.0;
 		c.weighty = 1.0;
 		c.fill = GridBagConstraints.BOTH;
@@ -141,11 +138,10 @@ public class Board extends JFrame {
 		player.addObserver(actionBoard);
 	}
 
-	private void initActionsBoard(TurnUndoManager undoManager) {
-		actionBoard = new ActionBoard(game.getActions(), ap, game.getSubmitListener(), undoManager);
+	private void initActionsBoard() {
+		actionBoard = new ActionBoard(game.getActions(), ap, game.getSubmitListener());
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 1;
-		c.gridy = 1;
 		c.ipadx = 5;
 		c.ipady = 5;
 		c.fill = GridBagConstraints.BOTH;
@@ -157,7 +153,7 @@ public class Board extends JFrame {
 		debugPanel = new DebugPanel(players);
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
-		c.gridy = 2;
+		c.gridy = 1;
 		c.gridwidth = 3;
 		c.fill = GridBagConstraints.BOTH;
 		mainPane.add(debugPanel, c);
@@ -173,7 +169,19 @@ public class Board extends JFrame {
 			statusL.setText(Msg.get("round", roundNo, Game.ROUNDS));
 		}
 		actionBoard.updateActions();
-		actionBoard.refreshUndoRedo();
+		refreshUndoRedo();
+	}
+	
+	public void refreshUndoRedo() {
+		// refresh undo
+		undoB.setText(undoManager.getUndoPresentationName());
+		undoB.setToolTipText(undoManager.getUndoPresentationName());
+		undoB.setEnabled(undoManager.canUndo());
+
+		// refresh redo
+		redoB.setText(undoManager.getRedoPresentationName());
+		redoB.setToolTipText(undoManager.getUndoPresentationName());
+		redoB.setEnabled(undoManager.canRedo());
 	}
 
 	public void startRound(int roundNo) {
@@ -223,14 +231,14 @@ public class Board extends JFrame {
 	}
 
 	private static enum MenuCommand {
-		NEW, EXIT;
+		NEW, EXIT, UNDO, REDO;
 	}
 
-	private static class MenuListener implements ActionListener, ItemListener {
+	private class ToolListener implements ActionListener, ItemListener {
 
 		private final Board board;
 
-		public MenuListener(Board board) {
+		public ToolListener(Board board) {
 			this.board = board;
 		}
 
@@ -242,6 +250,12 @@ public class Board extends JFrame {
 						|| UiFactory.showQuestionDialog(Msg.get("restartGame"), Msg.get("gameInProgress"))) {
 					board.game.start();
 				}
+				break;
+			case UNDO:
+				board.undoManager.undo();
+				break;
+			case REDO:
+				board.undoManager.redo();
 				break;
 			case EXIT:
 				board.endGame();
@@ -264,7 +278,7 @@ public class Board extends JFrame {
 
 	private class UndoButtonUpdater implements UndoableEditListener {
 		public void undoableEditHappened(UndoableEditEvent evt) {
-			actionBoard.refreshUndoRedo();
+			refreshUndoRedo();
 		}
 	}
 

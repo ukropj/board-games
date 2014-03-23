@@ -2,7 +2,6 @@ package com.dill.agricola.actions.farm;
 
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoableEdit;
 
 import com.dill.agricola.GeneralSupply;
 import com.dill.agricola.GeneralSupply.Supplyable;
@@ -11,6 +10,7 @@ import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Material;
 import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.undo.SimpleEdit;
+import com.dill.agricola.undo.UndoableFarmEdit;
 
 public class Troughs extends PurchaseAction {
 
@@ -34,7 +34,7 @@ public class Troughs extends PurchaseAction {
 		return GeneralSupply.getLeft(Supplyable.TROUGH) > 0;
 	}
 
-	protected UndoableEdit postActivate() {
+	protected UndoableFarmEdit postActivate() {
 		GeneralSupply.useTrough(true);
 		return new UseTrough();
 	}

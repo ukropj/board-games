@@ -221,10 +221,20 @@ public class UiFactory {
 		}
 		pane.setOptions(buttons);
 		JDialog dialog = pane.createDialog(title);
-//		dialog.setUndecorated(true);
 		dialog.setVisible(true);
 		Object retVal = pane.getValue();
 		return retVal == null ? JOptionPane.CLOSED_OPTION : (int) retVal;
+	}
+	
+	public static JButton createToolbarButton(String label, String iconName, String toolTip, ActionListener listener) {
+		JButton b = new JButton(label);
+//		b.setMargin(new Insets(1,1,1,1));
+		b.setToolTipText(toolTip);
+		if (iconName != null) {
+			b.setIcon(new ImageIcon(Images.createImage("icons/small/" + iconName)));
+		}
+		b.addActionListener(listener);
+		return b;
 	}
 
 }

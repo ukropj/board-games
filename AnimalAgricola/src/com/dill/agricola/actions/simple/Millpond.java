@@ -2,7 +2,6 @@ package com.dill.agricola.actions.simple;
 
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoableEdit;
 
 import com.dill.agricola.common.Animals;
 import com.dill.agricola.common.Materials;
@@ -11,6 +10,7 @@ import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.Material;
 import com.dill.agricola.undo.SimpleEdit;
+import com.dill.agricola.undo.UndoableFarmEdit;
 
 public class Millpond extends AnimalAction {
 
@@ -30,10 +30,10 @@ public class Millpond extends AnimalAction {
 		setChanged();
 	}
 
-	public UndoableEdit init() {
-		UndoableEdit initEdit = isUsed() ? new ActionInit(user) : null;
+	public UndoableFarmEdit init() {
+		UndoableFarmEdit initEdit = isUsed() ? new ActionInit(user) : null;
 		user = null;
-		UndoableEdit edit;
+		UndoableFarmEdit edit;
 		if (materials.isEmpty()) {
 			materials.add(REFILL);
 			edit = new RefillMaterials(REFILL);
@@ -49,16 +49,15 @@ public class Millpond extends AnimalAction {
 		return false; // TODO animals.isEmpty();
 	}
 
-	public boolean canDo(Player player, int doneSoFar) {
+	public boolean canDo(Player player) {
 		return !materials.isEmpty() || !animals.isEmpty();
 	}
 
-	public UndoableEdit doo(Player player, int doneSoFar) {
-		if (canDo(player, doneSoFar)) {
-			UndoableEdit edit = joinEdits(
+	public UndoableFarmEdit doo(Player player) {
+		if (canDo(player)) {
+			UndoableFarmEdit edit = joinEdits(
 					new TakeAnimals(player, new Animals(animals)),
 					new TakeMaterials(player, new Materials(materials)));
-
 			player.purchaseAnimals(animals);
 			player.addMaterial(materials);
 			animals.clear();

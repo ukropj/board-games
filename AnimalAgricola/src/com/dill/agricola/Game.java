@@ -390,6 +390,10 @@ public class Game {
 			ap.setPlayer(null);
 			board.endRound();
 		}
+		
+		public boolean isAnimalEdit() {
+			return Bag.sumSize(newAnimals) > 0;
+		}
 	}
 	
 	private class BreedingDone extends SimpleEdit {

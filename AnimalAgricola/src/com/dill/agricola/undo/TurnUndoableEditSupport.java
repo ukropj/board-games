@@ -17,7 +17,12 @@ public class TurnUndoableEditSupport extends UndoableEditSupport {
         if (updateLevel == 0) {
             _postEdit(e);
         } else {
-            compoundEdit.addEdit(e);
+        	if (compoundEdit.isEmpty() && compoundEdit.addEdit(e)) {
+        		System.out.println("# Start: " + compoundEdit.getPresentationName());
+    			_postEdit(compoundEdit);
+        	} else {
+        		compoundEdit.addEdit(e);        		
+        	}
         }
     }
 	
@@ -31,8 +36,6 @@ public class TurnUndoableEditSupport extends UndoableEditSupport {
 		}
 		if (updateLevel == 0) {
 			compoundEdit = createCompoundEdit(currentPlayer, actionType);
-			System.out.println("# Start: " + compoundEdit.getPresentationName());
-			_postEdit(compoundEdit);
 		}
 		updateLevel++;
 	}
@@ -45,7 +48,9 @@ public class TurnUndoableEditSupport extends UndoableEditSupport {
 		if (updateLevel > 0) {
 			updateLevel = 0;
 			compoundEdit.end();
-			System.out.println("# End: " + compoundEdit.getPresentationName());
+			if (!compoundEdit.isEmpty()) {
+				System.out.println("# End: " + compoundEdit.getPresentationName());				
+			}
 			compoundEdit = null;
 		}
 	}

@@ -34,12 +34,27 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 		hasBeenDone = true;
 		alive = true;
 	}
+	
+	public boolean isEmpty() {
+		return edits.size() == 0;
+	}
 
 	public boolean isFarmEdit() {
 		if (!edits.isEmpty()) {
 			// compound edit is farm edit only when first child is // TODO rethink..
 			UndoableFarmEdit edit = (UndoableFarmEdit) edits.firstElement();
 			return edit.isFarmEdit();
+		}
+		return false;
+	}
+
+	public boolean isAnimalEdit() {
+		int i = edits.size();
+		while (i-- > 0) {
+			UndoableFarmEdit e = (UndoableFarmEdit) edits.elementAt(i);
+			if (e.isAnimalEdit()) {
+				return true;
+			}
 		}
 		return false;
 	}

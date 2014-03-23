@@ -10,6 +10,8 @@ public interface UndoableFarmEdit extends UndoableEdit {
 
 	public boolean isFarmEdit();
 	
+	public boolean isAnimalEdit();
+	
 	public boolean matchesFarmAction(PlayerColor player, DirPoint pos, Purchasable thing);
 	
 }

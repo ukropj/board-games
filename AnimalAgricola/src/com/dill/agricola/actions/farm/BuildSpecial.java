@@ -10,7 +10,6 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoableEdit;
 
 import com.dill.agricola.GeneralSupply;
 import com.dill.agricola.GeneralSupply.Supplyable;
@@ -27,6 +26,7 @@ import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.undo.SimpleEdit;
+import com.dill.agricola.undo.UndoableFarmEdit;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
 import com.dill.agricola.view.utils.UiFactory;
@@ -51,7 +51,7 @@ public class BuildSpecial extends BuildAction {
 		super(counter++ % 2 == 0 ? ActionType.SPECIAL : ActionType.SPECIAL2);
 	}
 
-	public UndoableEdit init() {
+	public UndoableFarmEdit init() {
 		toBuild = null;
 		toGive = null;
 		return super.init();
@@ -69,11 +69,11 @@ public class BuildSpecial extends BuildAction {
 		return  GeneralSupply.getSpecialBuilding(type);
 	}
 	
-	public boolean canDo(Player player, int doneSoFar) {
+	public boolean canDo(Player player) {
 		return isAnyLeft(); // currently can perform even if player cannot purchase anything
 	}
 
-	public boolean canDo(Player player, DirPoint pos, int doneSoFar) {
+	public boolean canDoOnFarm(Player player, DirPoint pos, int doneSoFar) {
 		// there does not need to be "any left", since building was already chosen
 		return doneSoFar < 1 && toBuild != null && canPurchase(player, toBuild, pos);
 	}
@@ -128,8 +128,8 @@ public class BuildSpecial extends BuildAction {
 		return result != JOptionPane.CLOSED_OPTION ? animalRewards[result] : animalRewards[0];
 	}
 
-	public UndoableEdit doo(Player player, int doneSoFar) {
-		if (canDo(player, doneSoFar)) {
+	public UndoableFarmEdit doo(Player player) {
+		if (canDo(player)) {
 			toBuild = chooseBuilding(player);
 			if (toBuild != null) {
 				player.setActiveType(thing);
@@ -139,17 +139,17 @@ public class BuildSpecial extends BuildAction {
 		return null;
 	}
 	
-	public UndoableEdit doo(Player player, DirPoint pos, int doneSoFar) {
+	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos, int doneSoFar) {
 		if (toBuild == BuildingType.OPEN_STABLES) {
 			osCostNo = chooseOpenStablesCost(player);
 			if (osCostNo == JOptionPane.CLOSED_OPTION) {
 				return null;
 			}
 		}
-		return super.doo(player, pos, doneSoFar);
+		return super.doOnFarm(player, pos, doneSoFar);
 	}
 	
-	protected UndoableEdit postActivate(Player player, Building b) {
+	protected UndoableFarmEdit postActivate(Player player, Building b) {
 		GeneralSupply.useBuilding(toBuild, true);
 		toGive = chooseReward(b);
 		if (toGive != null) {
@@ -203,5 +203,8 @@ public class BuildSpecial extends BuildAction {
 			setChanged();
 		}
 
+		public boolean isAnimalEdit() {
+			return takenAnimals != null && takenAnimals.size() > 0;
+		}
 	}
 }

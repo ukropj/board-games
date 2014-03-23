@@ -1,5 +1,6 @@
 package com.dill.agricola.view;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -33,6 +34,8 @@ public class PlayerBoard extends JPanel implements Observer {
 	private final Farm farm;
 	private final ActionPerformer ap;
 
+	private JPanel mainPanel;
+
 	private JLabel playerLabel;
 	private FarmPanel farmPanel;
 	private JLabel firstLabel;
@@ -45,8 +48,12 @@ public class PlayerBoard extends JPanel implements Observer {
 		this.farm = player.getFarm();
 		this.ap = ap;
 		player.addObserver(this);
-
-		setLayout(new GridBagLayout());
+		
+		setLayout(new BorderLayout());
+		
+		mainPanel = new JPanel();
+		mainPanel.setLayout(new GridBagLayout());
+		add(mainPanel, BorderLayout.CENTER);
 
 		buildTopPanel();
 		buildFarmPanel();
@@ -65,16 +72,7 @@ public class PlayerBoard extends JPanel implements Observer {
 		playerLabel.setFont(playerLabel.getFont().deriveFont(20.0f));
 		playerLabel.setOpaque(true);
 		playerLabel.setForeground(color.getRealColor());
-
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridy = 0;
-		c.ipady = 10;
-		c.insets = new Insets(0, 0, 5, 0);
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.anchor = GridBagConstraints.PAGE_START;
-		c.gridwidth = 3;
-		c.weightx = 1.0;
-		add(playerLabel, c);
+		add(playerLabel, BorderLayout.NORTH);
 	}
 
 	private void buildFarmPanel() {
@@ -86,7 +84,7 @@ public class PlayerBoard extends JPanel implements Observer {
 		c.weightx = 1.0;
 		c.insets = new Insets(0, 0, 10, 0);
 		c.anchor = GridBagConstraints.PAGE_START;
-		add(farmPanel, c);
+		mainPanel.add(farmPanel, c);
 	}
 
 	private void buildFirstPanel() {
@@ -104,7 +102,7 @@ public class PlayerBoard extends JPanel implements Observer {
 		c.fill = GridBagConstraints.VERTICAL;
 //		first.setOpaque(true);
 //		first.setBackground(Color.GREEN);
-		add(first, c);
+		mainPanel.add(first, c);
 	}
 
 	private void buildWorkerPanel() {
@@ -124,7 +122,7 @@ public class PlayerBoard extends JPanel implements Observer {
 		c.fill = GridBagConstraints.VERTICAL;
 //		workers.setOpaque(true);
 //		workers.setBackground(Color.BLUE);
-		add(workers, c);
+		mainPanel.add(workers, c);
 	}
 
 	private void buildMaterialPanel() {
@@ -140,7 +138,7 @@ public class PlayerBoard extends JPanel implements Observer {
 		c.gridx = 1;
 		c.gridy = 2;
 		c.fill = GridBagConstraints.BOTH;
-		add(materials, c);
+		mainPanel.add(materials, c);
 	}
 
 	private void buildAnimalPanel() {
@@ -156,9 +154,7 @@ public class PlayerBoard extends JPanel implements Observer {
 		c.gridy = 3;
 		c.fill = GridBagConstraints.BOTH;
 		c.weighty = 1.0;
-//		animals.setOpaque(true);
-//		animals.setBackground(Color.RED);
-		add(animals, c);
+		mainPanel.add(animals, c);
 	}
 
 	public void setActive(boolean active) {

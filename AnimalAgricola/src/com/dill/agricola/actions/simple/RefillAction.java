@@ -2,7 +2,6 @@ package com.dill.agricola.actions.simple;
 
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoableEdit;
 
 import com.dill.agricola.actions.AbstractAction;
 import com.dill.agricola.common.DirPoint;
@@ -10,6 +9,7 @@ import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.undo.SimpleEdit;
+import com.dill.agricola.undo.UndoableFarmEdit;
 
 public abstract class RefillAction extends AbstractAction {
 
@@ -28,13 +28,13 @@ public abstract class RefillAction extends AbstractAction {
 		setChanged();
 	}
 
-	public UndoableEdit init() {
+	public UndoableFarmEdit init() {
 		materials.add(refill);
 		setChanged();
 		return joinEdits(super.init(), new RefillMaterials(refill));
 	}
 
-	public boolean canDo(Player player, int doneSoFar) {
+	public boolean canDo(Player player) {
 		return !materials.isEmpty();
 	}
 	
@@ -50,9 +50,9 @@ public abstract class RefillAction extends AbstractAction {
 		return true;
 	}
 
-	public UndoableEdit doo(Player player, int doneSoFar) {
-		if (canDo(player, doneSoFar)) {
-			UndoableEdit edit = new TakeMaterials(player, new Materials(materials));
+	public UndoableFarmEdit doo(Player player) {
+		if (canDo(player)) {
+			UndoableFarmEdit edit = new TakeMaterials(player, new Materials(materials));
 			player.addMaterial(materials);
 			materials.clear();
 			setChanged();
@@ -65,19 +65,19 @@ public abstract class RefillAction extends AbstractAction {
 		return materials;
 	}
 
-	public boolean canDo(Player player, DirPoint pos, int count) {
+	public boolean canDoOnFarm(Player player, DirPoint pos, int count) {
 		return false;
 	}
 
-	public boolean canUndo(Player player, DirPoint pos, int count) {
+	public boolean canUndoOnFarm(Player player, DirPoint pos, int count) {
 		return false;
 	}
 
-	public UndoableEdit doo(Player player, DirPoint pos, int count) {
+	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos, int count) {
 		return null;
 	}
 
-	public boolean undo(Player player, DirPoint pos, int count) {
+	public boolean undoOnFarm(Player player, DirPoint pos, int count) {
 		return false;
 	}
 

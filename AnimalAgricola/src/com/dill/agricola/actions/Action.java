@@ -8,6 +8,7 @@ import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.PlayerColor;
+import com.dill.agricola.undo.UndoableFarmEdit;
 
 public interface Action {
 
@@ -31,17 +32,19 @@ public interface Action {
 
 	int getMinimalCount();
 	
-	boolean canDo(Player player, int count);
+	boolean canDo(Player player);
 
-	UndoableEdit doo(Player player, int count);
+	UndoableFarmEdit doo(Player player);
 
-	boolean canDo(Player player, DirPoint pos, int count);
+	boolean canDoOnFarm(Player player, int doneSoFar);
 
-	UndoableEdit doo(Player player, DirPoint pos, int count);
+	boolean canDoOnFarm(Player player, DirPoint pos, int doneSoFar);
 
-	boolean canUndo(Player player, DirPoint pos, int count);
+	UndoableFarmEdit doOnFarm(Player player, DirPoint pos, int doneSoFar);
 
-	boolean undo(Player player, DirPoint pos, int count);
+	boolean canUndoOnFarm(Player player, DirPoint pos, int doneSoFar);
+
+	boolean undoOnFarm(Player player, DirPoint pos, int doneSoFar);
 
 	
 	Materials getAccumulatedMaterials();
