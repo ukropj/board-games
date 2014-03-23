@@ -89,7 +89,7 @@ public class Game {
 		if (Main.DEBUG) {
 			board.buildDebugPanel(players);
 		} else {
-			board.setExtendedState(JFrame.MAXIMIZED_BOTH);			
+			board.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		}
 		board.pack();
 		board.setLocationRelativeTo(null);
@@ -115,12 +115,23 @@ public class Game {
 		return new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				if (workPhase) {
-					// turn end
-					endTurn();
-				} else {
-					// round end
-					endRound();
+				ActionCommand cmd = ActionCommand.valueOf(e.getActionCommand());
+				switch (cmd) {
+				case SUBMIT : 
+					if (workPhase) {
+						// turn end
+						endTurn();
+					} else {
+						// round end
+						endRound();
+					}
+					break;
+				case CANCEL :
+					if (workPhase) {
+						undoManager.undo();
+					}
+				default:
+					break;
 				}
 			}
 
@@ -265,7 +276,7 @@ public class Game {
 			p.notifyObservers(ChangeType.TURN_END);
 		}
 		if (Bag.sumSize(lostAnimals) > 0) {
-			ap.postEdit(new ReleaseAnimals(lostAnimals));			
+			ap.postEdit(new ReleaseAnimals(lostAnimals));
 		}
 	}
 
@@ -284,6 +295,10 @@ public class Game {
 				new BuildStalls(), new BuildStables(),
 				new BuildSpecial(), new BuildSpecial()//
 				));
+	}
+
+	public static enum ActionCommand {
+		NEW, EXIT, UNDO, REDO, SUBMIT, CANCEL;
 	}
 
 	private class StartRound extends SimpleEdit {
@@ -356,10 +371,10 @@ public class Game {
 			switchCurrentPlayer();
 		}
 	}
-	
+
 	private class EndRound extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
-		
+
 		private final Player curPlayer;
 		private final Animals[] newAnimals;
 
@@ -379,7 +394,7 @@ public class Game {
 			ap.setPlayer(curPlayer);
 			board.startTurn(curPlayer);
 		}
-		
+
 		public void redo() throws CannotRedoException {
 			super.redo();
 			workPhase = false;
@@ -390,46 +405,46 @@ public class Game {
 			ap.setPlayer(null);
 			board.endRound();
 		}
-		
+
 		public boolean isAnimalEdit() {
 			return Bag.sumSize(newAnimals) > 0;
 		}
 	}
-	
+
 	private class BreedingDone extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
-		
+
 		public BreedingDone() {
 			super(true);
 		}
-		
+
 		public void undo() throws CannotUndoException {
 			super.undo();
 			breeding = true;
 		}
-		
+
 		public void redo() throws CannotRedoException {
 			super.redo();
 			breeding = false;
 		}
 	}
-	
+
 	private class ReleaseAnimals extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
-		
+
 		private final Animals[] lostAnimals;
-		
+
 		public ReleaseAnimals(Animals[] lostAnimals) {
 			this.lostAnimals = lostAnimals;
 		}
-		
+
 		public void undo() throws CannotUndoException {
 			super.undo();
 			for (Player p : players) {
 				p.purchaseAnimals(lostAnimals[p.getColor().ordinal()]);
 			}
 		}
-		
+
 		public void redo() throws CannotRedoException {
 			super.redo();
 			for (Player p : players) {
@@ -437,14 +452,14 @@ public class Game {
 			}
 		}
 	}
-	
+
 	private class EndGame extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
 
 		public EndGame() {
 			super(true);
 		}
-		
+
 		public void undo() throws CannotUndoException {
 			super.undo();
 			ended = false;

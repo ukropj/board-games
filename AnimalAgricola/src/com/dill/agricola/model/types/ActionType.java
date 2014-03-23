@@ -1,23 +1,25 @@
 package com.dill.agricola.model.types;
 
+import com.dill.agricola.support.Msg;
+
 public enum ActionType {
-	STARTING_ONE_WOOD("Start player and wood"),
-	THREE_WOOD("Wood"),
-	TWO_STONE("Stone"),
-	ONE_STONE("Stone"),
-	BUILDING_MATERIAL("Wood/Stone/Reed"),
-	EXPAND("Expand"),
-	FENCES("Borders"),
-	WALLS("Borders"),
-	STALLS("Stall"),
-	STABLES("Stables"),
-	SPECIAL("Special"),
-	SPECIAL2("Special"),
-	TROUGHS("Troughs"),
-	MILLPOND("Reed/Sheep"),
-	PIG_AND_SHEEP("Pig/Sheep"),
-	COW_AND_PIGS("Cow/Pigs"),
-	HORSE_AND_SHEEP("Horse/Sheep");
+	STARTING_ONE_WOOD(Msg.get("startWoodAct")),
+	THREE_WOOD(Msg.get("woodAct")),
+	TWO_STONE(Msg.get("stoneAct")),
+	ONE_STONE(Msg.get("stoneAct")),
+	BUILDING_MATERIAL(Msg.get("materialAct")),
+	EXPAND(Msg.get("expandAct")),
+	FENCES(Msg.get("bordersAct")),
+	WALLS(Msg.get("bordersAct")),
+	TROUGHS(Msg.get("troughsAct")),
+	STALLS(Msg.get("stallAct")),
+	STABLES(Msg.get("stablesAct")),
+	SPECIAL(Msg.get("specialAct")),
+	SPECIAL2(Msg.get("specialAct")),
+	MILLPOND(Msg.get("millpondAct")),
+	PIG_AND_SHEEP(Msg.get("pigSheepAct")),
+	COW_AND_PIGS(Msg.get("cowPigsAct")),
+	HORSE_AND_SHEEP(Msg.get("horseSheepAct"));
 	
 	public final String name;
 	

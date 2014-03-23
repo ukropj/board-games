@@ -44,10 +44,6 @@ public abstract class AnimalAction extends AbstractAction {
 		return joinEdits(super.init(), new RefillAnimals(new Animals(added)));
 	}
 
-	public boolean isQuickAction() {
-		return false;
-	}
-
 	public boolean isPurchaseAction() {
 		return false;
 	}

@@ -38,10 +38,6 @@ public abstract class RefillAction extends AbstractAction {
 		return !materials.isEmpty();
 	}
 	
-	public boolean isQuickAction() {
-		return true;
-	}
-	
 	public boolean isPurchaseAction() {
 		return false;
 	}

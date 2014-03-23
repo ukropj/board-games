@@ -37,6 +37,7 @@ import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Material;
 import com.dill.agricola.model.types.Purchasable;
+import com.dill.agricola.support.Fonts;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
@@ -189,7 +190,9 @@ public class ActionPanelFactory {
 			action.addChangeListener(new BuildingChangeListener(tmpBuildingSupplyP));
 			parent.add(tmpBuildingSupplyP, c);
 
-			actionButton.add(UiFactory.createLabel(Msg.get("specBuildLabel")));
+			JLabel spec1 = UiFactory.createLabel(Msg.get("specBuildLabel"));
+			spec1.setFont(Fonts.ACTION_TEXT_BIG);
+			actionButton.add(spec1);
 			if (tmpStallSupplyL != null) {
 				action.addChangeListener(new SupplyChangeListener(Supplyable.STALL, tmpStallSupplyL));
 			}
@@ -204,7 +207,9 @@ public class ActionPanelFactory {
 			if (tmpStallSupplyL != null) {
 				action.addChangeListener(new SupplyChangeListener(Supplyable.STALL, tmpStallSupplyL));
 			}
-			actionButton.add(UiFactory.createLabel(Msg.get("specBuildLabel")));
+			JLabel spec2 = UiFactory.createLabel(Msg.get("specBuildLabel"));
+			spec2.setFont(Fonts.ACTION_TEXT_BIG);
+			actionButton.add(spec2);
 			c.weighty = 0.5;
 			c.gridx = 4;
 			c.gridy = 9;

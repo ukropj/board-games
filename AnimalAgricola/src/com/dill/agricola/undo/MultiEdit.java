@@ -105,7 +105,7 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 
 	public String getPresentationName() {
 		return !isSignificant() ? "Cleanup" : currentPlayer != null
-				? "[" + currentPlayer.toString().substring(0, 1) + "] " + actionType.name
+				? actionType.name
 				: super.getPresentationName();
 	}
 

@@ -5,10 +5,13 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -21,8 +24,10 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import com.dill.agricola.Game.ActionCommand;
 import com.dill.agricola.actions.ActionPerformer;
 import com.dill.agricola.common.Animals;
 import com.dill.agricola.common.Dir;
@@ -38,6 +43,7 @@ import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.support.Fonts;
+import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
 
@@ -95,40 +101,7 @@ public class FarmPanel extends JPanel {
 					intersect(new Area(new Polygon(new int[] { S + 1, S / 2, S + 1 }, new int[] { 0, S / 2, S }, 3)), animalArea),
 					intersect(new Area(new Polygon(new int[] { 0, S / 2, 0 }, new int[] { 0, S / 2, S + 1 }, 3)), animalArea)
 			}
-			/*new Rectangle[] {
-					new Rectangle(S / 2 - AR / 2, S / 2 - AR / 2, AR, AR) },
-			new Rectangle[] {
-					new Rectangle(S / 2, S / 3 - M, AR, AR),
-					new Rectangle(S / 3 - M, S / 2, AR, AR) },
-			new Rectangle[] {
-					new Rectangle(S / 2 - M - AR, S / 2 - AR, AR, AR),
-					new Rectangle(S / 2 + M, S / 2 - AR, AR, AR),
-					new Rectangle(S / 2 - AR / 2, S / 2 + M, AR, AR) },
-			new Rectangle[] {
-					new Rectangle(S / 2 - AR/2, S / 2 - 3*AR/2, AR, AR),
-					new Rectangle(S / 2 - AR/2, S / 2 + AR/2, AR, AR),
-					new Rectangle(S / 2 + AR/2, S / 2 - AR/2, AR, AR),
-					new Rectangle(S / 2 - 3*AR/2, S / 2 - AR/2, AR, AR) }*/
-
-			/*new Rectangle[] {
-					new Rectangle(S / 2 - AR / 2, S / 3 - M, AR, AR),
-					new Rectangle(S / 2 - AR / 2, S / 2, AR, AR) },
-			new Rectangle[] {
-					new Rectangle(S / 3 - M, S / 3 - M, AR, AR),
-					new Rectangle(S / 3 - M, S / 2, AR, AR),
-					new Rectangle(S / 2, S / 2 - AR / 2, AR, AR) },
-			new Rectangle[] {
-					new Rectangle(S / 3 - M, S / 3 - M, AR, AR),
-					new Rectangle(S / 3 - M, S / 2, AR, AR),
-					new Rectangle(S / 2, S / 3 - M, AR, AR),
-					new Rectangle(S / 2, S / 2, AR, AR) }*/
 	};
-	// private final static Area[] animalRects = new Area[] {
-	// intersect(new Area(new Rectangle(S / 3 - M, S / 3 - M, AR, AR)), animalArea),
-	// intersect(new Area(new Rectangle(S / 2, S / 3 - M, AR, AR)), animalArea),
-	// intersect(new Area(new Rectangle(S / 3 - M, S / 2, AR, AR)), animalArea),
-	// intersect(new Area(new Rectangle(S / 2, S / 2, AR, AR)), animalArea)
-	// };
 
 	private final static Polygon troughShape = new Polygon(
 			new int[] { S - 6 * M, S - 6 * M, S - 4 * M, S - 2 * M, S - 2 * M },
@@ -163,23 +136,84 @@ public class FarmPanel extends JPanel {
 	public final static Stroke MOVABLE_STROKE = new BasicStroke(1.0f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL, 10.0f, new float[] { 2, 2 }, 1.0f);
 	public final static Color PASTURE_COLOR = new Color(153, 178, 97);
 
-	private final ActionPerformer ap;
 	private final Player player;
 	private final Farm farm;
 	private boolean active;
+	private boolean breeding;
+	private final ActionPerformer ap;
+	private final ActionListener submitListener;
 
-	public FarmPanel(Player player, ActionPerformer ap) {
+	private JButton finishBtn;
+	private JButton cancelBtn;
+
+
+	public FarmPanel(Player player, ActionPerformer ap, ActionListener submitListener) {
 		this.player = player;
 		this.farm = player.getFarm();
 		this.ap = ap;
+		this.submitListener = submitListener;
 
+		setLayout(null);
 		SpaceListener mouseListener = new SpaceListener(farm);
 		addMouseListener(mouseListener);
 		addMouseWheelListener(mouseListener);
+
+		initButtons();
 	}
 
-	public void setActive(boolean active) {
+	private void initButtons() {
+		finishBtn = new JButton(AgriImages.getYesIcon());
+		finishBtn.setToolTipText(Msg.get("finishActionTip"));
+		finishBtn.setMargin(new Insets(0, 0, 0, 0));
+		finishBtn.setBounds(X1 + farm.getWidth() * S + 3*M/2, Y1 + farm.getHeight() * S - S / 3 - M, S / 3, S / 3);
+		finishBtn.setActionCommand(ActionCommand.SUBMIT.toString());
+		finishBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (ap.hasAction()) {
+					if (ap.finishAction()) {
+						submitListener.actionPerformed(e);						
+					}
+				} else {
+					submitListener.actionPerformed(e);
+				}
+			}
+		});
+		add(finishBtn);
+		
+		cancelBtn = new JButton(AgriImages.getNoIcon());
+		cancelBtn.setToolTipText(Msg.get("cancelBtnTip"));
+		cancelBtn.setMargin(new Insets(0, 0, 0, 0));
+		cancelBtn.setBounds(X1 + farm.getWidth() * S + 3*M/2, Y1 + farm.getHeight() * S, S / 3, S / 3);
+		cancelBtn.setActionCommand(ActionCommand.CANCEL.toString());
+		cancelBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (ap.hasAction()) {
+					submitListener.actionPerformed(e);
+				}
+			}
+		});
+		add(cancelBtn);
+	}
+	
+	public void updateButtons() {
+		finishBtn.setLocation(X1 + farm.getWidth() * S + 3*M/2, Y1 + farm.getHeight() * S - S / 3 - M);
+		cancelBtn.setLocation(X1 + farm.getWidth() * S + 3*M/2, Y1 + farm.getHeight() * S);
+		
+		if (active && (breeding || player.equals(ap.getPlayer()) && ap.hasAction())) {
+			finishBtn.setVisible(true);
+			cancelBtn.setVisible(true);
+			
+			finishBtn.setEnabled(breeding || ap.canFinish());
+			cancelBtn.setEnabled(ap.hasAction() && !ap.isFinished());
+		} else {
+			finishBtn.setVisible(false);
+			cancelBtn.setVisible(false);
+		}
+	}
+
+	public void setActive(boolean active, boolean breeding) {
 		this.active = active;
+		this.breeding = breeding;
 	}
 
 	private static Area intersect(Area area, Area intersector) {
@@ -488,9 +522,10 @@ public class FarmPanel extends JPanel {
 		Animals loose = farm.getLooseAnimals();
 		int total = loose.size();
 		if (total > 0) {
-			int maxWidth = farm.getWidth() * S;
-			int l = Math.min(S / 8, maxWidth / (total + 3));
-			int x = X1 + (l * (total + 3));
+			total += 3;
+			float maxWidth = 1.0f * farm.getWidth() * S - S/2;
+			float l = Math.min(S / 8.0f, maxWidth / total);
+			float x = X1 + l * total;
 			int y = Y1 + farm.getHeight() * S + S / 2 - 2 * M;
 			int j = 0;
 			for (Animal type : Animal.values()) {
@@ -498,7 +533,7 @@ public class FarmPanel extends JPanel {
 				if (count > 0) {
 					BufferedImage img = AgriImages.getAnimalImage(type, ImgSize.BIG, 1);
 					for (int i = 0; i < count; i++) {
-						g.drawImage(img, x - j * l, y - img.getHeight(), img.getWidth(), img.getHeight(), null);
+						g.drawImage(img, (int)(x - j * l), y - img.getHeight(), img.getWidth(), img.getHeight(), null);
 						j++;
 					}
 					j++;
@@ -506,7 +541,7 @@ public class FarmPanel extends JPanel {
 			}
 
 			BufferedImage arrowImg = AgriImages.getArrowImage(Dir.E, true, ImgSize.BIG);
-			g.drawImage(arrowImg, 2 * M, y - M - arrowImg.getHeight(), arrowImg.getWidth(), arrowImg.getHeight(), null);
+			g.drawImage(arrowImg, M, y - M - arrowImg.getHeight(), arrowImg.getWidth(), arrowImg.getHeight(), null);
 		}
 	}
 
@@ -590,10 +625,10 @@ public class FarmPanel extends JPanel {
 
 			List<Animal> availableAnimals = null;
 
-			boolean done = false;
+			boolean done = false, hadAction = ap.hasAction();
 			Purchasable activeThing = farm.getActiveType();
 
-			if (active && activeThing != null) {
+			if (active && !breeding && activeThing != null) {
 				switch (activeThing) {
 				case EXTENSION:
 					Dir extDir = null;
@@ -615,8 +650,8 @@ public class FarmPanel extends JPanel {
 					Dir fenceDir = null;
 					for (Dir d : Dir.values()) {
 						if (fenceClickRects.get(d).contains(relativeDirPoint)) {
-								fenceDir = d;								
-						break;
+							fenceDir = d;
+							break;
 						}
 					}
 					if (fenceDir != null) {
@@ -665,6 +700,14 @@ public class FarmPanel extends JPanel {
 
 			if (done) {
 				farm.notifyObservers(changeType);
+				if (hadAction && ap.isFinished()) {
+                    ActionEvent evt = new ActionEvent(FarmPanel.this,
+                                        ActionEvent.ACTION_PERFORMED,
+                                        ActionCommand.SUBMIT.toString(),
+                                        e.getWhen(),
+                                        e.getModifiers());
+					submitListener.actionPerformed(evt);
+				}
 			}
 		}
 
@@ -692,5 +735,5 @@ public class FarmPanel extends JPanel {
 		}
 
 	}
-
+	
 }

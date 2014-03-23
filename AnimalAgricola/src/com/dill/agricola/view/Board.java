@@ -28,6 +28,7 @@ import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 
 import com.dill.agricola.Game;
+import com.dill.agricola.Game.ActionCommand;
 import com.dill.agricola.Main;
 import com.dill.agricola.actions.ActionPerformer;
 import com.dill.agricola.model.Player;
@@ -98,31 +99,31 @@ public class Board extends JFrame {
 		toolbar.setFloatable(false);
 		toolbar.setRollover(true);
 
-		JButton newB = UiFactory.createToolbarButton(null, "document-new", "TODO", bl);
-		newB.setActionCommand(MenuCommand.NEW.toString());
+		JButton newB = UiFactory.createToolbarButton(null, "document-new", Msg.get("newGame"), bl);
+		newB.setActionCommand(ActionCommand.NEW.toString());
 		toolbar.add(newB);
 		toolbar.addSeparator();
 		
-		undoB = UiFactory.createToolbarButton(null, "edit-undo", "TODO", bl);
-		undoB.setActionCommand(MenuCommand.UNDO.toString());
+		undoB = UiFactory.createToolbarButton(null, "edit-undo", "", bl);
+		undoB.setActionCommand(ActionCommand.UNDO.toString());
 		toolbar.add(undoB);
-		redoB = UiFactory.createToolbarButton(null, "edit-redo", "TODO", bl);
-		redoB.setActionCommand(MenuCommand.REDO.toString());
+		redoB = UiFactory.createToolbarButton(null, "edit-redo", "", bl);
+		redoB.setActionCommand(ActionCommand.REDO.toString());
 		toolbar.add(redoB);
 
 		toolbar.add(Box.createHorizontalGlue());
 		
 		statusL = UiFactory.createLabel(Msg.get("round", 0, Game.ROUNDS));
-		statusL.setFont(Fonts.ACTION_NUMBER);
+		statusL.setFont(Fonts.TEXT_BIG);
 		toolbar.add(statusL);
-		toolbar.addSeparator(new Dimension(2, 0));
+		toolbar.addSeparator(new Dimension(5, 0));
 		
 		getContentPane().add(toolbar, BorderLayout.PAGE_START);
 	}
 
 	private void initPlayerBoard(PlayerColor color, int x) {
 		Player player = game.getPlayer(color);
-		PlayerBoard playerBoard = new PlayerBoard(player, ap);
+		PlayerBoard playerBoard = new PlayerBoard(player, ap, game.getSubmitListener());
 		playerBoards[color.ordinal()] = playerBoard;
 
 		JScrollPane scrollPane = new JScrollPane(playerBoard);
@@ -135,7 +136,6 @@ public class Board extends JFrame {
 		c.fill = GridBagConstraints.BOTH;
 
 		mainPane.add(scrollPane, c);
-		player.addObserver(actionBoard);
 	}
 
 	private void initActionsBoard() {
@@ -193,8 +193,8 @@ public class Board extends JFrame {
 	}
 
 	public void startTurn(Player currentPlayer) {
-		playerBoards[currentPlayer.getColor().ordinal()].setActive(true);
-		playerBoards[currentPlayer.getColor().other().ordinal()].setActive(false);
+		playerBoards[currentPlayer.getColor().ordinal()].setActive(true, false);
+		playerBoards[currentPlayer.getColor().other().ordinal()].setActive(false, false);
 		updateState(-1);
 		if (Main.DEBUG) {
 			debugPanel.setCurrentPlayer(currentPlayer.getColor());
@@ -202,11 +202,11 @@ public class Board extends JFrame {
 	}
 
 	public void endRound() {
-		playerBoards[0].setActive(true);
-		playerBoards[1].setActive(true);
+		playerBoards[0].setActive(true, true);
+		playerBoards[1].setActive(true, true);
 
 		updateState(-1);
-		actionBoard.enableFinishOnly();
+		actionBoard.disableActions();
 	}
 
 	public void showScoring(Player[] players, PlayerColor initialStartingPlayer) {
@@ -230,10 +230,6 @@ public class Board extends JFrame {
 		}
 	}
 
-	private static enum MenuCommand {
-		NEW, EXIT, UNDO, REDO;
-	}
-
 	private class ToolListener implements ActionListener, ItemListener {
 
 		private final Board board;
@@ -243,7 +239,7 @@ public class Board extends JFrame {
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			MenuCommand command = MenuCommand.valueOf(e.getActionCommand());
+			ActionCommand command = ActionCommand.valueOf(e.getActionCommand());
 			switch (command) {
 			case NEW:
 				if (!board.game.isStarted()
@@ -267,7 +263,7 @@ public class Board extends JFrame {
 
 		public void itemStateChanged(ItemEvent e) {
 			JCheckBoxMenuItem mi = (JCheckBoxMenuItem) e.getItemSelectable();
-			MenuCommand command = MenuCommand.valueOf(mi.getActionCommand());
+			ActionCommand command = ActionCommand.valueOf(mi.getActionCommand());
 			switch (command) {
 			default:
 				break;

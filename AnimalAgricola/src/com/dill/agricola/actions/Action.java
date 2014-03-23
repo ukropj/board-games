@@ -24,8 +24,6 @@ public interface Action {
 	
 	PlayerColor getUser();
 
-	boolean isQuickAction();
-	
 	boolean isPurchaseAction();
 	
 	boolean isResourceAction();

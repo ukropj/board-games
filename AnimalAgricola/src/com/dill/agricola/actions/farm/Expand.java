@@ -39,10 +39,6 @@ public class Expand extends PurchaseAction {
 		return joinEdits(super.init(), new RefillMaterials(REFILL));
 	}
 	
-	public boolean isQuickAction() {
-		return !isPurchaseAction();
-	}
-	
 	public boolean isPurchaseAction() {
 		return hadExp || isAnyLeft();
 	}

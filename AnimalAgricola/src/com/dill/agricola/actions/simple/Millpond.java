@@ -45,10 +45,6 @@ public class Millpond extends AnimalAction {
 		return joinEdits(initEdit, edit);
 	}
 	
-	public boolean isQuickAction() {
-		return false; // TODO animals.isEmpty();
-	}
-
 	public boolean canDo(Player player) {
 		return !materials.isEmpty() || !animals.isEmpty();
 	}

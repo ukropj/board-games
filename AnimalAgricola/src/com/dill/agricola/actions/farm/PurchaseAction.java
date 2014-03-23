@@ -27,10 +27,6 @@ public abstract class PurchaseAction extends AbstractAction {
 		return true;
 	}
 	
-	public boolean isQuickAction() {
-		return false;
-	}
-
 	public boolean isPurchaseAction() {
 		return true;
 	}

@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionListener;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Observable;
@@ -22,6 +23,7 @@ import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.model.types.Material;
 import com.dill.agricola.model.types.PlayerColor;
+import com.dill.agricola.support.Fonts;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
@@ -43,20 +45,20 @@ public class PlayerBoard extends JPanel implements Observer {
 	private final Map<Animal, JLabel> animalSupply = new EnumMap<Animal, JLabel>(Animal.class);
 	private final JLabel[] workerLabels = new JLabel[Player.MAX_WORKERS];
 
-	public PlayerBoard(Player player, ActionPerformer ap) {
+	public PlayerBoard(Player player, ActionPerformer ap, ActionListener submitListener) {
 		this.player = player;
 		this.farm = player.getFarm();
 		this.ap = ap;
 		player.addObserver(this);
-		
+
 		setLayout(new BorderLayout());
-		
+
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new GridBagLayout());
 		add(mainPanel, BorderLayout.CENTER);
 
 		buildTopPanel();
-		buildFarmPanel();
+		buildFarmPanel(submitListener);
 		buildFirstPanel();
 		buildMaterialPanel();
 		buildAnimalPanel();
@@ -69,14 +71,14 @@ public class PlayerBoard extends JPanel implements Observer {
 	private void buildTopPanel() {
 		PlayerColor color = player.getColor();
 		playerLabel = UiFactory.createLabel(Msg.get("player", Msg.get(color.toString().toLowerCase())));
-		playerLabel.setFont(playerLabel.getFont().deriveFont(20.0f));
+		playerLabel.setFont(Fonts.TEXT_BIG);
 		playerLabel.setOpaque(true);
 		playerLabel.setForeground(color.getRealColor());
 		add(playerLabel, BorderLayout.NORTH);
 	}
 
-	private void buildFarmPanel() {
-		farmPanel = new FarmPanel(player, ap);
+	private void buildFarmPanel(ActionListener submitListener) {
+		farmPanel = new FarmPanel(player, ap, submitListener);
 
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridy = 1;
@@ -120,8 +122,6 @@ public class PlayerBoard extends JPanel implements Observer {
 		c.weightx = c.weighty = 1.0;
 		c.anchor = GridBagConstraints.LINE_START;
 		c.fill = GridBagConstraints.VERTICAL;
-//		workers.setOpaque(true);
-//		workers.setBackground(Color.BLUE);
 		mainPanel.add(workers, c);
 	}
 
@@ -157,7 +157,7 @@ public class PlayerBoard extends JPanel implements Observer {
 		mainPanel.add(animals, c);
 	}
 
-	public void setActive(boolean active) {
+	public void setActive(boolean active, boolean breeding) {
 		Color c = player.getColor().getRealColor();
 		if (active) {
 			playerLabel.setForeground(Color.WHITE);
@@ -166,7 +166,7 @@ public class PlayerBoard extends JPanel implements Observer {
 			playerLabel.setForeground(c);
 			playerLabel.setBackground(null);
 		}
-		farmPanel.setActive(active);
+		farmPanel.setActive(active, breeding);
 		updatePlayer();
 	}
 
@@ -187,6 +187,7 @@ public class PlayerBoard extends JPanel implements Observer {
 	private void updateFarm() {
 		Fencer.calculateFences(farm);
 		farmPanel.paintImmediately(farmPanel.getVisibleRect());
+		farmPanel.updateButtons();
 	}
 
 	public void update(Observable o, Object arg) {
@@ -195,6 +196,17 @@ public class PlayerBoard extends JPanel implements Observer {
 			farmPanel.revalidate();
 		}
 		updateFarm();
+
+//		if (arg == ChangeType.FARM_CLICK || arg == ChangeType.FARM_ANIMALS) {
+//			updateControls();
+//		}
+//		if (arg == ChangeType.FARM_ANIMALS) {
+//			updateFinishLabel();
+//		}
+//		if (arg == ChangeType.ACTION_DONE) {
+//			updateActions();
+//			submitListener.actionPerformed(null);
+//		}
 	}
 
 }

@@ -20,10 +20,6 @@ public class BuildingMaterial extends AbstractAction {
 		super(ActionType.BUILDING_MATERIAL);
 	}
 	
-	public boolean isQuickAction() {
-		return true;
-	}
-	
 	public boolean isPurchaseAction() {
 		return false;
 	}
