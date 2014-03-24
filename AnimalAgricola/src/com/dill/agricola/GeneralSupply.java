@@ -27,8 +27,8 @@ public class GeneralSupply {
 	public final static Integer[] EXTS = { 0, 1, 2, 3 };
 	public final static Stall[] STALLS = { new Stall(0), new Stall(1), new Stall(2), new Stall(3) };
 
-	private final static List<BuildingType> SPECIAL_BUILDINGS_TYPES = Arrays.asList(new BuildingType[] { BuildingType.HALF_TIMBERED_HOUSE,
-			BuildingType.STORAGE_BUILDING, BuildingType.SHELTER, BuildingType.OPEN_STABLES });
+	private final static List<BuildingType> SPECIAL_BUILDINGS_TYPES = Collections.unmodifiableList(Arrays.asList(new BuildingType[] { BuildingType.HALF_TIMBERED_HOUSE,
+			BuildingType.STORAGE_BUILDING, BuildingType.SHELTER, BuildingType.OPEN_STABLES }));
 	private final static Map<BuildingType, Building> SPECIAL_BUILDINGS = new EnumMap<BuildingType, Building>(BuildingType.class);
 
 	private static final Stack<Stall> stallsLeft = new Stack<Stall>();
@@ -73,6 +73,10 @@ public class GeneralSupply {
 
 	public static Set<BuildingType> getBuildingsLeft() {
 		return buildingsLeft;
+	}
+	
+	public static List<BuildingType> getBuildingsAll() {
+		return SPECIAL_BUILDINGS_TYPES;
 	}
 
 	public static void useTrough(boolean use) {

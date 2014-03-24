@@ -1,14 +1,23 @@
 package com.dill.agricola.view;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
+import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import com.dill.agricola.GeneralSupply;
@@ -41,13 +50,14 @@ import com.dill.agricola.support.Fonts;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
+import com.dill.agricola.view.utils.Images;
 import com.dill.agricola.view.utils.UiFactory;
 
 public class ActionPanelFactory {
 
 	// TODO this introduces state, rethink
-	private static JLabel tmpStallSupplyL = null;
-	private static JPanel tmpBuildingSupplyP = null;
+	private static ActionStateChangeListener stallSupplyChangeListener = null;
+	private static ActionStateChangeListener buildingChangeListener = null;
 
 	public static void createActionPanel(JPanel parent, Action action, JButton actionButton) {
 		JComponent actionPanel = null;
@@ -151,13 +161,14 @@ public class ActionPanelFactory {
 			stallP.add(UiFactory.createResourcesPanel(Stall.COST, null, UiFactory.X_AXIS));
 			stallP.add(UiFactory.createArrowLabel(Dir.S, false));
 			stallP.add(UiFactory.createLabel(AgriImages.getBuildingIcon(BuildingType.STALL, ImgSize.MEDIUM)));
-			tmpStallSupplyL = createSupplyLabel(action, Supplyable.STALL);
-			stallP.add(tmpStallSupplyL);
+			JLabel stallSupplyL = createSupplyLabel(action, Supplyable.STALL);
+			stallSupplyChangeListener = new SupplyChangeListener(Supplyable.STALL, stallSupplyL);
+			stallP.add(stallSupplyL);
 			stallP.add(Box.createVerticalGlue());
 			actionButton.add(stallP);
 			c.gridx = 0;
 			c.gridy = 7;
-			c.gridwidth = 2;
+			c.gridwidth = 1;
 			c.gridheight = 3;
 			c.weightx = 1;
 			break;
@@ -173,47 +184,47 @@ public class ActionPanelFactory {
 			staP.add(UiFactory.createLabel(AgriImages.getBuildingIcon(BuildingType.STABLES, ImgSize.MEDIUM)));
 			staP.add(Box.createVerticalGlue());
 			actionButton.add(staP);
-			c.gridx = 2;
+			c.gridx = 1;
 			c.gridy = 7;
 			c.gridwidth = 2;
 			c.gridheight = 3;
 			c.weightx = 1;
 			break;
 		case SPECIAL:
-			c.gridx = 4;
+			c.gridx = 3;
 			c.gridy = 8;
-			c.gridwidth = 2;
+			c.gridwidth = 3;
 			c.weighty = 0;
 //			c.fill = GridBagConstraints.NONE;
 //			c.anchor = GridBagConstraints.CENTER;
-			tmpBuildingSupplyP = UiFactory.createFlowPanel(3, 0);
-			action.addChangeListener(new BuildingChangeListener(tmpBuildingSupplyP));
-			parent.add(tmpBuildingSupplyP, c);
+			JPanel bP = createBuildingPanel();
+			parent.add(bP, c);
+			action.addChangeListener(buildingChangeListener);
 
 			JLabel spec1 = UiFactory.createLabel(Msg.get("specBuildLabel"));
 			spec1.setFont(Fonts.ACTION_TEXT_BIG);
 			actionButton.add(spec1);
-			if (tmpStallSupplyL != null) {
-				action.addChangeListener(new SupplyChangeListener(Supplyable.STALL, tmpStallSupplyL));
+			if (stallSupplyChangeListener != null) {
+				action.addChangeListener(stallSupplyChangeListener);
 			}
 			c.fill = GridBagConstraints.BOTH;
 			c.weighty = 0.5;
 			c.gridy = 7;
 			break;
 		case SPECIAL2:
-			if (tmpBuildingSupplyP != null) {
-				action.addChangeListener(new BuildingChangeListener(tmpBuildingSupplyP));
+			if (buildingChangeListener != null) {
+				action.addChangeListener(buildingChangeListener);
 			}
-			if (tmpStallSupplyL != null) {
-				action.addChangeListener(new SupplyChangeListener(Supplyable.STALL, tmpStallSupplyL));
+			if (stallSupplyChangeListener != null) {
+				action.addChangeListener(stallSupplyChangeListener);
 			}
 			JLabel spec2 = UiFactory.createLabel(Msg.get("specBuildLabel"));
 			spec2.setFont(Fonts.ACTION_TEXT_BIG);
 			actionButton.add(spec2);
-			c.weighty = 0.5;
-			c.gridx = 4;
+			c.gridx = 3;
 			c.gridy = 9;
-			c.gridwidth = 2;
+			c.gridwidth = 3;
+			c.weighty = 0.5;
 			break;
 		default:
 			actionButton.setText(action.toString());
@@ -221,6 +232,22 @@ public class ActionPanelFactory {
 		}
 
 		parent.add(actionPanel != null ? actionPanel : actionButton, c);
+	}
+	
+	private static JPanel createBuildingPanel() {
+		JPanel display = new JPanel(new GridLayout(0, 4, 2, 2));
+		display.setOpaque(false);
+		JPanel bP = UiFactory.createBorderPanel(2, 0);
+		bP.add(display, BorderLayout.CENTER);
+		
+		JButton button = new JButton(new ImageIcon(Images.createImage("icons/system-search")));
+		button.setToolTipText(Msg.get("buildingDetailTip"));
+		button.setMargin(new Insets(2,2,2,2));
+		button.addActionListener(new BuildingDetailListener());
+		bP.add(button, BorderLayout.LINE_END);
+		
+		buildingChangeListener = new BuildingChangeListener(display, button);
+		return bP;
 	}
 
 	private static void createRefillPanel(JPanel parent, int x, int y, Action action, JButton button, JComponent extraP, Materials materials) {
@@ -319,22 +346,46 @@ public class ActionPanelFactory {
 
 	private static class BuildingChangeListener implements ActionStateChangeListener {
 
-		private JPanel buildingPanel;
+		private final JPanel buildingPanel;
+		private final JButton detailButton;
 
-		public BuildingChangeListener(JPanel buildingPanel) {
+		public BuildingChangeListener(JPanel buildingPanel, JButton detailButton) {
 			this.buildingPanel = buildingPanel;
+			this.detailButton = detailButton;
 		}
 
 		public void stateChanges(Action action) {
 			buildingPanel.removeAll();
-			for (BuildingType b : GeneralSupply.getBuildingsLeft()) {
-				JLabel bl = new JLabel(AgriImages.getBuildingIcon(b, ImgSize.SMALL));
-//				bl.setToolTipText(String.format(
-//			            "<html><img src=\"%s\">",
-//			            Images.getImageUrl(AgriImages.getBuildingImageName(b))));
+			Set<BuildingType> left = GeneralSupply.getBuildingsLeft();
+			for (BuildingType type : GeneralSupply.getBuildingsAll()) {
+				JLabel bl = new JLabel(AgriImages.getBuildingIcon(type, ImgSize.SMALL));
+				if (!left.contains(type)) {
+					bl.setEnabled(false);
+				}
 				buildingPanel.add(bl);
 			}
+			detailButton.setEnabled(GeneralSupply.getBuildingsLeft().size() > 0);
+			buildingPanel.revalidate();
 		}
+	}
+	
+	private static class BuildingDetailListener implements ActionListener {
+
+		public void actionPerformed(ActionEvent e) {
+			Set<BuildingType> left = GeneralSupply.getBuildingsLeft();
+
+			List<JComponent> opts = new ArrayList<JComponent>();
+			for (BuildingType type : GeneralSupply.getBuildingsAll()) {
+				JComponent opt = UiFactory.createLabel(AgriImages.getBuildingIcon(type, ImgSize.BIG));
+				if (!left.contains(type)) {
+					opt.setEnabled(false);
+				}
+				opts.add(opt);
+			}
+			JOptionPane.showOptionDialog(null, "", Msg.get("specialBuildings"), JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null,
+					opts.toArray(), null);
+		}
+		
 	}
 
 }

@@ -3,7 +3,6 @@ package com.dill.agricola.view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -13,22 +12,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
 import com.dill.agricola.Game.ActionCommand;
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.ActionPerformer;
-import com.dill.agricola.actions.ActionPerformer.ActionPerfListener;
 import com.dill.agricola.actions.ActionStateChangeListener;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
-import com.dill.agricola.support.Fonts;
 import com.dill.agricola.support.Msg;
-import com.dill.agricola.view.utils.UiFactory;
 
 public class ActionBoard extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -38,7 +32,7 @@ public class ActionBoard extends JPanel {
 	private final Map<ActionType, Action> actions = new EnumMap<ActionType, Action>(ActionType.class);
 	private final Map<ActionType, JButton> actionButtons = new EnumMap<ActionType, JButton>(ActionType.class);
 	private final JPanel actionPanel;
-	private final JLabel hintLabel;
+//	private final JLabel hintLabel;
 
 	private static final Color defaultBtnColor = UIManager.getColor("Button.background");
 	private static final Color defaultPanelColor = UIManager.getColor("Panel.background");
@@ -81,34 +75,34 @@ public class ActionBoard extends JPanel {
 
 		}
 
-		hintLabel = UiFactory.createLabel("");
-		hintLabel.setFont(Fonts.ACTION_HINT);
-		buildControlPanel();
+//		hintLabel = UiFactory.createLabel("");
+//		hintLabel.setFont(Fonts.ACTION_HINT);
+//		buildControlPanel();
 
 		add(actionPanel, BorderLayout.CENTER);
 	}
 
-	private void buildControlPanel() {
-		GridBagConstraints c = new GridBagConstraints();
-		JPanel controlPanel = UiFactory.createBorderPanel(5, 5);
-		controlPanel.setOpaque(true);
-		controlPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-		controlPanel.add(hintLabel, BorderLayout.CENTER);
-		c.gridy = 10;
-		c.gridwidth = 6;
-		c.gridheight = 2;
-		c.ipadx = c.ipady = 3;
-		c.insets = new Insets(2, 2, 2, 2);
-		c.weighty = 1;
-		c.fill = GridBagConstraints.BOTH;
-		actionPanel.add(controlPanel, c);
-
-		ap.setActionPerfListener(new ActionPerfListener() {
-			public void stateChanges(Action action) {
-				updateFinishLabel();
-			}
-		});
-	}
+//	private void buildControlPanel() {
+//		GridBagConstraints c = new GridBagConstraints();
+//		JPanel controlPanel = UiFactory.createBorderPanel(5, 5);
+//		controlPanel.setOpaque(true);
+//		controlPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+//		controlPanel.add(hintLabel, BorderLayout.CENTER);
+//		c.gridy = 10;
+//		c.gridwidth = 6;
+//		c.gridheight = 2;
+//		c.ipadx = c.ipady = 3;
+//		c.insets = new Insets(2, 2, 2, 2);
+//		c.weighty = 1;
+//		c.fill = GridBagConstraints.BOTH;
+//		actionPanel.add(controlPanel, c);
+//
+//		ap.setActionPerfListener(new ActionPerfListener() {
+//			public void stateChanges(Action action) {
+//				updateFinishLabel();
+//			}
+//		});
+//	}
 
 	public void updateActions() {
 		for (Entry<ActionType, JButton> btnEntry : actionButtons.entrySet()) {
@@ -131,7 +125,7 @@ public class ActionBoard extends JPanel {
 						}
 						text.append(Msg.get("purchaseExpected"));
 					}
-					setHint(text.toString());
+//					setHint(text.toString());
 				}
 			} else {
 				// when no action being performed, disable those that cannot be currently performed
@@ -141,7 +135,7 @@ public class ActionBoard extends JPanel {
 		if (ap.getPlayer() != null) {
 			actionPanel.setBackground(ap.getPlayer().getColor().getRealColor());
 			if (!ap.hasAction()) {
-				setHint(Msg.get("chooseAction"));
+//				setHint(Msg.get("chooseAction"));
 			}
 		} else {
 			actionPanel.setBackground(defaultPanelColor);
@@ -182,12 +176,12 @@ public class ActionBoard extends JPanel {
 		for (JButton b : actionButtons.values()) {
 			b.setEnabled(false);
 		}
-		setHint(Msg.get("animalsBreed"));
+//		setHint(Msg.get("animalsBreed"));
 	}
 
-	private void setHint(String str) {
-		hintLabel.setText("<html>" + str);
-	}
+//	private void setHint(String str) {
+//		hintLabel.setText("<html>" + str);
+//	}
 	
 	private class ActionUsageListener implements ActionStateChangeListener {
 
