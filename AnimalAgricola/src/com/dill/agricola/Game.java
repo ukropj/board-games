@@ -54,6 +54,7 @@ public class Game {
 
 	private final ActionPerformer ap;
 	private final TurnUndoManager undoManager;
+	private ActionListener submitListener;
 
 	private int round = 0;
 	private Player startingPlayer;
@@ -112,30 +113,40 @@ public class Game {
 	}
 
 	public ActionListener getSubmitListener() {
-		return new ActionListener() {
+		if (submitListener == null) {
+			submitListener = new ActionListener() {
 
-			public void actionPerformed(ActionEvent e) {
-				ActionCommand cmd = ActionCommand.valueOf(e.getActionCommand());
-				switch (cmd) {
-				case SUBMIT : 
-					if (workPhase) {
-						// turn end
-						endTurn();
-					} else {
-						// round end
-						endRound();
+				private int count = 0;
+
+				public void actionPerformed(ActionEvent e) {
+					ActionCommand cmd = ActionCommand.valueOf(e.getActionCommand());
+					switch (cmd) {
+					case SUBMIT:
+						if (workPhase) {
+							// turn end
+							endTurn();
+						} else if (breeding) {
+							// all players must submit
+							if (++count == players.length) {
+								count = 0;
+
+								// round end
+								endRound();
+							}
+						}
+						break;
+					case CANCEL:
+						if (workPhase) {
+							undoManager.undo();
+						}
+					default:
+						break;
 					}
-					break;
-				case CANCEL :
-					if (workPhase) {
-						undoManager.undo();
-					}
-				default:
-					break;
 				}
-			}
 
-		};
+			};
+		}
+		return submitListener;
 	}
 
 	private Player chooseStartingPlayer() {

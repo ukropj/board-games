@@ -13,7 +13,6 @@ import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -240,7 +239,7 @@ public class ActionPanelFactory {
 		JPanel bP = UiFactory.createBorderPanel(2, 0);
 		bP.add(display, BorderLayout.CENTER);
 		
-		JButton button = new JButton(new ImageIcon(Images.createImage("icons/system-search")));
+		JButton button = new JButton(Images.createIcon("system-search", ImgSize.MEDIUM));
 		button.setToolTipText(Msg.get("buildingDetailTip"));
 		button.setMargin(new Insets(2,2,2,2));
 		button.addActionListener(new BuildingDetailListener());

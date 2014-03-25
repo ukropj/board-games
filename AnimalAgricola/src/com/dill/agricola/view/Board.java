@@ -144,6 +144,7 @@ public class Board extends JFrame {
 		c.gridx = 1;
 		c.ipadx = 5;
 		c.ipady = 5;
+		c.weighty = 1.0;
 		c.fill = GridBagConstraints.BOTH;
 
 		mainPane.add(actionBoard, c);
@@ -204,7 +205,6 @@ public class Board extends JFrame {
 	public void endRound() {
 		playerBoards[0].setActive(true, true);
 		playerBoards[1].setActive(true, true);
-
 		updateState(-1);
 		actionBoard.disableActions();
 	}

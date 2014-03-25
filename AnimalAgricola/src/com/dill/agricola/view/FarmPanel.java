@@ -25,9 +25,11 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.dill.agricola.Game.ActionCommand;
+import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.ActionPerformer;
 import com.dill.agricola.common.Animals;
 import com.dill.agricola.common.Dir;
@@ -46,14 +48,15 @@ import com.dill.agricola.support.Fonts;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
+import com.dill.agricola.view.utils.UiFactory;
 
 public class FarmPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	public final static int S = 100;
 	public final static int M = S / 16, L = S - 2 * M;
-	public final static int X1 = S / 2, X2 = S / 2, Y1 = (int) (S * 0.28f);
-	static int H = (int) (S * 3.7f);
+	public final static int X1 = S / 2, X2 = S / 2, Y1 = (int) (S * 0.39f);
+	static int H = (int) (S * 3.8f);
 	// static int Y2 = H - Y1 - 3 * S;
 
 	private final static Area animalArea = new Area(new Ellipse2D.Float(S / 4 - M, S / 4 - M, S / 2 + 2 * M, S / 2 + 2 * M));
@@ -145,7 +148,7 @@ public class FarmPanel extends JPanel {
 
 	private JButton finishBtn;
 	private JButton cancelBtn;
-
+	private JLabel msgLabel;
 
 	public FarmPanel(Player player, ActionPerformer ap, ActionListener submitListener) {
 		this.player = player;
@@ -158,32 +161,43 @@ public class FarmPanel extends JPanel {
 		addMouseListener(mouseListener);
 		addMouseWheelListener(mouseListener);
 
+		initMsgPanel();
 		initButtons();
+	}
+
+	private void initMsgPanel() {
+		msgLabel = UiFactory.createLabel("");
+		msgLabel.setFont(Fonts.FARM_MESSAGE);
+		msgLabel.setOpaque(true);
+		msgLabel.setBackground(makeTranslucent(msgLabel.getBackground(), 180));
+		msgLabel.setBounds(M, M, X1 + farm.getWidth() * S + X2 - 2 * M, X1 - 4 * M);
+		add(msgLabel);
 	}
 
 	private void initButtons() {
 		finishBtn = new JButton(AgriImages.getYesIcon());
 		finishBtn.setToolTipText(Msg.get("finishActionTip"));
 		finishBtn.setMargin(new Insets(0, 0, 0, 0));
-		finishBtn.setBounds(X1 + farm.getWidth() * S + 3*M/2, Y1 + farm.getHeight() * S - S / 3 - M, S / 3, S / 3);
+		finishBtn.setBounds(X1 + farm.getWidth() * S + 3 * M / 2, Y1 + M / 2, S / 3, S / 3);
 		finishBtn.setActionCommand(ActionCommand.SUBMIT.toString());
 		finishBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (ap.hasAction()) {
 					if (ap.finishAction()) {
-						submitListener.actionPerformed(e);						
+						submitListener.actionPerformed(e);
 					}
-				} else {
+				} else if (breeding) {
 					submitListener.actionPerformed(e);
+					finishBtn.setEnabled(false);
 				}
 			}
 		});
 		add(finishBtn);
-		
+
 		cancelBtn = new JButton(AgriImages.getNoIcon());
 		cancelBtn.setToolTipText(Msg.get("cancelBtnTip"));
 		cancelBtn.setMargin(new Insets(0, 0, 0, 0));
-		cancelBtn.setBounds(X1 + farm.getWidth() * S + 3*M/2, Y1 + farm.getHeight() * S, S / 3, S / 3);
+		cancelBtn.setBounds(X1 + farm.getWidth() * S + 3 * M / 2, Y1 + M * 7, S / 3, S / 3);
 		cancelBtn.setActionCommand(ActionCommand.CANCEL.toString());
 		cancelBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -194,26 +208,47 @@ public class FarmPanel extends JPanel {
 		});
 		add(cancelBtn);
 	}
-	
-	public void updateButtons() {
-		finishBtn.setLocation(X1 + farm.getWidth() * S + 3*M/2, Y1 + farm.getHeight() * S - S / 3 - M);
-		cancelBtn.setLocation(X1 + farm.getWidth() * S + 3*M/2, Y1 + farm.getHeight() * S);
-		
+
+	public void updateButtonsAndMsg() {
+		finishBtn.setLocation(X1 + farm.getWidth() * S + 3 * M / 2, Y1 + M / 2);
+		cancelBtn.setLocation(X1 + farm.getWidth() * S + 3 * M / 2, Y1 + M * 7);
+
 		if (active && (breeding || player.equals(ap.getPlayer()) && ap.hasAction())) {
 			finishBtn.setVisible(true);
 			cancelBtn.setVisible(true);
-			
+
 			finishBtn.setEnabled(breeding || ap.canFinish());
 			cancelBtn.setEnabled(ap.hasAction() && !ap.isFinished());
 		} else {
 			finishBtn.setVisible(false);
 			cancelBtn.setVisible(false);
 		}
+
+		msgLabel.setSize(X1 + farm.getWidth() * S + X2 - 2 * M, X1 - 4 * M);
+		this.msgLabel.setVisible(active && (breeding || player.equals(ap.getPlayer())));
+		if (active) {
+			if (breeding) {
+				this.msgLabel.setText(Msg.get("animalsBreed"));
+			} else if (player.equals(ap.getPlayer())) {
+				if (ap.hasAction()) {
+					Action a = ap.getAction();
+					if (a.isPurchaseAction()) {
+						this.msgLabel.setText(Msg.get("purchaseExpected"));
+					} else if (a.isResourceAction()) {
+						this.msgLabel.setText(Msg.get("resourcesRecieved"));
+					}
+				} else {
+					this.msgLabel.setText(Msg.get("chooseAction"));
+				}
+			}
+		}
 	}
 
 	public void setActive(boolean active, boolean breeding) {
 		this.active = active;
 		this.breeding = breeding;
+
+		updateButtonsAndMsg();
 	}
 
 	private static Area intersect(Area area, Area intersector) {
@@ -268,10 +303,12 @@ public class FarmPanel extends JPanel {
 
 		// unused stuff
 		drawUnused(g);
+
+		paintChildren(g);
 	}
 
 	public Dimension getPreferredSize() {
-		return new Dimension(X1 + farm.getWidth() * S + X2, H/* Y1 + farm.getHeight() * S + Y2 */);
+		return new Dimension(X1 + farm.getWidth() * S + X2, H);
 	}
 
 	public Dimension getMinimumSize() {
@@ -285,6 +322,7 @@ public class FarmPanel extends JPanel {
 	private void drawFarm(Graphics2D g) {
 		BufferedImage img = null;
 		g.setColor(Color.BLACK);
+
 		// west margin
 		img = AgriImages.getFarmMarginImage(Dir.W);
 		g.drawImage(img, X1 - S / 2, 0, S / 2, H, null);
@@ -523,7 +561,7 @@ public class FarmPanel extends JPanel {
 		int total = loose.size();
 		if (total > 0) {
 			total += 3;
-			float maxWidth = 1.0f * farm.getWidth() * S - S/2;
+			float maxWidth = 1.0f * farm.getWidth() * S - S / 2;
 			float l = Math.min(S / 8.0f, maxWidth / total);
 			float x = X1 + l * total;
 			int y = Y1 + farm.getHeight() * S + S / 2 - 2 * M;
@@ -533,7 +571,7 @@ public class FarmPanel extends JPanel {
 				if (count > 0) {
 					BufferedImage img = AgriImages.getAnimalImage(type, ImgSize.BIG, 1);
 					for (int i = 0; i < count; i++) {
-						g.drawImage(img, (int)(x - j * l), y - img.getHeight(), img.getWidth(), img.getHeight(), null);
+						g.drawImage(img, (int) (x - j * l), y - img.getHeight(), img.getWidth(), img.getHeight(), null);
 						j++;
 					}
 					j++;
@@ -701,11 +739,11 @@ public class FarmPanel extends JPanel {
 			if (done) {
 				farm.notifyObservers(changeType);
 				if (hadAction && ap.isFinished()) {
-                    ActionEvent evt = new ActionEvent(FarmPanel.this,
-                                        ActionEvent.ACTION_PERFORMED,
-                                        ActionCommand.SUBMIT.toString(),
-                                        e.getWhen(),
-                                        e.getModifiers());
+					ActionEvent evt = new ActionEvent(FarmPanel.this,
+							ActionEvent.ACTION_PERFORMED,
+							ActionCommand.SUBMIT.toString(),
+							e.getWhen(),
+							e.getModifiers());
 					submitListener.actionPerformed(evt);
 				}
 			}
@@ -735,5 +773,5 @@ public class FarmPanel extends JPanel {
 		}
 
 	}
-	
+
 }

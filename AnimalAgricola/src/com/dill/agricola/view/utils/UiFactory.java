@@ -231,7 +231,7 @@ public class UiFactory {
 //		b.setMargin(new Insets(1,1,1,1));
 		b.setToolTipText(toolTip);
 		if (iconName != null) {
-			b.setIcon(new ImageIcon(Images.createImage("icons/small/" + iconName)));
+			b.setIcon(Images.createIcon(iconName, ImgSize.SMALL));
 		}
 		b.addActionListener(listener);
 		return b;

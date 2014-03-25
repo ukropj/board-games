@@ -8,8 +8,10 @@ import java.io.IOException;
 import java.net.URL;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 import com.dill.agricola.Main;
+import com.dill.agricola.view.utils.AgriImages.ImgSize;
 
 public class Images {
 
@@ -23,8 +25,8 @@ public class Images {
 //		return new ImageIcon(image.getScaledInstance(width, height, Image.SCALE_SMOOTH));
 //	}
 
-	public static String getImagePath(String name) {
-		return "images/" + name + ".png";
+	public static String getImagePath(String name, boolean icon) {
+		return "resources/" + (icon ? "icons/" : "images/") + name + ".png";
 	}
 
 	public static URL getImageUrl(String path) {
@@ -32,7 +34,18 @@ public class Images {
 	}
 
 	public static BufferedImage createImage(String name) {
-		String path = getImagePath(name);
+		return createImageInner(name, false);
+	}
+
+	public static ImageIcon createIcon(String name, ImgSize size) {
+		if (size == ImgSize.SMALL) {
+			name = "small/" + name; 
+		}
+		return new ImageIcon(createImageInner(name, true));
+	}
+
+	private static BufferedImage createImageInner(String name, boolean icon) {
+		String path = getImagePath(name, icon);
 		URL url = getImageUrl(path);
 		BufferedImage img = null;
 		if (url != null) {

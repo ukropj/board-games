@@ -22,7 +22,6 @@ import com.dill.agricola.actions.ActionPerformer;
 import com.dill.agricola.actions.ActionStateChangeListener;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
-import com.dill.agricola.support.Msg;
 
 public class ActionBoard extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -72,37 +71,10 @@ public class ActionBoard extends JPanel {
 
 			actionButtons.put(type, b);
 			ActionPanelFactory.createActionPanel(actionPanel, action, b);
-
 		}
-
-//		hintLabel = UiFactory.createLabel("");
-//		hintLabel.setFont(Fonts.ACTION_HINT);
-//		buildControlPanel();
 
 		add(actionPanel, BorderLayout.CENTER);
 	}
-
-//	private void buildControlPanel() {
-//		GridBagConstraints c = new GridBagConstraints();
-//		JPanel controlPanel = UiFactory.createBorderPanel(5, 5);
-//		controlPanel.setOpaque(true);
-//		controlPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-//		controlPanel.add(hintLabel, BorderLayout.CENTER);
-//		c.gridy = 10;
-//		c.gridwidth = 6;
-//		c.gridheight = 2;
-//		c.ipadx = c.ipady = 3;
-//		c.insets = new Insets(2, 2, 2, 2);
-//		c.weighty = 1;
-//		c.fill = GridBagConstraints.BOTH;
-//		actionPanel.add(controlPanel, c);
-//
-//		ap.setActionPerfListener(new ActionPerfListener() {
-//			public void stateChanges(Action action) {
-//				updateFinishLabel();
-//			}
-//		});
-//	}
 
 	public void updateActions() {
 		for (Entry<ActionType, JButton> btnEntry : actionButtons.entrySet()) {
@@ -114,18 +86,6 @@ public class ActionBoard extends JPanel {
 				button.setEnabled(false);
 				if (ap.hasAction(type)) {
 					// TODO mark current action
-					// update hint message
-					StringBuilder text = new StringBuilder();
-					if (a.isResourceAction()) {
-						text.append(Msg.get("resourcesRecieved"));
-					}
-					if (a.isPurchaseAction()) {
-						if (text.length() > 0) {
-							text.append("<br>");
-						}
-						text.append(Msg.get("purchaseExpected"));
-					}
-//					setHint(text.toString());
 				}
 			} else {
 				// when no action being performed, disable those that cannot be currently performed
@@ -134,9 +94,6 @@ public class ActionBoard extends JPanel {
 		}
 		if (ap.getPlayer() != null) {
 			actionPanel.setBackground(ap.getPlayer().getColor().getRealColor());
-			if (!ap.hasAction()) {
-//				setHint(Msg.get("chooseAction"));
-			}
 		} else {
 			actionPanel.setBackground(defaultPanelColor);
 		}
@@ -176,13 +133,8 @@ public class ActionBoard extends JPanel {
 		for (JButton b : actionButtons.values()) {
 			b.setEnabled(false);
 		}
-//		setHint(Msg.get("animalsBreed"));
 	}
 
-//	private void setHint(String str) {
-//		hintLabel.setText("<html>" + str);
-//	}
-	
 	private class ActionUsageListener implements ActionStateChangeListener {
 
 		private final JButton actionButtton;

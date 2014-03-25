@@ -13,13 +13,13 @@ public class Fonts {
 	
 	public static final Font FARM_FONT = CALIBRI.deriveFont(15f);
 	public static final Font FARM_BUILDING = CALIBRI.deriveFont(10f);
+	public static final Font FARM_MESSAGE = CALIBRI.deriveFont(13f);
 	
 	public static final Font TEXT_BIG = CALIBRI.deriveFont(18f);
 	
 	public static final Font ACTION_NUMBER = CALIBRI.deriveFont(18f);
 	public static final Font ACTION_TEXT = CALIBRI.deriveFont(12f);
 	public static final Font ACTION_TEXT_BIG = CALIBRI.deriveFont(16f);
-	public static final Font ACTION_HINT = CALIBRI.deriveFont(18f);
 	
 //	public static final Font BUILDING_ICON = DOMNICAN.deriveFont(Font.PLAIN).deriveFont(20f);
 	public static final Font BUILDING_ICON = CALIBRI.deriveFont(Font.PLAIN).deriveFont(20f);
