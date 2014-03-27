@@ -48,7 +48,6 @@ import com.dill.agricola.support.Fonts;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
-import com.dill.agricola.view.utils.UiFactory;
 
 public class FarmPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -166,10 +165,20 @@ public class FarmPanel extends JPanel {
 	}
 
 	private void initMsgPanel() {
-		msgLabel = UiFactory.createLabel("");
+		msgLabel = new JLabel() {
+			private static final long serialVersionUID = 1L;
+
+			public void paintComponent(Graphics g) {
+				g.setColor(getBackground());
+				g.fillRect(0, 0, getWidth(), getHeight());
+				super.paintComponent(g);
+			}
+		};
+		msgLabel.setHorizontalAlignment(JLabel.CENTER);
+		msgLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+		msgLabel.setAlignmentY(JLabel.CENTER_ALIGNMENT);
 		msgLabel.setFont(Fonts.FARM_MESSAGE);
-		msgLabel.setOpaque(true);
-		msgLabel.setBackground(makeTranslucent(msgLabel.getBackground(), 180));
+		msgLabel.setBackground(makeTranslucent(msgLabel.getBackground(), 140));
 		msgLabel.setBounds(M, M, X1 + farm.getWidth() * S + X2 - 2 * M, X1 - 4 * M);
 		add(msgLabel);
 	}
@@ -210,10 +219,10 @@ public class FarmPanel extends JPanel {
 	}
 
 	public void updateButtonsAndMsg() {
-		finishBtn.setLocation(X1 + farm.getWidth() * S + 3 * M / 2, Y1 + M / 2);
-		cancelBtn.setLocation(X1 + farm.getWidth() * S + 3 * M / 2, Y1 + M * 7);
-
 		if (active && (breeding || player.equals(ap.getPlayer()) && ap.hasAction())) {
+			finishBtn.setLocation(X1 + farm.getWidth() * S + 3 * M / 2, Y1 + M / 2);
+			cancelBtn.setLocation(X1 + farm.getWidth() * S + 3 * M / 2, Y1 + M * 7);
+
 			finishBtn.setVisible(true);
 			cancelBtn.setVisible(true);
 
@@ -245,8 +254,8 @@ public class FarmPanel extends JPanel {
 	}
 
 	public void setActive(boolean active, boolean breeding) {
-		this.active = active;
 		this.breeding = breeding;
+		this.active = breeding ? farm.getLooseAnimals().size() > 0 : active;
 
 		updateButtonsAndMsg();
 	}
@@ -278,6 +287,7 @@ public class FarmPanel extends JPanel {
 
 	public void paintComponent(Graphics g0) {
 		super.paintComponent(g0);
+		System.out.println("repaint " + player.toString());
 		Graphics2D g = (Graphics2D) g0;
 
 //		g.setClip(getVisibleRect());

@@ -180,8 +180,6 @@ public class UiFactory {
 		l.setIconTextGap(1);
 		l.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 		l.setAlignmentY(JLabel.CENTER_ALIGNMENT);
-		// l.setOpaque(true);
-		// l.setBackground(Color.RED);
 		if (string != null) {
 			if (string.matches("[^a-z]+")) {
 				l.setFont(Fonts.ACTION_NUMBER);

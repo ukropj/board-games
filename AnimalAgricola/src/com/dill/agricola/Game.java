@@ -54,7 +54,7 @@ public class Game {
 
 	private final ActionPerformer ap;
 	private final TurnUndoManager undoManager;
-	private ActionListener submitListener;
+	private SubmitListener submitListener;
 
 	private int round = 0;
 	private Player startingPlayer;
@@ -114,37 +114,7 @@ public class Game {
 
 	public ActionListener getSubmitListener() {
 		if (submitListener == null) {
-			submitListener = new ActionListener() {
-
-				private int count = 0;
-
-				public void actionPerformed(ActionEvent e) {
-					ActionCommand cmd = ActionCommand.valueOf(e.getActionCommand());
-					switch (cmd) {
-					case SUBMIT:
-						if (workPhase) {
-							// turn end
-							endTurn();
-						} else if (breeding) {
-							// all players must submit
-							if (++count == players.length) {
-								count = 0;
-
-								// round end
-								endRound();
-							}
-						}
-						break;
-					case CANCEL:
-						if (workPhase) {
-							undoManager.undo();
-						}
-					default:
-						break;
-					}
-				}
-
-			};
+			submitListener = new SubmitListener();
 		}
 		return submitListener;
 	}
@@ -248,8 +218,9 @@ public class Game {
 		if (Bag.sumSize(newAnimals) == 0) {
 			endRound();
 		} else {
-			// else wait for user confirmation
 			ap.endUpdate(); // end current "action edit"
+			// else wait for user confirmation
+			submitListener.setBreedingCount(newAnimals);
 			breeding = true;
 		}
 	}
@@ -307,6 +278,45 @@ public class Game {
 				new BuildSpecial(), new BuildSpecial()//
 				));
 	}
+
+	private class SubmitListener implements ActionListener {
+
+		private int count = 0;
+
+		public void actionPerformed(ActionEvent e) {
+			ActionCommand cmd = ActionCommand.valueOf(e.getActionCommand());
+			switch (cmd) {
+			case SUBMIT:
+				if (workPhase) {
+					// turn end
+					endTurn();
+				} else if (breeding) {
+					// one or both players must submit
+					if (--count == 0) {
+						// round end
+						endRound();
+					}
+				}
+				break;
+			case CANCEL:
+				if (workPhase) {
+					undoManager.undo();
+				}
+			default:
+				break;
+			}
+		}
+
+		public void setBreedingCount(Animals[] newAnimals) {
+			this.count = 0;
+			for (Animals animals : newAnimals) {
+				if (animals.size() > 0) {
+					count++;
+				}
+			}
+		}
+
+	};
 
 	public static enum ActionCommand {
 		NEW, EXIT, UNDO, REDO, SUBMIT, CANCEL;
