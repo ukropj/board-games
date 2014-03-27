@@ -218,8 +218,8 @@ public class Board extends JFrame {
 	}
 
 	public void startingPlayerChanged() {
-		playerBoards[0].updatePlayer();
-		playerBoards[1].updatePlayer();
+		playerBoards[0].updateFarm();
+		playerBoards[1].updateFarm();
 	}
 
 	public void endGame() {

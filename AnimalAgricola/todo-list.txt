@@ -1,21 +1,17 @@
 #TODO#
 
-	better building display
 	animal count font+position
 	embed fonts
-	round meter
 	animal breeding notification
 	game ending
-	investicate "serial"
 	highlight current action
 	about & credits
-	window icon
-	undo/redo
 	stables action icon
 	
 #Bugs#
 
-	make breeding undoable without undoing previous action
+	no message when undone breeding
+	undo breeding says "Undo StartTurn"
 
 #Nice to have#
 

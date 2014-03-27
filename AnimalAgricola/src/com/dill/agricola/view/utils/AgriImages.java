@@ -34,6 +34,7 @@ public class AgriImages {
 	private static BufferedImage[] cottages = new BufferedImage[PlayerColor.values().length];
 	private static BufferedImage[] stallsAndStables = new BufferedImage[8];
 	private static BufferedImage[] exts = new BufferedImage[4];
+	private static BufferedImage[] pads = new BufferedImage[3];
 
 	private final static BufferedImage[] arrowsMedium = new BufferedImage[Dir.values().length];
 	private final static BufferedImage[] arrowsBig = new BufferedImage[Dir.values().length];
@@ -92,6 +93,14 @@ public class AgriImages {
 			farmsAndMargins[arrId] = Images.createImage("f_margin" + (id + 1));
 		}
 		return farmsAndMargins[arrId];
+	}
+	
+	public static BufferedImage getFarmPadImage(int id) {
+		Main.asrtInRange(id, 0, pads.length, "Invalid img id");
+		if (pads[id] == null) {
+			pads[id] = Images.createImage("f_pad" + (id + 1));
+		}
+		return pads[id];
 	}
 
 	public static BufferedImage getExtensionImage(int id) {

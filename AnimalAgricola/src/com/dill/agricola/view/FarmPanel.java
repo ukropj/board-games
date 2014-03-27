@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Polygon;
 import java.awt.Rectangle;
@@ -24,6 +25,8 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -43,11 +46,13 @@ import com.dill.agricola.model.buildings.MultiImaged;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.ChangeType;
+import com.dill.agricola.model.types.Material;
 import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.support.Fonts;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
+import com.dill.agricola.view.utils.UiFactory;
 
 public class FarmPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -56,7 +61,7 @@ public class FarmPanel extends JPanel {
 	public final static int M = S / 16, L = S - 2 * M;
 	public final static int X1 = S / 2, X2 = S / 2, Y1 = (int) (S * 0.39f);
 	static int H = (int) (S * 3.8f);
-	// static int Y2 = H - Y1 - 3 * S;
+	static int P = (int) (S * 0.9f);
 
 	private final static Area animalArea = new Area(new Ellipse2D.Float(S / 4 - M, S / 4 - M, S / 2 + 2 * M, S / 2 + 2 * M));
 	private final static int AR = S / 6 + M;
@@ -148,6 +153,11 @@ public class FarmPanel extends JPanel {
 	private JButton finishBtn;
 	private JButton cancelBtn;
 	private JLabel msgLabel;
+	private JPanel supplyPanel;
+	private final JLabel[] workerLabels = new JLabel[Player.MAX_WORKERS];
+	private JLabel firstLabel;
+	private final Map<Material, JLabel> supply = new EnumMap<Material, JLabel>(Material.class);
+	private final Map<Animal, JLabel> animalSupply = new EnumMap<Animal, JLabel>(Animal.class);
 
 	public FarmPanel(Player player, ActionPerformer ap, ActionListener submitListener) {
 		this.player = player;
@@ -162,6 +172,8 @@ public class FarmPanel extends JPanel {
 
 		initMsgPanel();
 		initButtons();
+		initWorkerPanel();
+		initSupplyPanel();
 	}
 
 	private void initMsgPanel() {
@@ -178,8 +190,8 @@ public class FarmPanel extends JPanel {
 		msgLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 		msgLabel.setAlignmentY(JLabel.CENTER_ALIGNMENT);
 		msgLabel.setFont(Fonts.FARM_MESSAGE);
-		msgLabel.setBackground(makeTranslucent(msgLabel.getBackground(), 140));
-		msgLabel.setBounds(M, M, X1 + farm.getWidth() * S + X2 - 2 * M, X1 - 4 * M);
+		msgLabel.setBackground(makeTranslucent(msgLabel.getBackground(), 210));
+		msgLabel.setBounds(M, M, getWidth() - 2 * M, X1 - 4 * M);
 		add(msgLabel);
 	}
 
@@ -218,22 +230,83 @@ public class FarmPanel extends JPanel {
 		add(cancelBtn);
 	}
 
-	public void updateButtonsAndMsg() {
+	private void initWorkerPanel() {
+		firstLabel = UiFactory.createLabel(AgriImages.getFirstTokenIcon(player.getColor().ordinal(), ImgSize.MEDIUM));
+		firstLabel.setBounds(M / 2, Y1 + M, 40, 40);
+		add(firstLabel);
+
+		JPanel workersP = UiFactory.createVerticalPanel();
+		for (int i = 0; i < workerLabels.length; i++) {
+			workerLabels[i] = UiFactory.createLabel(AgriImages.getWorkerIcon(player.getColor()));
+			workersP.add(workerLabels[i]);
+			workersP.add(Box.createVerticalStrut(5));
+		}
+		workersP.setBounds(M / 2, Y1 + S / 2, 40, workerLabels.length * 40);
+		add(workersP);
+	}
+
+	private void initSupplyPanel() {
+		supplyPanel = new JPanel(/* BoxLayout */) {
+			private static final long serialVersionUID = 1L;
+
+			public void paintComponent(Graphics g) {
+				g.setColor(getBackground());
+				g.fillRect(0, 0, getWidth(), getHeight());
+				super.paintComponent(g);
+			}
+		};
+		supplyPanel.setLayout(new BoxLayout(supplyPanel, BoxLayout.Y_AXIS));
+		supplyPanel.setOpaque(false);
+		supplyPanel.setBackground(makeTranslucent(msgLabel.getBackground(), 180));
+
+		JPanel materialsP = new JPanel(new GridLayout(2, 4));
+		materialsP.setOpaque(false);
+		for (Material m : Material.values()) {
+			JLabel l = UiFactory.createMaterialLabel(m, 0, UiFactory.ICON_FIRST);
+			materialsP.add(l);
+			supply.put(m, l);
+		}
+		for (Animal a : Animal.values()) {
+			JLabel l = UiFactory.createAnimalLabel(a, 0, UiFactory.ICON_FIRST);
+			materialsP.add(l);
+			animalSupply.put(a, l);
+		}
+		supplyPanel.add(materialsP);
+		supplyPanel.setBounds(M, H + M, getWidth() - 2 * M, P - 2 * M);
+		add(supplyPanel);
+	}
+
+	public void updateComponentPosition() {
+		finishBtn.setLocation(X1 + farm.getWidth() * S + 3 * M / 2, finishBtn.getY());
+		cancelBtn.setLocation(X1 + farm.getWidth() * S + 3 * M / 2, cancelBtn.getY());
+
+		supplyPanel.setLocation((getWidth() - supplyPanel.getWidth()) / 2, supplyPanel.getY());
+		msgLabel.setLocation((getWidth() - msgLabel.getWidth()) / 2, msgLabel.getY());
+	}
+
+	public void updateButtonsAndMsg() { //TODO rename
+		firstLabel.setVisible(player.isStarting());
+		for (int i = 0; i < workerLabels.length; i++) {
+			workerLabels[i].setVisible(player.getWorkers() > i);
+		}
+		for (Material m : Material.values()) {
+			supply.get(m).setText(String.valueOf(player.getMaterial(m)));
+		}
+		for (Animal a : Animal.values()) {
+			animalSupply.get(a).setText(String.valueOf(player.getAnimal(a)));
+		}
+
 		if (active && (breeding || player.equals(ap.getPlayer()) && ap.hasAction())) {
-			finishBtn.setLocation(X1 + farm.getWidth() * S + 3 * M / 2, Y1 + M / 2);
-			cancelBtn.setLocation(X1 + farm.getWidth() * S + 3 * M / 2, Y1 + M * 7);
-
 			finishBtn.setVisible(true);
-			cancelBtn.setVisible(true);
-
 			finishBtn.setEnabled(breeding || ap.canFinish());
+
+			cancelBtn.setVisible(true);
 			cancelBtn.setEnabled(ap.hasAction() && !ap.isFinished());
 		} else {
 			finishBtn.setVisible(false);
 			cancelBtn.setVisible(false);
 		}
 
-		msgLabel.setSize(X1 + farm.getWidth() * S + X2 - 2 * M, X1 - 4 * M);
 		this.msgLabel.setVisible(active && (breeding || player.equals(ap.getPlayer())));
 		if (active) {
 			if (breeding) {
@@ -285,12 +358,31 @@ public class FarmPanel extends JPanel {
 		return new DirPoint(dx, dy);
 	}
 
+	public int getWidth() {
+		return X1 + farm.getWidth() * S + X2;
+	}
+
+	public int getHeight() {
+		return H + P;
+	}
+
+	public Dimension getPreferredSize() {
+		return new Dimension(getWidth(), getHeight());
+	}
+
+	public Dimension getMinimumSize() {
+		return getPreferredSize();
+	}
+
+	public Dimension getMaximumSize() {
+		return getPreferredSize();
+	}
+
 	public void paintComponent(Graphics g0) {
 		super.paintComponent(g0);
-		System.out.println("repaint " + player.toString());
 		Graphics2D g = (Graphics2D) g0;
 
-//		g.setClip(getVisibleRect());
+//		g.setClip(new Rectangle(getPreferredSize()));
 
 		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
@@ -314,19 +406,19 @@ public class FarmPanel extends JPanel {
 		// unused stuff
 		drawUnused(g);
 
-		paintChildren(g);
+		drawPad(g);
+
+//		paintChildren(g);
 	}
 
-	public Dimension getPreferredSize() {
-		return new Dimension(X1 + farm.getWidth() * S + X2, H);
-	}
-
-	public Dimension getMinimumSize() {
-		return getPreferredSize();
-	}
-
-	public Dimension getMaximumSize() {
-		return getPreferredSize();
+	private void drawPad(Graphics2D g) {
+		int count = (farm.getWidth() + 1) / 2 + (farm.getWidth() + 1) % 2;
+		int d = (count * 2 * S - getWidth()) / 2;
+		g.setClip(new Rectangle(getPreferredSize()));
+		for (int i = 0; i < count; i++) {
+			BufferedImage img = AgriImages.getFarmPadImage(i % 3);
+			g.drawImage(img, -d + i * 2 * S, H, S * 2, P, null);
+		}
 	}
 
 	private void drawFarm(Graphics2D g) {
@@ -369,29 +461,6 @@ public class FarmPanel extends JPanel {
 				r.translate(-(X1 + pos.x * S), 0);
 			}
 		}
-
-		/*if (farm.getActiveType() == Purchasable.EXTENSION) {
-			g.setColor(makeTranslucent(player.getColor().getRealColor(), 140));
-			Rectangle r = extRect;				
-			if (!farm.isActiveSpot(new DirPoint(0, 0), Purchasable.EXTENSION)) {
-				r.translate(X1 - S, 0);
-				g.fill(r);
-				r.translate(-X1 + S, 0);
-			} else {
-				r.translate(X1, 0);
-				g.fill(r);
-				r.translate(-X1, 0);
-			}
-			if (!farm.isActiveSpot(new DirPoint(farm.getWidth() - 1, 0), Purchasable.EXTENSION)) {
-				r.translate(X1 + farm.getWidth() * S, 0);
-				g.fill(r);
-				r.translate(-(X1 + farm.getWidth() * S), 0);
-			} else {
-				r.translate(X1 + (farm.getWidth() - 1) * S, 0);
-				g.fill(r);
-				r.translate(-(X1 + (farm.getWidth() - 1) * S), 0);
-			}
-		}*/
 	}
 
 	private void drawSpace(Graphics2D g, DirPoint pos, Space space) {
@@ -407,7 +476,7 @@ public class FarmPanel extends JPanel {
 
 		// fences
 		for (Dir d : Dir.values()) {
-			drawFence(g, pos, d, space);
+			drawFence(g, new DirPoint(pos, d));
 		}
 
 		// trough
@@ -539,24 +608,24 @@ public class FarmPanel extends JPanel {
 
 	}
 
-	private void drawFence(Graphics2D g, DirPoint pos, Dir d, Space space) {
-		if ((d == Dir.N && pos.y > 0) || (d == Dir.W && pos.x > 0)) {
+	private void drawFence(Graphics2D g, DirPoint dirPos) {
+		if ((dirPos.dir == Dir.N && dirPos.y > 0) || (dirPos.dir == Dir.W && dirPos.x > 0)) {
 			// will be brawn by neighouring spaces
 			return;
 		}
 
-		DirPoint realPos = toRealPos(pos);
-		boolean hasBorder = space.hasBorder(d);
+		DirPoint realPos = toRealPos(dirPos);
+		boolean hasBorder = farm.has(Purchasable.FENCE, dirPos, false);
 
-		Rectangle r = new Rectangle(fenceRects.get(d));
+		Rectangle r = new Rectangle(fenceRects.get(dirPos.dir));
 		r.translate(realPos.x, realPos.y);
 
 		if (hasBorder) {
-			BufferedImage img = AgriImages.getFenceImage(d);
+			BufferedImage img = AgriImages.getFenceImage(dirPos.dir);
 			g.drawImage(img, r.x, r.y, r.width, r.height, null);
 		}
 
-		if (isActive(new DirPoint(pos, d), Purchasable.FENCE)) {
+		if (isActive(dirPos, Purchasable.FENCE)) {
 			g.setColor(makeTranslucent(player.getColor().getRealColor(), 130));
 			g.fill(r);
 		}

@@ -61,6 +61,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 
 			action.setUsed(player.getColor());
 			edit = action.doo(player);
+			// TODO action may not be started - special bldg
 
 			if (edit != null) {
 				count++;

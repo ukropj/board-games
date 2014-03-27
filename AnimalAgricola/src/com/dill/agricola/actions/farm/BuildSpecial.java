@@ -71,6 +71,7 @@ public class BuildSpecial extends BuildAction {
 	
 	public boolean canDo(Player player) {
 		return isAnyLeft(); // currently can perform even if player cannot purchase anything
+		// TODO add strict condition
 	}
 
 	public boolean canDoOnFarm(Player player, DirPoint pos, int doneSoFar) {
