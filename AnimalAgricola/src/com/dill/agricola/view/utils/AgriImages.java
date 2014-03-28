@@ -52,7 +52,7 @@ public class AgriImages {
 			return firstTokens[arrId];
 		} else {
 			BufferedImage img = Images.createImage("first" + (id + 1));
-			img = Images.getBestScaledInstance(img, size == ImgSize.BIG ? 0.3f : 0.2f);
+			img = Images.getBestScaledInstance(img, size == ImgSize.BIG ? 0.3f : size == ImgSize.MEDIUM ? 0.2f : 0.15f);
 			firstTokens[arrId] = img;
 			return img;
 		}

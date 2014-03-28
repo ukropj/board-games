@@ -8,21 +8,21 @@ public class Fonts {
 
 	// TODO load fonts from file
 	
-	private static final Font CALIBRI = new Font("Calibri", Font.BOLD, 15);	
+	public static final Font TEXT_FONT = new Font("Calibri", Font.BOLD, 15);	
 //	private static final Font DOMNICAN = new Font("Dominican", Font.BOLD, 15);	
 	
-	public static final Font FARM_FONT = CALIBRI.deriveFont(15f);
-	public static final Font FARM_BUILDING = CALIBRI.deriveFont(10f);
-	public static final Font FARM_MESSAGE = CALIBRI.deriveFont(13f);
+	public static final Font FARM_FONT = TEXT_FONT.deriveFont(15f);
+	public static final Font FARM_BUILDING = TEXT_FONT.deriveFont(10f);
+	public static final Font FARM_MESSAGE = TEXT_FONT.deriveFont(13f);
 	
-	public static final Font TEXT_BIG = CALIBRI.deriveFont(18f);
+	public static final Font TEXT_BIG = TEXT_FONT.deriveFont(18f);
 	
-	public static final Font ACTION_NUMBER = CALIBRI.deriveFont(18f);
-	public static final Font ACTION_TEXT = CALIBRI.deriveFont(12f);
-	public static final Font ACTION_TEXT_BIG = CALIBRI.deriveFont(16f);
+	public static final Font ACTION_NUMBER = TEXT_FONT.deriveFont(18f);
+	public static final Font ACTION_TEXT = TEXT_FONT.deriveFont(12f);
+	public static final Font ACTION_TEXT_BIG = TEXT_FONT.deriveFont(16f);
 	
 //	public static final Font BUILDING_ICON = DOMNICAN.deriveFont(Font.PLAIN).deriveFont(20f);
-	public static final Font BUILDING_ICON = CALIBRI.deriveFont(Font.PLAIN).deriveFont(20f);
+	public static final Font BUILDING_ICON = TEXT_FONT.deriveFont(Font.PLAIN).deriveFont(20f);
 	
 	public static void updateFontToFit(Graphics2D g, String text, int width) {
 		Font font = g.getFont();

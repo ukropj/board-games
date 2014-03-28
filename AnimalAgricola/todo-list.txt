@@ -7,6 +7,9 @@
 	highlight current action
 	about & credits
 	stables action icon
+	all dialog icons (top + inside)
+	resizing ?
+	less cluttered action board
 	
 #Bugs#
 

@@ -6,10 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
@@ -36,14 +33,11 @@ import com.dill.agricola.common.Bag;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.model.types.PlayerColor;
-import com.dill.agricola.support.Msg;
 import com.dill.agricola.undo.SimpleEdit;
 import com.dill.agricola.undo.TurnUndoManager;
 import com.dill.agricola.undo.TurnUndoManager.UndoRedoListener;
 import com.dill.agricola.view.Board;
-import com.dill.agricola.view.utils.AgriImages;
-import com.dill.agricola.view.utils.AgriImages.ImgSize;
-import com.dill.agricola.view.utils.UiFactory;
+import com.dill.agricola.view.NewGameDialog;
 
 public class Game {
 
@@ -57,11 +51,11 @@ public class Game {
 	private SubmitListener submitListener;
 
 	private int round = 0;
-	private Player startingPlayer;
+	private PlayerColor startPlayer;
 	private Player currentPlayer;
 	private boolean workPhase;
 
-	private PlayerColor initialStartingPlayer;
+	private PlayerColor initialStartPlayer;
 
 	private boolean breeding;
 	private boolean ended;
@@ -98,17 +92,25 @@ public class Game {
 	}
 
 	public Player getPlayer(PlayerColor color) {
-		return players[color.ordinal()];
+		return color != null ? players[color.ordinal()] : null;
 	}
 
-	public Player getStartingPlayer() {
-		return startingPlayer;
+	public Player[] getPlayers() {
+		return players;
 	}
 
-	public void setStartingPlayer(Player startingPlayer) {
-		this.startingPlayer = startingPlayer;
-		startingPlayer.setStartingPlayer(true);
-		getPlayer(startingPlayer.getColor().other()).setStartingPlayer(false);
+	public PlayerColor getStartPlayer() {
+		return startPlayer;
+	}
+
+	public PlayerColor getInitialStartPlayer() {
+		return initialStartPlayer;
+	}
+
+	public void setStartingPlayer(PlayerColor startPlayerColor) {
+		this.startPlayer = startPlayerColor;
+		getPlayer(startPlayer).setStartingPlayer(true);
+		getPlayer(startPlayer.other()).setStartingPlayer(false);
 		board.startingPlayerChanged();
 	}
 
@@ -117,23 +119,6 @@ public class Game {
 			submitListener = new SubmitListener();
 		}
 		return submitListener;
-	}
-
-	private Player chooseStartingPlayer() {
-		if (Main.DEBUG) {
-			return players[0];
-		} else {
-			List<JComponent> opts = new ArrayList<JComponent>();
-			for (PlayerColor color : PlayerColor.values()) {
-				JLabel l = UiFactory.createLabel(AgriImages.getFirstTokenIcon(color.ordinal(), ImgSize.BIG));
-				l.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-				l.setOpaque(true);
-				l.setBackground(color.getRealColor());
-				opts.add(l);
-			}
-			int result = UiFactory.showOptionDialog(Msg.get("chooseStarting"), Msg.get("gameStart"), null, opts);
-			return players[Math.max(0, result)];
-		}
 	}
 
 	private void switchCurrentPlayer() {
@@ -145,6 +130,11 @@ public class Game {
 	}
 
 	public void start() {
+		NewGameDialog newDialog = new NewGameDialog(board);
+		if (!newDialog.isDone()) {
+			return;
+		}
+
 		for (Player p : players) {
 			p.init();
 		}
@@ -155,19 +145,19 @@ public class Game {
 		undoManager.discardAllEdits();
 		ap.beginUpdate(); // start "initial edit"
 		ap.invalidateUpdated(); // which cannot be undone
-
-		setStartingPlayer(chooseStartingPlayer());
-		initialStartingPlayer = startingPlayer.getColor();
 		GeneralSupply.reset();
-		board.start();
 
+		setStartingPlayer(newDialog.getStartingPlayer());
+		initialStartPlayer = startPlayer;
+
+		board.start();
 		startRound();
 	}
 
 	private void startRound() {
-		ap.postEdit(new StartRound(round, currentPlayer, startingPlayer));
+		ap.postEdit(new StartRound(round, currentPlayer != null ? currentPlayer.getColor() : null, startPlayer));
 		round++;
-		currentPlayer = startingPlayer;
+		currentPlayer = getPlayer(startPlayer);
 		// refill
 		board.startRound(round);
 		// start work
@@ -248,7 +238,7 @@ public class Game {
 		ap.endUpdate(); // end last "action/breeding edit"
 		ap.postEdit(new EndGame());
 		ended = true;
-		board.showScoring(players, initialStartingPlayer);
+		board.showScoring();
 	}
 
 	private void releaseAnimals() {
@@ -319,16 +309,16 @@ public class Game {
 	};
 
 	public static enum ActionCommand {
-		NEW, EXIT, UNDO, REDO, SUBMIT, CANCEL;
+		NEW, EXIT, UNDO, REDO, SUBMIT, CANCEL, SCORE;
 	}
 
 	private class StartRound extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
 
-		private final Player curPlayer;
-		private final Player firstPlayer;
+		private final PlayerColor curPlayer;
+		private final PlayerColor firstPlayer;
 
-		public StartRound(int round, Player currentPlayer, Player startingPlayer) {
+		public StartRound(int round, PlayerColor currentPlayer, PlayerColor startingPlayer) {
 			this.curPlayer = currentPlayer;
 			this.firstPlayer = startingPlayer;
 		}
@@ -337,14 +327,14 @@ public class Game {
 			super.undo();
 			round--;
 			workPhase = false;
-			currentPlayer = curPlayer;
+			currentPlayer = getPlayer(curPlayer);
 		}
 
 		public void redo() throws CannotRedoException {
 			super.redo();
 			round++;
 			workPhase = true;
-			currentPlayer = firstPlayer;
+			currentPlayer = getPlayer(firstPlayer);
 		}
 
 	}

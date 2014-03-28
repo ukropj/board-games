@@ -8,6 +8,7 @@ import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Material;
+import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.support.Namer;
 import com.dill.agricola.undo.SimpleEdit;
 import com.dill.agricola.undo.UndoableFarmEdit;
@@ -24,21 +25,21 @@ public class StartOneWood extends RefillAction {
 	}
 
 	public UndoableFarmEdit doo(Player player) {
-		Player previousPlayer = game.getStartingPlayer();
-		game.setStartingPlayer(player);
-		return joinEdits(super.doo(player), new TakeStartPlayer(previousPlayer, player));
+		PlayerColor previousPlayer = game.getStartPlayer();
+		game.setStartingPlayer(player.getColor());
+		return joinEdits(super.doo(player), new TakeStartPlayer(previousPlayer, player.getColor()));
 	}
 	
 	protected class TakeStartPlayer extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
 
-		private final Player previousPlayer;
-		private final Player player;
+		private final PlayerColor previousPlayer;
+		private final PlayerColor player;
 		
-		public TakeStartPlayer(Player previousPlayer, Player player) {
+		public TakeStartPlayer(PlayerColor previousPlayer, PlayerColor playerColor) {
 			super(true);
 			this.previousPlayer = previousPlayer;
-			this.player = player;
+			this.player = playerColor;
 		}
 		
 		public void undo() throws CannotUndoException {

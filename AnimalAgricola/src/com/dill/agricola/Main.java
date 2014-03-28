@@ -22,9 +22,7 @@ public class Main {
 				Msg.load(new Locale("en"));
 				try {
 					Game g = new Game();
-					if (DEBUG) {
-						g.start();
-					}
+					g.start();
 				} catch (Throwable e) {
 					String msg = e.getMessage();
 					JOptionPane.showMessageDialog(null, msg != null ? msg : Msg.get("unknownError"), Msg.get("error"), JOptionPane.ERROR_MESSAGE);

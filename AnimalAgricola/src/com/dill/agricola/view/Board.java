@@ -99,17 +99,24 @@ public class Board extends JFrame {
 		toolbar.setFloatable(false);
 		toolbar.setRollover(true);
 
-		JButton newB = UiFactory.createToolbarButton(null, "document-new", Msg.get("newGame"), bl);
+		JButton newB = UiFactory.createToolbarButton(null, "document-new", Msg.get("newGameBtn"), bl);
 		newB.setActionCommand(ActionCommand.NEW.toString());
 		toolbar.add(newB);
 		toolbar.addSeparator();
 		
 		undoB = UiFactory.createToolbarButton(null, "edit-undo", "", bl);
 		undoB.setActionCommand(ActionCommand.UNDO.toString());
+		undoB.setEnabled(false);
 		toolbar.add(undoB);
 		redoB = UiFactory.createToolbarButton(null, "edit-redo", "", bl);
 		redoB.setActionCommand(ActionCommand.REDO.toString());
+		undoB.setEnabled(false);
 		toolbar.add(redoB);
+		
+		toolbar.addSeparator();
+		JButton scoreB = UiFactory.createToolbarButton(null, "application-certificate", Msg.get("scoringBtn"), bl);
+		scoreB.setActionCommand(ActionCommand.SCORE.toString());
+		toolbar.add(scoreB);
 
 		toolbar.add(Box.createHorizontalGlue());
 		
@@ -209,10 +216,8 @@ public class Board extends JFrame {
 		actionBoard.disableActions();
 	}
 
-	public void showScoring(Player[] players, PlayerColor initialStartingPlayer) {
-		if (scoreDialog == null) {
-			scoreDialog = new ScoreDialog(players, initialStartingPlayer);
-		}
+	public void showScoring() {
+		scoreDialog = new ScoreDialog(game.getPlayers(), game.getInitialStartPlayer());
 		scoreDialog.setLocationRelativeTo(this);
 		scoreDialog.setVisible(true);
 	}
@@ -252,6 +257,9 @@ public class Board extends JFrame {
 				break;
 			case REDO:
 				board.undoManager.redo();
+				break;
+			case SCORE:
+				showScoring();
 				break;
 			case EXIT:
 				board.endGame();
