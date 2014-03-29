@@ -3,6 +3,7 @@ package com.dill.agricola.view;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
@@ -140,7 +141,7 @@ public class FarmPanel extends JPanel {
 
 	public final static Stroke NORMAL_STROKE = new BasicStroke();
 	public final static Stroke THICK_STROKE = new BasicStroke(2.0f);
-	public final static Stroke MOVABLE_STROKE = new BasicStroke(1.0f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL, 10.0f, new float[] { 2, 2 }, 1.0f);
+//	public final static Stroke MOVABLE_STROKE = new BasicStroke(1.0f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL, 10.0f, new float[] { 2, 2 }, 1.0f);
 	public final static Color PASTURE_COLOR = new Color(153, 178, 97);
 
 	private final Player player;
@@ -285,7 +286,7 @@ public class FarmPanel extends JPanel {
 		msgLabel.setLocation((getWidth() - msgLabel.getWidth()) / 2, msgLabel.getY());
 	}
 
-	public void updateButtonsAndMsg() { //  TODO rename
+	public void updateControls() {
 		firstLabel.setVisible(player.isStarting());
 		for (int i = 0; i < workerLabels.length; i++) {
 			workerLabels[i].setVisible(player.getWorkers() > i);
@@ -332,7 +333,7 @@ public class FarmPanel extends JPanel {
 		this.breeding = breeding;
 		this.active = breeding ? farm.getLooseAnimals().size() > 0 : active;
 
-		updateButtonsAndMsg();
+		updateControls();
 	}
 
 	private static Area intersect(Area area, Area intersector) {
@@ -387,6 +388,7 @@ public class FarmPanel extends JPanel {
 
 		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+		g.setStroke(THICK_STROKE);
 
 		// background (should not be seen)
 		g.setColor(Color.WHITE);
@@ -487,16 +489,24 @@ public class FarmPanel extends JPanel {
 		Animal type = space.getAnimalType();
 		int count = space.getAnimals();
 		if (space.getMaxCapacity() > 0 || count > 0) {
-			g.setStroke(NORMAL_STROKE);
 			g.setColor(UiFactory.makeTranslucent(type != null ? (space.isValid() ? type.getColor() : PASTURE_COLOR) : PASTURE_COLOR, 200));
 			g.setClip(getVisibleRect().createIntersection(new Rectangle(realPos.x + M, realPos.y + M, L + 1, L + 1)));
 			g.fillOval(realPos.x + S - 6 * M, realPos.y + S - 6 * M, 8 * M, 8 * M);
 			g.setClip(getVisibleRect());
-
+			// draw actual/max
 			g.setColor(type != null ? (space.isValid() ? type.getContrastingColor() : Color.RED) : Color.BLACK);
-			String text = count + "/" + space.getMaxCapacity();
 			g.setFont(Fonts.FARM_FONT);
-			g.drawString(text, realPos.x + S - 5 * M, realPos.y + S - 2 * M);
+			FontMetrics fm = g.getFontMetrics();
+			int w0 = fm.stringWidth("99");
+			String t1 = String.valueOf(count);
+			int w1 = fm.stringWidth(t1);
+			String t2 = String.valueOf(space.getMaxCapacity());
+			int w2 = fm.stringWidth(t2);
+			int c = -1;
+			g.drawString(t1, realPos.x + S - 5 * M + (w0 - w1) / 2 + c, realPos.y + S - 3 * M);
+			g.drawString(t2, realPos.x + S - 3 * M + (w0 - w2) / 2 + c, realPos.y + S - 3 * M / 2);
+			// slash
+			g.drawLine(realPos.x + S - 4 * M + c, realPos.y + S - 2 * M, realPos.x + S - 2 * M + c, realPos.y + S - 4 * M);
 		}
 
 		if (space.getMaxCapacity() > count && availableAnimals.size() > 0) {
@@ -571,7 +581,6 @@ public class FarmPanel extends JPanel {
 			}
 			if (img != null) {
 				g.drawImage(img, r.x, r.y, r.width, r.height, null);
-				// TODO extract
 				// name
 				g.setColor(Color.BLACK);
 				g.setFont(Fonts.FARM_BUILDING);

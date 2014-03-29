@@ -161,7 +161,7 @@ public class ActionPanelFactory {
 			stallP.add(UiFactory.createLabel(Msg.get("once")));
 			stallP.add(UiFactory.createResourcesPanel(Stall.COST, null, UiFactory.X_AXIS));
 			stallP.add(UiFactory.createArrowLabel(Dir.S, false));
-			stallP.add(UiFactory.createLabel(AgriImages.getBuildingIcon(BuildingType.STALL, ImgSize.MEDIUM)));
+			stallP.add(UiFactory.createLabel(AgriImages.getStallIcon()));
 			JLabel stallSupplyL = createSupplyLabel(action, Supplyable.STALL);
 			stallSupplyChangeListener = new SupplyChangeListener(Supplyable.STALL, stallSupplyL);
 			stallP.add(stallSupplyL);
@@ -182,7 +182,7 @@ public class ActionPanelFactory {
 			costP.add(UiFactory.createResourcesPanel(Stables.COST_STONE, null, UiFactory.X_AXIS));
 			staP.add(costP);
 			staP.add(UiFactory.createArrowLabel(Dir.S, false));
-			staP.add(UiFactory.createLabel(AgriImages.getBuildingIcon(BuildingType.STABLES, ImgSize.MEDIUM)));
+			staP.add(UiFactory.createLabel(AgriImages.getStallToStablesIcon()));
 			staP.add(Box.createVerticalGlue());
 			actionButton.add(staP);
 			c.gridx = 1;

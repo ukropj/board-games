@@ -96,7 +96,7 @@ public class PlayerBoard extends JPanel implements Observer {
 
 	void updateFarm() {
 		Fencer.calculateFences(farm);
-		farmPanel.updateButtonsAndMsg();
+		farmPanel.updateControls();
 		farmPanel.paintImmediately(farmPanel.getVisibleRect());
 	}
 

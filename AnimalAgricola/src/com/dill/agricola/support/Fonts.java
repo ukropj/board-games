@@ -27,7 +27,7 @@ public class Fonts {
 	public static final Font TOOLBAR_TEXT = TEXT_FONT_BOLD.deriveFont(17f);
 
 	public static final Font FARM_NAME = TEXT_FONT.deriveFont(22f);
-	public static final Font FARM_FONT = TEXT_FONT.deriveFont(15f);
+	public static final Font FARM_FONT = TEXT_FONT.deriveFont(12f);
 	public static final Font FARM_BUILDING = TEXT_FONT.deriveFont(10f);
 	public static final Font FARM_MESSAGE = TEXT_FONT.deriveFont(13f);
 
@@ -36,6 +36,7 @@ public class Fonts {
 	public static final Font ACTION_TEXT_BIG = TEXT_FONT.deriveFont(14f);
 
 	public static final Font BUILDING_ICON = TEXT_FONT.deriveFont(20f);
+	public static final Font BUILDING_ICON_MEDIUM = TEXT_FONT.deriveFont(8f);
 
 	public static void updateFontToFit(Graphics2D g, String text, int width) {
 		Font font = g.getFont();

@@ -1,10 +1,8 @@
 #TODO#
 
-	animal count font+position
-	animal breeding notification
-	game ending
+	loose animal notification
+	game ending + restart
 	highlight current action
-	stables action icon
 	all dialog icons (top + inside)
 	resizing ?
 	less cluttered action board

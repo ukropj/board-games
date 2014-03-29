@@ -83,10 +83,11 @@ public class Game {
 
 		if (Main.DEBUG) {
 			board.buildDebugPanel(players);
+			board.setSize(1100, 640 + (Main.DEBUG ? 50 : 0));
 		} else {
 			board.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		}
-		board.pack();
+//		board.pack();
 		board.setLocationRelativeTo(null);
 		board.setVisible(true);
 	}
@@ -151,7 +152,7 @@ public class Game {
 		initialStartPlayer = startPlayer;
 
 		board.start();
-		board.pack();
+//		board.pack();
 		startRound();
 	}
 

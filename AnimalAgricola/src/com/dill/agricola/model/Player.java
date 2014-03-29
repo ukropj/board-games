@@ -8,6 +8,8 @@ import com.dill.agricola.common.Dir;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.buildings.Cottage;
+import com.dill.agricola.model.buildings.Stables;
+import com.dill.agricola.model.buildings.Stall;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Material;
@@ -60,7 +62,14 @@ public class Player extends SimpleObservable {
 			farm.put(Purchasable.FENCE, new DirPoint(pos, Dir.E));
 			Fencer.calculateFences(farm);
 			purchaseAnimal(Animal.COW, 1);
-			farm.putAnimals(new DirPoint(pos), Animal.COW, 1);
+			farm.putAnimals(pos, Animal.COW, 1);
+			
+			DirPoint pos2 = new DirPoint(0, 1);
+			farm.build(new Stall(0), pos2);
+			farm.build(new Stables(), pos2);
+			farm.put(Purchasable.TROUGH, pos2);
+			purchaseAnimal(Animal.SHEEP, 10);
+			farm.putAnimals(pos2, Animal.SHEEP, 10);
 		}
 		Fencer.calculateFences(farm);
 	}

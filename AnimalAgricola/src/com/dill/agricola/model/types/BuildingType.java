@@ -15,8 +15,6 @@ public enum BuildingType {
 	SHELTER(Msg.get("shelter"), Msg.get("immediately"), 		 0.12f, 0.57f, 0.38f),
 	OPEN_STABLES(Msg.get("openStables"), Msg.get("immediately"), 0.14f, 0.535f, 0.38f);
 
-//	BUILDING();
-
 	public final String name;
 	public final String text;
 

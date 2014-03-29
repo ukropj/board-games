@@ -15,6 +15,7 @@ import com.dill.agricola.model.types.Material;
 import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.support.Fonts;
+import com.dill.agricola.support.Msg;
 
 public class AgriImages {
 
@@ -305,6 +306,46 @@ public class AgriImages {
 			img = Images.getBestScaledInstance(img, 0.8f);
 			break;
 		}
+		return new ImageIcon(img);
+	}
+	
+	public static ImageIcon getStallIcon() {
+		BufferedImage orig = Images.createImage("b_stall1");
+		orig = Images.getBestScaledInstance(orig, 0.3f);
+		int w = orig.getWidth(), h = orig.getHeight();
+		BufferedImage img = new BufferedImage(w, h, Images.getImageType(orig));
+		Graphics2D g = img.createGraphics();
+		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+		g.drawImage(orig, 0, 0, w, h, null);
+		g.setFont(Fonts.BUILDING_ICON_MEDIUM);
+		g.setColor(Color.BLACK);
+		// names
+		String stall = Msg.get("stall");
+		int x = 28, y = 24;
+		g.drawString(stall, x, y);
+		g.dispose();
+		return new ImageIcon(img);
+	}
+	
+	public static ImageIcon getStallToStablesIcon() {
+		BufferedImage orig = Images.createImage("stall-to-stables");
+		orig = Images.getBestScaledInstance(orig, 0.3f);
+		int w = orig.getWidth(), h = orig.getHeight();
+		BufferedImage img = new BufferedImage(w, h, Images.getImageType(orig));
+		Graphics2D g = img.createGraphics();
+		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+		g.drawImage(orig, 0, 0, w, h, null);
+		g.setFont(Fonts.BUILDING_ICON_MEDIUM);
+		g.setColor(Color.BLACK);
+		// names
+		String stall = Msg.get("stall");
+		String stables = Msg.get("stables");
+		int x1 = 14, x2 = 55, y = 24;
+		g.drawString(stall, x1, y);
+		g.drawString(stables, x2, y);
+		g.dispose();
 		return new ImageIcon(img);
 	}
 
