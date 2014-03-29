@@ -11,11 +11,13 @@ public class Fonts {
 	public static final Font TEXT_FONT = new Font("Calibri", Font.BOLD, 15);	
 //	private static final Font DOMNICAN = new Font("Dominican", Font.BOLD, 15);	
 	
+	public static final Font TOOLBAR_FONT = TEXT_FONT.deriveFont(13f);
+	public static final Font TEXT_BIG = TEXT_FONT.deriveFont(22f);
+	
 	public static final Font FARM_FONT = TEXT_FONT.deriveFont(15f);
 	public static final Font FARM_BUILDING = TEXT_FONT.deriveFont(10f);
 	public static final Font FARM_MESSAGE = TEXT_FONT.deriveFont(13f);
 	
-	public static final Font TEXT_BIG = TEXT_FONT.deriveFont(22f);
 	
 	public static final Font ACTION_NUMBER = TEXT_FONT.deriveFont(18f);
 	public static final Font ACTION_TEXT = TEXT_FONT.deriveFont(12f);

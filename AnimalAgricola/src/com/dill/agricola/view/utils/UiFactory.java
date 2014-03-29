@@ -226,6 +226,7 @@ public class UiFactory {
 	
 	public static JButton createToolbarButton(String label, String iconName, String toolTip, ActionListener listener) {
 		JButton b = new JButton(label);
+		b.setFont(Fonts.TOOLBAR_FONT);
 //		b.setMargin(new Insets(1,1,1,1));
 		b.setToolTipText(toolTip);
 		if (iconName != null) {
