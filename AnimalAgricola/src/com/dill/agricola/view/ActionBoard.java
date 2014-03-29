@@ -1,10 +1,7 @@
 package com.dill.agricola.view;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.EnumMap;
@@ -15,10 +12,8 @@ import java.util.Map.Entry;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.UIManager;
 import javax.swing.border.Border;
 
-import com.dill.agricola.Game.ActionCommand;
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.ActionPerformer;
 import com.dill.agricola.actions.ActionStateChangeListener;
@@ -32,12 +27,9 @@ public class ActionBoard extends JPanel {
 	private final ActionPerformer ap;
 
 	private final Map<ActionType, Action> actions = new EnumMap<ActionType, Action>(ActionType.class);
-	private final Map<ActionType, JButton> actionButtons = new EnumMap<ActionType, JButton>(ActionType.class);
+	private final Map<ActionType, ActionButton> actionButtons = new EnumMap<ActionType, ActionButton>(ActionType.class);
 	private final JPanel actionPanel;
-//	private final JLabel hintLabel;
 
-	private static final Color defaultBtnColor = UIManager.getColor("Button.background");
-//	private static final Color defaultPanelColor = UIManager.getColor("Panel.background");
 	private static final Border defaultPanelBorder = BorderFactory.createEmptyBorder(
 			Board.BORDER_WIDTH, Board.BORDER_WIDTH, Board.BORDER_WIDTH, Board.BORDER_WIDTH);
 
@@ -49,20 +41,15 @@ public class ActionBoard extends JPanel {
 		actionPanel = new JPanel(new GridBagLayout());
 
 		for (final Action action : actions) {
-			final ActionType type = action.getType();
+			ActionType type = action.getType();
 			this.actions.put(type, action);
-			final JButton b = new JButton();
+			ActionButton b = new ActionButton(type);
 			b.setEnabled(false);
-			b.setMargin(new Insets(1, 1, 1, 1));
-			b.setAlignmentX(JButton.CENTER_ALIGNMENT);
-			b.setCursor(new Cursor(Cursor.HAND_CURSOR));
-			b.setToolTipText(type.name); // TODO better tooltip
-			b.setActionCommand(ActionCommand.SUBMIT.toString());
+			
 			b.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if (!action.isUsed()) {
 						if (ap.startAction(action)) {
-							b.setBackground(ap.getPlayer().getColor().getRealColor());
 							updateActions();
 
 							if (ap.isFinished()) {
@@ -82,10 +69,10 @@ public class ActionBoard extends JPanel {
 	}
 
 	public void updateActions() {
-		for (Entry<ActionType, JButton> btnEntry : actionButtons.entrySet()) {
+		for (Entry<ActionType, ActionButton> btnEntry : actionButtons.entrySet()) {
 			ActionType type = btnEntry.getKey();
 			Action a = actions.get(type);
-			JButton button = btnEntry.getValue();
+			ActionButton button = btnEntry.getValue();
 			if (ap.hasAction()) {
 				// when action is being performed, disable everything
 				button.setEnabled(false);
@@ -113,10 +100,6 @@ public class ActionBoard extends JPanel {
 		}
 		updateFinishLabel();
 	}
-
-//	private void updateControls() {
-//		finishB.setEnabled(ap.getPlayer() == null || ap.canFinish());
-//	}
 
 	private void updateFinishLabel() {
 		if (ap.canFinish()) {
@@ -148,23 +131,34 @@ public class ActionBoard extends JPanel {
 			b.setEnabled(false);
 		}
 	}
-
+	
 	private class ActionUsageListener implements ActionStateChangeListener {
 
-		private final JButton actionButtton;
+		private final ActionButton actionButtton;
+//		private final JLabel workerLabel;
 
-		public ActionUsageListener(JButton button) {
+
+		public ActionUsageListener(ActionButton button) {
 			actionButtton = button;
+//			workerLabel = UiFactory.createLabel("");
+//			workerLabel.setVisible(true);
+//			actionButtton.add(workerLabel);
+//			workerLabel.setIcon(workerIcons[0]);
+//			actionButtton.setComponentZOrder(workerLabel, 0);
 		}
 
 		public void stateChanges(Action action) {
 			if (!action.isUsed()) {
-				actionButtton.setBackground(defaultBtnColor);
+//				workerLabel.setVisible(false);
 				actionButtton.setEnabled(ap.getPlayer() != null && action.canDo(ap.getPlayer()));
+//				actionButtton.remove(workerLabel);
+//				workerLabel.setIcon(null);
 			} else {
-				actionButtton.setBackground(action.getUser().getRealColor());
+//				workerLabel.setVisible(true);
+//				workerLabel.setIcon(workerIcons[action.getUser().ordinal()]);
 				actionButtton.setEnabled(false);
 			}
+			actionButtton.setUsed(action.getUser());
 		}
 	}
 

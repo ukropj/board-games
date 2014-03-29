@@ -1,5 +1,6 @@
 package com.dill.agricola.actions.farm;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -122,6 +123,7 @@ public class BuildSpecial extends BuildAction {
 		List<JComponent> opts = new ArrayList<JComponent>();
 		for (int i = 0; i < animalRewards.length; i++) {
 			JComponent opt = UiFactory.createResourcesPanel(null, animalRewards[i], UiFactory.X_AXIS);
+			opt.setPreferredSize(new Dimension(40, 30));
 			opts.add(opt);
 		}
 		Icon icon = AgriImages.getBuildingIcon(building.getType(), ImgSize.MEDIUM);

@@ -310,7 +310,7 @@ public class Game {
 	};
 
 	public static enum ActionCommand {
-		NEW, EXIT, UNDO, REDO, SUBMIT, CANCEL, SCORE;
+		NEW, EXIT, UNDO, REDO, SUBMIT, CANCEL, SCORE, ABOUT;
 	}
 
 	private class StartRound extends SimpleEdit {

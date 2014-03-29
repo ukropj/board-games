@@ -55,7 +55,7 @@ public class PlayerBoard extends JPanel implements Observer {
 	private void buildTopPanel() {
 		PlayerColor color = player.getColor();
 		playerLabel = UiFactory.createLabel(Msg.get("player", Msg.get(color.toString().toLowerCase())));
-		playerLabel.setFont(Fonts.TEXT_BIG);
+		playerLabel.setFont(Fonts.FARM_NAME);
 		playerLabel.setPreferredSize(new Dimension(0, 30));
 //		playerLabel.setOpaque(true);
 //		playerLabel.setForeground(Color.WHITE);

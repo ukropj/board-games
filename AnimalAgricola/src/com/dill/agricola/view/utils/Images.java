@@ -18,13 +18,6 @@ public class Images {
 	private Images() {
 	}
 
-//	public static ImageIcon toIcon(BufferedImage image, int height) {
-//		float ratio = 1.0f * height / image.getHeight();
-//		int width = (int) (image.getWidth() * ratio);
-//		// TODO don't use getScaledInstance
-//		return new ImageIcon(image.getScaledInstance(width, height, Image.SCALE_SMOOTH));
-//	}
-
 	public static String getImagePath(String name, boolean icon) {
 		return "resources/" + (icon ? "icons/" : "images/") + name + ".png";
 	}

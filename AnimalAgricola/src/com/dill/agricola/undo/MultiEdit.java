@@ -9,6 +9,7 @@ import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.model.types.Purchasable;
+import com.dill.agricola.support.Msg;
 
 public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 	private static final long serialVersionUID = 1L;
@@ -34,7 +35,7 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 		hasBeenDone = true;
 		alive = true;
 	}
-	
+
 	public boolean isEmpty() {
 		return edits.size() == 0;
 	}
@@ -110,11 +111,11 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 	}
 
 	public String getUndoPresentationName() {
-		return !isSignificant() ? super.getUndoPresentationName() + "..." : "Undo " + getPresentationName();
+		return !isSignificant() ? super.getUndoPresentationName() + "..." : Msg.get("undo") + " " + getPresentationName();
 	}
 
 	public String getRedoPresentationName() {
-		return !isSignificant() ? super.getRedoPresentationName() + "..." : "Redo " + getPresentationName();
+		return !isSignificant() ? super.getRedoPresentationName() + "..." : Msg.get("redo") + " " + getPresentationName();
 	}
 
 	public boolean matchesFarmAction(PlayerColor player, DirPoint pos, Purchasable thing) {
@@ -154,8 +155,7 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 		return false;
 	}
 
-	public String toString()
-	{
+	public String toString() {
 		return getPresentationName()
 				+ " hasBeenDone: " + hasBeenDone
 				+ " alive: " + alive

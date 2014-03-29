@@ -90,6 +90,10 @@ public abstract class AbstractAction implements Action {
 			listener.stateChanges(this);
 		}
 	}
+	
+	public String toString() {
+		return Namer.getName(this) + " user:" + user;
+	}
 
 	protected class ActionInit extends SimpleEdit {
 		private static final long serialVersionUID = 1L;

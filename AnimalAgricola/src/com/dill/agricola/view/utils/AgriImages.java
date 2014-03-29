@@ -29,7 +29,7 @@ public class AgriImages {
 	private final static BufferedImage[] troughs = new BufferedImage[ImgSize.values().length];
 	private final static BufferedImage[] firstTokens = new BufferedImage[ImgSize.values().length * PlayerColor.values().length];
 	private final static BufferedImage[] farmsAndMargins = new BufferedImage[4];
-	private final static BufferedImage[] workers = new BufferedImage[PlayerColor.values().length];
+	private final static BufferedImage[] workers = new BufferedImage[PlayerColor.values().length + 1];
 //	private final static BufferedImage[] misc = new BufferedImage[4];
 	private static BufferedImage[] cottages = new BufferedImage[PlayerColor.values().length];
 	private static BufferedImage[] stallsAndStables = new BufferedImage[8];
@@ -63,7 +63,7 @@ public class AgriImages {
 	}
 
 	public static BufferedImage getWorkerImage(PlayerColor color) {
-		int i = color.ordinal();
+		int i = color != null ? color.ordinal() : 2;
 		if (workers[i] == null) {
 			BufferedImage img = Images.createImage("worker" + (i + 1));
 			img = Images.getBestScaledInstance(img, 0.3f);

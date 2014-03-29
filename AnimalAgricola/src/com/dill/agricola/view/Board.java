@@ -1,7 +1,6 @@
 package com.dill.agricola.view;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
@@ -17,10 +16,12 @@ import java.util.Arrays;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
@@ -116,18 +117,22 @@ public class Board extends JFrame {
 		redoB.setActionCommand(ActionCommand.REDO.toString());
 		undoB.setEnabled(false);
 		toolbar.add(redoB);
-
 		toolbar.addSeparator();
+
 		JButton scoreB = UiFactory.createToolbarButton(null, "application-certificate", Msg.get("scoringBtn"), bl);
 		scoreB.setActionCommand(ActionCommand.SCORE.toString());
 		toolbar.add(scoreB);
-
 		toolbar.add(Box.createHorizontalGlue());
 
 		statusL = UiFactory.createLabel(Msg.get("round", 0, Game.ROUNDS));
-		statusL.setFont(Fonts.TEXT_FONT.deriveFont(18f));
+		statusL.setFont(Fonts.TOOLBAR_TEXT);
 		toolbar.add(statusL);
-		toolbar.addSeparator(new Dimension(5, 0));
+		toolbar.add(Box.createHorizontalGlue());
+
+		JButton aboutB = UiFactory.createToolbarButton(null, "help-browser", Msg.get("aboutBtn"), bl);
+		aboutB.setActionCommand(ActionCommand.ABOUT.toString());
+		toolbar.add(aboutB);
+//		toolbar.addSeparator(new Dimension(5, 0));
 
 		getContentPane().add(toolbar, BorderLayout.PAGE_START);
 	}
@@ -234,7 +239,7 @@ public class Board extends JFrame {
 	public void endGame() {
 		if (Main.DEBUG
 				|| !game.isStarted()
-				|| UiFactory.showQuestionDialog(Msg.get("endGame"), Msg.get("gameInProgress"))) {
+				|| UiFactory.showQuestionDialog(Msg.get("endGameMsg"), Msg.get("gameInProgressTitle"))) {
 			System.exit(0);
 		}
 	}
@@ -252,7 +257,7 @@ public class Board extends JFrame {
 			switch (command) {
 			case NEW:
 				if (!board.game.isStarted()
-						|| UiFactory.showQuestionDialog(Msg.get("restartGame"), Msg.get("gameInProgress"))) {
+						|| UiFactory.showQuestionDialog(Msg.get("restartGameMsg"), Msg.get("gameInProgressTitle"))) {
 					board.game.start();
 				}
 				break;
@@ -264,6 +269,10 @@ public class Board extends JFrame {
 				break;
 			case SCORE:
 				showScoring();
+				break;
+			case ABOUT:
+				BufferedImage img = Images.getBestScaledInstance(Images.createImage("a_all"), 50);
+				JOptionPane.showMessageDialog(board, Msg.get("aboutMsg"), Msg.get("aboutTitle"), JOptionPane.INFORMATION_MESSAGE, new ImageIcon(img));
 				break;
 			case EXIT:
 				board.endGame();

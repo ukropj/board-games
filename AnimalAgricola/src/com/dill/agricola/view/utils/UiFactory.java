@@ -1,6 +1,7 @@
 package com.dill.agricola.view.utils;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Insets;
@@ -46,6 +47,9 @@ public class UiFactory {
 //	public static String pad(String str, int length) {
 //		return String.format("%1$-" + length + "s", str);
 //	}
+	public static Color makeTranslucent(Color c, int alpha) {
+		return new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha);
+	}
 
 	public static JPanel createFlowPanel() {
 		return createFlowPanel(0, 0);
@@ -177,7 +181,7 @@ public class UiFactory {
 	public static JLabel createLabel(String string, Icon icon) {
 		JLabel l = new JLabel(string, icon, JLabel.CENTER);
 		l.setHorizontalTextPosition(JLabel.LEFT);
-		l.setIconTextGap(1);
+		l.setIconTextGap(3);
 		l.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 		l.setAlignmentY(JLabel.CENTER_ALIGNMENT);
 		if (string != null) {
@@ -226,7 +230,7 @@ public class UiFactory {
 	
 	public static JButton createToolbarButton(String label, String iconName, String toolTip, ActionListener listener) {
 		JButton b = new JButton(label);
-		b.setFont(Fonts.TOOLBAR_FONT);
+		b.setFont(Fonts.TOOLBAR_BTN);
 //		b.setMargin(new Insets(1,1,1,1));
 		b.setToolTipText(toolTip);
 		if (iconName != null) {

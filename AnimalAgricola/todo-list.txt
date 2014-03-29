@@ -1,11 +1,9 @@
 #TODO#
 
 	animal count font+position
-	embed fonts
 	animal breeding notification
 	game ending
 	highlight current action
-	about & credits
 	stables action icon
 	all dialog icons (top + inside)
 	resizing ?

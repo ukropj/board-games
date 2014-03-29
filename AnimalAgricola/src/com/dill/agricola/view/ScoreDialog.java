@@ -32,7 +32,7 @@ public class ScoreDialog extends JDialog {
 	private static final Color BORDER_COLOR = Color.LIGHT_GRAY;
 
 	public ScoreDialog(Player[] players, PlayerColor initialStartingPlayer) {
-		setTitle(Msg.get("scoring"));
+		setTitle(Msg.get("scoringTitle"));
 		setIconImage(Images.createIcon("application-certificate", ImgSize.SMALL).getImage());
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setResizable(false);
@@ -77,7 +77,7 @@ public class ScoreDialog extends JDialog {
 		mainP.add(p, BorderLayout.CENTER);
 		
 		if (blueTotal == redTotal) {
-			JLabel bottomLabel = UiFactory.createLabel(Msg.get("msgTieBreaker", 
+			JLabel bottomLabel = UiFactory.createLabel(Msg.get("tieBreakerMsg", 
 					Msg.get(initialStartPlayer.other().toString().toLowerCase())));
 			mainP.add(bottomLabel, BorderLayout.SOUTH);
 		}
@@ -85,7 +85,7 @@ public class ScoreDialog extends JDialog {
 		// winner
 		PlayerColor winner = blueTotal > redTotal ? PlayerColor.BLUE
 				: blueTotal < redTotal ? PlayerColor.RED : initialStartPlayer.other();
-		JLabel winnerLabel = UiFactory.createLabel(Msg.get("msgWinner", 
+		JLabel winnerLabel = UiFactory.createLabel(Msg.get("winnerMsg", 
 				Msg.get(winner.toString().toLowerCase())));
 		winnerLabel.setFont(Fonts.TEXT_FONT.deriveFont(18f));
 		winnerLabel.setOpaque(true);

@@ -7,6 +7,7 @@ import javax.swing.undo.CannotUndoException;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.model.types.Purchasable;
+import com.dill.agricola.support.Msg;
 import com.dill.agricola.support.Namer;
 
 public abstract class SimpleEdit extends AbstractUndoableEdit implements UndoableFarmEdit {
@@ -62,6 +63,16 @@ public abstract class SimpleEdit extends AbstractUndoableEdit implements Undoabl
 
 	public String getPresentationName() {
 		return Namer.getName(this);
+	}
+
+	public String getUndoPresentationName() {
+		String name = getPresentationName();
+		return Msg.get("undo") + (!"".equals(name) ? " " + name : "");
+	}
+
+	public String getRedoPresentationName() {
+		String name = getPresentationName();
+		return Msg.get("redo") + (!"".equals(name) ? " " + name : "");
 	}
 
 }

@@ -190,7 +190,7 @@ public class FarmPanel extends JPanel {
 		msgLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 		msgLabel.setAlignmentY(JLabel.CENTER_ALIGNMENT);
 		msgLabel.setFont(Fonts.FARM_MESSAGE);
-		msgLabel.setBackground(makeTranslucent(msgLabel.getBackground(), 210));
+		msgLabel.setBackground(UiFactory.makeTranslucent(msgLabel.getBackground(), 210));
 		msgLabel.setBounds(M, M, getWidth() - 2 * M, X1 - 4 * M);
 		add(msgLabel);
 	}
@@ -238,6 +238,7 @@ public class FarmPanel extends JPanel {
 		JPanel workersP = UiFactory.createVerticalPanel();
 		for (int i = 0; i < workerLabels.length; i++) {
 			workerLabels[i] = UiFactory.createLabel(AgriImages.getWorkerIcon(player.getColor()));
+			workerLabels[i].setDisabledIcon(AgriImages.getWorkerIcon(null));
 			workersP.add(workerLabels[i]);
 			workersP.add(Box.createVerticalStrut(5));
 		}
@@ -257,7 +258,7 @@ public class FarmPanel extends JPanel {
 		};
 		supplyPanel.setLayout(new BoxLayout(supplyPanel, BoxLayout.Y_AXIS));
 		supplyPanel.setOpaque(false);
-		supplyPanel.setBackground(makeTranslucent(msgLabel.getBackground(), 180));
+		supplyPanel.setBackground(UiFactory.makeTranslucent(msgLabel.getBackground(), 180));
 
 		JPanel materialsP = new JPanel(new GridLayout(2, 4));
 		materialsP.setOpaque(false);
@@ -284,10 +285,11 @@ public class FarmPanel extends JPanel {
 		msgLabel.setLocation((getWidth() - msgLabel.getWidth()) / 2, msgLabel.getY());
 	}
 
-	public void updateButtonsAndMsg() { //TODO rename
+	public void updateButtonsAndMsg() { //  TODO rename
 		firstLabel.setVisible(player.isStarting());
 		for (int i = 0; i < workerLabels.length; i++) {
 			workerLabels[i].setVisible(player.getWorkers() > i);
+//			workerLabels[i].setEnabled(player.getWorkers() > i);
 		}
 		for (Material m : Material.values()) {
 			supply.get(m).setText(String.valueOf(player.getMaterial(m)));
@@ -452,7 +454,7 @@ public class FarmPanel extends JPanel {
 
 		for (DirPoint pos : PointUtils.createGridRange(-1, farm.getWidth() + 1, 0, 1)) {
 			if (isActive(pos, Purchasable.EXTENSION)) {
-				g.setColor(makeTranslucent(player.getColor().getRealColor(), 140));
+				g.setColor(UiFactory.makeTranslucent(player.getColor().getRealColor(), 140));
 				Rectangle r = extRect;
 				r.translate(X1 + pos.x * S, 0);
 				g.fill(r);
@@ -486,7 +488,7 @@ public class FarmPanel extends JPanel {
 		int count = space.getAnimals();
 		if (space.getMaxCapacity() > 0 || count > 0) {
 			g.setStroke(NORMAL_STROKE);
-			g.setColor(makeTranslucent(type != null ? (space.isValid() ? type.getColor() : PASTURE_COLOR) : PASTURE_COLOR, 200));
+			g.setColor(UiFactory.makeTranslucent(type != null ? (space.isValid() ? type.getColor() : PASTURE_COLOR) : PASTURE_COLOR, 200));
 			g.setClip(getVisibleRect().createIntersection(new Rectangle(realPos.x + M, realPos.y + M, L + 1, L + 1)));
 			g.fillOval(realPos.x + S - 6 * M, realPos.y + S - 6 * M, 8 * M, 8 * M);
 			g.setClip(getVisibleRect());
@@ -501,7 +503,7 @@ public class FarmPanel extends JPanel {
 			// can add more - show "area"
 			AffineTransform tr = AffineTransform.getTranslateInstance(realPos.x, realPos.y);
 			Area r = animalArea.createTransformedArea(tr);
-			g.setColor(makeTranslucent(player.getColor().getRealColor(), 120));
+			g.setColor(UiFactory.makeTranslucent(player.getColor().getRealColor(), 120));
 			g.fill(r);
 			if (count == 0) {
 				// no animals present - show options
@@ -540,7 +542,7 @@ public class FarmPanel extends JPanel {
 
 		if (isActive(pos, Purchasable.TROUGH)) {
 			troughShape.translate(realPos.x, realPos.y);
-			g.setColor(makeTranslucent(player.getColor().getRealColor(), 140));
+			g.setColor(UiFactory.makeTranslucent(player.getColor().getRealColor(), 140));
 			g.fill(troughShape);
 			troughShape.translate(-realPos.x, -realPos.y);
 		}
@@ -595,7 +597,7 @@ public class FarmPanel extends JPanel {
 		}
 
 		if (isActive(pos, Purchasable.BUILDING)) {
-			g.setColor(makeTranslucent(player.getColor().getRealColor(), 120));
+			g.setColor(UiFactory.makeTranslucent(player.getColor().getRealColor(), 120));
 			g.fill(r);
 		}
 
@@ -618,7 +620,7 @@ public class FarmPanel extends JPanel {
 		}
 
 		if (isActive(dirPos, Purchasable.FENCE)) {
-			g.setColor(makeTranslucent(player.getColor().getRealColor(), 130));
+			g.setColor(UiFactory.makeTranslucent(player.getColor().getRealColor(), 130));
 			g.fill(r);
 		}
 	}
@@ -697,10 +699,6 @@ public class FarmPanel extends JPanel {
 			BufferedImage arrowImg = AgriImages.getArrowImage(Dir.S, true, ImgSize.BIG);
 			g.drawImage(arrowImg, 2 * M, 2 * M, arrowImg.getWidth(), arrowImg.getHeight(), null);
 		}*/
-	}
-
-	private static Color makeTranslucent(Color c, int alpha) {
-		return new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha);
 	}
 
 	private class SpaceListener extends MouseAdapter {
