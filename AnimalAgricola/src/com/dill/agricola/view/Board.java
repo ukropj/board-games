@@ -1,7 +1,6 @@
 package com.dill.agricola.view;
 
 import java.awt.BorderLayout;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -22,6 +21,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.event.UndoableEditEvent;
@@ -41,13 +41,15 @@ import com.dill.agricola.view.utils.UiFactory;
 
 public class Board extends JFrame {
 	private static final long serialVersionUID = 1L;
+	
+	public static final int BORDER_WIDTH = 5;
 
 	private Game game;
 
 	private final ActionPerformer ap;
 	private final TurnUndoManager undoManager;
 
-	private final Container mainPane;
+	private final JPanel mainPane;
 
 	private JLabel statusL;
 	private final PlayerBoard[] playerBoards;
@@ -55,7 +57,7 @@ public class Board extends JFrame {
 	private DebugPanel debugPanel;
 	private JButton undoB;
 	private JButton redoB;
-	
+
 	private ScoreDialog scoreDialog;
 
 	public Board(Game game, ActionPerformer ap, TurnUndoManager undoManager) {
@@ -77,6 +79,8 @@ public class Board extends JFrame {
 
 		mainPane = UiFactory.createFlowPanel();
 		mainPane.setLayout(new GridBagLayout());
+		int b = 10;
+		mainPane.setBorder(BorderFactory.createEmptyBorder(b, b, b, b));
 		getContentPane().add(mainPane, BorderLayout.CENTER);
 
 		initToolbar();
@@ -95,7 +99,7 @@ public class Board extends JFrame {
 	private void initToolbar() {
 		ToolListener bl = new ToolListener(this);
 		JToolBar toolbar = new JToolBar(JToolBar.HORIZONTAL);
-		toolbar.setMargin(new Insets(0,0,0,0));
+		toolbar.setMargin(new Insets(0, 0, 0, 0));
 		toolbar.setFloatable(false);
 		toolbar.setRollover(true);
 
@@ -103,7 +107,7 @@ public class Board extends JFrame {
 		newB.setActionCommand(ActionCommand.NEW.toString());
 		toolbar.add(newB);
 		toolbar.addSeparator();
-		
+
 		undoB = UiFactory.createToolbarButton(null, "edit-undo", "", bl);
 		undoB.setActionCommand(ActionCommand.UNDO.toString());
 		undoB.setEnabled(false);
@@ -112,19 +116,19 @@ public class Board extends JFrame {
 		redoB.setActionCommand(ActionCommand.REDO.toString());
 		undoB.setEnabled(false);
 		toolbar.add(redoB);
-		
+
 		toolbar.addSeparator();
 		JButton scoreB = UiFactory.createToolbarButton(null, "application-certificate", Msg.get("scoringBtn"), bl);
 		scoreB.setActionCommand(ActionCommand.SCORE.toString());
 		toolbar.add(scoreB);
 
 		toolbar.add(Box.createHorizontalGlue());
-		
+
 		statusL = UiFactory.createLabel(Msg.get("round", 0, Game.ROUNDS));
-		statusL.setFont(Fonts.TEXT_BIG);
+		statusL.setFont(Fonts.TEXT_FONT.deriveFont(18f));
 		toolbar.add(statusL);
 		toolbar.addSeparator(new Dimension(5, 0));
-		
+
 		getContentPane().add(toolbar, BorderLayout.PAGE_START);
 	}
 
@@ -134,7 +138,12 @@ public class Board extends JFrame {
 		playerBoards[color.ordinal()] = playerBoard;
 
 		JScrollPane scrollPane = new JScrollPane(playerBoard);
-		scrollPane.setBorder(BorderFactory.createEmptyBorder());
+		scrollPane.setBorder(BorderFactory.createMatteBorder(
+				BORDER_WIDTH,
+				color == PlayerColor.BLUE ? BORDER_WIDTH : 0,
+				BORDER_WIDTH,
+				color == PlayerColor.RED ? BORDER_WIDTH : 0,
+				color.getRealColor()));
 
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = x;
@@ -159,12 +168,7 @@ public class Board extends JFrame {
 
 	public void buildDebugPanel(Player[] players) {
 		debugPanel = new DebugPanel(players);
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridx = 0;
-		c.gridy = 1;
-		c.gridwidth = 3;
-		c.fill = GridBagConstraints.BOTH;
-		mainPane.add(debugPanel, c);
+		getContentPane().add(debugPanel, BorderLayout.PAGE_END);
 	}
 
 	public void start() {
@@ -179,7 +183,7 @@ public class Board extends JFrame {
 		actionBoard.updateActions();
 		refreshUndoRedo();
 	}
-	
+
 	public void refreshUndoRedo() {
 		// refresh undo
 		undoB.setText(undoManager.getUndoPresentationName());

@@ -27,9 +27,9 @@ import com.dill.agricola.view.utils.UiFactory;
 public class ScoreDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
 	
-	private final DecimalFormat scoreFormat = new DecimalFormat("###.#");
-	private final Color MORE_COLOR = new Color(23, 133, 23);
-	private final Color BORDER_COLOR = Color.LIGHT_GRAY;
+	private static final DecimalFormat scoreFormat = new DecimalFormat("###.#");
+	private static final Color MORE_COLOR = new Color(23, 133, 23);
+	private static final Color BORDER_COLOR = Color.LIGHT_GRAY;
 
 	public ScoreDialog(Player[] players, PlayerColor initialStartingPlayer) {
 		setTitle(Msg.get("scoring"));

@@ -5,10 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.Animal;
@@ -150,13 +148,6 @@ public class DebugPanel extends JPanel {
 				currentPlayer.notifyObservers();
 			}
 		});
-		createDebugButton("Done", new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				currentPlayer.setActiveType(null);
-				currentPlayer.notifyObservers();
-			}
-		});
-		createDebugButton("*Score*", new ScoreListener(this));
 	}
 
 	private JButton createDebugButton(JLabel label, ActionListener al) {
@@ -172,21 +163,6 @@ public class DebugPanel extends JPanel {
 		b.addActionListener(al);
 		this.add(b);
 		return b;
-	}
-
-	private class ScoreListener implements ActionListener {
-
-		private final JComponent c;
-
-		public ScoreListener(JComponent c) {
-			this.c = c;
-		}
-
-		public void actionPerformed(ActionEvent e) {
-			ScoreDialog sd = new ScoreDialog(players, players[0].getColor() /*not true*/);
-			sd.setLocationRelativeTo(SwingUtilities.windowForComponent(c));
-			sd.setVisible(true);
-		}
 	}
 
 }

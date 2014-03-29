@@ -151,6 +151,7 @@ public class Game {
 		initialStartPlayer = startPlayer;
 
 		board.start();
+		board.pack();
 		startRound();
 	}
 

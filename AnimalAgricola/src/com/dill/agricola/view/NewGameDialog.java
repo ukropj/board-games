@@ -13,6 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
+import com.dill.agricola.Main;
 import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.AgriImages;
@@ -30,7 +31,6 @@ public class NewGameDialog extends JDialog implements ActionListener {
 
 	public NewGameDialog(JFrame parent) {
 		super(parent);
-		// TODO make reusable
 		setTitle(Msg.get("newGameTitle"));
 		setIconImage(Images.createIcon("document-new", ImgSize.SMALL).getImage());
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -40,14 +40,13 @@ public class NewGameDialog extends JDialog implements ActionListener {
 		buildOptions();
 		pack();
 		setLocationRelativeTo(parent);
-//		setSize(300, 400);
 
-//		if (!Main.DEBUG) {
-		setVisible(true);
-//		} else {
-//			done = true;
-//			dispose();
-//		}
+		if (!Main.DEBUG) {
+			setVisible(true);
+		} else {
+			done = true;
+			dispose();
+		}
 	}
 
 	private void buildOptions() {

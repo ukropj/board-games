@@ -325,14 +325,14 @@ public class Player extends SimpleObservable {
 		int animals = 0;
 		for (Animal type : Animal.values()) {
 			animals += getAnimalScore(type);
-			System.out.println("\t" + type + ": " + getAnimalScore(type));
+//			System.out.println("\t" + type + ": " + getAnimalScore(type));
 		}
 		// score extensions
 		int usedExts = getExtensionsScore();
-		System.out.println("\tExtensions: " + usedExts);
+//		System.out.println("\tExtensions: " + usedExts);
 		// score buildings
 		float buildings = getBuildingScore();
-		System.out.println("\tBuildings: " + buildings);
+//		System.out.println("\tBuildings: " + buildings);
 
 		return animals + usedExts + buildings;
 	}

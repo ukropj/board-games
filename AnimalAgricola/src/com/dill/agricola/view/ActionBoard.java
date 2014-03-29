@@ -12,9 +12,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
 
 import com.dill.agricola.Game.ActionCommand;
 import com.dill.agricola.actions.Action;
@@ -22,6 +24,7 @@ import com.dill.agricola.actions.ActionPerformer;
 import com.dill.agricola.actions.ActionStateChangeListener;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
+import com.dill.agricola.model.types.PlayerColor;
 
 public class ActionBoard extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -34,7 +37,9 @@ public class ActionBoard extends JPanel {
 //	private final JLabel hintLabel;
 
 	private static final Color defaultBtnColor = UIManager.getColor("Button.background");
-	private static final Color defaultPanelColor = UIManager.getColor("Panel.background");
+//	private static final Color defaultPanelColor = UIManager.getColor("Panel.background");
+	private static final Border defaultPanelBorder = BorderFactory.createEmptyBorder(
+			Board.BORDER_WIDTH, Board.BORDER_WIDTH, Board.BORDER_WIDTH, Board.BORDER_WIDTH);
 
 	public ActionBoard(List<Action> actions, final ActionPerformer ap, final ActionListener submitListener) {
 		this.ap = ap;
@@ -93,9 +98,18 @@ public class ActionBoard extends JPanel {
 			}
 		}
 		if (ap.getPlayer() != null) {
-			actionPanel.setBackground(ap.getPlayer().getColor().getRealColor());
+//			actionPanel.setBackground(ap.getPlayer().getColor().getRealColor());
+			PlayerColor pc = ap.getPlayer().getColor();
+			actionPanel.setBorder(
+					BorderFactory.createMatteBorder(
+							Board.BORDER_WIDTH,
+							pc == PlayerColor.RED ? Board.BORDER_WIDTH : 0,
+							Board.BORDER_WIDTH,
+							pc == PlayerColor.BLUE ? Board.BORDER_WIDTH : 0,
+							pc.getRealColor()));
 		} else {
-			actionPanel.setBackground(defaultPanelColor);
+//			actionPanel.setBackground(defaultPanelColor);
+			actionPanel.setBorder(defaultPanelBorder);
 		}
 		updateFinishLabel();
 	}

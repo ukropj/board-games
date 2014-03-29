@@ -54,6 +54,8 @@ import com.dill.agricola.view.utils.UiFactory;
 
 public class ActionPanelFactory {
 
+	private final static int INSET = 4;
+	
 	// TODO this introduces state, rethink
 	private static ActionStateChangeListener stallSupplyChangeListener = null;
 	private static ActionStateChangeListener buildingChangeListener = null;
@@ -64,7 +66,7 @@ public class ActionPanelFactory {
 		c.fill = GridBagConstraints.BOTH;
 		c.gridwidth = 3;
 		c.ipadx = c.ipady = 3;
-		c.insets = new Insets(2, 2, 2, 2);
+		c.insets = new Insets(INSET,INSET,INSET,INSET);
 		c.weighty = 0.5;
 		switch (action.getType()) {
 		case STARTING_ONE_WOOD:
@@ -232,19 +234,19 @@ public class ActionPanelFactory {
 
 		parent.add(actionPanel != null ? actionPanel : actionButton, c);
 	}
-	
+
 	private static JPanel createBuildingPanel() {
 		JPanel display = new JPanel(new GridLayout(0, 4, 2, 2));
 		display.setOpaque(false);
 		JPanel bP = UiFactory.createBorderPanel(2, 0);
 		bP.add(display, BorderLayout.CENTER);
-		
+
 		JButton button = new JButton(Images.createIcon("system-search", ImgSize.MEDIUM));
 		button.setToolTipText(Msg.get("buildingDetailTip"));
-		button.setMargin(new Insets(2,2,2,2));
+		button.setMargin(new Insets(INSET,INSET,INSET,INSET));
 		button.addActionListener(new BuildingDetailListener());
 		bP.add(button, BorderLayout.LINE_END);
-		
+
 		buildingChangeListener = new BuildingChangeListener(display, button);
 		return bP;
 	}
@@ -265,13 +267,13 @@ public class ActionPanelFactory {
 		c.gridy = y;
 		c.gridwidth = 2;
 		c.ipadx = c.ipady = 3;
-		c.insets = new Insets(2, 2, 2, 0);
+		c.insets = new Insets(INSET, INSET, INSET, 0);
 		c.weightx = 0.6;
 		c.weighty = 0.5;
 		parent.add(createPrefixPanel(materials, animal, otherAnimal), c);
 		c.gridx = 3 * x + 2;
 		c.gridwidth = 1;
-		c.insets = new Insets(2, 0, 2, 2);
+		c.insets = new Insets(INSET, 0, INSET, INSET);
 		parent.add(createResourcesButton(action, button, extraP), c);
 	}
 
@@ -367,7 +369,7 @@ public class ActionPanelFactory {
 			buildingPanel.revalidate();
 		}
 	}
-	
+
 	private static class BuildingDetailListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
@@ -384,7 +386,7 @@ public class ActionPanelFactory {
 			JOptionPane.showOptionDialog(null, "", Msg.get("specialBuildings"), JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null,
 					opts.toArray(), null);
 		}
-		
+
 	}
 
 }

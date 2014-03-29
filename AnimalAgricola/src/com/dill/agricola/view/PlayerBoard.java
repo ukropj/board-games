@@ -1,7 +1,6 @@
 package com.dill.agricola.view;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -58,16 +57,17 @@ public class PlayerBoard extends JPanel implements Observer {
 		playerLabel = UiFactory.createLabel(Msg.get("player", Msg.get(color.toString().toLowerCase())));
 		playerLabel.setFont(Fonts.TEXT_BIG);
 		playerLabel.setPreferredSize(new Dimension(0, 30));
-		playerLabel.setOpaque(true);
-		playerLabel.setForeground(Color.WHITE);
-		playerLabel.setBackground(color.getRealColor());
+//		playerLabel.setOpaque(true);
+//		playerLabel.setForeground(Color.WHITE);
+		playerLabel.setForeground(color.getRealColor());
+//		playerLabel.setBackground(color.getRealColor());
 		add(playerLabel, BorderLayout.NORTH);
 
-		JLabel footerLabel = UiFactory.createLabel("");
-		footerLabel.setPreferredSize(new Dimension(0, 30));
-		footerLabel.setOpaque(true);
-		footerLabel.setBackground(color.getRealColor());
-		add(footerLabel, BorderLayout.SOUTH);
+//		JLabel footerLabel = UiFactory.createLabel("");
+//		footerLabel.setPreferredSize(new Dimension(0, 5));
+//		footerLabel.setOpaque(true);
+//		footerLabel.setBackground(color.getRealColor());
+//		add(footerLabel, BorderLayout.SOUTH);
 	}
 
 	private void buildFarmPanel(ActionListener submitListener) {

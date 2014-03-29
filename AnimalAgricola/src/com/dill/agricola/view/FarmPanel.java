@@ -381,8 +381,7 @@ public class FarmPanel extends JPanel {
 	public void paintComponent(Graphics g0) {
 		super.paintComponent(g0);
 		Graphics2D g = (Graphics2D) g0;
-
-//		g.setClip(new Rectangle(getPreferredSize()));
+		g.setClip(getVisibleRect());
 
 		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
@@ -414,7 +413,6 @@ public class FarmPanel extends JPanel {
 	private void drawPad(Graphics2D g) {
 		int count = (farm.getWidth() + 1) / 2 + (farm.getWidth() + 1) % 2;
 		int d = (count * 2 * S - getWidth()) / 2;
-		g.setClip(new Rectangle(getPreferredSize()));
 		for (int i = 0; i < count; i++) {
 			BufferedImage img = AgriImages.getFarmPadImage(i % 3);
 			g.drawImage(img, -d + i * 2 * S, H, S * 2, P, null);
@@ -464,11 +462,6 @@ public class FarmPanel extends JPanel {
 	}
 
 	private void drawSpace(Graphics2D g, DirPoint pos, Space space) {
-		g.setColor(Color.BLACK);
-		// if (Main.DEBUG) {
-		// g.drawRect(x + M, y + M, L, L);
-		// }
-
 		List<Animal> availableAnimals = farm.guessAnimalTypesToPut(pos, true);
 
 		// building
@@ -494,9 +487,9 @@ public class FarmPanel extends JPanel {
 		if (space.getMaxCapacity() > 0 || count > 0) {
 			g.setStroke(NORMAL_STROKE);
 			g.setColor(makeTranslucent(type != null ? (space.isValid() ? type.getColor() : PASTURE_COLOR) : PASTURE_COLOR, 200));
-			g.setClip(realPos.x + M, realPos.y + M, L + 1, L + 1);
+			g.setClip(getVisibleRect().createIntersection(new Rectangle(realPos.x + M, realPos.y + M, L + 1, L + 1)));
 			g.fillOval(realPos.x + S - 6 * M, realPos.y + S - 6 * M, 8 * M, 8 * M);
-			g.setClip(null);
+			g.setClip(getVisibleRect());
 
 			g.setColor(type != null ? (space.isValid() ? type.getContrastingColor() : Color.RED) : Color.BLACK);
 			String text = count + "/" + space.getMaxCapacity();
@@ -613,7 +606,6 @@ public class FarmPanel extends JPanel {
 			// will be brawn by neighouring spaces
 			return;
 		}
-
 		DirPoint realPos = toRealPos(dirPos);
 		boolean hasBorder = farm.has(Purchasable.FENCE, dirPos, false);
 
