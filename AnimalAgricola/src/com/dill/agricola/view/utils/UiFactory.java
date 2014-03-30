@@ -7,6 +7,8 @@ import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.List;
 
@@ -195,9 +197,9 @@ public class UiFactory {
 	}
 
 	public static boolean showQuestionDialog(String message, String title) {
-		List<JComponent> opts = Arrays.asList(new JComponent[] { 
-			UiFactory.createLabel(Msg.get("yes"), null, 50), 
-			UiFactory.createLabel(Msg.get("no"), null, 50)
+		List<JComponent> opts = Arrays.asList(new JComponent[] {
+				UiFactory.createLabel(Msg.get("yes"), null, 50),
+				UiFactory.createLabel(Msg.get("no"), null, 50)
 		});
 		return 0 == showOptionDialog(message, title, null, opts);
 	}
@@ -227,17 +229,41 @@ public class UiFactory {
 		Object retVal = pane.getValue();
 		return retVal == null ? JOptionPane.CLOSED_OPTION : (int) retVal;
 	}
-	
+
 	public static JButton createToolbarButton(String label, String iconName, String toolTip, ActionListener listener) {
-		JButton b = new JButton(label);
-		b.setFont(Fonts.TOOLBAR_BTN);
-//		b.setMargin(new Insets(1,1,1,1));
+		final JButton b = new JButton(label);
 		b.setToolTipText(toolTip);
+		b.setFont(Fonts.TOOLBAR_BTN);
+		b.setContentAreaFilled(false);
+		b.setBorderPainted(false);
+		b.setFocusPainted(false); // not good for a11y, but rest of game is not navigable by keyboard anyway
 		if (iconName != null) {
 			b.setIcon(Images.createIcon(iconName, ImgSize.SMALL));
 		}
 		b.addActionListener(listener);
+
+		b.addMouseListener(new MouseAdapter() {
+
+			public void mouseExited(MouseEvent e) {
+				b.setContentAreaFilled(false);
+				b.setBorderPainted(false);
+			}
+
+			public void mouseEntered(MouseEvent e) {
+				if (b.isEnabled()) {
+					b.setContentAreaFilled(true);
+					b.setBorderPainted(true);
+				}
+			}
+
+		});
 		return b;
 	}
 
+	public static JComponent createToolbarSeparator() {
+		JLabel l = new JLabel(Images.createIcon("separator", ImgSize.SMALL));
+		l.setBorder(BorderFactory.createEmptyBorder(0, 1, 0, 2));
+		return l;
+//		return new JToolBar.Separator(null);
+	}
 }

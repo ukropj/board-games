@@ -42,7 +42,7 @@ import com.dill.agricola.view.utils.UiFactory;
 
 public class Board extends JFrame {
 	private static final long serialVersionUID = 1L;
-	
+
 	public static final int BORDER_WIDTH = 5;
 
 	private Game game;
@@ -107,7 +107,8 @@ public class Board extends JFrame {
 		JButton newB = UiFactory.createToolbarButton(null, "document-new", Msg.get("newGameBtn"), bl);
 		newB.setActionCommand(ActionCommand.NEW.toString());
 		toolbar.add(newB);
-		toolbar.addSeparator();
+		toolbar.add(UiFactory.createToolbarSeparator());
+		
 
 		undoB = UiFactory.createToolbarButton(null, "edit-undo", "", bl);
 		undoB.setActionCommand(ActionCommand.UNDO.toString());
@@ -117,22 +118,28 @@ public class Board extends JFrame {
 		redoB.setActionCommand(ActionCommand.REDO.toString());
 		undoB.setEnabled(false);
 		toolbar.add(redoB);
-		toolbar.addSeparator();
+		toolbar.add(UiFactory.createToolbarSeparator());
 
 		JButton scoreB = UiFactory.createToolbarButton(null, "application-certificate", Msg.get("scoringBtn"), bl);
 		scoreB.setActionCommand(ActionCommand.SCORE.toString());
 		toolbar.add(scoreB);
-		toolbar.add(Box.createHorizontalGlue());
+		toolbar.add(UiFactory.createToolbarSeparator());
+		toolbar.add(Box.createHorizontalStrut(10));
+//		toolbar.add(Box.createHorizontalGlue());
 
 		statusL = UiFactory.createLabel(Msg.get("round", 0, Game.ROUNDS));
 		statusL.setFont(Fonts.TOOLBAR_TEXT);
 		toolbar.add(statusL);
 		toolbar.add(Box.createHorizontalGlue());
+//		toolbar.add(Box.createHorizontalStrut(100));
+
+//		JButton settingB = UiFactory.createToolbarButton(null, "preferences-system", Msg.get("settingsBtn"), bl);
+//		settingB.setActionCommand(ActionCommand.SETTINGS.toString());
+//		toolbar.add(settingB);
 
 		JButton aboutB = UiFactory.createToolbarButton(null, "help-browser", Msg.get("aboutBtn"), bl);
 		aboutB.setActionCommand(ActionCommand.ABOUT.toString());
 		toolbar.add(aboutB);
-//		toolbar.addSeparator(new Dimension(5, 0));
 
 		getContentPane().add(toolbar, BorderLayout.PAGE_START);
 	}
@@ -191,13 +198,13 @@ public class Board extends JFrame {
 
 	public void refreshUndoRedo() {
 		// refresh undo
-		undoB.setText(undoManager.getUndoPresentationName());
+//		undoB.setText(undoManager.getUndoPresentationName());
 		undoB.setToolTipText(undoManager.getUndoPresentationName());
 		undoB.setEnabled(undoManager.canUndo());
 
 		// refresh redo
-		redoB.setText(undoManager.getRedoPresentationName());
-		redoB.setToolTipText(undoManager.getUndoPresentationName());
+//		redoB.setText(undoManager.getRedoPresentationName());
+		redoB.setToolTipText(undoManager.getRedoPresentationName());
 		redoB.setEnabled(undoManager.canRedo());
 	}
 
@@ -270,6 +277,9 @@ public class Board extends JFrame {
 			case SCORE:
 				showScoring();
 				break;
+//			case SETTINGS:
+//				showSettings();
+//				break;
 			case ABOUT:
 				BufferedImage img = Images.getBestScaledInstance(Images.createImage("a_all"), 50);
 				JOptionPane.showMessageDialog(board, Msg.get("aboutMsg"), Msg.get("aboutTitle"), JOptionPane.INFORMATION_MESSAGE, new ImageIcon(img));
