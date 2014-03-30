@@ -31,7 +31,7 @@ public class ActionBoard extends JPanel {
 	private final JPanel actionPanel;
 
 	private static final Border defaultPanelBorder = BorderFactory.createEmptyBorder(
-			Board.BORDER_WIDTH, Board.BORDER_WIDTH, Board.BORDER_WIDTH, Board.BORDER_WIDTH);
+			Board.BORDER_WIDTH, Board.BORDER_WIDTH / 2, Board.BORDER_WIDTH, Board.BORDER_WIDTH / 2);
 
 	public ActionBoard(List<Action> actions, final ActionPerformer ap, final ActionListener submitListener) {
 		this.ap = ap;
@@ -45,7 +45,7 @@ public class ActionBoard extends JPanel {
 			this.actions.put(type, action);
 			ActionButton b = new ActionButton(type);
 			b.setEnabled(false);
-			
+
 			b.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if (!action.isUsed()) {
@@ -131,12 +131,12 @@ public class ActionBoard extends JPanel {
 			b.setEnabled(false);
 		}
 	}
-	
+
 	private class ActionUsageListener implements ActionStateChangeListener {
 
 		private final ActionButton actionButtton;
-//		private final JLabel workerLabel;
 
+//		private final JLabel workerLabel;
 
 		public ActionUsageListener(ActionButton button) {
 			actionButtton = button;

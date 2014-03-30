@@ -8,8 +8,6 @@ import com.dill.agricola.common.Dir;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.buildings.Cottage;
-import com.dill.agricola.model.buildings.Stables;
-import com.dill.agricola.model.buildings.Stall;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Material;
@@ -24,7 +22,7 @@ public class Player extends SimpleObservable {
 
 	public static final int USED_EXT_VP = 4;
 
-	public static final int MAX_WORKERS = Main.DEBUG ? 3 : 3;
+	public static final int MAX_WORKERS = Main.DEBUG ? 1 : 3;
 
 	private final PlayerColor color;
 	public final Farm farm;
@@ -51,7 +49,7 @@ public class Player extends SimpleObservable {
 		addMaterial(Material.BORDER, INIT_BORDERS);
 
 		if (Main.DEBUG) {
-			addMaterial(new Materials(Material.WOOD, 10));
+//			addMaterial(new Materials(Material.WOOD, 10));
 			addMaterial(new Materials(Material.STONE, 20));
 			addMaterial(new Materials(Material.REED, 20));
 
@@ -64,12 +62,12 @@ public class Player extends SimpleObservable {
 			purchaseAnimal(Animal.COW, 1);
 			farm.putAnimals(pos, Animal.COW, 1);
 			
-			DirPoint pos2 = new DirPoint(0, 1);
-			farm.build(new Stall(0), pos2);
-			farm.build(new Stables(), pos2);
-			farm.put(Purchasable.TROUGH, pos2);
-			purchaseAnimal(Animal.SHEEP, 10);
-			farm.putAnimals(pos2, Animal.SHEEP, 10);
+//			DirPoint pos2 = new DirPoint(0, 1);
+//			farm.build(new Stall(0), pos2);
+//			farm.build(new Stables(), pos2);
+//			farm.put(Purchasable.TROUGH, pos2);
+//			purchaseAnimal(Animal.SHEEP, 10);
+//			farm.putAnimals(pos2, Animal.SHEEP, 10);
 		}
 		Fencer.calculateFences(farm);
 	}

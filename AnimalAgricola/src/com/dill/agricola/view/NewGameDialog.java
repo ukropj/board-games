@@ -80,9 +80,8 @@ public class NewGameDialog extends JDialog implements ActionListener {
 		startPlayerP.add(b, BorderLayout.CENTER);
 		main.add(startPlayerP, BorderLayout.CENTER);
 
-		JButton submitButton = new JButton(Msg.get("startGameBtn"));
+		JButton submitButton = UiFactory.createTextButton(Msg.get("startGameBtn"), this);
 		submitButton.setActionCommand(OptionCommand.SUBMIT.toString());
-		submitButton.addActionListener(this);
 		JPanel submitP = UiFactory.createFlowPanel();
 		submitP.add(submitButton);
 

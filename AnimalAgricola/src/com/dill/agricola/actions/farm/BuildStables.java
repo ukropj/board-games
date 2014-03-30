@@ -52,11 +52,20 @@ public class BuildStables extends BuildAction {
 			opts.add(opt);
 		}
 		Icon icon = AgriImages.getBuildingIcon(BuildingType.OPEN_STABLES, ImgSize.MEDIUM);
-		return UiFactory.showOptionDialog("Choose cost", "Stables", icon, opts);
+		return UiFactory.showOptionDialog(null, "Choose cost", "Stables", icon, opts);
 	}
 
 	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos, int doneSoFar) {
-		costNo = chooseStablesCost(player);
+		costNo = JOptionPane.CLOSED_OPTION;
+		if (!player.canPay(COSTS[0])) {
+			costNo = 1;
+		} else if(!player.canPay(COSTS[1])) {
+			costNo = 0;
+		}
+		if (costNo == JOptionPane.CLOSED_OPTION) {
+			// ask only if player can pay any
+			costNo = chooseStablesCost(player);
+		}
 		if (costNo == JOptionPane.CLOSED_OPTION) {
 			return null;
 		}

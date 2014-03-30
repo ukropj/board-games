@@ -33,6 +33,7 @@ import com.dill.agricola.common.Bag;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.model.types.PlayerColor;
+import com.dill.agricola.support.Msg;
 import com.dill.agricola.undo.SimpleEdit;
 import com.dill.agricola.undo.TurnUndoManager;
 import com.dill.agricola.undo.TurnUndoManager.UndoRedoListener;
@@ -59,6 +60,8 @@ public class Game {
 
 	private boolean breeding;
 	private boolean ended;
+	
+	private Animals[] lastNewAnimals;
 
 	public Game() {
 		ap = new ActionPerformer();
@@ -130,6 +133,10 @@ public class Game {
 		return round > 0 && !ended;
 	}
 
+	public boolean isEnded() {
+		return ended;
+	}
+
 	public void start() {
 		NewGameDialog newDialog = new NewGameDialog(board);
 		if (!newDialog.isDone()) {
@@ -144,7 +151,7 @@ public class Game {
 		round = 0;
 		workPhase = false;
 		undoManager.discardAllEdits();
-		ap.beginUpdate(); // start "initial edit"
+		ap.beginUpdate(""); // start "initial edit"
 		ap.invalidateUpdated(); // which cannot be undone
 		GeneralSupply.reset();
 
@@ -207,6 +214,7 @@ public class Game {
 		ap.postEdit(new EndRound(currentPlayer, newAnimals));
 		ap.setPlayer(null);
 		board.endRound();
+		lastNewAnimals = newAnimals;
 		if (Bag.sumSize(newAnimals) == 0) {
 			endRound();
 		} else {
@@ -219,8 +227,8 @@ public class Game {
 
 	private void endRound() {
 		if (breeding) {
-			ap.beginUpdate(); // start "breeding edit"
-			ap.postEdit(new BreedingDone());
+			ap.beginUpdate(Msg.get("actBreedingDone")); // start "breeding edit"
+			ap.postEdit(new BreedingDone(lastNewAnimals));
 			breeding = false;
 			// animals run away after breeding
 			releaseAnimals();
@@ -237,10 +245,10 @@ public class Game {
 	}
 
 	private void endGame() {
-		ap.endUpdate(); // end last "action/breeding edit"
 		ap.postEdit(new EndGame());
 		ended = true;
-		board.showScoring();
+		ap.endUpdate(); // end last "action/breeding edit"
+		board.endGame();
 	}
 
 	private void releaseAnimals() {
@@ -273,7 +281,9 @@ public class Game {
 
 	private class SubmitListener implements ActionListener {
 
-		private int count = 0;
+		
+		private int breedingCount = 0;
+		private int submitCount = 0;
 
 		public void actionPerformed(ActionEvent e) {
 			ActionCommand cmd = ActionCommand.valueOf(e.getActionCommand());
@@ -284,7 +294,9 @@ public class Game {
 					endTurn();
 				} else if (breeding) {
 					// one or both players must submit
-					if (--count == 0) {
+					submitCount++;
+					if (submitCount >= breedingCount) {
+						submitCount = 0;
 						// round end
 						endRound();
 					}
@@ -300,10 +312,10 @@ public class Game {
 		}
 
 		public void setBreedingCount(Animals[] newAnimals) {
-			this.count = 0;
+			breedingCount = 0;
 			for (Animals animals : newAnimals) {
 				if (animals.size() > 0) {
-					count++;
+					breedingCount++;
 				}
 			}
 		}
@@ -330,6 +342,7 @@ public class Game {
 			round--;
 			workPhase = false;
 			currentPlayer = getPlayer(curPlayer);
+			board.endRound();
 		}
 
 		public void redo() throws CannotRedoException {
@@ -358,8 +371,6 @@ public class Game {
 			ap.setPlayer(prevPlayer);
 			if (prevPlayer != null) {
 				board.startTurn(prevPlayer);
-			} else {
-				board.endRound();
 			}
 		}
 
@@ -406,6 +417,7 @@ public class Game {
 			}
 			ap.setPlayer(curPlayer);
 			board.startTurn(curPlayer);
+			breeding = false;
 		}
 
 		public void redo() throws CannotRedoException {
@@ -417,6 +429,8 @@ public class Game {
 			}
 			ap.setPlayer(null);
 			board.endRound();
+			submitListener.setBreedingCount(newAnimals);
+			breeding = true;
 		}
 
 		public boolean isAnimalEdit() {
@@ -427,18 +441,29 @@ public class Game {
 	private class BreedingDone extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
 
-		public BreedingDone() {
+		private final Animals[] newAnimals;
+		
+		public BreedingDone(Animals[] lastNewAnimals) {
 			super(true);
+			newAnimals = lastNewAnimals;
 		}
 
 		public void undo() throws CannotUndoException {
 			super.undo();
+			submitListener.setBreedingCount(newAnimals);
 			breeding = true;
+			for (Player p : players) {
+				// move animals from farm to loose
+				p.unpurchaseAnimals(newAnimals[p.getColor().ordinal()]);
+				p.purchaseAnimals(newAnimals[p.getColor().ordinal()]);
+			}
+			board.endRound();
 		}
 
 		public void redo() throws CannotRedoException {
 			super.redo();
 			breeding = false;
+			
 		}
 	}
 
@@ -469,10 +494,6 @@ public class Game {
 	private class EndGame extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
 
-		public EndGame() {
-			super(true);
-		}
-
 		public void undo() throws CannotUndoException {
 			super.undo();
 			ended = false;
@@ -481,6 +502,7 @@ public class Game {
 		public void redo() throws CannotRedoException {
 			super.redo();
 			ended = true;
+			board.endGame();
 		}
 
 	}

@@ -100,7 +100,7 @@ public class BuildSpecial extends BuildAction {
 			opt.setEnabled(canPurchase(player, type, null));				
 			opts.add(opt);
 		}
-		int result = UiFactory.showOptionDialog(Msg.get("chooseBuilding"), Msg.get("specialBuildings"), null, opts);
+		int result = UiFactory.showOptionDialog(null, Msg.get("chooseBuilding"), Msg.get("specialBuildings"), null, opts);
 		return result != JOptionPane.CLOSED_OPTION ? types.get(result) : null;
 	}
 
@@ -112,7 +112,7 @@ public class BuildSpecial extends BuildAction {
 			opts.add(opt);
 		}
 		Icon icon = AgriImages.getBuildingIcon(BuildingType.OPEN_STABLES, ImgSize.MEDIUM);
-		return UiFactory.showOptionDialog(Msg.get("chooseCost"), Msg.get("openStables"), icon, opts);
+		return UiFactory.showOptionDialog(null, Msg.get("chooseCost"), Msg.get("openStables"), icon, opts);
 	}
 
 	private Animals chooseReward(Building building) {
@@ -127,7 +127,7 @@ public class BuildSpecial extends BuildAction {
 			opts.add(opt);
 		}
 		Icon icon = AgriImages.getBuildingIcon(building.getType(), ImgSize.MEDIUM);
-		int result = UiFactory.showOptionDialog(Msg.get("chooseReward"), building.getType().name, icon, opts);
+		int result = UiFactory.showOptionDialog(null, Msg.get("chooseReward"), building.getType().name, icon, opts);
 		return result != JOptionPane.CLOSED_OPTION ? animalRewards[result] : animalRewards[0];
 	}
 
@@ -144,7 +144,16 @@ public class BuildSpecial extends BuildAction {
 	
 	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos, int doneSoFar) {
 		if (toBuild == BuildingType.OPEN_STABLES) {
-			osCostNo = chooseOpenStablesCost(player);
+			osCostNo = JOptionPane.CLOSED_OPTION;
+			if (!player.canPay(OS_COSTS[0])) {
+				osCostNo = 1;
+			} else if(!player.canPay(OS_COSTS[1])) {
+				osCostNo = 0;
+			}
+			if (osCostNo == JOptionPane.CLOSED_OPTION) {
+				// ask only if player can pay any
+				osCostNo = chooseOpenStablesCost(player);
+			}
 			if (osCostNo == JOptionPane.CLOSED_OPTION) {
 				return null;
 			}

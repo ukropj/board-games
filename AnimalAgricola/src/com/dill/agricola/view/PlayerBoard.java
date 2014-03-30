@@ -83,14 +83,6 @@ public class PlayerBoard extends JPanel implements Observer {
 	}
 
 	public void setActive(boolean active, boolean breeding) {
-//		Color c = player.getColor().getRealColor();
-//		if (active) {
-//			playerLabel.setForeground(Color.WHITE);
-//			playerLabel.setBackground(c);
-//		} else {
-//			playerLabel.setForeground(c);
-//			playerLabel.setBackground(null);
-//		}
 		farmPanel.setActive(active, breeding);
 	}
 

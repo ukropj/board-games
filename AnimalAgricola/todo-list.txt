@@ -6,11 +6,9 @@
 	all dialog icons (top + inside)
 	resizing ?
 	less cluttered action board
+	animal scoring table
 	
 #Bugs#
-
-	no message when undone breeding
-	undo breeding says "Undo StartTurn"
 
 #Nice to have#
 

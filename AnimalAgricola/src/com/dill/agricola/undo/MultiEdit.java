@@ -6,7 +6,6 @@ import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
 import com.dill.agricola.common.DirPoint;
-import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.support.Msg;
@@ -14,23 +13,20 @@ import com.dill.agricola.support.Msg;
 public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 	private static final long serialVersionUID = 1L;
 
-	boolean hasBeenDone;
-	boolean alive;
+	private boolean hasBeenDone;
+	private boolean alive;
 
-	final PlayerColor currentPlayer;
-	final ActionType actionType;
-
-//	final boolean significant;
+	private final PlayerColor currentPlayer;
+	private final String name;
 
 	public MultiEdit() {
-		this(null, null, false);
+		this(null, null);
 	}
 
-	public MultiEdit(PlayerColor currentPlayer, ActionType actionType, boolean significant) {
+	public MultiEdit(PlayerColor currentPlayer, String name) {
 		super();
 		this.currentPlayer = currentPlayer;
-		this.actionType = actionType;
-//		this.significant = significant;
+		this.name = name;
 
 		hasBeenDone = true;
 		alive = true;
@@ -105,9 +101,7 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 	}*/
 
 	public String getPresentationName() {
-		return !isSignificant() ? "Cleanup" : currentPlayer != null
-				? actionType.name
-				: super.getPresentationName();
+		return !isSignificant() ? "Cleanup" : name;
 	}
 
 	public String getUndoPresentationName() {

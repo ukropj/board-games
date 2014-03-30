@@ -56,8 +56,9 @@ public class Board extends JFrame {
 	private final PlayerBoard[] playerBoards;
 	private ActionBoard actionBoard;
 	private DebugPanel debugPanel;
-	private JButton undoB;
-	private JButton redoB;
+	private JButton undoBtn;
+	private JButton redoBtn;
+	private JButton scoreBtn;
 
 	private ScoreDialog scoreDialog;
 
@@ -88,7 +89,7 @@ public class Board extends JFrame {
 
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				endGame();
+				quitGame();
 			}
 		});
 
@@ -98,7 +99,7 @@ public class Board extends JFrame {
 	}
 
 	private void initToolbar() {
-		ToolListener bl = new ToolListener(this);
+		ToolListener bl = new ToolListener();
 		JToolBar toolbar = new JToolBar(JToolBar.HORIZONTAL);
 		toolbar.setMargin(new Insets(0, 0, 0, 0));
 		toolbar.setFloatable(false);
@@ -110,19 +111,20 @@ public class Board extends JFrame {
 		toolbar.add(UiFactory.createToolbarSeparator());
 		
 
-		undoB = UiFactory.createToolbarButton(null, "edit-undo", "", bl);
-		undoB.setActionCommand(ActionCommand.UNDO.toString());
-		undoB.setEnabled(false);
-		toolbar.add(undoB);
-		redoB = UiFactory.createToolbarButton(null, "edit-redo", "", bl);
-		redoB.setActionCommand(ActionCommand.REDO.toString());
-		undoB.setEnabled(false);
-		toolbar.add(redoB);
+		undoBtn = UiFactory.createToolbarButton(null, "edit-undo", "", bl);
+		undoBtn.setActionCommand(ActionCommand.UNDO.toString());
+		undoBtn.setEnabled(false);
+		toolbar.add(undoBtn);
+		redoBtn = UiFactory.createToolbarButton(null, "edit-redo", "", bl);
+		redoBtn.setActionCommand(ActionCommand.REDO.toString());
+		redoBtn.setEnabled(false);
+		toolbar.add(redoBtn);
 		toolbar.add(UiFactory.createToolbarSeparator());
 
-		JButton scoreB = UiFactory.createToolbarButton(null, "application-certificate", Msg.get("scoringBtn"), bl);
-		scoreB.setActionCommand(ActionCommand.SCORE.toString());
-		toolbar.add(scoreB);
+		scoreBtn = UiFactory.createToolbarButton(null, "application-certificate", Msg.get("scoringBtn"), bl);
+		scoreBtn.setActionCommand(ActionCommand.SCORE.toString());
+		scoreBtn.setEnabled(false);
+		toolbar.add(scoreBtn);
 		toolbar.add(UiFactory.createToolbarSeparator());
 		toolbar.add(Box.createHorizontalStrut(10));
 //		toolbar.add(Box.createHorizontalGlue());
@@ -184,7 +186,7 @@ public class Board extends JFrame {
 	}
 
 	public void start() {
-		scoreDialog = null;
+		scoreBtn.setEnabled(true);
 		actionBoard.resetActions();
 	}
 
@@ -199,13 +201,13 @@ public class Board extends JFrame {
 	public void refreshUndoRedo() {
 		// refresh undo
 //		undoB.setText(undoManager.getUndoPresentationName());
-		undoB.setToolTipText(undoManager.getUndoPresentationName());
-		undoB.setEnabled(undoManager.canUndo());
+		undoBtn.setToolTipText(undoManager.getUndoPresentationName());
+		undoBtn.setEnabled(undoManager.canUndo());
 
 		// refresh redo
 //		redoB.setText(undoManager.getRedoPresentationName());
-		redoB.setToolTipText(undoManager.getRedoPresentationName());
-		redoB.setEnabled(undoManager.canRedo());
+		redoBtn.setToolTipText(undoManager.getRedoPresentationName());
+		redoBtn.setEnabled(undoManager.canRedo());
 	}
 
 	public void startRound(int roundNo) {
@@ -232,8 +234,11 @@ public class Board extends JFrame {
 		actionBoard.disableActions();
 	}
 
-	public void showScoring() {
-		scoreDialog = new ScoreDialog(game.getPlayers(), game.getInitialStartPlayer());
+	public void showScoring(boolean isFinal) {
+		if (scoreDialog == null) {
+			scoreDialog = new ScoreDialog();			
+		}
+		scoreDialog.update(game.getPlayers(), game.getInitialStartPlayer(), isFinal);
 		scoreDialog.setLocationRelativeTo(this);
 		scoreDialog.setVisible(true);
 	}
@@ -242,50 +247,50 @@ public class Board extends JFrame {
 		playerBoards[0].updateFarm();
 		playerBoards[1].updateFarm();
 	}
-
+	
 	public void endGame() {
+		playerBoards[0].setActive(false, false);
+		playerBoards[1].setActive(false, false);
+		showScoring(true);
+	}
+
+	public void quitGame() {
 		if (Main.DEBUG
 				|| !game.isStarted()
-				|| UiFactory.showQuestionDialog(Msg.get("endGameMsg"), Msg.get("gameInProgressTitle"))) {
+				|| UiFactory.showQuestionDialog(this, Msg.get("endGameMsg"), Msg.get("gameInProgressTitle"))) {
 			System.exit(0);
 		}
 	}
 
 	private class ToolListener implements ActionListener, ItemListener {
 
-		private final Board board;
-
-		public ToolListener(Board board) {
-			this.board = board;
-		}
-
 		public void actionPerformed(ActionEvent e) {
 			ActionCommand command = ActionCommand.valueOf(e.getActionCommand());
 			switch (command) {
 			case NEW:
-				if (!board.game.isStarted()
-						|| UiFactory.showQuestionDialog(Msg.get("restartGameMsg"), Msg.get("gameInProgressTitle"))) {
-					board.game.start();
+				if (!game.isStarted()
+						|| UiFactory.showQuestionDialog(Board.this, Msg.get("restartGameMsg"), Msg.get("gameInProgressTitle"))) {
+					game.start();
 				}
 				break;
 			case UNDO:
-				board.undoManager.undo();
+				undoManager.undo();
 				break;
 			case REDO:
-				board.undoManager.redo();
+				undoManager.redo();
 				break;
 			case SCORE:
-				showScoring();
+				showScoring(game.isEnded());
 				break;
 //			case SETTINGS:
 //				showSettings();
 //				break;
 			case ABOUT:
 				BufferedImage img = Images.getBestScaledInstance(Images.createImage("a_all"), 50);
-				JOptionPane.showMessageDialog(board, Msg.get("aboutMsg"), Msg.get("aboutTitle"), JOptionPane.INFORMATION_MESSAGE, new ImageIcon(img));
+				JOptionPane.showMessageDialog(Board.this, Msg.get("aboutMsg"), Msg.get("aboutTitle"), JOptionPane.INFORMATION_MESSAGE, new ImageIcon(img));
 				break;
 			case EXIT:
-				board.endGame();
+				quitGame();
 				break;
 			default:
 				break;

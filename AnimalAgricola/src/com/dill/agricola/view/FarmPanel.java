@@ -65,7 +65,7 @@ public class FarmPanel extends JPanel {
 	static int P = (int) (S * 0.9f);
 
 	private final static Area animalArea = new Area(new Ellipse2D.Float(S / 4 - M, S / 4 - M, S / 2 + 2 * M, S / 2 + 2 * M));
-	private final static int AR = S / 6 + M;
+	private final static int AR = S / 6 + M; // 
 	private final static DirPoint[][] animalPositions = new DirPoint[][] {
 			new DirPoint[] {
 					new DirPoint(S / 2, S / 2) },
@@ -73,7 +73,7 @@ public class FarmPanel extends JPanel {
 					new DirPoint(S / 2 + AR / 2, S / 2 - AR / 2),
 					new DirPoint(S / 2 - AR / 2, S / 2 + AR / 2) },
 			new DirPoint[] {
-					new DirPoint(S / 2, S / 2 + M + AR / 2),
+					new DirPoint(S / 2, S / 2 + AR),
 					new DirPoint(S / 2 + M + AR / 2, S / 2 - M),
 					new DirPoint(S / 2 - M - AR / 2, S / 2 - M) },
 			new DirPoint[] {
@@ -86,12 +86,12 @@ public class FarmPanel extends JPanel {
 			new Line2D[] {},
 			new Line2D[] { new Line2D.Float(new DirPoint(S / 4, S / 4), new DirPoint(3 * S / 4, 3 * S / 4)) },
 			new Line2D[] {
-					new Line2D.Float(new DirPoint(S / 2, S / 2), new DirPoint(S / 2, S / 4 - 2 * M)),
-					new Line2D.Float(new DirPoint(S / 2, S / 2), new DirPoint(3 * S / 4, 3 * S / 4)),
-					new Line2D.Float(new DirPoint(S / 2, S / 2), new DirPoint(S / 4, 3 * S / 4)) },
+					new Line2D.Float(new DirPoint(S / 2, S / 2), new DirPoint(S / 2, S / 4 - M/2)),
+					new Line2D.Float(new DirPoint(S / 2, S / 2), new DirPoint(3 * S / 4 - M, 3 * S / 4 - M)),
+					new Line2D.Float(new DirPoint(S / 2, S / 2), new DirPoint(S / 4 + M, 3 * S / 4 - M)) },
 			new Line2D[] {
-					new Line2D.Float(new DirPoint(S / 4, S / 4), new DirPoint(3 * S / 4, 3 * S / 4)),
-					new Line2D.Float(new DirPoint(S / 4, 3 * S / 4), new DirPoint(3 * S / 4, S / 4)) }
+					new Line2D.Float(new DirPoint(S / 4 + M, S / 4 + M), new DirPoint(3 * S / 4 - M, 3 * S / 4 - M)),
+					new Line2D.Float(new DirPoint(S / 4 + M, 3 * S / 4 - M), new DirPoint(3 * S / 4 - M, S / 4 + M)) }
 	};
 	private final static Area[][] animalAreas = new Area[][] {
 			new Area[] { animalArea },
@@ -388,7 +388,6 @@ public class FarmPanel extends JPanel {
 
 		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
-		g.setStroke(THICK_STROKE);
 
 		// background (should not be seen)
 		g.setColor(Color.WHITE);
@@ -506,6 +505,7 @@ public class FarmPanel extends JPanel {
 			g.drawString(t1, realPos.x + S - 5 * M + (w0 - w1) / 2 + c, realPos.y + S - 3 * M);
 			g.drawString(t2, realPos.x + S - 3 * M + (w0 - w2) / 2 + c, realPos.y + S - 3 * M / 2);
 			// slash
+			g.setStroke(THICK_STROKE);
 			g.drawLine(realPos.x + S - 4 * M + c, realPos.y + S - 2 * M, realPos.x + S - 2 * M + c, realPos.y + S - 4 * M);
 		}
 

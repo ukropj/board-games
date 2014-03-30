@@ -2,6 +2,7 @@ package com.dill.agricola.view.utils;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Insets;
@@ -196,15 +197,15 @@ public class UiFactory {
 		return l;
 	}
 
-	public static boolean showQuestionDialog(String message, String title) {
+	public static boolean showQuestionDialog(Component parent, String message, String title) {
 		List<JComponent> opts = Arrays.asList(new JComponent[] {
-				UiFactory.createLabel(Msg.get("yes"), null, 50),
-				UiFactory.createLabel(Msg.get("no"), null, 50)
+				UiFactory.createLabel(Msg.get("yesBtn"), null, 50),
+				UiFactory.createLabel(Msg.get("noBtn"), null, 50)
 		});
-		return 0 == showOptionDialog(message, title, null, opts);
+		return 0 == showOptionDialog(parent, message, title, null, opts);
 	}
 
-	public static int showOptionDialog(String message, String title, Icon icon, List<JComponent> opts) {
+	public static int showOptionDialog(Component parent, String message, String title, Icon icon, List<JComponent> opts) {
 		final JOptionPane pane = new JOptionPane(message, JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION, icon);
 		JButton[] buttons = new JButton[opts.size()];
 		int i = 0;
@@ -224,7 +225,7 @@ public class UiFactory {
 			i++;
 		}
 		pane.setOptions(buttons);
-		JDialog dialog = pane.createDialog(title);
+		JDialog dialog = pane.createDialog(parent, title);
 		dialog.setVisible(true);
 		Object retVal = pane.getValue();
 		return retVal == null ? JOptionPane.CLOSED_OPTION : (int) retVal;
@@ -265,5 +266,13 @@ public class UiFactory {
 		l.setBorder(BorderFactory.createEmptyBorder(0, 1, 0, 2));
 		return l;
 //		return new JToolBar.Separator(null);
+	}
+
+	public static JButton createTextButton(String text, ActionListener actionListener) {
+		JButton b = new JButton(text);
+		b.setMargin(new Insets(2,8,2,8));
+		b.setAlignmentX(JButton.CENTER_ALIGNMENT);
+		b.addActionListener(actionListener);
+		return b;
 	}
 }
