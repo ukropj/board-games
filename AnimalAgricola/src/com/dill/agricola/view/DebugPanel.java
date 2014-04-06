@@ -141,13 +141,13 @@ public class DebugPanel extends JPanel {
 				currentPlayer.setActiveType(Purchasable.BUILDING);
 				currentPlayer.notifyObservers();
 			}
-		});*/
+		});
 		createDebugButton("Do Nothing", new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				currentPlayer.spendWorker();
 				currentPlayer.notifyObservers();
 			}
-		});
+		});*/
 	}
 
 	private JButton createDebugButton(JLabel label, ActionListener al) {
@@ -158,11 +158,11 @@ public class DebugPanel extends JPanel {
 		return b;
 	}
 
-	private JButton createDebugButton(String label, ActionListener al) {
-		JButton b = new JButton(label);
-		b.addActionListener(al);
-		this.add(b);
-		return b;
-	}
+//	private JButton createDebugButton(String label, ActionListener al) {
+//		JButton b = new JButton(label);
+//		b.addActionListener(al);
+//		this.add(b);
+//		return b;
+//	}
 
 }

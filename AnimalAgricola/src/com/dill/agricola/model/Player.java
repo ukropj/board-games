@@ -312,7 +312,7 @@ public class Player extends SimpleObservable {
 
 	public int getAnimalScore(Animal type) {
 		int count = getAnimal(type);
-		return count + type.getBonusDirPoints(count);
+		return count + type.getBonusPoints(count);
 	}
 
 	public int getExtensionsScore() {

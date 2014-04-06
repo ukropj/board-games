@@ -58,9 +58,6 @@ public class Board extends JFrame {
 	private DebugPanel debugPanel;
 	private JButton undoBtn;
 	private JButton redoBtn;
-	private JButton scoreBtn;
-
-	private ScoreDialog scoreDialog;
 
 	public Board(Game game, ActionPerformer ap, TurnUndoManager undoManager) {
 		this.game = game;
@@ -120,14 +117,8 @@ public class Board extends JFrame {
 		redoBtn.setEnabled(false);
 		toolbar.add(redoBtn);
 		toolbar.add(UiFactory.createToolbarSeparator());
-
-		scoreBtn = UiFactory.createToolbarButton(null, "application-certificate", Msg.get("scoringBtn"), bl);
-		scoreBtn.setActionCommand(ActionCommand.SCORE.toString());
-		scoreBtn.setEnabled(false);
-		toolbar.add(scoreBtn);
-		toolbar.add(UiFactory.createToolbarSeparator());
 		toolbar.add(Box.createHorizontalStrut(10));
-//		toolbar.add(Box.createHorizontalGlue());
+		toolbar.add(Box.createHorizontalGlue());
 
 		statusL = UiFactory.createLabel(Msg.get("round", 0, Game.ROUNDS));
 		statusL.setFont(Fonts.TOOLBAR_TEXT);
@@ -169,14 +160,16 @@ public class Board extends JFrame {
 	}
 
 	private void initActionsBoard() {
+		
 		actionBoard = new ActionBoard(game.getActions(), ap, game.getSubmitListener());
+		actionBoard.addTabs(new ScorePanel(game), new AnimalScoringPanel());
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 1;
 		c.ipadx = 5;
 		c.ipady = 5;
 		c.weighty = 1.0;
 		c.fill = GridBagConstraints.BOTH;
-
+		
 		mainPane.add(actionBoard, c);
 	}
 
@@ -186,7 +179,6 @@ public class Board extends JFrame {
 	}
 
 	public void start() {
-		scoreBtn.setEnabled(true);
 		actionBoard.resetActions();
 	}
 
@@ -234,15 +226,6 @@ public class Board extends JFrame {
 		actionBoard.disableActions();
 	}
 
-	public void showScoring(boolean isFinal) {
-		if (scoreDialog == null) {
-			scoreDialog = new ScoreDialog();			
-		}
-		scoreDialog.update(game.getPlayers(), game.getInitialStartPlayer(), isFinal);
-		scoreDialog.setLocationRelativeTo(this);
-		scoreDialog.setVisible(true);
-	}
-
 	public void startingPlayerChanged() {
 		playerBoards[0].updateFarm();
 		playerBoards[1].updateFarm();
@@ -251,7 +234,8 @@ public class Board extends JFrame {
 	public void endGame() {
 		playerBoards[0].setActive(false, false);
 		playerBoards[1].setActive(false, false);
-		showScoring(true);
+
+		actionBoard.showScoring();
 	}
 
 	public void quitGame() {
@@ -278,9 +262,6 @@ public class Board extends JFrame {
 				break;
 			case REDO:
 				undoManager.redo();
-				break;
-			case SCORE:
-				showScoring(game.isEnded());
 				break;
 //			case SETTINGS:
 //				showSettings();

@@ -7,6 +7,7 @@
 	resizing ?
 	less cluttered action board
 	animal scoring table
+	resolve TODOs in code
 	
 #Bugs#
 

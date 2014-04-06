@@ -1,18 +1,28 @@
 package com.dill.agricola.view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
+import java.awt.LinearGradientPaint;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.Point2D;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.border.Border;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.ActionPerformer;
@@ -20,6 +30,7 @@ import com.dill.agricola.actions.ActionStateChangeListener;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.PlayerColor;
+import com.dill.agricola.support.Msg;
 
 public class ActionBoard extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -28,17 +39,49 @@ public class ActionBoard extends JPanel {
 
 	private final Map<ActionType, Action> actions = new EnumMap<ActionType, Action>(ActionType.class);
 	private final Map<ActionType, ActionButton> actionButtons = new EnumMap<ActionType, ActionButton>(ActionType.class);
-	private final JPanel actionPanel;
 
-	private static final Border defaultPanelBorder = BorderFactory.createEmptyBorder(
-			Board.BORDER_WIDTH, Board.BORDER_WIDTH / 2, Board.BORDER_WIDTH, Board.BORDER_WIDTH / 2);
+	private final JTabbedPane tabPane;
+	private int scoringTabIndex = 1;
+
+	private static final Border defaultPanelBorder = BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(
+			Board.BORDER_WIDTH, 0, Board.BORDER_WIDTH, 0, new Icon() {
+
+				private final int W = 300;
+
+				public void paintIcon(Component c, Graphics g, int x, int y) {
+					Graphics2D g2 = (Graphics2D) g.create();
+					Point2D start = new Point2D.Float(0f, 0f);
+					Point2D end = new Point2D.Float(W, 0f);
+					float[] dist = { 0.5f, 1.0f };
+					Color[] colors = { PlayerColor.BLUE.getRealColor(), PlayerColor.RED.getRealColor() };
+					g2.setPaint(new LinearGradientPaint(start, end, dist, colors));
+					g2.fillRect(x, y, W, Board.BORDER_WIDTH);
+					g2.dispose();
+				}
+
+				public int getIconWidth() {
+					return W;
+				}
+
+				public int getIconHeight() {
+					return Board.BORDER_WIDTH;
+				}
+			}), BorderFactory.createEmptyBorder(0, Board.BORDER_WIDTH, 0, Board.BORDER_WIDTH));
+
+	private static final Border[] playerBorders = {
+			createPlayerBorder(PlayerColor.BLUE),
+			createPlayerBorder(PlayerColor.RED)
+	};
 
 	public ActionBoard(List<Action> actions, final ActionPerformer ap, final ActionListener submitListener) {
 		this.ap = ap;
-
 		setLayout(new BorderLayout());
 
-		actionPanel = new JPanel(new GridBagLayout());
+		tabPane = new JTabbedPane();
+		add(tabPane, BorderLayout.CENTER);
+
+		JPanel actionPanel = new JPanel(new GridBagLayout());
+		actionPanel.setName("abc");
 
 		for (final Action action : actions) {
 			ActionType type = action.getType();
@@ -65,7 +108,27 @@ public class ActionBoard extends JPanel {
 			ActionPanelFactory.createActionPanel(actionPanel, action, b);
 		}
 
-		add(actionPanel, BorderLayout.CENTER);
+		tabPane.addTab(Msg.get("actionsTitle"), actionPanel);
+
+	}
+
+	public void addTabs(final ScorePanel scorePanel, AnimalScoringPanel animalScoring) {
+		tabPane.addTab(Msg.get("scoresTitle"), /*Images.createIcon("application-certificate", ImgSize.SMALL),*/scorePanel);
+		tabPane.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				if (tabPane.getSelectedIndex() == scoringTabIndex) {
+					scorePanel.updateScoring();
+				}
+			}
+		});
+		tabPane.addTab(Msg.get("animalScoringTitle"), animalScoring);
+
+		scoringTabIndex = tabPane.indexOfComponent(scorePanel);
+		System.out.println(scoringTabIndex);
+	}
+
+	public void showScoring() {
+		tabPane.setSelectedIndex(scoringTabIndex);
 	}
 
 	public void updateActions() {
@@ -85,18 +148,10 @@ public class ActionBoard extends JPanel {
 			}
 		}
 		if (ap.getPlayer() != null) {
-//			actionPanel.setBackground(ap.getPlayer().getColor().getRealColor());
 			PlayerColor pc = ap.getPlayer().getColor();
-			actionPanel.setBorder(
-					BorderFactory.createMatteBorder(
-							Board.BORDER_WIDTH,
-							pc == PlayerColor.RED ? Board.BORDER_WIDTH : 0,
-							Board.BORDER_WIDTH,
-							pc == PlayerColor.BLUE ? Board.BORDER_WIDTH : 0,
-							pc.getRealColor()));
+			setBorder(playerBorders[pc.ordinal()]);
 		} else {
-//			actionPanel.setBackground(defaultPanelColor);
-			actionPanel.setBorder(defaultPanelBorder);
+			setBorder(defaultPanelBorder);
 		}
 		updateFinishLabel();
 	}
@@ -131,31 +186,33 @@ public class ActionBoard extends JPanel {
 			b.setEnabled(false);
 		}
 	}
+	
+	private static Border createPlayerBorder(PlayerColor c) {
+		return BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(
+				Board.BORDER_WIDTH,
+				c == PlayerColor.RED ? Board.BORDER_WIDTH : 0,
+				Board.BORDER_WIDTH,
+				c == PlayerColor.BLUE ? Board.BORDER_WIDTH : 0,
+				c.getRealColor()),
+				BorderFactory.createEmptyBorder(
+						0,
+						c == PlayerColor.RED ? 0 : Board.BORDER_WIDTH,
+						0,
+						c == PlayerColor.BLUE ? 0 : Board.BORDER_WIDTH));
+	}
 
 	private class ActionUsageListener implements ActionStateChangeListener {
 
 		private final ActionButton actionButtton;
 
-//		private final JLabel workerLabel;
-
 		public ActionUsageListener(ActionButton button) {
 			actionButtton = button;
-//			workerLabel = UiFactory.createLabel("");
-//			workerLabel.setVisible(true);
-//			actionButtton.add(workerLabel);
-//			workerLabel.setIcon(workerIcons[0]);
-//			actionButtton.setComponentZOrder(workerLabel, 0);
 		}
 
 		public void stateChanges(Action action) {
 			if (!action.isUsed()) {
-//				workerLabel.setVisible(false);
 				actionButtton.setEnabled(ap.getPlayer() != null && action.canDo(ap.getPlayer()));
-//				actionButtton.remove(workerLabel);
-//				workerLabel.setIcon(null);
 			} else {
-//				workerLabel.setVisible(true);
-//				workerLabel.setIcon(workerIcons[action.getUser().ordinal()]);
 				actionButtton.setEnabled(false);
 			}
 			actionButtton.setUsed(action.getUser());

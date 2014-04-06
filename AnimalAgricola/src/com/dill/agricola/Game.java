@@ -42,7 +42,7 @@ import com.dill.agricola.view.NewGameDialog;
 
 public class Game {
 
-	public final static int ROUNDS = Main.DEBUG ? 5 : 8;
+	public final static int ROUNDS = Main.DEBUG ? 1 : 8;
 
 	private final Player[] players;
 	private final Board board;
@@ -88,9 +88,9 @@ public class Game {
 			board.buildDebugPanel(players);
 			board.setSize(1100, 640 + (Main.DEBUG ? 50 : 0));
 		} else {
+			board.pack();
 			board.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		}
-//		board.pack();
 		board.setLocationRelativeTo(null);
 		board.setVisible(true);
 	}
@@ -323,7 +323,7 @@ public class Game {
 	};
 
 	public static enum ActionCommand {
-		NEW, EXIT, UNDO, REDO, SUBMIT, CANCEL, SCORE, ABOUT, SETTINGS;
+		NEW, EXIT, UNDO, REDO, SUBMIT, CANCEL, ABOUT, SETTINGS;
 	}
 
 	private class StartRound extends SimpleEdit {

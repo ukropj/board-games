@@ -30,7 +30,7 @@ public enum Animal {
 		return color2;
 	}
 
-	public int getBonusDirPoints(int count) {
+	public int getBonusPoints(int count) {
 		if (count < scoringRanges[0]) {
 			return -3;
 		}
@@ -44,6 +44,10 @@ public enum Animal {
 			return 2;
 		}
 		return count - (scoringRanges[2] - 1);
+	}
+	
+	public int getDoublePointsTreshold() {
+		return scoringRanges[2] + 1;
 	}
 
 	public static Animal[] reversedValues() {
