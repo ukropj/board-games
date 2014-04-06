@@ -171,14 +171,6 @@ public class BuildSpecial extends BuildAction {
 			return new UseBuilding(toBuild, player);			
 		}
 	}
-	
-	protected void postUndo(Player player, Building b) {
-		GeneralSupply.useBuilding(b.getType(), false);
-		if (toGive != null) {
-			player.unpurchaseAnimals(toGive);
-		}
-		toGive = null;
-	}
 
 	protected class UseBuilding extends SimpleEdit {
 		private static final long serialVersionUID = 1L;

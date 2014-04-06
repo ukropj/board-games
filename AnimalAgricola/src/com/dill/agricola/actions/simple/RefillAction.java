@@ -73,10 +73,6 @@ public abstract class RefillAction extends AbstractAction {
 		return null;
 	}
 
-	public boolean undoOnFarm(Player player, DirPoint pos, int count) {
-		return false;
-	}
-
 	protected class TakeMaterials extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
 

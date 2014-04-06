@@ -54,21 +54,8 @@ public abstract class BuildAction extends PurchaseAction {
 		return null;
 	}
 
-	public boolean undoOnFarm(Player player, DirPoint pos, int doneSoFar) {
-		if (canUndoOnFarm(player, pos, doneSoFar)) {
-			Building b = player.unpurchase(toBuild, pos, true);
-			postUndo(player, b);
-			setChanged();
-			return true;
-		}
-		return false;
-	}
-
 	protected UndoableFarmEdit postActivate(Player player, Building b) {
 		return null;
-	}
-
-	protected void postUndo(Player player, Building b) {
 	}
 
 	protected class PurchaseBuilding extends SimpleEdit {
@@ -90,13 +77,11 @@ public abstract class BuildAction extends PurchaseAction {
 		public void undo() throws CannotUndoException {
 			super.undo();
 			player.unpurchase(building.getType(), pos, false);
-//			postUndo(player, building);
 		}
 
 		public void redo() throws CannotRedoException {
 			super.redo();
 			player.purchase(building, cost, pos);
-//			postActivate(player, building);
 		}
 
 	}

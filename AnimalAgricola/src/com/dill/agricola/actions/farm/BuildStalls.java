@@ -40,10 +40,6 @@ public class BuildStalls extends BuildAction {
 	protected UndoableFarmEdit postActivate(Player player, Building b) {
 		return new UseStall((Stall) b);
 	}
-	
-	protected void postUndo(Player player, Building b) {
-		GeneralSupply.unuseStall((Stall) b);
-	}
 
 	protected class UseStall extends SimpleEdit {
 		private static final long serialVersionUID = 1L;

@@ -66,22 +66,10 @@ public abstract class PurchaseAction extends AbstractAction {
 		return null;
 	}
 
-	public boolean undoOnFarm(Player player, DirPoint pos, int doneSoFar) {
-		if (canUndoOnFarm(player, pos, doneSoFar)) {
-			player.unpurchase(thing, getCost(doneSoFar - 1), pos, true);
-			postUndo();
-			return true;
-		}
-		return false;
-	}
-
 	protected UndoableFarmEdit postActivate() {
 		return null;
 	}
 
-	protected void postUndo() {
-	}
-	
 	protected class PurchaseThing extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
 
@@ -99,13 +87,11 @@ public abstract class PurchaseAction extends AbstractAction {
 		public void undo() throws CannotUndoException {
 			super.undo();
 			player.unpurchase(thing, cost, pos, false);
-//			postUndo();
 		}
 		
 		public void redo() throws CannotRedoException {
 			super.redo();
 			player.purchase(thing, cost, pos);
-//			postActivate();
 		}
 		
 	}

@@ -83,27 +83,11 @@ public class Expand extends PurchaseAction {
 		}
 		return null;
 	}
-
-	public boolean undoOnFarm(Player player, DirPoint pos, int doneSoFar) {
-		if (hadExp) {
-			if (super.undoOnFarm(player, pos, doneSoFar)) {
-				postUndo();
-			} else {
-				return false;
-			}
-		}
-		return true;
-	}
 	
 	protected UndoableFarmEdit postActivate() {
 		GeneralSupply.useExtension(true);
 		hadExp = true;
 		return new UseExtension();
-	}
-	
-	protected void postUndo() {
-		GeneralSupply.useExtension(false);
-		hadExp = false;
 	}
 
 	public Materials getAccumulatedMaterials() {

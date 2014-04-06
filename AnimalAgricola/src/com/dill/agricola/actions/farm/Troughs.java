@@ -39,10 +39,6 @@ public class Troughs extends PurchaseAction {
 		return new UseTrough();
 	}
 
-	protected void postUndo() {
-		GeneralSupply.useTrough(false);
-	}
-
 	protected class UseTrough extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
 		

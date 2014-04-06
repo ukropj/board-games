@@ -42,9 +42,6 @@ public interface Action {
 
 	boolean canUndoOnFarm(Player player, DirPoint pos, int doneSoFar);
 
-	boolean undoOnFarm(Player player, DirPoint pos, int doneSoFar);
-
-	
 	Materials getAccumulatedMaterials();
 
 	Animals getAccumulatedAnimals();

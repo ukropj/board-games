@@ -48,10 +48,6 @@ public class BuildingMaterial extends AbstractAction {
 	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos, int count) {
 		return null;
 	}
-
-	public boolean undoOnFarm(Player player, DirPoint pos, int count) {
-		return false;
-	}
 	
 	private class TakeMaterials extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
