@@ -12,8 +12,8 @@ public enum BuildingType {
 	COTTAGE(Msg.get("cottage")),
 	HALF_TIMBERED_HOUSE(Msg.get("halfHouse")),
 	STORAGE_BUILDING(Msg.get("storage"), Msg.get("storageText"), 0.39f, 0.48f, 0.42f),
-	SHELTER(Msg.get("shelter"), Msg.get("immediately"), 		 0.12f, 0.57f, 0.38f),
-	OPEN_STABLES(Msg.get("openStables"), Msg.get("immediately"), 0.14f, 0.535f, 0.38f);
+	SHELTER(Msg.get("shelter"), Msg.get("immediately"), 		 0.12f, 0.57f, 0.37f),
+	OPEN_STABLES(Msg.get("openStables"), Msg.get("immediately"), 0.14f, 0.535f, 0.37f);
 
 	public final String name;
 	public final String text;

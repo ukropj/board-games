@@ -42,7 +42,7 @@ import com.dill.agricola.view.NewGameDialog;
 
 public class Game {
 
-	public final static int ROUNDS = Main.DEBUG ? 1 : 8;
+	public final static int ROUNDS = Main.DEBUG ? 5 : 8;
 
 	private final Player[] players;
 	private final Board board;

@@ -5,10 +5,6 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
@@ -16,7 +12,6 @@ import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import com.dill.agricola.GeneralSupply;
@@ -49,14 +44,13 @@ import com.dill.agricola.support.Fonts;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
-import com.dill.agricola.view.utils.Images;
 import com.dill.agricola.view.utils.UiFactory;
 
 public class ActionPanelFactory {
 
 	private final static int INSET = 4;
 	
-	// TODO this introduces state, rethink
+	// shared listeners
 	private static ActionStateChangeListener stallSupplyChangeListener = null;
 	private static ActionStateChangeListener buildingChangeListener = null;
 
@@ -241,13 +235,13 @@ public class ActionPanelFactory {
 		JPanel bP = UiFactory.createBorderPanel(2, 0);
 		bP.add(display, BorderLayout.CENTER);
 
-		JButton button = new JButton(Images.createIcon("system-search", ImgSize.MEDIUM));
-		button.setToolTipText(Msg.get("buildingDetailTip"));
-		button.setMargin(new Insets(INSET,INSET,INSET,INSET));
-		button.addActionListener(new BuildingDetailListener());
-		bP.add(button, BorderLayout.LINE_END);
+//		JButton button = new JButton(Images.createIcon("system-search", ImgSize.MEDIUM));
+//		button.setToolTipText(Msg.get("buildingDetailTip"));
+//		button.setMargin(new Insets(INSET,INSET,INSET,INSET));
+//		button.addActionListener(new BuildingDetailListener());
+//		bP.add(button, BorderLayout.LINE_END);
 
-		buildingChangeListener = new BuildingChangeListener(display, button);
+		buildingChangeListener = new BuildingChangeListener(display);
 		return bP;
 	}
 
@@ -348,11 +342,9 @@ public class ActionPanelFactory {
 	private static class BuildingChangeListener implements ActionStateChangeListener {
 
 		private final JPanel buildingPanel;
-		private final JButton detailButton;
 
-		public BuildingChangeListener(JPanel buildingPanel, JButton detailButton) {
+		public BuildingChangeListener(JPanel buildingPanel) {
 			this.buildingPanel = buildingPanel;
-			this.detailButton = detailButton;
 		}
 
 		public void stateChanges(Action action) {
@@ -363,30 +355,30 @@ public class ActionPanelFactory {
 				if (!left.contains(type)) {
 					bl.setEnabled(false);
 				}
+				bl.setToolTipText(type.name);
 				buildingPanel.add(bl);
 			}
-			detailButton.setEnabled(GeneralSupply.getBuildingsLeft().size() > 0);
 			buildingPanel.revalidate();
 		}
 	}
 
-	private static class BuildingDetailListener implements ActionListener {
-
-		public void actionPerformed(ActionEvent e) {
-			Set<BuildingType> left = GeneralSupply.getBuildingsLeft();
-
-			List<JComponent> opts = new ArrayList<JComponent>();
-			for (BuildingType type : GeneralSupply.getBuildingsAll()) {
-				JComponent opt = UiFactory.createLabel(AgriImages.getBuildingIcon(type, ImgSize.BIG));
-				if (!left.contains(type)) {
-					opt.setEnabled(false);
-				}
-				opts.add(opt);
-			}
-			JOptionPane.showOptionDialog(null, "", Msg.get("specialBuildings"), JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null,
-					opts.toArray(), null);
-		}
-
-	}
+//	private static class BuildingDetailListener implements ActionListener {
+//
+//		public void actionPerformed(ActionEvent e) {
+//			Set<BuildingType> left = GeneralSupply.getBuildingsLeft();
+//
+//			List<JComponent> opts = new ArrayList<JComponent>();
+//			for (BuildingType type : GeneralSupply.getBuildingsAll()) {
+//				JComponent opt = UiFactory.createLabel(AgriImages.getBuildingIcon(type, ImgSize.BIG));
+//				if (!left.contains(type)) {
+//					opt.setEnabled(false);
+//				}
+//				opts.add(opt);
+//			}
+//			JOptionPane.showOptionDialog(null, "", Msg.get("specialBuildings"), JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null,
+//					opts.toArray(), null);
+//		}
+//
+//	}
 
 }

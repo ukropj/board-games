@@ -106,7 +106,6 @@ public class Board extends JFrame {
 		newB.setActionCommand(ActionCommand.NEW.toString());
 		toolbar.add(newB);
 		toolbar.add(UiFactory.createToolbarSeparator());
-		
 
 		undoBtn = UiFactory.createToolbarButton(null, "edit-undo", "", bl);
 		undoBtn.setActionCommand(ActionCommand.UNDO.toString());
@@ -160,16 +159,16 @@ public class Board extends JFrame {
 	}
 
 	private void initActionsBoard() {
-		
+
 		actionBoard = new ActionBoard(game.getActions(), ap, game.getSubmitListener());
-		actionBoard.addTabs(new ScorePanel(game), new AnimalScoringPanel());
+		actionBoard.addTabs(new ScorePanel(game));
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 1;
 		c.ipadx = 5;
 		c.ipady = 5;
 		c.weighty = 1.0;
 		c.fill = GridBagConstraints.BOTH;
-		
+
 		mainPane.add(actionBoard, c);
 	}
 
@@ -230,7 +229,7 @@ public class Board extends JFrame {
 		playerBoards[0].updateFarm();
 		playerBoards[1].updateFarm();
 	}
-	
+
 	public void endGame() {
 		playerBoards[0].setActive(false, false);
 		playerBoards[1].setActive(false, false);

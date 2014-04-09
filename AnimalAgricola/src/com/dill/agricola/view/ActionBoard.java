@@ -112,8 +112,11 @@ public class ActionBoard extends JPanel {
 
 	}
 
-	public void addTabs(final ScorePanel scorePanel, AnimalScoringPanel animalScoring) {
+	public void addTabs(final ScorePanel scorePanel) {
+		tabPane.addTab(Msg.get("buildingsTitle"), new BuildingsPanel());
+		tabPane.addTab(Msg.get("animalTitle"), new AnimalScoringPanel());
 		tabPane.addTab(Msg.get("scoresTitle"), /*Images.createIcon("application-certificate", ImgSize.SMALL),*/scorePanel);
+		
 		tabPane.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				if (tabPane.getSelectedIndex() == scoringTabIndex) {
@@ -121,7 +124,6 @@ public class ActionBoard extends JPanel {
 				}
 			}
 		});
-		tabPane.addTab(Msg.get("animalScoringTitle"), animalScoring);
 
 		scoringTabIndex = tabPane.indexOfComponent(scorePanel);
 		System.out.println(scoringTabIndex);
@@ -140,11 +142,15 @@ public class ActionBoard extends JPanel {
 				// when action is being performed, disable everything
 				button.setEnabled(false);
 				if (ap.hasAction(type)) {
-					// TODO mark current action
+					// NTH mark current action
 				}
 			} else {
 				// when no action being performed, disable those that cannot be currently performed
-				new ActionUsageListener(button).stateChanges(a);
+				if (!a.isUsed()) {
+					button.setEnabled(ap.getPlayer() != null && a.canDo(ap.getPlayer()));
+				} else {
+					button.setEnabled(false);
+				}
 			}
 		}
 		if (ap.getPlayer() != null) {

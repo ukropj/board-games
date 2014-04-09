@@ -34,7 +34,7 @@ public class GeneralSupply {
 	private static final Stack<Stall> stallsLeft = new Stack<Stall>();
 	private static int troughsLeft;
 	private static final Stack<Integer> extsLeft = new Stack<Integer>();
-	private static int lastUsedExt = 0;
+	private static final Stack<Integer> extsUsed = new Stack<Integer>();
 	private static final Set<BuildingType> buildingsLeft = new TreeSet<BuildingType>();
 
 	static {
@@ -52,6 +52,7 @@ public class GeneralSupply {
 		extsLeft.clear();
 		extsLeft.addAll(Arrays.asList(EXTS));
 		Collections.shuffle(extsLeft);
+		extsUsed.clear();
 		buildingsLeft.clear();
 		buildingsLeft.addAll(SPECIAL_BUILDINGS_TYPES);
 	}
@@ -93,9 +94,9 @@ public class GeneralSupply {
 
 	public static void useExtension(boolean use) {
 		if (use) {
-			lastUsedExt = extsLeft.pop(); // TODO this will not work when undo/redo
+			extsUsed.push(extsLeft.pop());
 		} else {
-			extsLeft.push(lastUsedExt);
+			extsLeft.push(extsUsed.pop());
 		}
 	}
 
@@ -111,8 +112,8 @@ public class GeneralSupply {
 		return SPECIAL_BUILDINGS.get(type);
 	}
 
-	public static int getLastExtensionId() {
-		return lastUsedExt;
+	public static int getNextExtensionId() {
+		return extsLeft.peek();
 	}
 
 }

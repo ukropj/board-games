@@ -433,7 +433,6 @@ public class FarmPanel extends JPanel {
 		int westExts = farm.getExtensions(Dir.W).size(), farmCore = 2;
 		int i = 0;
 		for (Integer id : farm.getExtensions(Dir.W)) {
-			// TODO marker
 			img = AgriImages.getExtensionImage(id);
 			g.drawImage(img, X1 + (westExts - i - 1) * S, 0, S, H, null);
 			i++;
@@ -444,7 +443,6 @@ public class FarmPanel extends JPanel {
 		// east extensions
 		i = 0;
 		for (Integer id : farm.getExtensions(Dir.E)) {
-			// TODO marker
 			img = AgriImages.getExtensionImage(id);
 			g.drawImage(img, X1 + S * (westExts + farmCore + i), 0, S, H, null);
 			i++;

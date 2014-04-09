@@ -97,7 +97,10 @@ public abstract class AnimalAction extends AbstractAction {
 
 		public void undo() throws CannotUndoException {
 			super.undo();
-			player.unpurchaseAnimals(takenAnimals);
+			boolean done = player.unpurchaseAnimals(takenAnimals);
+			if (!done) {
+				throw new CannotUndoException();
+			}
 			animals.add(takenAnimals);
 		}
 
@@ -105,7 +108,10 @@ public abstract class AnimalAction extends AbstractAction {
 			super.redo();
 			animals.substract(takenAnimals);
 			setChanged();
-			player.purchaseAnimals(takenAnimals);
+			boolean done = player.purchaseAnimals(takenAnimals);
+			if (!done) {
+				throw new CannotRedoException();
+			}
 		}
 		
 		public boolean isAnimalEdit() {

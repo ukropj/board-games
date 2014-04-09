@@ -160,6 +160,7 @@ public class Farm extends SimpleObservable {
 					return false;
 				}
 				if (pos.x < 0) {
+					pos = new DirPoint(pos);
 					pos.translate(1, 0);
 				}
 			}
@@ -272,7 +273,7 @@ public class Farm extends SimpleObservable {
 		}
 
 		spaces.add(targetCol, initCol(height));
-		extensions.get(d).push(GeneralSupply.getLastExtensionId());
+		extensions.get(d).push(GeneralSupply.getNextExtensionId());
 		width++;
 		return true;
 	}
@@ -316,7 +317,6 @@ public class Farm extends SimpleObservable {
 	}
 
 	public List<Building> getFarmBuildings() {
-		// TODO keep list
 		List<Building> buildings = new ArrayList<Building>();
 		List<DirPoint> range = PointUtils.createGridRange(width, height);
 		for (DirPoint pos : range) {
@@ -368,7 +368,7 @@ public class Farm extends SimpleObservable {
 		return false;
 	}
 
-	private Building takenBuilding = null; // TODO ugly
+	private Building takenBuilding = null;
 
 	public Building unbuild(DirPoint pos) {
 		if (pos == null) {

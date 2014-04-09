@@ -303,7 +303,7 @@ public class AgriImages {
 			img = Images.getBestScaledInstance(img, 0.3f);
 			break;
 		case BIG:
-			img = Images.getBestScaledInstance(img, 0.8f);
+			img = Images.getBestScaledInstance(img, 0.7f);
 			break;
 		}
 		return new ImageIcon(img);

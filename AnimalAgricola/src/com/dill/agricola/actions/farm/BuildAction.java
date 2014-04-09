@@ -76,12 +76,18 @@ public abstract class BuildAction extends PurchaseAction {
 
 		public void undo() throws CannotUndoException {
 			super.undo();
-			player.unpurchase(building.getType(), pos, false);
+			Object done = player.unpurchase(building.getType(), pos, false);
+			if (done == null) {
+				throw new CannotUndoException();
+			}
 		}
 
 		public void redo() throws CannotRedoException {
 			super.redo();
-			player.purchase(building, cost, pos);
+			boolean done = player.purchase(building, cost, pos);
+			if (!done) {
+				throw new CannotRedoException();
+			}
 		}
 
 	}

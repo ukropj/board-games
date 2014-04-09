@@ -58,6 +58,10 @@ public abstract class AbstractAction implements Action {
 		return 1;
 	}
 	
+	public boolean isCancelled() {
+		return false;
+	}
+	
 	public boolean canDoOnFarm(Player player, int doneSoFar) {
 		return canDoOnFarm(player, null, doneSoFar);
 	}

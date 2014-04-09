@@ -35,7 +35,7 @@ import com.dill.agricola.view.utils.UiFactory;
 public class BuildSpecial extends BuildAction {
 
 	private static int counter = 0;
-	
+
 	private final static Map<BuildingType, Materials> COSTS = new EnumMap<BuildingType, Materials>(BuildingType.class);
 	static {
 		COSTS.put(BuildingType.HALF_TIMBERED_HOUSE, HalfTimberedHouse.COST);
@@ -45,7 +45,7 @@ public class BuildSpecial extends BuildAction {
 	}
 	private final Materials[] OS_COSTS = new Materials[] { OpenStables.COST_WOOD, OpenStables.COST_STONE };
 	private int osCostNo;
-	
+
 	private Animals toGive = null;
 
 	public BuildSpecial() {
@@ -57,22 +57,30 @@ public class BuildSpecial extends BuildAction {
 		toGive = null;
 		return super.init();
 	}
-	
+
 	protected Materials getCost(int doneSoFar) {
 		return toBuild == null ? null : toBuild == BuildingType.OPEN_STABLES ? OS_COSTS[osCostNo] : COSTS.get(toBuild);
 	}
-	
+
 	protected boolean isAnyLeft() {
 		return GeneralSupply.getLeft(Supplyable.SPECIAL_BUILDING) > 0;
 	}
-	
+
 	protected Building getBuildingInstance(BuildingType type) {
-		return  GeneralSupply.getSpecialBuilding(type);
+		return GeneralSupply.getSpecialBuilding(type);
 	}
-	
+
 	public boolean canDo(Player player) {
-		return isAnyLeft(); // currently can perform even if player cannot purchase anything
-		// TODO add strict condition
+		return isAnyLeft() && canPurchaseAny(player);
+	}
+
+	private boolean canPurchaseAny(Player player) {
+		for (BuildingType b : GeneralSupply.getBuildingsLeft()) {
+			if (canPurchase(player, b, null)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public boolean canDoOnFarm(Player player, DirPoint pos, int doneSoFar) {
@@ -84,7 +92,7 @@ public class BuildSpecial extends BuildAction {
 		if (type == BuildingType.OPEN_STABLES) {
 			return player.canPurchase(type, OS_COSTS[0], pos) || player.canPurchase(type, OS_COSTS[1], pos);
 		} else {
-			return player.canPurchase(type, COSTS.get(type), pos);			
+			return player.canPurchase(type, COSTS.get(type), pos);
 		}
 	}
 
@@ -97,7 +105,7 @@ public class BuildSpecial extends BuildAction {
 		List<JComponent> opts = new ArrayList<JComponent>();
 		for (BuildingType type : types) {
 			JComponent opt = UiFactory.createLabel(AgriImages.getBuildingIcon(type, ImgSize.BIG));
-			opt.setEnabled(canPurchase(player, type, null));				
+			opt.setEnabled(canPurchase(player, type, null));
 			opts.add(opt);
 		}
 		int result = UiFactory.showOptionDialog(null, Msg.get("chooseBuilding"), Msg.get("specialBuildings"), null, opts);
@@ -131,6 +139,10 @@ public class BuildSpecial extends BuildAction {
 		return result != JOptionPane.CLOSED_OPTION ? animalRewards[result] : animalRewards[0];
 	}
 
+	public boolean isCancelled() {
+		return toBuild == null;
+	}
+
 	public UndoableFarmEdit doo(Player player) {
 		if (canDo(player)) {
 			toBuild = chooseBuilding(player);
@@ -141,13 +153,13 @@ public class BuildSpecial extends BuildAction {
 		}
 		return null;
 	}
-	
+
 	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos, int doneSoFar) {
 		if (toBuild == BuildingType.OPEN_STABLES) {
 			osCostNo = JOptionPane.CLOSED_OPTION;
 			if (!player.canPay(OS_COSTS[0])) {
 				osCostNo = 1;
-			} else if(!player.canPay(OS_COSTS[1])) {
+			} else if (!player.canPay(OS_COSTS[1])) {
 				osCostNo = 0;
 			}
 			if (osCostNo == JOptionPane.CLOSED_OPTION) {
@@ -160,7 +172,7 @@ public class BuildSpecial extends BuildAction {
 		}
 		return super.doOnFarm(player, pos, doneSoFar);
 	}
-	
+
 	protected UndoableFarmEdit postActivate(Player player, Building b) {
 		GeneralSupply.useBuilding(toBuild, true);
 		toGive = chooseReward(b);
@@ -168,7 +180,7 @@ public class BuildSpecial extends BuildAction {
 			player.purchaseAnimals(toGive);
 			return new UseBuilding(toBuild, player, toGive);
 		} else {
-			return new UseBuilding(toBuild, player);			
+			return new UseBuilding(toBuild, player);
 		}
 	}
 
@@ -182,7 +194,7 @@ public class BuildSpecial extends BuildAction {
 		public UseBuilding(BuildingType built, Player player) {
 			this(built, player, null);
 		}
-		
+
 		public UseBuilding(BuildingType built, Player player, Animals animals) {
 			this.built = built;
 			this.player = player;
@@ -192,7 +204,7 @@ public class BuildSpecial extends BuildAction {
 		public void undo() throws CannotUndoException {
 			super.undo();
 			if (takenAnimals != null) {
-				player.unpurchaseAnimals(takenAnimals);				
+				player.unpurchaseAnimals(takenAnimals);
 			}
 			GeneralSupply.useBuilding(built, false);
 			setChanged();

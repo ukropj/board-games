@@ -30,6 +30,8 @@ public interface Action {
 
 	int getMinimalCount();
 	
+	boolean isCancelled();
+	
 	boolean canDo(Player player);
 
 	UndoableFarmEdit doo(Player player);

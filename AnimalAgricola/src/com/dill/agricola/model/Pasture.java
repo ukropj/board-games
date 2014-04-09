@@ -21,9 +21,4 @@ public class Pasture extends Space {
 		return false;
 	}
 
-	/*public Space unbuild() {
-		// cannot be unbuild any more
-		return null;
-	}*/
-
 }

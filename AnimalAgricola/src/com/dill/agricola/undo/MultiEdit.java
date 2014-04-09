@@ -126,8 +126,9 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 		return false;
 	}
 
-	public boolean undoFarmAction(PlayerColor player, DirPoint pos, Purchasable thing) {
+	public boolean undoFarmAction(PlayerColor player, DirPoint pos, Purchasable thing) throws CannotUndoException {
 		// TODO refactor ugly
+		// or at least document
 		if (matchesFarmAction(player, pos, thing)) {
 			int i = edits.size();
 			while (i-- > 0) {
@@ -141,7 +142,6 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 						return true;
 					}
 				} catch (ClassCastException e) {
-					e.printStackTrace(); //TODO remove
 					return false;
 				}
 			}

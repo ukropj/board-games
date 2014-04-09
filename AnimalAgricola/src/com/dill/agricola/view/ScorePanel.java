@@ -12,6 +12,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import com.dill.agricola.Game;
 import com.dill.agricola.model.Player;
@@ -23,7 +24,7 @@ import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.UiFactory;
 
-public class ScorePanel extends JPanel {
+public class ScorePanel extends JScrollPane {
 	private static final long serialVersionUID = 1L;
 
 	private static final DecimalFormat scoreFormat = new DecimalFormat("###.#");
@@ -38,10 +39,14 @@ public class ScorePanel extends JPanel {
 	public ScorePanel(Game game) {
 		this.game = game;
 		setFont(COUNT_FONT);
-		setLayout(new BorderLayout(0, 10));
-		setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
+		setBorder(null);
+		JPanel p = new JPanel();
+		setViewportView(p);
+		p.setLayout(new BorderLayout(0, 10));
+		p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		scoringP = UiFactory.createBorderPanel();
-		add(scoringP, BorderLayout.NORTH);
+		p.add(scoringP, BorderLayout.NORTH);
 	}
 
 	public void updateScoring() {
@@ -49,7 +54,7 @@ public class ScorePanel extends JPanel {
 
 		Player[] players = game.getPlayers();
 		JPanel p = new JPanel(new GridLayout(0, 3, 0, 0));
-		p.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
+//		p.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
 		// heading
 		JPanel emptyP = new JPanel();
 		emptyP.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 1, BORDER_COLOR));
@@ -121,7 +126,10 @@ public class ScorePanel extends JPanel {
 	}
 
 	private <T extends JComponent> T addBorder(T component) {
-		component.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 1));
+		component.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createLineBorder(BORDER_COLOR, 1),
+				BorderFactory.createEmptyBorder(2, 2, 2, 2)));
 		return component;
 	}
+
 }

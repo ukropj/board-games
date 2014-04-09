@@ -1,5 +1,6 @@
 package com.dill.agricola.undo;
 
+import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
 import javax.swing.undo.UndoableEditSupport;
 
@@ -59,13 +60,13 @@ public class TurnUndoableEditSupport extends UndoableEditSupport {
 		}
 	}
 
-	public synchronized void invalidateUpdated() {
+	public synchronized void invalidateUpdated() throws CannotUndoException {
 		if (compoundEdit != null) {
 			compoundEdit.die();
 		}
 	}
 
-	protected boolean undoFarmAction(Player player, DirPoint pos, Purchasable thing) {
+	protected boolean undoFarmAction(Player player, DirPoint pos, Purchasable thing) throws CannotUndoException {
 		return compoundEdit != null && compoundEdit.undoFarmAction(player.getColor(), pos, thing);
 	}
 

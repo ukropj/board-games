@@ -212,7 +212,6 @@ public class Player extends SimpleObservable {
 
 	public boolean purchaseAnimals(Animals newAnimals) {
 		animals.add(newAnimals);
-		// TODO refactor, add farm methods
 		for (Animal a : Animal.values()) {
 			int count = newAnimals.get(a);
 			if (count > 0) {
@@ -246,15 +245,15 @@ public class Player extends SimpleObservable {
 		return false;
 	}
 
-	public int getBuildingCount(BuildingType type) {
-		int count = 0;
-		for (Building b : farm.getFarmBuildings()) {
-			if (b.getType() == type) {
-				count++;
-			}
-		}
-		return count;
-	}
+//	public int getBuildingCount(BuildingType type) {
+//		int count = 0;
+//		for (Building b : farm.getFarmBuildings()) {
+//			if (b.getType() == type) {
+//				count++;
+//			}
+//		}
+//		return count;
+//	}
 
 	public boolean validate() {
 		return farm.hasValidAnimals();

@@ -48,8 +48,8 @@ public class Expand extends PurchaseAction {
 	}
 	
 	public int getMinimalCount() {
-		return (hadExp || isAnyLeft()) ? 2 : 1; 
 		// first is fences, second is extension (that may not happen if not any left)
+		return (hadExp || isAnyLeft()) ? 2 : 1; 
 	}
 
 	protected Materials getCost(int doneSoFar) {

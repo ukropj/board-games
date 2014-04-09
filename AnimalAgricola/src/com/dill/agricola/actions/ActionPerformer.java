@@ -55,13 +55,16 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		boolean canDo = action.canDo(player);
 		UndoableFarmEdit edit = null;
 		if (canDo) {
+			edit = action.doo(player);
+
+			if (action.isCancelled()) {
+				return false;
+			}
+
 			beginUpdate(player.getColor(), action.getType()); // start "action edit"
 			postEdit(new StartAction(player, action));
 			player.spendWorker();
-
 			action.setUsed(player.getColor());
-			edit = action.doo(player);
-			// TODO action may not be started - special bldg
 
 			if (edit != null) {
 				count++;

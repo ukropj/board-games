@@ -6,8 +6,9 @@
 	all dialog icons (top + inside)
 	resizing ?
 	less cluttered action board
-	animal scoring table
 	resolve TODOs in code
+	move building display to tab
+	red arrow in stables action icon
 	
 #Bugs#
 
@@ -19,3 +20,4 @@
 	action tooltips
 	farm cursors
 	actual single animals instead of count
+	condensed layout (p1+p2 on tabs)

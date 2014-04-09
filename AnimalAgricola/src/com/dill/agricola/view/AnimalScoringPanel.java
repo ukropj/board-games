@@ -40,23 +40,28 @@ public class AnimalScoringPanel extends JPanel {
 	}
 
 	private JComponent buildAnimalScoring() {
-		JPanel p = new JPanel(new GridLayout(5, 0));
+		JPanel p = UiFactory.createHorizontalPanel();
+		JPanel p0 = new JPanel(new GridLayout(5, 0));
+		JPanel p1 = new JPanel(new GridLayout(5, 0));
+		p.add(p0);
+		p.add(Box.createHorizontalStrut(-3));
+		p.add(p1);
 		int l = 14;
 		// header
 		JPanel emptyP = new JPanel();
 		emptyP.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 1, BORDER_COLOR));
-		p.add(emptyP);
+		p0.add(emptyP);
 		JLabel lab = addBorder(UiFactory.createLabel("[0-3]"));
 		lab.setFont(COUNT_FONT);
-		p.add(lab);
+		p0.add(lab);
 		for (int i = 4; i < l; i++) {
 			lab = addBorder(UiFactory.createLabel("[" + String.valueOf(i) + "]"));
 			lab.setFont(COUNT_FONT);
-			p.add(lab);
+			p1.add(lab);
 		}
 		// animals
 		for (Animal a : Animal.values()) {
-			p.add(addBorder(UiFactory.createAnimalLabel(a, 0, UiFactory.NO_NUMBER)));
+			p0.add(addBorder(UiFactory.createAnimalLabel(a, 0, UiFactory.NO_NUMBER)));
 			for (int i = 3; i < l; i++) {
 				int b = a.getBonusPoints(i);
 				lab = addBorder(UiFactory.createLabel(String.valueOf(b)));
@@ -69,7 +74,11 @@ public class AnimalScoringPanel extends JPanel {
 				} else {
 					lab.setForeground(MOST_COLOR);
 				}
-				p.add(lab);
+				if (i == 3) {
+					p0.add(lab);										
+				} else {
+					p1.add(lab);					
+				}
 			}
 		}
 		return p;
@@ -127,7 +136,9 @@ public class AnimalScoringPanel extends JPanel {
 	}
 
 	private <T extends JComponent> T addBorder(T component) {
-		component.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 1));
+		component.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createLineBorder(BORDER_COLOR, 1),
+				BorderFactory.createEmptyBorder(2, 2, 2, 2)));
 		return component;
 	}
 

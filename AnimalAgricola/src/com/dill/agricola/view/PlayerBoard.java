@@ -93,7 +93,7 @@ public class PlayerBoard extends JPanel implements Observer {
 	}
 
 	public void update(Observable o, Object arg) {
-		if (arg == ChangeType.FARM_RESIZE) {
+		if (arg == ChangeType.FARM_RESIZE || arg == ChangeType.UNDO || arg == ChangeType.REDO) {
 			farmPanel.revalidate();
 			farmPanel.updateComponentPosition();
 		}
