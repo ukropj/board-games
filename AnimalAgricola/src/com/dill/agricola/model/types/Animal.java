@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.dill.agricola.support.Msg;
+
 public enum Animal {
 
 	SHEEP(new Color(229, 229, 229), Color.BLACK, new int[] { 4, 8, 11 }),
@@ -54,6 +56,10 @@ public enum Animal {
 		List<Animal> list = Arrays.asList(Animal.values());
 		Collections.reverse(list);
 		return list.toArray(new Animal[4]);
+	}
+	
+	public String getName(boolean many) {
+		return Msg.get(toString().toLowerCase() + (many ? "s" : ""));
 	}
 
 	/*public static void main(String[] args) {

@@ -5,6 +5,7 @@
 	highlight current action
 	resizing ?
 	less cluttered action board
+	relative paths in ant script
 	
 #Bugs#
 

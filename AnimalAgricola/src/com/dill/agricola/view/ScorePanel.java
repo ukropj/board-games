@@ -30,7 +30,9 @@ public class ScorePanel extends JScrollPane {
 	private static final DecimalFormat scoreFormat = new DecimalFormat("###.#");
 	private static final Color MORE_COLOR = new Color(23, 133, 23);
 	private static final Color BORDER_COLOR = Color.LIGHT_GRAY;
-	private static final Font COUNT_FONT = Fonts.TEXT_FONT.deriveFont(14f);
+	private static final Font SMALLER_FONT = Fonts.TEXT_FONT.deriveFont(14f);
+	private static final Font BIGGER_FONT = Fonts.TEXT_FONT.deriveFont(16f);
+	public static final Font BIGGER_NUMBER = Fonts.TEXT_FONT_BOLD.deriveFont(20f);
 
 	private final JPanel scoringP;
 
@@ -38,7 +40,7 @@ public class ScorePanel extends JScrollPane {
 
 	public ScorePanel(Game game) {
 		this.game = game;
-		setFont(COUNT_FONT);
+		setFont(SMALLER_FONT);
 		setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
 		setBorder(null);
 		JPanel p = new JPanel();
@@ -61,7 +63,7 @@ public class ScorePanel extends JScrollPane {
 		p.add(emptyP);
 		for (Player player : players) {
 			JLabel playerL = UiFactory.createLabel(Msg.get("player", Msg.get(player.toString().toLowerCase())));
-			playerL.setFont(COUNT_FONT);
+			playerL.setFont(SMALLER_FONT);
 			playerL.setForeground(Color.WHITE);
 			playerL.setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 5));
 			JPanel playerP = UiFactory.createBorderPanel();
@@ -72,17 +74,23 @@ public class ScorePanel extends JScrollPane {
 		}
 		// animals
 		for (Animal a : Animal.values()) {
-			addLine(p, UiFactory.createAnimalLabel(a, 0, UiFactory.NO_NUMBER), players[0].getAnimalScore(a), players[1].getAnimalScore(a),
+			addLine(p, UiFactory.createAnimalLabel(a, 0, UiFactory.NO_NUMBER), Msg.get("pointsFor", a.getName(true).toLowerCase()),
+					players[0].getAnimalScore(a), players[1].getAnimalScore(a),
 					String.valueOf(players[0].getAnimal(a)), String.valueOf(players[1].getAnimal(a)));
 		}
 		// extensions
-		addLine(p, "", AgriImages.getPurchasableIcon(Purchasable.EXTENSION), players[0].getExtensionsScore(), players[1].getExtensionsScore());
+		addLine(p, "", AgriImages.getPurchasableIcon(Purchasable.EXTENSION), Msg.get("pointsForExts"), players[0].getExtensionsScore(),
+				players[1].getExtensionsScore());
 		// buildings
-		addLine(p, "", AgriImages.getPurchasableIcon(Purchasable.BUILDING), players[0].getBuildingScore(), players[1].getBuildingScore());
+		addLine(p, "", AgriImages.getPurchasableIcon(Purchasable.BUILDING), Msg.get("pointsForBuildings"), players[0].getBuildingScore(),
+				players[1].getBuildingScore());
 		// total
 		float blueTotal = players[0].getScore();
 		float redTotal = players[1].getScore();
-		addLine(p, Msg.get("sum"), null, blueTotal, redTotal);
+		addLine(p, Msg.get("sum"), null, Msg.get("pointsFinal"), blueTotal, redTotal);
+		for (int i = p.getComponentCount() - 1, j = 0; j < players.length + 1; i--, j++) {
+			p.getComponent(i).setFont(BIGGER_NUMBER);
+		}
 
 		JPanel mainP = UiFactory.createVerticalPanel();
 		mainP.add(p);
@@ -99,26 +107,29 @@ public class ScorePanel extends JScrollPane {
 				: blueTotal < redTotal ? PlayerColor.RED : game.getInitialStartPlayer().other();
 		JLabel winnerLabel = UiFactory.createLabel(Msg.get(game.isEnded() ? "winnerMsg" : "wouldBeWinnerMsg",
 				Msg.get(winner.toString().toLowerCase())));
-		winnerLabel.setFont(Fonts.TEXT_FONT.deriveFont(16f));
+		winnerLabel.setFont(BIGGER_FONT);
 		winnerLabel.setForeground(winner.getRealColor());
 		mainP.add(winnerLabel);
 
 		scoringP.add(mainP, BorderLayout.CENTER);
 	}
 
-	private void addLine(JPanel p, String text, ImageIcon icon, float scoreBlue, float scoreRed) {
-		addLine(p, UiFactory.createLabel(text, icon), scoreBlue, scoreRed, null, null);
+	private void addLine(JPanel p, String text, ImageIcon icon, String tooltip, float scoreBlue, float scoreRed) {
+		addLine(p, UiFactory.createLabel(text, icon), tooltip, scoreBlue, scoreRed, null, null);
 	}
 
-	private void addLine(JPanel p, JLabel lineLabel, float scoreBlue, float scoreRed, String extraBlue, String extraRed) {
+	private void addLine(JPanel p, JLabel lineLabel, String tooltip, float scoreBlue, float scoreRed, String extraBlue, String extraRed) {
+		lineLabel.setToolTipText(tooltip);
 		p.add(addBorder(lineLabel));
 		JLabel blueL = UiFactory.createLabel(scoreFormat.format(scoreBlue) + (extraBlue != null ? " [" + extraBlue + "]" : ""));
+		blueL.setToolTipText(tooltip);
 		if (scoreBlue > scoreRed) {
 			blueL.setForeground(MORE_COLOR);
 		}
 		p.add(addBorder(blueL));
 
 		JLabel redL = UiFactory.createLabel(scoreFormat.format(scoreRed) + (extraRed != null ? " [" + extraRed + "]" : ""));
+		redL.setToolTipText(tooltip);
 		if (scoreRed > scoreBlue) {
 			redL.setForeground(MORE_COLOR);
 		}

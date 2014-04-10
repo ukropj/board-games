@@ -61,7 +61,9 @@ public class AnimalScoringPanel extends JPanel {
 		}
 		// animals
 		for (Animal a : Animal.values()) {
-			p0.add(addBorder(UiFactory.createAnimalLabel(a, 0, UiFactory.NO_NUMBER)));
+			JLabel al = UiFactory.createAnimalLabel(a, 0, UiFactory.NO_NUMBER);
+			al.setToolTipText(a.getName(true));
+			p0.add(addBorder(al));
 			for (int i = 3; i < l; i++) {
 				int b = a.getBonusPoints(i);
 				lab = addBorder(UiFactory.createLabel(String.valueOf(b)));
@@ -108,7 +110,9 @@ public class AnimalScoringPanel extends JPanel {
 		// animals
 		int l = 30;
 		for (Animal a : Animal.values()) {
-			p.add(addBorder(UiFactory.createAnimalLabel(a, 0, UiFactory.NO_NUMBER)));
+			JLabel al = UiFactory.createAnimalLabel(a, 0, UiFactory.NO_NUMBER);
+			al.setToolTipText(a.getName(true));
+			p.add(addBorder(al));
 			int from, to = 0;
 			for (int i = 0; i < points.length; i++) {
 				from = -1;

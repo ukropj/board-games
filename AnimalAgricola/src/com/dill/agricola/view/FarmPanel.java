@@ -267,11 +267,13 @@ public class FarmPanel extends JPanel {
 		materialsP.setOpaque(false);
 		for (Material m : Material.values()) {
 			JLabel l = UiFactory.createMaterialLabel(m, 0, UiFactory.ICON_FIRST);
+			l.setToolTipText(m.getName());
 			materialsP.add(l);
 			supply.put(m, l);
 		}
 		for (Animal a : Animal.values()) {
 			JLabel l = UiFactory.createAnimalLabel(a, 0, UiFactory.ICON_FIRST);
+			l.setToolTipText(a.getName(true));
 			materialsP.add(l);
 			animalSupply.put(a, l);
 		}
