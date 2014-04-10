@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -137,17 +138,20 @@ public class UiFactory {
 	public static JPanel createResourcesPanel(Materials materials, Animals animals, int orientation) {
 		JPanel p = orientation == Y_AXIS ? UiFactory.createVerticalPanel() : UiFactory.createHorizontalPanel();
 		p.setOpaque(false);
-		updateResourcePanel(p, materials, animals, false);
+		updateResourcePanel(p, materials, animals, false, 0);
 		return p;
 	}
 
-	public static void updateResourcePanel(JPanel panel, Materials materials, Animals animals, boolean usePlus) {
+	public static void updateResourcePanel(JPanel panel, Materials materials, Animals animals, boolean usePlus, int gap) {
 		panel.removeAll();
 		int added = 0;
 		if (materials != null) {
 			for (Material m : Material.values()) {
 				int count = materials.get(m);
 				if (count > 0) {
+					if (added > 0 && gap > 0) {
+						panel.add(Box.createRigidArea(new Dimension(gap, gap)));
+					}
 					panel.add(createMaterialLabel(m, count, usePlus ? ICON_QUANTITY : ICON_LAST));
 					added++;
 				}
@@ -157,6 +161,9 @@ public class UiFactory {
 			for (Animal a : Animal.reversedValues()) {
 				int count = animals.get(a);
 				if (count > 0) {
+					if (added > 0 && gap > 0) {
+						panel.add(Box.createRigidArea(new Dimension(gap, gap)));
+					}
 					panel.add(createAnimalLabel(a, count, usePlus ? ICON_QUANTITY : ICON_LAST));
 					added++;
 				}

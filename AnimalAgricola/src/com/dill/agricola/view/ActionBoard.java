@@ -113,14 +113,17 @@ public class ActionBoard extends JPanel {
 	}
 
 	public void addTabs(final ScorePanel scorePanel) {
-		tabPane.addTab(Msg.get("buildingsTitle"), new BuildingsPanel());
+		final BuildingsPanel buildingPanel = new BuildingsPanel();
+		tabPane.addTab(Msg.get("buildingsTitle"), buildingPanel);
 		tabPane.addTab(Msg.get("animalTitle"), new AnimalScoringPanel());
 		tabPane.addTab(Msg.get("scoresTitle"), /*Images.createIcon("application-certificate", ImgSize.SMALL),*/scorePanel);
 		
 		tabPane.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
-				if (tabPane.getSelectedIndex() == scoringTabIndex) {
+				if (tabPane.getSelectedComponent() == scorePanel) {
 					scorePanel.updateScoring();
+				} else if (tabPane.getSelectedComponent() == buildingPanel) {
+					buildingPanel.updateBuildings();
 				}
 			}
 		});

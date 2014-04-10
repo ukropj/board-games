@@ -1,10 +1,11 @@
 package com.dill.agricola.view;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
@@ -80,7 +81,7 @@ public class ActionPanelFactory {
 			return;
 		case BUILDING_MATERIAL:
 			JPanel bmP = UiFactory.createVerticalPanel();
-			UiFactory.updateResourcePanel(bmP, BuildingMaterial.MATERIALS, null, true);
+			UiFactory.updateResourcePanel(bmP, BuildingMaterial.MATERIALS, null, true, 5);
 			actionButton.add(bmP);
 			c.gridx = 0;
 			c.gridy = 3;
@@ -129,6 +130,7 @@ public class ActionPanelFactory {
 			JPanel troP = UiFactory.createVerticalPanel();
 			troP.add(UiFactory.createLabel(Msg.get("xTimes", 1), AgriImages.getPurchasableIcon(Purchasable.TROUGH)));
 			troP.add(UiFactory.createLabel(Msg.get("alsoUnlimited")));
+			
 			JPanel tro1P = UiFactory.createResourcesPanel(Troughs.COST, null, UiFactory.X_AXIS);
 			tro1P.add(UiFactory.createArrowLabel(Dir.E, false));
 			tro1P.add(UiFactory.createLabel(AgriImages.getPurchasableIcon(Purchasable.TROUGH)));
@@ -153,7 +155,9 @@ public class ActionPanelFactory {
 		case STALLS:
 			JPanel stallP = UiFactory.createVerticalPanel();
 			stallP.add(UiFactory.createLabel(Msg.get("once")));
-			stallP.add(UiFactory.createResourcesPanel(Stall.COST, null, UiFactory.X_AXIS));
+			JPanel stall1P = UiFactory.createHorizontalPanel();
+			UiFactory.updateResourcePanel(stall1P, Stall.COST, null, false, 5);
+			stallP.add(stall1P);
 			stallP.add(UiFactory.createArrowLabel(Dir.S, false));
 			stallP.add(UiFactory.createLabel(AgriImages.getStallIcon()));
 			JLabel stallSupplyL = createSupplyLabel(action, Supplyable.STALL);
@@ -163,7 +167,7 @@ public class ActionPanelFactory {
 			actionButton.add(stallP);
 			c.gridx = 0;
 			c.gridy = 7;
-			c.gridwidth = 1;
+			c.gridwidth = 2;
 			c.gridheight = 3;
 			c.weightx = 1;
 			break;
@@ -179,9 +183,9 @@ public class ActionPanelFactory {
 			staP.add(UiFactory.createLabel(AgriImages.getStallToStablesIcon()));
 			staP.add(Box.createVerticalGlue());
 			actionButton.add(staP);
-			c.gridx = 1;
+			c.gridx = 2;
 			c.gridy = 7;
-			c.gridwidth = 2;
+			c.gridwidth = 1;
 			c.gridheight = 3;
 			c.weightx = 1;
 			break;
@@ -232,6 +236,13 @@ public class ActionPanelFactory {
 	private static JPanel createBuildingPanel() {
 		JPanel display = new JPanel(new GridLayout(0, 4, 2, 2));
 		display.setOpaque(false);
+		List<BuildingLabel> labels = new ArrayList<BuildingLabel>();
+		for (BuildingType type : GeneralSupply.getBuildingsAll()) {
+			BuildingLabel bl = new BuildingLabel(type, ImgSize.SMALL);
+			bl.setToolTipText(type.name);
+			labels.add(bl);
+			display.add(bl);
+		}
 		JPanel bP = UiFactory.createBorderPanel(2, 0);
 		bP.add(display, BorderLayout.CENTER);
 
@@ -241,7 +252,7 @@ public class ActionPanelFactory {
 //		button.addActionListener(new BuildingDetailListener());
 //		bP.add(button, BorderLayout.LINE_END);
 
-		buildingChangeListener = new BuildingChangeListener(display);
+		buildingChangeListener = new BuildingChangeListener(labels);
 		return bP;
 	}
 
@@ -267,15 +278,16 @@ public class ActionPanelFactory {
 		parent.add(createPrefixPanel(materials, animal, otherAnimal), c);
 		c.gridx = 3 * x + 2;
 		c.gridwidth = 1;
-		c.insets = new Insets(INSET, 0, INSET, INSET);
+		c.insets = new Insets(INSET, INSET, INSET, INSET);
 		parent.add(createResourcesButton(action, button, extraP), c);
 	}
 
 	private static JPanel createPrefixPanel(Materials materials, Animal animal, Animal otherAnimal) {
 		JPanel refillP = UiFactory.createHorizontalPanel();
+		refillP.setToolTipText(Msg.get("actRefill"));
 		refillP.setOpaque(true);
 		refillP.add(Box.createHorizontalGlue());
-		refillP.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 0, Color.GRAY));
+//		refillP.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 0, Color.GRAY));
 		Animals animals = animal == null ? null : new Animals(animal, 1);
 		JPanel main = UiFactory.createResourcesPanel(materials, animals, UiFactory.Y_AXIS);
 		refillP.add(main);
@@ -318,7 +330,7 @@ public class ActionPanelFactory {
 		}
 
 		public void stateChanges(Action action) {
-			UiFactory.updateResourcePanel(materialPanel, action.getAccumulatedMaterials(), action.getAccumulatedAnimals(), true);
+			UiFactory.updateResourcePanel(materialPanel, action.getAccumulatedMaterials(), action.getAccumulatedAnimals(), true, 0);
 		}
 
 	}
@@ -341,24 +353,17 @@ public class ActionPanelFactory {
 
 	private static class BuildingChangeListener implements ActionStateChangeListener {
 
-		private final JPanel buildingPanel;
+		private final List<BuildingLabel> labels;
 
-		public BuildingChangeListener(JPanel buildingPanel) {
-			this.buildingPanel = buildingPanel;
+		public BuildingChangeListener(List<BuildingLabel> labels) {
+			this.labels = labels;
 		}
 
 		public void stateChanges(Action action) {
-			buildingPanel.removeAll();
 			Set<BuildingType> left = GeneralSupply.getBuildingsLeft();
-			for (BuildingType type : GeneralSupply.getBuildingsAll()) {
-				JLabel bl = new JLabel(AgriImages.getBuildingIcon(type, ImgSize.SMALL));
-				if (!left.contains(type)) {
-					bl.setEnabled(false);
-				}
-				bl.setToolTipText(type.name);
-				buildingPanel.add(bl);
+			for (BuildingLabel label : labels) {
+				label.setUsed(!left.contains(label.getType()));
 			}
-			buildingPanel.revalidate();
 		}
 	}
 

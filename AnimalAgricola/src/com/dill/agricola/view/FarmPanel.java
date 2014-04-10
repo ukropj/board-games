@@ -58,6 +58,8 @@ import com.dill.agricola.view.utils.UiFactory;
 public class FarmPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
+	public final static Color RED = new Color(154, 0, 25);
+
 	public final static int S = 100;
 	public final static int M = S / 16, L = S - 2 * M;
 	public final static int X1 = S / 2, X2 = S / 2, Y1 = (int) (S * 0.39f);
@@ -84,9 +86,9 @@ public class FarmPanel extends JPanel {
 	};
 	private final static Line2D[][] animalDividers = new Line2D[][] {
 			new Line2D[] {},
-			new Line2D[] { new Line2D.Float(new DirPoint(S / 4, S / 4), new DirPoint(3 * S / 4, 3 * S / 4)) },
+			new Line2D[] { new Line2D.Float(new DirPoint(S / 4 + M, S / 4 + M), new DirPoint(3 * S / 4 - M, 3 * S / 4 - M)) },
 			new Line2D[] {
-					new Line2D.Float(new DirPoint(S / 2, S / 2), new DirPoint(S / 2, S / 4 - M/2)),
+					new Line2D.Float(new DirPoint(S / 2, S / 2), new DirPoint(S / 2, S / 4 - M / 2)),
 					new Line2D.Float(new DirPoint(S / 2, S / 2), new DirPoint(3 * S / 4 - M, 3 * S / 4 - M)),
 					new Line2D.Float(new DirPoint(S / 2, S / 2), new DirPoint(S / 4 + M, 3 * S / 4 - M)) },
 			new Line2D[] {
@@ -491,7 +493,7 @@ public class FarmPanel extends JPanel {
 			g.fillOval(realPos.x + S - 6 * M, realPos.y + S - 6 * M, 8 * M, 8 * M);
 			g.setClip(getVisibleRect());
 			// draw actual/max
-			g.setColor(type != null ? (space.isValid() ? type.getContrastingColor() : Color.RED) : Color.BLACK);
+			g.setColor(type != null ? (space.isValid() ? type.getContrastingColor() : RED) : Color.BLACK);
 			g.setFont(Fonts.FARM_FONT);
 			FontMetrics fm = g.getFontMetrics();
 			int w0 = fm.stringWidth("99");
@@ -646,10 +648,11 @@ public class FarmPanel extends JPanel {
 			float x = X1 + l * total;
 			int y = Y1 + farm.getHeight() * S + S / 2 - 2 * M;
 			int j = 0;
+			BufferedImage img = null;
 			for (Animal type : Animal.values()) {
 				int count = loose.get(type);
 				if (count > 0) {
-					BufferedImage img = AgriImages.getAnimalImage(type, ImgSize.BIG, 1);
+					img = AgriImages.getAnimalImage(type, ImgSize.BIG, 1);
 					for (int i = 0; i < count; i++) {
 						g.drawImage(img, (int) (x - j * l), y - img.getHeight(), img.getWidth(), img.getHeight(), null);
 						j++;
@@ -658,8 +661,18 @@ public class FarmPanel extends JPanel {
 				}
 			}
 
-			BufferedImage arrowImg = AgriImages.getArrowImage(Dir.E, true, ImgSize.BIG);
-			g.drawImage(arrowImg, M, y - M - arrowImg.getHeight(), arrowImg.getWidth(), arrowImg.getHeight(), null);
+//			g.setColor(msgLabel.getBackground());
+//			g.fillRect(M, H - 6 * M, 9 * M, 6 * M);
+
+//			g.setColor(RED);
+//			g.setFont(Fonts.FARM_MESSAGE);
+//			g.drawString("... will", x + img.getWidth(), y - 3 * M);
+//			g.drawString("run away", x + img.getWidth(), y - M / 2);
+//			g.drawString(loose.size() + " runs", 2 * M, y - 3 * M);
+//			g.drawString("away:", 2 * M, y - M / 2);
+
+//			BufferedImage arrowImg = AgriImages.getArrowImage(Dir.E, true, ImgSize.BIG);
+//			g.drawImage(arrowImg, M, y - M - arrowImg.getHeight(), arrowImg.getWidth(), arrowImg.getHeight(), null);
 		}
 	}
 

@@ -49,7 +49,7 @@ public class Player extends SimpleObservable {
 		addMaterial(Material.BORDER, INIT_BORDERS);
 
 		if (Main.DEBUG) {
-//			addMaterial(new Materials(Material.WOOD, 10));
+			addMaterial(new Materials(Material.WOOD, 10));
 			addMaterial(new Materials(Material.STONE, 20));
 			addMaterial(new Materials(Material.REED, 20));
 

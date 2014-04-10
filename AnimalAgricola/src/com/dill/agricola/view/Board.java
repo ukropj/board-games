@@ -68,7 +68,8 @@ public class Board extends JFrame {
 		playerBoards = new PlayerBoard[2];
 
 		setTitle(Msg.get("gameTitle"));
-		BufferedImage img = Images.createImage("a_all");
+//		BufferedImage img = Images.createImage("a_all");
+		BufferedImage img = Images.createImage("a");
 		setIconImages(Arrays.asList(new Image[] {
 				Images.getBestScaledInstance(img, 16),
 				Images.getBestScaledInstance(img, 32),
@@ -179,6 +180,8 @@ public class Board extends JFrame {
 
 	public void start() {
 		actionBoard.resetActions();
+		playerBoards[0].reset();
+		playerBoards[1].reset();
 	}
 
 	public void updateState(int roundNo) {
@@ -266,7 +269,7 @@ public class Board extends JFrame {
 //				showSettings();
 //				break;
 			case ABOUT:
-				BufferedImage img = Images.getBestScaledInstance(Images.createImage("a_all"), 50);
+				BufferedImage img = Images.getBestScaledInstance(Images.createImage("a"), 50);
 				JOptionPane.showMessageDialog(Board.this, Msg.get("aboutMsg"), Msg.get("aboutTitle"), JOptionPane.INFORMATION_MESSAGE, new ImageIcon(img));
 				break;
 			case EXIT:

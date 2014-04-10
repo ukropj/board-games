@@ -86,10 +86,16 @@ public class PlayerBoard extends JPanel implements Observer {
 		farmPanel.setActive(active, breeding);
 	}
 
-	void updateFarm() {
+	public void updateFarm() {
 		Fencer.calculateFences(farm);
 		farmPanel.updateControls();
 		farmPanel.paintImmediately(farmPanel.getVisibleRect());
+	}
+	
+	public void reset() {
+		farmPanel.revalidate();
+		farmPanel.updateComponentPosition();
+		updateFarm();
 	}
 
 	public void update(Observable o, Object arg) {
