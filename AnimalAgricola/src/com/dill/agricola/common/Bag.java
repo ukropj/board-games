@@ -19,7 +19,6 @@ public class Bag<T extends Enum<T>> {
 		}
 	}
 
-	@SafeVarargs
 	public Bag(Class<T> clazz, T... types) {
 		this(clazz);
 		for (T t : types) {

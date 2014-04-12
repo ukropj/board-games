@@ -236,7 +236,7 @@ public class UiFactory {
 		JDialog dialog = pane.createDialog(parent, title);
 		dialog.setVisible(true);
 		Object retVal = pane.getValue();
-		return retVal == null ? JOptionPane.CLOSED_OPTION : (int) retVal;
+		return retVal == null ? JOptionPane.CLOSED_OPTION : (Integer) retVal;
 	}
 
 	public static JButton createToolbarButton(String label, String iconName, String toolTip, ActionListener listener) {
