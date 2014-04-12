@@ -172,6 +172,7 @@ public class UiFactory {
 		if (added == 0) {
 			panel.add(createLabel(Msg.get("empty")));
 		}
+		panel.revalidate();
 	}
 
 	public static JLabel createLabel(String text) {

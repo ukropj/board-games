@@ -99,7 +99,6 @@ public class BuildSpecial extends BuildAction {
 	private BuildingType chooseBuilding(Player player) {
 		List<BuildingType> types = new ArrayList<BuildingType>(GeneralSupply.getBuildingsLeft());
 		if (types.size() == 0) {
-			System.out.println("No special buildings available");
 			return null;
 		}
 		List<JComponent> opts = new ArrayList<JComponent>();

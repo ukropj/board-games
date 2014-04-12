@@ -53,7 +53,7 @@ public class AgriImages {
 			return firstTokens[arrId];
 		} else {
 			BufferedImage img = Images.createImage("first" + (id + 1));
-			img = Images.getBestScaledInstance(img, size == ImgSize.BIG ? 0.3f : size == ImgSize.MEDIUM ? 0.2f : 0.15f);
+			img = Images.getBestScaledInstance(img, size == ImgSize.BIG ? 0.3f : size == ImgSize.MEDIUM ? 0.2f : 0.1f);
 			firstTokens[arrId] = img;
 			return img;
 		}
@@ -95,7 +95,7 @@ public class AgriImages {
 		}
 		return farmsAndMargins[arrId];
 	}
-	
+
 	public static BufferedImage getFarmPadImage(int id) {
 		Main.asrtInRange(id, 0, pads.length, "Invalid img id");
 		if (pads[id] == null) {
@@ -150,22 +150,11 @@ public class AgriImages {
 		return fences[d.ordinal()];
 	}
 
-	/*public static BufferedImage getUnusedFenceImage() {
-		if (misc[MISC_U_FENCE] == null) {
-			misc[MISC_U_FENCE] = Images.createImage("border-unused");
-		}
-		return misc[MISC_U_FENCE];
-	}*/
-
 	public static BufferedImage getAnimalImage(Animal type, ImgSize size) {
-		return getAnimalImage(type, size, 0);
-	}
-
-	public static BufferedImage getAnimalImage(Animal type, ImgSize size, int variant) {
-		int index = type.ordinal() + size.ordinal() * ImgSize.values().length + variant * ImgSize.values().length * Animal.values().length;
+		int index = type.ordinal() + size.ordinal() * Animal.values().length;
 		float[] ratios = new float[] { 0.25f, 0.3f, 0.5f };
 		if (animals[index] == null) {
-			BufferedImage img = Images.createImage("a_" + type.toString().toLowerCase() + (variant > 0 ? variant : ""));
+			BufferedImage img = Images.createImage("a_" + type.toString().toLowerCase() + (size != ImgSize.BIG ? "" : "1"));
 			img = Images.getBestScaledInstance(img, ratios[size.ordinal()]);
 			animals[index] = img;
 		}
@@ -180,7 +169,6 @@ public class AgriImages {
 		return new ImageIcon(getMultiImage(getAnimalImage(type, size), count));
 	}
 
-	
 	public static BufferedImage getMaterialImage(Material type) {
 		if (materials[type.ordinal()] == null) {
 			BufferedImage img = Images.createImage("m_" + type.toString().toLowerCase());
@@ -308,7 +296,7 @@ public class AgriImages {
 		}
 		return new ImageIcon(img);
 	}
-	
+
 	public static ImageIcon getStallIcon() {
 		BufferedImage orig = Images.createImage("b_stall1");
 		orig = Images.getBestScaledInstance(orig, 0.3f);
@@ -327,7 +315,7 @@ public class AgriImages {
 		g.dispose();
 		return new ImageIcon(img);
 	}
-	
+
 	public static ImageIcon getStallToStablesIcon() {
 		BufferedImage orig = Images.createImage("stall-to-stables");
 		orig = Images.getBestScaledInstance(orig, 0.3f);

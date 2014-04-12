@@ -110,6 +110,7 @@ public class Expand extends PurchaseAction {
 			super.undo();
 			player.removeMaterial(takenMaterials);
 			materials.add(takenMaterials);
+			setChanged();
 		}
 		
 		public void redo() throws CannotRedoException {

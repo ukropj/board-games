@@ -81,11 +81,6 @@ public class Fencer {
 			}
 		}
 
-//		print(floodMap);
-//		System.out.println("Fencer iterations: " + counter);
-//		System.out.println("Feeders: " + feederMap);
-//		System.out.println("----------------");
-		
 		// process results
 		boolean farmValid = true;
 		for (DirPoint pos : range) {

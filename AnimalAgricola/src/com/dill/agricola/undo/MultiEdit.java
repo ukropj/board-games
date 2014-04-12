@@ -61,14 +61,14 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 			return false;
 		}
 		boolean retVal = super.addEdit(anEdit);
-		if (retVal && anEdit.isSignificant() && isSignificant()) {
-			System.out.println("# Atomic Edit: " + anEdit.getPresentationName() + " into " + getPresentationName());
-		}
+//		if (retVal && anEdit.isSignificant() && isSignificant()) {
+//			System.out.println("# Atomic Edit: " + anEdit.getPresentationName() + " into " + getPresentationName());
+//		}
 		return retVal;
 	}
 
 	public void undo() throws CannotUndoException {
-		System.out.println("#" + (isSignificant() ? " " : "-") + getUndoPresentationName());
+//		System.out.println("#" + (isSignificant() ? " " : "-") + getUndoPresentationName());
 		super.undo();
 		hasBeenDone = false;
 		if (isInProgress()) {
@@ -82,7 +82,7 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 	}
 
 	public void redo() throws CannotRedoException {
-		System.out.println("#" + (isSignificant() ? " " : "-") + getRedoPresentationName());
+//		System.out.println("#" + (isSignificant() ? " " : "-") + getRedoPresentationName());
 		super.redo();
 		hasBeenDone = true;
 	}
@@ -138,7 +138,7 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 						e.undo();
 						e.die();
 						edits.removeElementAt(i);
-						System.out.println("# Unedit " + e.getPresentationName());
+//						System.out.println("# Unedit " + e.getPresentationName());
 						return true;
 					}
 				} catch (ClassCastException e) {

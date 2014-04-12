@@ -28,8 +28,12 @@ import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.ActionPerformer;
 import com.dill.agricola.actions.ActionStateChangeListener;
 import com.dill.agricola.model.types.ActionType;
+import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.support.Msg;
+import com.dill.agricola.view.utils.AgriImages;
+import com.dill.agricola.view.utils.AgriImages.ImgSize;
+import com.dill.agricola.view.utils.Images;
 
 public class ActionBoard extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -109,15 +113,15 @@ public class ActionBoard extends JPanel {
 			ActionPanelFactory.createActionPanel(actionPanel, action, b);
 		}
 
-		tabPane.addTab(Msg.get("actionsTitle"), actionPanel);
+		tabPane.addTab(Msg.get("actionsTitle"), AgriImages.getFirstTokenIcon(1, ImgSize.SMALL), actionPanel);
 		actionsTabIndex = tabPane.indexOfComponent(actionPanel);
 	}
 
 	public void addTabs(final ScorePanel scorePanel) {
 		final BuildingsPanel buildingPanel = new BuildingsPanel();
-		tabPane.addTab(Msg.get("buildingsTitle"), buildingPanel);
-		tabPane.addTab(Msg.get("animalTitle"), new AnimalScoringPanel());
-		tabPane.addTab(Msg.get("scoresTitle"), /*Images.createIcon("application-certificate", ImgSize.SMALL),*/scorePanel);
+		tabPane.addTab(Msg.get("buildingsTitle"), Images.createIcon("go-home", ImgSize.SMALL), buildingPanel);
+		tabPane.addTab(Msg.get("animalTitle"), AgriImages.getAnimalIcon(Animal.HORSE, ImgSize.SMALL), new AnimalScoringPanel());
+		tabPane.addTab(Msg.get("scoresTitle"), Images.createIcon("application-certificate", ImgSize.SMALL), scorePanel);
 		
 		tabPane.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {

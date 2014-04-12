@@ -19,7 +19,7 @@ public class TurnUndoableEditSupport extends UndoableEditSupport {
 			_postEdit(e);
 		} else {
 			if (compoundEdit.isEmpty() && compoundEdit.addEdit(e)) {
-				System.out.println("# Start: " + compoundEdit.getPresentationName());
+//				System.out.println("# Start: " + compoundEdit.getPresentationName());
 				_postEdit(compoundEdit);
 			} else {
 				compoundEdit.addEdit(e);
@@ -53,9 +53,9 @@ public class TurnUndoableEditSupport extends UndoableEditSupport {
 		if (updateLevel > 0) {
 			updateLevel = 0;
 			compoundEdit.end();
-			if (!compoundEdit.isEmpty()) {
-				System.out.println("# End: " + compoundEdit.getPresentationName());
-			}
+//			if (!compoundEdit.isEmpty()) {
+//				System.out.println("# End: " + compoundEdit.getPresentationName());
+//			}
 			compoundEdit = null;
 		}
 	}

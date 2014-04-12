@@ -52,12 +52,12 @@ public abstract class SimpleEdit extends AbstractUndoableEdit implements Undoabl
 	}
 
 	public void undo() throws CannotUndoException {
-		System.out.println("#" + (isSignificant() ? " " : "-") + "Atomic " + getUndoPresentationName());
+//		System.out.println("#" + (isSignificant() ? " " : "-") + "Atomic " + getUndoPresentationName());
 		super.undo();
 	}
 
 	public void redo() throws CannotRedoException {
-		System.out.println("#" + (isSignificant() ? " " : "-") + "Atomic " + getRedoPresentationName());
+//		System.out.println("#" + (isSignificant() ? " " : "-") + "Atomic " + getRedoPresentationName());
 		super.redo();
 	}
 

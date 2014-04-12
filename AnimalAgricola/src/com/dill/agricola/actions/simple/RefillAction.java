@@ -89,6 +89,7 @@ public abstract class RefillAction extends AbstractAction {
 			super.undo();
 			player.removeMaterial(takenMaterials);
 			materials.add(takenMaterials);
+			setChanged();
 		}
 		
 		public void redo() throws CannotRedoException {

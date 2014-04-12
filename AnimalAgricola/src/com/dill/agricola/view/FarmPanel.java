@@ -245,7 +245,7 @@ public class FarmPanel extends JPanel {
 		JPanel workersP = UiFactory.createVerticalPanel();
 		for (int i = 0; i < workerLabels.length; i++) {
 			workerLabels[i] = UiFactory.createLabel(AgriImages.getWorkerIcon(player.getColor()));
-			workerLabels[i].setDisabledIcon(AgriImages.getWorkerIcon(null));
+//			workerLabels[i].setDisabledIcon(AgriImages.getWorkerIcon(null));
 			workersP.add(workerLabels[i]);
 			workersP.add(Box.createVerticalStrut(5));
 		}
@@ -556,7 +556,7 @@ public class FarmPanel extends JPanel {
 		}
 		if (count > 0) {
 			// show present animals
-			BufferedImage img = AgriImages.getAnimalImage(type, ImgSize.BIG, 1);
+			BufferedImage img = AgriImages.getAnimalImage(type, ImgSize.BIG);
 			int w = img.getWidth(), h = img.getHeight();
 			g.drawImage(img, realPos.x + (S - w) / 2, realPos.y + (S - h) / 2, w, h, null);
 		}
@@ -671,7 +671,7 @@ public class FarmPanel extends JPanel {
 			for (Animal type : Animal.values()) {
 				int count = loose.get(type);
 				if (count > 0) {
-					img = AgriImages.getAnimalImage(type, ImgSize.BIG, 1);
+					img = AgriImages.getAnimalImage(type, ImgSize.BIG);
 					for (int i = 0; i < count; i++) {
 						g.drawImage(img, (int) (x - j * l), y - img.getHeight(), img.getWidth(), img.getHeight(), null);
 						j++;

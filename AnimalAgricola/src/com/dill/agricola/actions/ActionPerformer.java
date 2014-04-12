@@ -28,7 +28,6 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 
 	public void setPlayer(Player player) {
 		this.player = player;
-		System.out.println("## AP: " + player);
 	}
 
 	public Player getPlayer() {

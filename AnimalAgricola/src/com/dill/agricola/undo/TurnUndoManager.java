@@ -17,23 +17,22 @@ public class TurnUndoManager extends UndoManager {
 			return false;
 		}
 		boolean retVal = super.addEdit(anEdit);
-		if (retVal) {
-			System.out.println("#" + (anEdit.isSignificant() ? " " : "-") + "Edit: " + anEdit.getPresentationName());
-		}
+//		if (retVal) {
+//			System.out.println("#" + (anEdit.isSignificant() ? " " : "-") + "Edit: " + anEdit.getPresentationName());
+//		}
 		return retVal;
 	}
 
 	public synchronized void undo() throws CannotUndoException {
-		System.out.println("# Undo: " + getUndoPresentationName());
+//		System.out.println("# Undo: " + getUndoPresentationName());
 		super.undo();
 		for (UndoRedoListener l : listeners) {
 			l.undoOrRedoPerformed(true);
 		}
-		System.out.println(canRedo());
 	}
 	
 	public synchronized void redo() throws CannotRedoException {
-		System.out.println("# Redo: " + getRedoPresentationName());
+//		System.out.println("# Redo: " + getRedoPresentationName());
 		super.redo();
 		for (UndoRedoListener l : listeners) {
 			l.undoOrRedoPerformed(false);

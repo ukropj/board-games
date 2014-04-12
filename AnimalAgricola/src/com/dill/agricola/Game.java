@@ -243,7 +243,6 @@ public class Game {
 			releaseAnimals(players[0]);
 			releaseAnimals(players[1]);
 		}
-		System.out.println("");
 
 		if (round < ROUNDS) {
 			// either start new round
