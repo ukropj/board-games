@@ -21,9 +21,9 @@ public enum ActionType {
 	COW_AND_PIGS(Msg.get("cowPigsAct")),
 	HORSE_AND_SHEEP(Msg.get("horseSheepAct"));
 	
-	public final String name;
+	public final String desc;
 	
 	private ActionType(String name) {
-		this.name = name;
+		this.desc = name;
 	}
 }

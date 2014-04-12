@@ -27,7 +27,7 @@ public class ActionButton extends JButton {
 		setMargin(new Insets(1, 1, 1, 1));
 		setAlignmentX(JButton.CENTER_ALIGNMENT);
 		setCursor(new Cursor(Cursor.HAND_CURSOR));
-		setToolTipText(actionType.name); // TODO better tooltip
+		setToolTipText(actionType.desc);
 		setActionCommand(ActionCommand.SUBMIT.toString());
 	}
 

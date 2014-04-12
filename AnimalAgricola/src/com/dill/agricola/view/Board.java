@@ -210,12 +210,10 @@ public class Board extends JFrame {
 
 	public void refreshUndoRedo() {
 		// refresh undo
-//		undoB.setText(undoManager.getUndoPresentationName());
 		undoBtn.setToolTipText(undoManager.getUndoPresentationName());
 		undoBtn.setEnabled(undoManager.canUndo());
 
 		// refresh redo
-//		redoB.setText(undoManager.getRedoPresentationName());
 		redoBtn.setToolTipText(undoManager.getRedoPresentationName());
 		redoBtn.setEnabled(undoManager.canRedo());
 	}
@@ -231,6 +229,7 @@ public class Board extends JFrame {
 	public void startTurn(Player currentPlayer) {
 		playerBoards[currentPlayer.getColor().ordinal()].setActive(true, false);
 		playerBoards[currentPlayer.getColor().other().ordinal()].setActive(false, false);
+		actionBoard.showActions();
 		updateState(-1, game.getCurrentPlayer());
 		if (Main.DEBUG) {
 			debugPanel.setCurrentPlayer(currentPlayer.getColor());
@@ -252,7 +251,11 @@ public class Board extends JFrame {
 	public void endGame() {
 		playerBoards[0].setActive(false, false);
 		playerBoards[1].setActive(false, false);
-		turnL.setText("");
+		
+		PlayerColor winner = game.getWinner();
+		playerL.setText(Msg.get(winner.toString().toLowerCase()));
+		playerL.setForeground(winner.getRealColor());
+		turnL.setText(Msg.get("winner"));
 
 		actionBoard.showScoring();
 	}

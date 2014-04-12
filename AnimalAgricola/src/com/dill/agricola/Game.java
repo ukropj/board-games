@@ -41,7 +41,7 @@ import com.dill.agricola.view.NewGameDialog;
 
 public class Game {
 
-	public final static int ROUNDS = Main.DEBUG ? 5 : 8;
+	public final static int ROUNDS = Main.DEBUG ? 2 : 8;
 
 	private final Player[] players;
 	private final Board board;
@@ -109,9 +109,16 @@ public class Game {
 	public PlayerColor getInitialStartPlayer() {
 		return initialStartPlayer;
 	}
-	
+
 	public PlayerColor getCurrentPlayer() {
 		return currentPlayer.getColor();
+	}
+
+	public PlayerColor getWinner() {
+		float blueTotal = players[0].getScore();
+		float redTotal = players[1].getScore();
+		return blueTotal > redTotal ? PlayerColor.BLUE
+				: blueTotal < redTotal ? PlayerColor.RED : getInitialStartPlayer().other();
 	}
 
 	public void setStartingPlayer(PlayerColor startPlayerColor) {
@@ -504,4 +511,5 @@ public class Game {
 		}
 
 	}
+
 }

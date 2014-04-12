@@ -40,7 +40,8 @@ public class ActionBoard extends JPanel {
 	private final Map<ActionType, ActionButton> actionButtons = new EnumMap<ActionType, ActionButton>(ActionType.class);
 
 	private final JTabbedPane tabPane;
-	private int scoringTabIndex = 1;
+	private int scoringTabIndex;
+	private int actionsTabIndex;
 
 	private static final Border defaultPanelBorder = BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(
 			Board.BORDER_WIDTH, 0, Board.BORDER_WIDTH, 0, new Icon() {
@@ -109,7 +110,7 @@ public class ActionBoard extends JPanel {
 		}
 
 		tabPane.addTab(Msg.get("actionsTitle"), actionPanel);
-
+		actionsTabIndex = tabPane.indexOfComponent(actionPanel);
 	}
 
 	public void addTabs(final ScorePanel scorePanel) {
@@ -129,7 +130,10 @@ public class ActionBoard extends JPanel {
 		});
 
 		scoringTabIndex = tabPane.indexOfComponent(scorePanel);
-		System.out.println(scoringTabIndex);
+	}
+
+	public void showActions() {
+		tabPane.setSelectedIndex(actionsTabIndex);
 	}
 
 	public void showScoring() {
