@@ -63,12 +63,10 @@ public class ScorePanel extends JScrollPane {
 		p.add(emptyP);
 		for (Player player : players) {
 			JLabel playerL = UiFactory.createLabel(Msg.get("player", Msg.get(player.toString().toLowerCase())));
-			playerL.setFont(SMALLER_FONT);
-			playerL.setForeground(Color.WHITE);
+			playerL.setFont(BIGGER_FONT);
+			playerL.setForeground(player.getColor().getRealColor());
 			playerL.setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 5));
 			JPanel playerP = UiFactory.createBorderPanel();
-			playerP.setBackground(player.getColor().getRealColor());
-			playerP.setOpaque(true);
 			playerP.add(playerL);
 			p.add(addBorder(playerP));
 		}

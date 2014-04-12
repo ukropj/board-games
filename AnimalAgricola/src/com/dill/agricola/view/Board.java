@@ -52,7 +52,9 @@ public class Board extends JFrame {
 
 	private final JPanel mainPane;
 
-	private JLabel statusL;
+	private JLabel roundL;
+	private JLabel playerL;
+	private JLabel turnL;
 	private final PlayerBoard[] playerBoards;
 	private ActionBoard actionBoard;
 	private DebugPanel debugPanel;
@@ -117,12 +119,18 @@ public class Board extends JFrame {
 		redoBtn.setEnabled(false);
 		toolbar.add(redoBtn);
 		toolbar.add(UiFactory.createToolbarSeparator());
-		toolbar.add(Box.createHorizontalStrut(10));
 		toolbar.add(Box.createHorizontalGlue());
 
-		statusL = UiFactory.createLabel(Msg.get("round", 0, Game.ROUNDS));
-		statusL.setFont(Fonts.TOOLBAR_TEXT);
-		toolbar.add(statusL);
+		roundL = UiFactory.createLabel(Msg.get("round", 0, Game.ROUNDS));
+		roundL.setFont(Fonts.TOOLBAR_TEXT);
+		toolbar.add(roundL);
+		toolbar.add(Box.createHorizontalStrut(30));
+		playerL = UiFactory.createLabel("");
+		playerL.setFont(Fonts.TOOLBAR_TEXT);
+		toolbar.add(playerL);
+		turnL = UiFactory.createLabel("");
+		turnL.setFont(Fonts.TOOLBAR_TEXT);
+		toolbar.add(turnL);
 		toolbar.add(Box.createHorizontalGlue());
 //		toolbar.add(Box.createHorizontalStrut(100));
 
@@ -184,9 +192,17 @@ public class Board extends JFrame {
 		playerBoards[1].reset();
 	}
 
-	public void updateState(int roundNo) {
+	public void updateState(int roundNo, PlayerColor playerColor) {
 		if (roundNo > 0) {
-			statusL.setText(Msg.get("round", roundNo, Game.ROUNDS));
+			roundL.setText(Msg.get("round", roundNo, Game.ROUNDS));
+		}
+		if (playerColor != null) {
+			playerL.setText(Msg.get(playerColor.toString().toLowerCase()));
+			playerL.setForeground(playerColor.getRealColor());
+			turnL.setText(Msg.get("turn"));			
+		} else {
+			playerL.setText("");
+			turnL.setText(Msg.get("breeding"));
 		}
 		actionBoard.updateActions();
 		refreshUndoRedo();
@@ -209,13 +225,13 @@ public class Board extends JFrame {
 		if (Main.DEBUG && roundNo == 1) {
 			actionBoard.initActions();
 		}
-		updateState(roundNo);
+		updateState(roundNo, null);
 	}
 
 	public void startTurn(Player currentPlayer) {
 		playerBoards[currentPlayer.getColor().ordinal()].setActive(true, false);
 		playerBoards[currentPlayer.getColor().other().ordinal()].setActive(false, false);
-		updateState(-1);
+		updateState(-1, game.getCurrentPlayer());
 		if (Main.DEBUG) {
 			debugPanel.setCurrentPlayer(currentPlayer.getColor());
 		}
@@ -224,7 +240,7 @@ public class Board extends JFrame {
 	public void endRound() {
 		playerBoards[0].setActive(true, true);
 		playerBoards[1].setActive(true, true);
-		updateState(-1);
+		updateState(-1, null);
 		actionBoard.disableActions();
 	}
 
@@ -236,6 +252,7 @@ public class Board extends JFrame {
 	public void endGame() {
 		playerBoards[0].setActive(false, false);
 		playerBoards[1].setActive(false, false);
+		turnL.setText("");
 
 		actionBoard.showScoring();
 	}

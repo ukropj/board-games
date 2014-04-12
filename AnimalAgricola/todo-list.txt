@@ -1,9 +1,7 @@
 #TODO#
 
-	loose animal notification
 	game ending + restart
 	highlight current action
-	relative paths in ant script (+ manifest version)
 	
 #Bugs#
 

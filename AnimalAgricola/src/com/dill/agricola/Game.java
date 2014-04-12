@@ -77,8 +77,8 @@ public class Game {
 			public void undoOrRedoPerformed(boolean isUndo) {
 				for (Player player : players) {
 					player.notifyObservers(isUndo ? ChangeType.UNDO : ChangeType.REDO);
-					board.updateState(round);
 				}
+				board.updateState(round, breeding ? null : getCurrentPlayer());
 			}
 
 		});
@@ -108,6 +108,10 @@ public class Game {
 
 	public PlayerColor getInitialStartPlayer() {
 		return initialStartPlayer;
+	}
+	
+	public PlayerColor getCurrentPlayer() {
+		return currentPlayer.getColor();
 	}
 
 	public void setStartingPlayer(PlayerColor startPlayerColor) {
