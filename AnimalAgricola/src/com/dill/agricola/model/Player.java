@@ -281,6 +281,10 @@ public class Player extends SimpleObservable {
 		return lostAnimals;
 	}
 
+	public boolean hasLooseAnimals() {
+		return farm.getLooseAnimals().size() > 0;
+	}
+	
 	public int getWorkers() {
 		return workers;
 	}

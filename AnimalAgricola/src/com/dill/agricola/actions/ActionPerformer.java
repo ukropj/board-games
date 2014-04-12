@@ -70,7 +70,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 				count++;
 				postEdit(edit);
 
-				if (!action.canDoOnFarm(player, count) && !edit.isAnimalEdit()) {
+				if (!action.canDoOnFarm(player, count) && !edit.isAnimalEdit() && !player.hasLooseAnimals()) {
 					return finishAction();
 				}
 			}

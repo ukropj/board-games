@@ -3,9 +3,7 @@
 	loose animal notification
 	game ending + restart
 	highlight current action
-	resizing ?
-	less cluttered action board
-	relative paths in ant script
+	relative paths in ant script (+ manifest version)
 	
 #Bugs#
 
@@ -14,7 +12,7 @@
 	cz/sk localization
 	language picker
 	single player
-	action tooltips
 	farm cursors
 	actual single animals instead of count
 	condensed layout (p1+p2 on tabs)
+	stats

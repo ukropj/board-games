@@ -43,9 +43,11 @@ public class AnimalScoringPanel extends JPanel {
 		JPanel p = UiFactory.createHorizontalPanel();
 		JPanel p0 = new JPanel(new GridLayout(5, 0));
 		JPanel p1 = new JPanel(new GridLayout(5, 0));
+		p.add(Box.createHorizontalGlue());
 		p.add(p0);
-		p.add(Box.createHorizontalStrut(-3));
+		p.add(Box.createHorizontalStrut(-4));
 		p.add(p1);
+		p.add(Box.createHorizontalGlue());
 		int l = 14;
 		// header
 		JPanel emptyP = new JPanel();

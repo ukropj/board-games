@@ -27,7 +27,6 @@ import javax.swing.event.ChangeListener;
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.ActionPerformer;
 import com.dill.agricola.actions.ActionStateChangeListener;
-import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.support.Msg;
@@ -76,6 +75,7 @@ public class ActionBoard extends JPanel {
 	public ActionBoard(List<Action> actions, final ActionPerformer ap, final ActionListener submitListener) {
 		this.ap = ap;
 		setLayout(new BorderLayout());
+		setBorder(defaultPanelBorder);
 
 		tabPane = new JTabbedPane();
 		add(tabPane, BorderLayout.CENTER);
@@ -162,19 +162,6 @@ public class ActionBoard extends JPanel {
 		} else {
 			setBorder(defaultPanelBorder);
 		}
-		updateFinishLabel();
-	}
-
-	private void updateFinishLabel() {
-		if (ap.canFinish()) {
-			Player p = ap.getPlayer();
-			int looseAnimals = p != null ? p.getFarm().getLooseAnimals().size() : -1;
-			if (looseAnimals > 0) {
-//				finishB.setText(Msg.getNum(looseAnimals, "finishActionRunAway", looseAnimals));
-				return;
-			}
-		}
-//		finishB.setText(Msg.get("finishAction"));
 	}
 
 	public void resetActions() {
