@@ -1,12 +1,13 @@
 # Agricola: All Creatures Big and Small for PC
 
-Welcome to computer implementation of "Agricola: All Creatures Big and Small" by Uwe Rosenberg.
+Welcome to computer implementation of "Agricola: All Creatures Big and Small" by Uwe Rosenberg (published by Lookout Games, 2012).
 This readme file will not explain the rules, just the most important facts about this PC version. 
 To learn more about the ACBaS board game visit Board Game Geek (http://www.boardgamegeek.com/boardgame/119890/agricola-all-creatures-big-and-small).
 
-## Requirements
+## General 
 
- - Java 6 (or greater)
+Game uses Java6 (will also work if you have greater). Start it by double-click on AnimalAgricola.jar file.
+There is no AI or networking present. Two players play on one computer.
 
 ## Controls
 
@@ -20,9 +21,9 @@ To learn more about the ACBaS board game visit Board Game Geek (http://www.board
  - Possible animal locations are marked with blue/red circles.
  - Any unplaced animals will run away at the end of your turn.
  
- - Left click on pasture/building to add one animal of particular type.
- - Right click on pasture/building to remove one animal.
- - Use double click to add/remove all available animals.
+ - Left-click on pasture/building to add one animal of particular type.
+ - Right-click on pasture/building to remove one animal.
+ - Use double-click to add/remove all available animals.
  - Alternatively, use mouse wheel to add/remove animals (this is the most convenient way - try it).
 
 ### Undo/Redo

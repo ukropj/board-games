@@ -19,19 +19,14 @@ import com.dill.agricola.support.Msg;
 
 public class AgriImages {
 
-//	private final static int MISC_EMPTY = 0;
-	// private final static int MISC_TROUGH = 1;
-	// private final static int MISC_U_TROUGH = 2;
-
 	private final static BufferedImage[] buildings = new BufferedImage[BuildingType.values().length];
-	private final static BufferedImage[] animals = new BufferedImage[2 * ImgSize.values().length * Animal.values().length];
+	private final static BufferedImage[] animals = new BufferedImage[ImgSize.values().length * Animal.values().length];
 	private final static BufferedImage[] materials = new BufferedImage[Material.values().length];
 	private final static BufferedImage[] fences = new BufferedImage[Dir.values().length];
 	private final static BufferedImage[] troughs = new BufferedImage[ImgSize.values().length];
 	private final static BufferedImage[] firstTokens = new BufferedImage[ImgSize.values().length * PlayerColor.values().length];
 	private final static BufferedImage[] farmsAndMargins = new BufferedImage[4];
 	private final static BufferedImage[] workers = new BufferedImage[PlayerColor.values().length + 1];
-//	private final static BufferedImage[] misc = new BufferedImage[4];
 	private static BufferedImage[] cottages = new BufferedImage[PlayerColor.values().length];
 	private static BufferedImage[] stallsAndStables = new BufferedImage[8];
 	private static BufferedImage[] exts = new BufferedImage[4];

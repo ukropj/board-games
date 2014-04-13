@@ -22,6 +22,7 @@ import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -505,6 +506,12 @@ public class FarmPanel extends JPanel {
 		DirPoint realPos = toRealPos(pos);
 
 		Animal type = space.getAnimalType();
+		if (type == null) {
+			List<Animal> pastureTypes = new ArrayList<Animal>(space.getAnimalTypesPerPasture());
+			if (pastureTypes.size() == 1) {
+				type = pastureTypes.get(0);
+			}
+		}
 		int count = space.getAnimals();
 		if (space.getMaxCapacity() > 0 || count > 0) {
 			g.setColor(UiFactory.makeTranslucent(type != null ? (space.isValid() ? type.getColor() : PASTURE_COLOR) : PASTURE_COLOR, 200));
