@@ -19,7 +19,7 @@ public class Main {
 
 	public static boolean DEBUG = false;
 
-	private static String[] LANGS = { "en", "cz" };
+	private static String[] LANGS = { "en", /*"de",*/ "cz" };
 	private static int DEFAULT_LANG = 0; // 'en' is default
 
 	public static void main(String[] args) {

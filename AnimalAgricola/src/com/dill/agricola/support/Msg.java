@@ -13,12 +13,14 @@ import java.util.ResourceBundle.Control;
 
 public class Msg {
 
+	private static Locale locale;
 	private static ResourceBundle messages;
 
 	private Msg() {
 	}
 
 	public static void load(Locale locale) {
+		Msg.locale = locale;
 		try {
 			messages = ResourceBundle.getBundle("messages", locale,
 					new UnicodeControl());
@@ -93,6 +95,10 @@ public class Msg {
 			}
 			return bundle;
 		}
+	}
+
+	public static Object getLocaleName() {
+		return locale.getLanguage();
 	}
 
 }

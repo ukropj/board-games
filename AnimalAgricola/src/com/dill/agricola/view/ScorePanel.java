@@ -72,7 +72,11 @@ public class ScorePanel extends JScrollPane {
 		}
 		// animals
 		for (Animal a : Animal.values()) {
-			addLine(p, UiFactory.createAnimalLabel(a, 0, UiFactory.NO_NUMBER), Msg.get("pointsFor", a.getName(true).toLowerCase()),
+			String animalName = a.getName(true);
+			if (!"de".equals(Msg.getLocaleName())) {
+				animalName = animalName.toLowerCase();
+			}
+			addLine(p, UiFactory.createAnimalLabel(a, 0, UiFactory.NO_NUMBER), Msg.get("pointsFor", animalName),
 					players[0].getAnimalScore(a), players[1].getAnimalScore(a),
 					String.valueOf(players[0].getAnimal(a)), String.valueOf(players[1].getAnimal(a)));
 		}
