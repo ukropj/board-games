@@ -41,7 +41,7 @@ import com.dill.agricola.view.NewGameDialog;
 
 public class Game {
 
-	public final static int ROUNDS = Main.DEBUG ? 2 : 8;
+	public final static int ROUNDS = Main.DEBUG ? 8 : 8;
 
 	private final Player[] players;
 	private final Board board;
@@ -170,6 +170,9 @@ public class Game {
 
 		board.start();
 		startRound();
+		if (!board.isMaximized()) {
+			board.pack();			
+		}
 	}
 
 	private void startRound() {

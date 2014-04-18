@@ -185,6 +185,10 @@ public class Board extends JFrame {
 		debugPanel = new DebugPanel(players);
 		getContentPane().add(debugPanel, BorderLayout.PAGE_END);
 	}
+	
+	public boolean isMaximized() {
+		return (getExtendedState() & JFrame.MAXIMIZED_BOTH) != 0;
+	}
 
 	public void start() {
 		actionBoard.resetActions();

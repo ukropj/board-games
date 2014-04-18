@@ -186,13 +186,13 @@ public class AgriImages {
 		if (count < 2) {
 			return img;
 		}
-		int d = 5;
-		BufferedImage multiImg = new BufferedImage(img.getWidth() + d * (count - 1),
+		float d = Math.min(4.5f, 30f / count);
+		BufferedImage multiImg = new BufferedImage(img.getWidth() + (int)(d * (count - 1)),
 				img.getHeight(), Images.getImageType(img));
 		Graphics2D g2 = multiImg.createGraphics();
 		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		for (int i = 0; i < count; i++) {
-			g2.drawImage(img, d * (count - 1 - i), 0, img.getWidth(), img.getHeight(), null);
+			g2.drawImage(img, (int)(d * (count - 1 - i)), 0, img.getWidth(), img.getHeight(), null);
 		}
 		g2.dispose();
 		return multiImg;
