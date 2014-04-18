@@ -88,9 +88,12 @@ public abstract class Space {
 	}
 
 	public abstract int getMaxCapacity();
+	
+	public abstract Animal getRequiredAnimal();
 
 	public int getActualCapacity(Animal type) {
-		return animalType == null || animalType == type ? Math.max(0, getMaxCapacity() - getAnimals()) : 0;
+		Animal req = getRequiredAnimal();
+		return (animalType == null || animalType == type) && (req == null || req == type) ? Math.max(0, getMaxCapacity() - getAnimals()) : 0;
 	}
 
 	public boolean isUsed() {

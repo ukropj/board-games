@@ -507,9 +507,12 @@ public class FarmPanel extends JPanel {
 
 		Animal type = space.getAnimalType();
 		if (type == null) {
-			List<Animal> pastureTypes = new ArrayList<Animal>(space.getAnimalTypesPerPasture());
-			if (pastureTypes.size() == 1) {
-				type = pastureTypes.get(0);
+			type = space.getRequiredAnimal();
+			if (type == null) {
+				List<Animal> pastureTypes = new ArrayList<Animal>(space.getAnimalTypesPerPasture());
+				if (pastureTypes.size() == 1) {
+					type = pastureTypes.get(0);
+				}				
 			}
 		}
 		int count = space.getAnimals();

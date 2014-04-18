@@ -341,7 +341,7 @@ public class Farm extends SimpleObservable {
 			return canBuildAnywhere(type);
 		}
 		Space space = getSpace(pos);
-		return space != null && type.canBuildAt(space.getType()); 
+		return space != null && type.canBuildAt(space.getType());
 	}
 
 	private boolean canBuildAnywhere(BuildingType type) {
@@ -389,7 +389,6 @@ public class Farm extends SimpleObservable {
 		}
 		return null;
 	}
-	
 
 	public Building getBuilding(DirPoint pos) {
 		Space space = getSpace(pos);
@@ -561,25 +560,33 @@ public class Farm extends SimpleObservable {
 	public List<Animal> guessAnimalTypesToPut(DirPoint pos, boolean onlyWhenUnused) {
 		List<Animal> types = new ArrayList<Animal>();
 		Space space = getSpace(pos);
-		if (space != null && space.getMaxCapacity() > 0 && (!onlyWhenUnused || looseAnimals.size() > 0)) {
-			if (space.getAnimals() > 0) {
-				// if animals are present on space use their type
-				types.add(space.getAnimalType());
-			} else {
-				// if animals are present on pasture use their types
-				Set<Animal> pastureTypes = space.getAnimalTypesPerPasture();
-				if (!pastureTypes.isEmpty()) {
-					types.addAll(pastureTypes);
+		if (space != null) {
+			Animal requiredType = space.getRequiredAnimal();
+			boolean unusedOk = !onlyWhenUnused || (requiredType == null ? looseAnimals.size() > 0 : looseAnimals.get(requiredType) > 0);
+			
+			if (space.getMaxCapacity() > 0 && unusedOk) {
+				if (requiredType != null) {
+					// if there is a required type use it
+					types.add(requiredType);
+				} else if (space.getAnimals() > 0) {
+					// if animals are present on space use their type
+					types.add(space.getAnimalType());
 				} else {
-					// if no animals anywhere use all types 
-					types.addAll(Arrays.asList(Animal.values()));
+					// if animals are present on pasture use their types
+					Set<Animal> pastureTypes = space.getAnimalTypesPerPasture();
+					if (!pastureTypes.isEmpty()) {
+						types.addAll(pastureTypes);
+					} else {
+						// if no animals anywhere use all types 
+						types.addAll(Arrays.asList(Animal.values()));
+					}
 				}
-			}
-			if (onlyWhenUnused) {
-				// use only types of present unused animals
-				for (Animal type : Animal.values()) {
-					if (getLooseAnimals(type) == 0) {
-						types.remove(type);
+				if (onlyWhenUnused) {
+					// use only types of present unused animals
+					for (Animal type : Animal.values()) {
+						if (getLooseAnimals(type) == 0) {
+							types.remove(type);
+						}
 					}
 				}
 			}

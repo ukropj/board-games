@@ -17,4 +17,5 @@ public class HalfTimberedHouse extends Building {
 	public boolean canBuildAt(Space space) {
 		return space instanceof Cottage;
 	}
+
 }

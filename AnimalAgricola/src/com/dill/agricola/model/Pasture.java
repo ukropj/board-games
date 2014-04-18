@@ -1,5 +1,7 @@
 package com.dill.agricola.model;
 
+import com.dill.agricola.model.types.Animal;
+
 
 public class Pasture extends Space {
 
@@ -15,6 +17,10 @@ public class Pasture extends Space {
 		}
 		int feeders = getTroughCount();
 		return feeders == 0 ? CAP : CAP * feeders * FEEDER_MULTI;
+	}
+	
+	public Animal getRequiredAnimal() {
+		return null;
 	}
 
 	public boolean isAlwaysEnclosed() {
