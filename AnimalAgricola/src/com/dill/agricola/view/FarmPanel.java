@@ -330,17 +330,17 @@ public class FarmPanel extends JPanel {
 		this.msgLabel.setVisible(active && (breeding || player.equals(ap.getPlayer())));
 		if (active) {
 			if (breeding) {
-				this.msgLabel.setText(Msg.get("animalsBreed"));
+				this.msgLabel.setText(Msg.get("animalsBreedMsg"));
 			} else if (player.equals(ap.getPlayer())) {
 				if (ap.hasAction()) {
 					Action a = ap.getAction();
 					if (a.isPurchaseAction()) {
-						this.msgLabel.setText(Msg.get("purchaseExpected"));
+						this.msgLabel.setText(Msg.get("purchaseExpectedMsg"));
 					} else if (a.isResourceAction()) {
-						this.msgLabel.setText(Msg.get("resourcesRecieved"));
+						this.msgLabel.setText(Msg.get("resourcesRecievedMsg"));
 					}
 				} else {
-					this.msgLabel.setText(Msg.get("chooseAction"));
+					this.msgLabel.setText(Msg.get("chooseActionMsg"));
 				}
 			}
 		}

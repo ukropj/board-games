@@ -1,16 +1,16 @@
 #TODO#
 
-	game ending + restart
 	highlight current action
 	
 #Bugs#
 
 #Nice to have#
 
-	cz/sk localization
-	language picker
+	sk localization
 	single player
 	farm cursors
 	actual single animals instead of count
 	condensed layout (p1+p2 on tabs)
 	stats
+	logging
+	global properties

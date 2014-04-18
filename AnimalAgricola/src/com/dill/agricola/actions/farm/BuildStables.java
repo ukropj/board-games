@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
-import javax.swing.JOptionPane;
 
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
@@ -56,17 +55,17 @@ public class BuildStables extends BuildAction {
 	}
 
 	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos, int doneSoFar) {
-		costNo = JOptionPane.CLOSED_OPTION;
+		costNo = UiFactory.NO_OPTION;
 		if (!player.canPay(COSTS[0])) {
 			costNo = 1;
 		} else if(!player.canPay(COSTS[1])) {
 			costNo = 0;
 		}
-		if (costNo == JOptionPane.CLOSED_OPTION) {
+		if (costNo == UiFactory.NO_OPTION) {
 			// ask only if player can pay any
 			costNo = chooseStablesCost(player);
 		}
-		if (costNo == JOptionPane.CLOSED_OPTION) {
+		if (costNo == UiFactory.NO_OPTION) {
 			return null;
 		}
 		return super.doOnFarm(player, pos, doneSoFar);

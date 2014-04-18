@@ -8,7 +8,6 @@ import java.util.Map;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
-import javax.swing.JOptionPane;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
@@ -108,7 +107,7 @@ public class BuildSpecial extends BuildAction {
 			opts.add(opt);
 		}
 		int result = UiFactory.showOptionDialog(null, Msg.get("chooseBuilding"), Msg.get("specialBuildings"), null, opts);
-		return result != JOptionPane.CLOSED_OPTION ? types.get(result) : null;
+		return result != UiFactory.NO_OPTION ? types.get(result) : null;
 	}
 
 	private int chooseOpenStablesCost(Player player) {
@@ -135,7 +134,7 @@ public class BuildSpecial extends BuildAction {
 		}
 		Icon icon = AgriImages.getBuildingIcon(building.getType(), ImgSize.MEDIUM);
 		int result = UiFactory.showOptionDialog(null, Msg.get("chooseReward"), building.getType().name, icon, opts);
-		return result != JOptionPane.CLOSED_OPTION ? animalRewards[result] : animalRewards[0];
+		return result != UiFactory.NO_OPTION ? animalRewards[result] : animalRewards[0];
 	}
 
 	public boolean isCancelled() {
@@ -155,17 +154,17 @@ public class BuildSpecial extends BuildAction {
 
 	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos, int doneSoFar) {
 		if (toBuild == BuildingType.OPEN_STABLES) {
-			osCostNo = JOptionPane.CLOSED_OPTION;
+			osCostNo = UiFactory.NO_OPTION;
 			if (!player.canPay(OS_COSTS[0])) {
 				osCostNo = 1;
 			} else if (!player.canPay(OS_COSTS[1])) {
 				osCostNo = 0;
 			}
-			if (osCostNo == JOptionPane.CLOSED_OPTION) {
+			if (osCostNo == UiFactory.NO_OPTION) {
 				// ask only if player can pay any
 				osCostNo = chooseOpenStablesCost(player);
 			}
-			if (osCostNo == JOptionPane.CLOSED_OPTION) {
+			if (osCostNo == UiFactory.NO_OPTION) {
 				return null;
 			}
 		}

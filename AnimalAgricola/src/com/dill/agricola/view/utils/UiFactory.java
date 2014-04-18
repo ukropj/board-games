@@ -44,6 +44,7 @@ public class UiFactory {
 
 	public static final int X_AXIS = 5;
 	public static final int Y_AXIS = 6;
+	public static final int NO_OPTION = -1;
 
 	private UiFactory() {
 	}
@@ -236,7 +237,7 @@ public class UiFactory {
 		JDialog dialog = pane.createDialog(parent, title);
 		dialog.setVisible(true);
 		Object retVal = pane.getValue();
-		return retVal == null ? JOptionPane.CLOSED_OPTION : (Integer) retVal;
+		return retVal == null ? UiFactory.NO_OPTION : (Integer) retVal;
 	}
 
 	public static JButton createToolbarButton(String label, String iconName, String toolTip, ActionListener listener) {

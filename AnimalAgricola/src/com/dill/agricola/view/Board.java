@@ -121,7 +121,7 @@ public class Board extends JFrame {
 		toolbar.add(UiFactory.createToolbarSeparator());
 		toolbar.add(Box.createHorizontalGlue());
 
-		roundL = UiFactory.createLabel(Msg.get("round", 0, Game.ROUNDS));
+		roundL = UiFactory.createLabel(Msg.get("roundLab", 0, Game.ROUNDS));
 		roundL.setFont(Fonts.TOOLBAR_TEXT);
 		toolbar.add(roundL);
 		toolbar.add(Box.createHorizontalStrut(30));
@@ -194,15 +194,15 @@ public class Board extends JFrame {
 
 	public void updateState(int roundNo, PlayerColor playerColor) {
 		if (roundNo > 0) {
-			roundL.setText(Msg.get("round", roundNo, Game.ROUNDS));
+			roundL.setText(Msg.get("roundLab", roundNo, Game.ROUNDS));
 		}
 		if (playerColor != null) {
 			playerL.setText(Msg.get(playerColor.toString().toLowerCase()));
 			playerL.setForeground(playerColor.getRealColor());
-			turnL.setText(Msg.get("turn"));			
+			turnL.setText(Msg.get("turnLab"));			
 		} else {
 			playerL.setText("");
-			turnL.setText(Msg.get("breeding"));
+			turnL.setText(Msg.get("breedingLab"));
 		}
 		actionBoard.updateActions();
 		refreshUndoRedo();
@@ -255,7 +255,7 @@ public class Board extends JFrame {
 		PlayerColor winner = game.getWinner();
 		playerL.setText(Msg.get(winner.toString().toLowerCase()));
 		playerL.setForeground(winner.getRealColor());
-		turnL.setText(Msg.get("winner"));
+		turnL.setText(Msg.get("winnerLab"));
 
 		actionBoard.showScoring();
 	}

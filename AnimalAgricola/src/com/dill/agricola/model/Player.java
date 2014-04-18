@@ -18,7 +18,7 @@ public class Player extends SimpleObservable {
 
 	public static final int FARM_H = 3;
 	public static final int FARM_W = 2;
-	public static final int INIT_BORDERS = 8;
+	public static final int INIT_BORDERS = 9;
 
 	public static final int USED_EXT_VP = 4;
 
