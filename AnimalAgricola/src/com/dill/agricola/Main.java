@@ -19,7 +19,7 @@ public class Main {
 
 	public static boolean DEBUG = false;
 
-	private static String[] LANGS = { "en", /*"de",*/ "cz" };
+	private static String[] LANGS = { "en", "de", "cz" };
 	private static int DEFAULT_LANG = 0; // 'en' is default
 
 	public static void main(String[] args) {
@@ -34,7 +34,7 @@ public class Main {
 					g.start();
 				} catch (Throwable e) {
 					String msg = e.getMessage();
-					JOptionPane.showMessageDialog(null, msg != null ? msg : Msg.get("unknownError"), Msg.get("error"), JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, msg != null ? msg : Msg.get("unknownErrorMsg"), Msg.get("errorTitle"), JOptionPane.ERROR_MESSAGE);
 					e.printStackTrace();
 				}
 			}
