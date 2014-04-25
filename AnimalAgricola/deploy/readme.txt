@@ -42,6 +42,6 @@ There is no AI or networking present. Two players play on one computer.
 ## Version history
 
 1.0
- - first release
+ - first release, available in English, German an Czech
 
 by Jakub Ukrop, April 2014
