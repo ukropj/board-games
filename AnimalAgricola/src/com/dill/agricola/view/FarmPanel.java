@@ -50,6 +50,7 @@ import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.model.types.Material;
 import com.dill.agricola.model.types.Purchasable;
+import com.dill.agricola.model.types.BuildingType.BuildingText;
 import com.dill.agricola.support.Fonts;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.AgriImages;
@@ -203,7 +204,7 @@ public class FarmPanel extends JPanel {
 		finishBtn = new JButton(AgriImages.getYesIcon());
 		finishBtn.setToolTipText(Msg.get("finishActionTip"));
 		finishBtn.setMargin(new Insets(0, 0, 0, 0));
-		finishBtn.setBounds(X1 + farm.getWidth() * S - S / 3 - 2*M, Y1 + 3 * S + 3 * M / 2, S / 3 + 3*M/2, S / 3);
+		finishBtn.setBounds(X1 + farm.getWidth() * S - S / 3 - 2 * M, Y1 + 3 * S + 3 * M / 2, S / 3 + 3 * M / 2, S / 3);
 		finishBtn.setActionCommand(ActionCommand.SUBMIT.toString());
 		finishBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -288,7 +289,7 @@ public class FarmPanel extends JPanel {
 	}
 
 	public void updateComponentPosition() {
-		finishBtn.setLocation(X1 + farm.getWidth() * S - S / 3 - 2*M, finishBtn.getY());
+		finishBtn.setLocation(X1 + farm.getWidth() * S - S / 3 - 2 * M, finishBtn.getY());
 		cancelBtn.setLocation(X1 + farm.getWidth() * S, cancelBtn.getY());
 
 		supplyPanel.setLocation((getWidth() - supplyPanel.getWidth()) / 2, supplyPanel.getY());
@@ -512,7 +513,7 @@ public class FarmPanel extends JPanel {
 				List<Animal> pastureTypes = new ArrayList<Animal>(space.getAnimalTypesPerPasture());
 				if (pastureTypes.size() == 1) {
 					type = pastureTypes.get(0);
-				}				
+				}
 			}
 		}
 		int count = space.getAnimals();
@@ -622,13 +623,15 @@ public class FarmPanel extends JPanel {
 				g.drawString(type.name, r.x + x + (maxw - textW) / 2, r.y + y);
 
 				// text
-				if (type.text != null) {
-					g.setFont(Fonts.FARM_BUILDING);
-					Fonts.updateFontToFit(g, type.text, (int) (r.width * type.textWidth));
-					float ty = r.height * type.y, textH = g.getFontMetrics().getHeight();
-					for (String line : type.text.split("[\r\n]+")) {
-						g.drawString(line, r.x + (r.width * type.x), r.y + ty);
-						ty += textH;
+				for (BuildingText bText : type.texts) {
+					if (bText.text != null) {
+						g.setFont(Fonts.FARM_BUILDING);
+						Fonts.updateFontToFit(g, bText.text, (int) (r.width * bText.textWidth));
+						float ty = r.height * bText.y, textH = g.getFontMetrics().getHeight();
+						for (String line : bText.text.split("[\r\n]+")) {
+							g.drawString(line, r.x + (r.width * bText.x), r.y + ty);
+							ty += textH;
+						}
 					}
 				}
 			}

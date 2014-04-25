@@ -18,6 +18,7 @@ import com.dill.agricola.view.utils.UiFactory;
 public class Main {
 
 	public static boolean DEBUG = false;
+	public static boolean MORE_BUILDINGS = false;
 
 	private static String[] LANGS = { "en", "de", "cz" };
 	private static int DEFAULT_LANG = 0; // 'en' is default

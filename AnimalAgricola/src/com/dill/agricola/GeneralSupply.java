@@ -1,5 +1,6 @@
 package com.dill.agricola;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -15,6 +16,10 @@ import com.dill.agricola.model.buildings.OpenStables;
 import com.dill.agricola.model.buildings.Shelter;
 import com.dill.agricola.model.buildings.Stall;
 import com.dill.agricola.model.buildings.StorageBuilding;
+import com.dill.agricola.model.buildings.more.FarmShop;
+import com.dill.agricola.model.buildings.more.FodderBeetFarm;
+import com.dill.agricola.model.buildings.more.HayRack;
+import com.dill.agricola.model.buildings.more.InseminationCenter;
 import com.dill.agricola.model.types.BuildingType;
 
 public class GeneralSupply {
@@ -27,8 +32,6 @@ public class GeneralSupply {
 	public final static Integer[] EXTS = { 0, 1, 2, 3 };
 	public final static Stall[] STALLS = { new Stall(0), new Stall(1), new Stall(2), new Stall(3) };
 
-	private final static List<BuildingType> SPECIAL_BUILDINGS_TYPES = Collections.unmodifiableList(Arrays.asList(new BuildingType[] { BuildingType.HALF_TIMBERED_HOUSE,
-			BuildingType.STORAGE_BUILDING, BuildingType.SHELTER, BuildingType.OPEN_STABLES }));
 	private final static Map<BuildingType, Building> SPECIAL_BUILDINGS = new EnumMap<BuildingType, Building>(BuildingType.class);
 
 	private static final Stack<Stall> stallsLeft = new Stack<Stall>();
@@ -42,6 +45,11 @@ public class GeneralSupply {
 		SPECIAL_BUILDINGS.put(BuildingType.STORAGE_BUILDING, new StorageBuilding());
 		SPECIAL_BUILDINGS.put(BuildingType.SHELTER, new Shelter());
 		SPECIAL_BUILDINGS.put(BuildingType.OPEN_STABLES, new OpenStables());
+		// more
+		SPECIAL_BUILDINGS.put(BuildingType.FARM_SHOP, new FarmShop());
+		SPECIAL_BUILDINGS.put(BuildingType.FODDER_BEET_FARM, new FodderBeetFarm());
+		SPECIAL_BUILDINGS.put(BuildingType.HAY_RACK, new HayRack());
+		SPECIAL_BUILDINGS.put(BuildingType.INSEMINATION_CENTER, new InseminationCenter());
 	}
 
 	public static void reset() {
@@ -54,7 +62,10 @@ public class GeneralSupply {
 		Collections.shuffle(extsLeft);
 		extsUsed.clear();
 		buildingsLeft.clear();
-		buildingsLeft.addAll(SPECIAL_BUILDINGS_TYPES);
+		buildingsLeft.addAll(BuildingType.SPECIAL_BUILDINGS_TYPES);
+		if (Main.MORE_BUILDINGS) {
+			buildingsLeft.addAll(BuildingType.MORE_SPECIAL_BUILDINGS_TYPES);			
+		}
 	}
 
 	public static int getLeft(Supplyable type) {
@@ -77,7 +88,11 @@ public class GeneralSupply {
 	}
 	
 	public static List<BuildingType> getBuildingsAll() {
-		return SPECIAL_BUILDINGS_TYPES;
+		List<BuildingType> types = new ArrayList<BuildingType>(BuildingType.SPECIAL_BUILDINGS_TYPES);
+		if (Main.MORE_BUILDINGS) {
+			types.addAll(BuildingType.MORE_SPECIAL_BUILDINGS_TYPES);			
+		}
+		return types;
 	}
 
 	public static void useTrough(boolean use) {

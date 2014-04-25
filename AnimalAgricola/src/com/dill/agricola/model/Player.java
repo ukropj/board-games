@@ -261,8 +261,10 @@ public class Player extends SimpleObservable {
 
 	public Animals breedAnimals() {
 		Animals newAnimals = new Animals();
+		boolean hasInseminationCenter = farm.hasBuilding(BuildingType.INSEMINATION_CENTER);
 		for (Animal type : Animal.values()) {
-			if (animals.get(type) >= 2) {
+			int count = animals.get(type);
+			if (count >= 2 || (hasInseminationCenter && count == 1)) {
 				purchaseAnimal(type, 1);
 				newAnimals.add(type, 1);
 			}

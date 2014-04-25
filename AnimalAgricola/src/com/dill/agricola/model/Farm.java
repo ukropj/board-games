@@ -317,6 +317,7 @@ public class Farm extends SimpleObservable {
 	}
 
 	public List<Building> getFarmBuildings() {
+		// TODO let fencer precompute this
 		List<Building> buildings = new ArrayList<Building>();
 		List<DirPoint> range = PointUtils.createGridRange(width, height);
 		for (DirPoint pos : range) {
@@ -326,6 +327,15 @@ public class Farm extends SimpleObservable {
 			}
 		}
 		return buildings;
+	}
+	
+	public boolean hasBuilding(BuildingType type) {
+		for (Building b : getFarmBuildings()) {
+			if (b.getType() == type) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public boolean hasBuilding(DirPoint pos, BuildingType type, boolean activeOnly) {
@@ -341,14 +351,14 @@ public class Farm extends SimpleObservable {
 			return canBuildAnywhere(type);
 		}
 		Space space = getSpace(pos);
-		return space != null && type.canBuildAt(space.getType());
+		return space != null && type.canBuildAt(space.getType(), pos);
 	}
 
 	private boolean canBuildAnywhere(BuildingType type) {
 		List<DirPoint> range = PointUtils.createGridRange(width, height);
 		for (DirPoint pos : range) {
 			Space space = getSpace(pos);
-			if (space != null && type.canBuildAt(space.getType())) {
+			if (space != null && type.canBuildAt(space.getType(), pos)) {
 				return true;
 			}
 		}
@@ -358,7 +368,7 @@ public class Farm extends SimpleObservable {
 	public boolean build(Building b, DirPoint pos) {
 		Main.asrtNotNull(b, "Cannot build null building");
 		Space space = getSpace(pos);
-		if (space != null && b.getType().canBuildAt(space.getType())) {
+		if (space != null && b.getType().canBuildAt(space.getType(), pos)) {
 			b.buildAt(space);
 			putSpace(pos, b);
 			addActiveSpot(pos);

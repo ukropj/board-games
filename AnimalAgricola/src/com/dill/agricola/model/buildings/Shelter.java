@@ -14,7 +14,7 @@ public class Shelter extends Building {
 	public Shelter() {
 		super(BuildingType.SHELTER, 0, 1, new Animals[] {
 				new Animals(Animal.SHEEP), new Animals(Animal.PIG),
-				new Animals(Animal.COW), new Animals(Animal.HORSE) });
+				new Animals(Animal.COW), new Animals(Animal.HORSE) }, null);
 	}
 
 }

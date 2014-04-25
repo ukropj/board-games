@@ -16,7 +16,8 @@ public class OpenStables extends Building {
 	public static final Materials COST_STONE = new Materials(Material.STONE, 3);
 	
 	public OpenStables() {
-		super(BuildingType.OPEN_STABLES, 2, 5, new Animals[]{new Animals(Animal.COW), new Animals(Animal.HORSE)});
+		super(BuildingType.OPEN_STABLES, 2, 5, new Animals[]{
+				new Animals(Animal.COW), new Animals(Animal.HORSE)}, null);
 	}
 
 	public boolean canBuildAt(Space space) {

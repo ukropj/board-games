@@ -11,6 +11,7 @@ import com.dill.agricola.Main;
 import com.dill.agricola.common.Dir;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
+import com.dill.agricola.model.types.BuildingType.BuildingText;
 import com.dill.agricola.model.types.Material;
 import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.model.types.Purchasable;
@@ -187,12 +188,12 @@ public class AgriImages {
 			return img;
 		}
 		float d = Math.min(4.5f, 30f / count);
-		BufferedImage multiImg = new BufferedImage(img.getWidth() + (int)(d * (count - 1)),
+		BufferedImage multiImg = new BufferedImage(img.getWidth() + (int) (d * (count - 1)),
 				img.getHeight(), Images.getImageType(img));
 		Graphics2D g2 = multiImg.createGraphics();
 		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		for (int i = 0; i < count; i++) {
-			g2.drawImage(img, (int)(d * (count - 1 - i)), 0, img.getWidth(), img.getHeight(), null);
+			g2.drawImage(img, (int) (d * (count - 1 - i)), 0, img.getWidth(), img.getHeight(), null);
 		}
 		g2.dispose();
 		return multiImg;
@@ -208,7 +209,7 @@ public class AgriImages {
 		default:
 			break;
 		}
-		return "b_" + dashedName;
+		return "b" + (type.set > 0 ? type.set : "") + "_" + dashedName;
 	}
 
 	public static BufferedImage getBuildingImage(BuildingType type) {
@@ -262,13 +263,15 @@ public class AgriImages {
 		int nameW = g.getFontMetrics().stringWidth(type.name);
 		g.drawString(type.name, x + (maxw - nameW) / 2, y);
 		// text
-		if (type.text != null) {
-			g.setFont(Fonts.BUILDING_ICON);
-			Fonts.updateFontToFit(g, type.text, (int) (w * type.textWidth));
-			float ty = h * type.y, textH = g.getFontMetrics().getHeight();
-			for (String line : type.text.split("[\r\n]+")) {
-				g.drawString(line, w * type.x, ty);
-				ty += textH;
+		for (BuildingText bText : type.texts) {
+			if (bText.text != null) {
+				g.setFont(Fonts.BUILDING_ICON);
+				Fonts.updateFontToFit(g, bText.text, (int) (w * bText.textWidth));
+				float ty = h * bText.y, textH = g.getFontMetrics().getHeight();
+				for (String line : bText.text.split("[\r\n]+")) {
+					g.drawString(line, w * bText.x, ty);
+					ty += textH;
+				}
 			}
 		}
 		g.dispose();

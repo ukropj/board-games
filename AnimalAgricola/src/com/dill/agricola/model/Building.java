@@ -12,20 +12,28 @@ public abstract class Building extends Space {
 	private final BuildingType type;
 	private final int cap;
 	private final int vp;
-	private final Animals[] rewards;
+	private final Animal reqiredAnimal;
+	private final Animals[] arewards;
+	private final Materials[] mrewards;
 	
 	protected Space buildSpace = null;
 	protected Materials paidCost; // actual cost payed for this building instance
 	
 	public Building(BuildingType type, int vp, int cap) {
-		this(type, vp, cap, null);
+		this(type, vp, cap, null, null);
 	}
 	
-	public Building(BuildingType type, int vp, int cap, Animals[] rewards) {
+	public Building(BuildingType type, int vp, int cap, Animals[] arewards, Materials[] mrewards) {
+		this(type, vp, cap, null, arewards, mrewards);
+	}
+
+	public Building(BuildingType type, int vp, int cap, Animal reqiredAnimal, Animals[] arewards, Materials[] mrewards) {
 		this.type = type;
 		this.vp = vp;
 		this.cap = cap;
-		this.rewards = rewards;
+		this.reqiredAnimal = reqiredAnimal;
+		this.arewards = arewards;
+		this.mrewards = mrewards;
 	}
 
 	public BuildingType getType() {
@@ -49,11 +57,15 @@ public abstract class Building extends Space {
 	}
 	
 	public Animal getRequiredAnimal() {
-		return null;
+		return reqiredAnimal;
 	}
 	
 	public Animals[] getAnimalRewards() {
-		return rewards;
+		return arewards;
+	}
+
+	public Materials[] getMaterialRewards() {
+		return mrewards;
 	}
 	
 	public boolean isAlwaysEnclosed() {
