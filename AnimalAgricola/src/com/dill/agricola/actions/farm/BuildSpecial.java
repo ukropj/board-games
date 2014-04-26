@@ -22,10 +22,12 @@ import com.dill.agricola.model.buildings.HalfTimberedHouse;
 import com.dill.agricola.model.buildings.OpenStables;
 import com.dill.agricola.model.buildings.Shelter;
 import com.dill.agricola.model.buildings.StorageBuilding;
+import com.dill.agricola.model.buildings.more.CowStall;
 import com.dill.agricola.model.buildings.more.FarmShop;
 import com.dill.agricola.model.buildings.more.FodderBeetFarm;
 import com.dill.agricola.model.buildings.more.HayRack;
 import com.dill.agricola.model.buildings.more.InseminationCenter;
+import com.dill.agricola.model.buildings.more.PigStall;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
@@ -48,6 +50,8 @@ public class BuildSpecial extends BuildAction {
 		COSTS.put(BuildingType.SHELTER, Shelter.COST);
 		COSTS.put(BuildingType.OPEN_STABLES, null);
 		// more
+		COSTS.put(BuildingType.COW_STALL, CowStall.COST);
+		COSTS.put(BuildingType.PIG_STALL, PigStall.COST);
 		COSTS.put(BuildingType.FARM_SHOP, FarmShop.COST);
 		COSTS.put(BuildingType.FODDER_BEET_FARM, FodderBeetFarm.COST);
 		COSTS.put(BuildingType.HAY_RACK, HayRack.COST);

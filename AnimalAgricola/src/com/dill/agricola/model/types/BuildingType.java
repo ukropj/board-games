@@ -25,7 +25,11 @@ public enum BuildingType {
 	FODDER_BEET_FARM(1, Msg.get("fodderBeetFarm"), new BuildingText(Msg.get("immediately"), 0.33f, 0.49f, 0.4f), 
 			new BuildingText(Msg.get("haveOfEach"), 0.14f, 0.18f, 0.76f)),
 	HAY_RACK(1, Msg.get("hayRack"), new BuildingText(Msg.get("immediately"), 0.33f, 0.51f, 0.4f)),
-	INSEMINATION_CENTER(1, Msg.get("inseminationCenter"), new BuildingText(Msg.get("inseminationCenterText"), 0.13f, 0.52f, 0.75f));
+	INSEMINATION_CENTER(1, Msg.get("inseminationCenter"), new BuildingText(Msg.get("inseminationCenterText"), 0.13f, 0.52f, 0.75f)),
+	COW_STALL(1, Msg.get("cowStall"), new BuildingText(Msg.get("immediately"), 0.4f, 0.5f, 0.4f),
+			new BuildingText(Msg.get("cowStallText"), 0.33f, 0.78f, 0.11f)),
+	PIG_STALL(1, Msg.get("pigStall"), new BuildingText(Msg.get("immediately"), 0.4f, 0.5f, 0.4f),
+			new BuildingText(Msg.get("pigStallText"), 0.33f, 0.78f, 0.11f)),;
 
 	public final static List<BuildingType> SPECIAL_BUILDINGS_TYPES =
 			Collections.unmodifiableList(
@@ -37,7 +41,8 @@ public enum BuildingType {
 			Collections.unmodifiableList(
 					Arrays.asList(new BuildingType[] {
 							BuildingType.FARM_SHOP, BuildingType.FODDER_BEET_FARM,
-							BuildingType.HAY_RACK, BuildingType.INSEMINATION_CENTER }));
+							BuildingType.HAY_RACK, BuildingType.INSEMINATION_CENTER,
+							BuildingType.COW_STALL, BuildingType.PIG_STALL}));
 
 //	private final int BY_FOREST = 0;
 	private final int BY_ROAD = 2;

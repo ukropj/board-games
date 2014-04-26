@@ -327,7 +327,7 @@ public class Player extends SimpleObservable {
 	public float getBuildingScore() {
 		float score = 0;
 		for (Building b : farm.getFarmBuildings()) {
-			score += b.getVictoryDirPoints(this);
+			score += b.getVictoryPoints(this);
 		}
 		return score;
 	}
