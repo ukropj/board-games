@@ -191,6 +191,7 @@ public class Board extends JFrame {
 	}
 
 	public void start() {
+		actionBoard.resetBuildings();
 		actionBoard.resetActions();
 		playerBoards[0].reset();
 		playerBoards[1].reset();

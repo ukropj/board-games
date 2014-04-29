@@ -2,7 +2,6 @@ package com.dill.agricola.model.buildings;
 
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Building;
-import com.dill.agricola.model.Space;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Material;
 
@@ -20,7 +19,4 @@ public class Stables extends Building implements MultiImaged {
 		return ((Stall)buildSpace).getId();
 	}
 
-	public boolean canBuildAt(Space building) {
-		return building instanceof Stall;
-	}
 }

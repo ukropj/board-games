@@ -22,11 +22,14 @@ import com.dill.agricola.model.buildings.HalfTimberedHouse;
 import com.dill.agricola.model.buildings.OpenStables;
 import com.dill.agricola.model.buildings.Shelter;
 import com.dill.agricola.model.buildings.StorageBuilding;
+import com.dill.agricola.model.buildings.more.BarnManufacturer;
 import com.dill.agricola.model.buildings.more.CowStall;
+import com.dill.agricola.model.buildings.more.DuckPond;
 import com.dill.agricola.model.buildings.more.FarmShop;
 import com.dill.agricola.model.buildings.more.FodderBeetFarm;
 import com.dill.agricola.model.buildings.more.HayRack;
 import com.dill.agricola.model.buildings.more.InseminationCenter;
+import com.dill.agricola.model.buildings.more.LogHouse;
 import com.dill.agricola.model.buildings.more.PigStall;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Animal;
@@ -50,12 +53,15 @@ public class BuildSpecial extends BuildAction {
 		COSTS.put(BuildingType.SHELTER, Shelter.COST);
 		COSTS.put(BuildingType.OPEN_STABLES, null);
 		// more
+		COSTS.put(BuildingType.BARN_MANUFACTURER, BarnManufacturer.COST);
 		COSTS.put(BuildingType.COW_STALL, CowStall.COST);
-		COSTS.put(BuildingType.PIG_STALL, PigStall.COST);
+		COSTS.put(BuildingType.DUCK_POND, DuckPond.COST);
 		COSTS.put(BuildingType.FARM_SHOP, FarmShop.COST);
 		COSTS.put(BuildingType.FODDER_BEET_FARM, FodderBeetFarm.COST);
 		COSTS.put(BuildingType.HAY_RACK, HayRack.COST);
 		COSTS.put(BuildingType.INSEMINATION_CENTER, InseminationCenter.COST);
+		COSTS.put(BuildingType.LOG_HOUSE, LogHouse.COST);
+		COSTS.put(BuildingType.PIG_STALL, PigStall.COST);
 	}
 	private final Materials[] OS_COSTS = new Materials[] { OpenStables.COST_WOOD, OpenStables.COST_STONE };
 	private int osCostNo;
@@ -109,6 +115,9 @@ public class BuildSpecial extends BuildAction {
 
 	private boolean passesCondition(Player player, BuildingType type, DirPoint pos) {
 		// special conditions for some buildings
+		if (type == BuildingType.DUCK_POND) {
+			return player.farm.getUnusedSpaces().size() >= 6;
+		}
 		if (type == BuildingType.FODDER_BEET_FARM) {
 			for (Animal a : Animal.values()) {
 				if (player.getAnimal(a) < 2) {
@@ -121,19 +130,22 @@ public class BuildSpecial extends BuildAction {
 	}
 
 	private BuildingType chooseBuilding(Player player) {
-		List<BuildingType> types = new ArrayList<BuildingType>(GeneralSupply.getBuildingsLeft());
-		if (types.size() == 0) {
+		List<BuildingType> types = new ArrayList<BuildingType>(GeneralSupply.getBuildingsAll());
+		List<BuildingType> left = new ArrayList<BuildingType>(GeneralSupply.getBuildingsLeft());
+		if (left.size() == 0) {
 			return null;
 		}
 		List<JComponent> opts = new ArrayList<JComponent>();
 		for (BuildingType type : types) {
-			JComponent opt = UiFactory.createLabel(AgriImages.getBuildingIcon(type, ImgSize.BIG));
-			System.out.println(type);
-			opt.setEnabled(canPurchase(player, type, null));
-			opts.add(opt);
+			if (left.contains(type)) {
+				JComponent opt = UiFactory.createLabel(AgriImages.getBuildingIcon(type, ImgSize.BIG));
+				opt.setEnabled(canPurchase(player, type, null));
+				opts.add(opt);				
+			} else {
+				opts.add(null);
+			}
 		}
-		// TODO with "more buildings", pae is getting too wide, will need to make custom one 
-		int result = UiFactory.showOptionDialog(null, Msg.get("chooseBuilding"), Msg.get("specialBuildings"), null, opts);
+		int result = UiFactory.showOptionDialog(null, Msg.get("chooseBuilding"), Msg.get("specialBuildings"), null, opts, 4);
 		return result != UiFactory.NO_OPTION ? types.get(result) : null;
 	}
 
@@ -145,9 +157,9 @@ public class BuildSpecial extends BuildAction {
 			opts.add(opt);
 		}
 		Icon icon = AgriImages.getBuildingIcon(BuildingType.OPEN_STABLES, ImgSize.MEDIUM);
-		return UiFactory.showOptionDialog(null, Msg.get("chooseCost"), Msg.get("openStables"), icon, opts);
+		return UiFactory.showOptionDialog(null, Msg.get("chooseCost"), Msg.get("openStables"), icon, opts, 0);
 	}
-	
+
 	private Materials chooseMaterialReward(Building building) {
 		Materials[] materialRewards = building.getMaterialRewards();
 		if (materialRewards == null) {
@@ -163,7 +175,7 @@ public class BuildSpecial extends BuildAction {
 			opts.add(opt);
 		}
 		Icon icon = AgriImages.getBuildingIcon(building.getType(), ImgSize.MEDIUM);
-		int result = UiFactory.showOptionDialog(null, Msg.get("chooseMaterial"), building.getType().name, icon, opts);
+		int result = UiFactory.showOptionDialog(null, Msg.get("chooseMaterial"), building.getType().name, icon, opts, 0);
 		return result != UiFactory.NO_OPTION ? materialRewards[result] : materialRewards[0];
 	}
 
@@ -183,7 +195,7 @@ public class BuildSpecial extends BuildAction {
 			opts.add(opt);
 		}
 		Icon icon = AgriImages.getBuildingIcon(building.getType(), ImgSize.MEDIUM);
-		int result = UiFactory.showOptionDialog(null, Msg.get("chooseAnimal"), building.getType().name, icon, opts);
+		int result = UiFactory.showOptionDialog(null, Msg.get("chooseAnimal"), building.getType().name, icon, opts, 0);
 		return result != UiFactory.NO_OPTION ? animalRewards[result] : animalRewards[0];
 	}
 
@@ -224,7 +236,7 @@ public class BuildSpecial extends BuildAction {
 
 	protected UndoableFarmEdit postActivate(Player player, Building b) {
 		GeneralSupply.useBuilding(toBuild, true);
-		
+
 		Materials materialReward = chooseMaterialReward(b);
 		Animals animalReward = chooseAnimalReward(b);
 		if (materialReward != null) {

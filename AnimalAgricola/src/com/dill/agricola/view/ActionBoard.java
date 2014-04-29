@@ -47,6 +47,9 @@ public class ActionBoard extends JPanel {
 	private int scoringTabIndex;
 	private int actionsTabIndex;
 
+	private BuildingsPanel buildingPanel;
+	private JPanel buildingDisplay;
+
 	private static final Border defaultPanelBorder = BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(
 			Board.BORDER_WIDTH, 0, Board.BORDER_WIDTH, 0, new Icon() {
 
@@ -88,6 +91,8 @@ public class ActionBoard extends JPanel {
 		JPanel actionPanel = new JPanel(new GridBagLayout());
 		actionPanel.setName("abc");
 
+		buildingDisplay = ActionPanelFactory.createBuildingPanel(actionPanel);
+		
 		for (final Action action : actions) {
 			ActionType type = action.getType();
 			this.actions.put(type, action);
@@ -111,6 +116,10 @@ public class ActionBoard extends JPanel {
 
 			actionButtons.put(type, b);
 			ActionPanelFactory.createActionPanel(actionPanel, action, b);
+			
+			if (type == ActionType.SPECIAL || type == ActionType.SPECIAL2) {
+				ActionPanelFactory.bindBuildingPanel(action, buildingDisplay);
+			}
 		}
 
 		tabPane.addTab(Msg.get("actionsTitle"), AgriImages.getFirstTokenIcon(1, ImgSize.SMALL), actionPanel);
@@ -118,7 +127,7 @@ public class ActionBoard extends JPanel {
 	}
 
 	public void addTabs(final ScorePanel scorePanel) {
-		final BuildingsPanel buildingPanel = new BuildingsPanel();
+		buildingPanel = new BuildingsPanel();
 		tabPane.addTab(Msg.get("buildingsTitle"), Images.createIcon("go-home", ImgSize.SMALL), buildingPanel);
 		tabPane.addTab(Msg.get("animalTitle"), AgriImages.getAnimalIcon(Animal.HORSE, ImgSize.SMALL), new AnimalScoringPanel());
 		tabPane.addTab(Msg.get("scoresTitle"), Images.createIcon("application-certificate", ImgSize.SMALL), scorePanel);
@@ -142,6 +151,11 @@ public class ActionBoard extends JPanel {
 
 	public void showScoring() {
 		tabPane.setSelectedIndex(scoringTabIndex);
+	}
+	
+	public void resetBuildings() {
+		buildingPanel.resetBuildings();
+		ActionPanelFactory.repopulateBuildingPanel(buildingDisplay);
 	}
 
 	public void updateActions() {

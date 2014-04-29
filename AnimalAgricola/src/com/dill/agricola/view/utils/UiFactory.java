@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -211,30 +212,38 @@ public class UiFactory {
 				UiFactory.createLabel(Msg.get("yesBtn"), null, 50),
 				UiFactory.createLabel(Msg.get("noBtn"), null, 50)
 		});
-		return 0 == showOptionDialog(parent, message, title, null, opts);
+		return 0 == showOptionDialog(parent, message, title, null, opts, 0);
 	}
 
-	public static int showOptionDialog(Component parent, String message, String title, Icon icon, List<JComponent> opts) {
+	public static int showOptionDialog(Component parent, String message, String title, Icon icon, List<JComponent> opts, int cols) {
 		final JOptionPane pane = new JOptionPane(message, JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION, icon);
-		JButton[] buttons = new JButton[opts.size()];
+		JComponent[] buttons = new JComponent[opts.size()];
 		int i = 0;
 		for (JComponent opt : opts) {
-			final JButton button = new JButton();
-			button.setMargin(new Insets(2, 2, 2, 2));
-			button.add(opt);
-			button.setEnabled(opt.isEnabled());
-			opt.setEnabled(true);
-			final int value = i;
-			button.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					pane.setValue(value);
-				}
-			});
-			buttons[i] = button;
+			if (opt == null) {
+				buttons[i] = new JLabel();
+			} else {
+				final JButton button = new JButton();
+				button.setMargin(new Insets(2, 2, 2, 2));
+				button.add(opt);
+				button.setEnabled(opt.isEnabled());
+				opt.setEnabled(true);
+				final int value = i;
+				button.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						pane.setValue(value);
+					}
+				});
+				buttons[i] = button;				
+			}
 			i++;
 		}
 		pane.setOptions(buttons);
+		if (cols > 0) {
+			((JPanel)pane.getComponent(1)).setLayout(new GridLayout(0, cols, 5, 5));			
+		}
 		JDialog dialog = pane.createDialog(parent, title);
+		
 		dialog.setVisible(true);
 		Object retVal = pane.getValue();
 		return retVal == null ? UiFactory.NO_OPTION : (Integer) retVal;

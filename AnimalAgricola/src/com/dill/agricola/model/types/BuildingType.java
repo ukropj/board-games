@@ -20,16 +20,20 @@ public enum BuildingType {
 	SHELTER(0, Msg.get("shelter"), new BuildingText(Msg.get("immediately"), 0.12f, 0.57f, 0.37f)),
 	OPEN_STABLES(0, Msg.get("openStables"), new BuildingText(Msg.get("immediately"), 0.14f, 0.535f, 0.37f)),
 	// more special buildings
-	FARM_SHOP(1, Msg.get("farmShop"), new BuildingText(Msg.get("immediately"), 0.33f, 0.49f, 0.4f), 
-			new BuildingText(Msg.get("nextToRoad"), 0.33f, 0.18f, 0.56f)),
-	FODDER_BEET_FARM(1, Msg.get("fodderBeetFarm"), new BuildingText(Msg.get("immediately"), 0.33f, 0.49f, 0.4f), 
-			new BuildingText(Msg.get("haveOfEach"), 0.14f, 0.18f, 0.76f)),
-	HAY_RACK(1, Msg.get("hayRack"), new BuildingText(Msg.get("immediately"), 0.33f, 0.51f, 0.4f)),
-	INSEMINATION_CENTER(1, Msg.get("inseminationCenter"), new BuildingText(Msg.get("inseminationCenterText"), 0.13f, 0.52f, 0.75f)),
+	BARN_MANUFACTURER(1, Msg.get("barnManufacturer"), new BuildingText(Msg.get("immediately"), 0.13f, 0.56f, 0.38f)),
 	COW_STALL(1, Msg.get("cowStall"), new BuildingText(Msg.get("immediately"), 0.4f, 0.5f, 0.4f),
 			new BuildingText(Msg.get("cowStallText"), 0.33f, 0.78f, 0.11f)),
+	DUCK_POND(1, Msg.get("duckPond"), new BuildingText(Msg.get("immediately"), 0.13f, 0.51f, 0.37f),
+			new BuildingText(Msg.get("duckPondText"), 0.30f, 0.18f, 0.56f)),
+	FARM_SHOP(1, Msg.get("farmShop"), new BuildingText(Msg.get("immediately"), 0.33f, 0.49f, 0.4f),
+			new BuildingText(Msg.get("nextToRoad"), 0.33f, 0.18f, 0.56f)),
+	FODDER_BEET_FARM(1, Msg.get("fodderBeetFarm"), new BuildingText(Msg.get("immediately"), 0.33f, 0.495f, 0.4f),
+			new BuildingText(Msg.get("haveOfEach"), 0.1f, 0.18f, 0.78f)),
+	HAY_RACK(1, Msg.get("hayRack"), new BuildingText(Msg.get("immediately"), 0.33f, 0.51f, 0.4f)),
+	INSEMINATION_CENTER(1, Msg.get("inseminationCenter"), new BuildingText(Msg.get("inseminationCenterText"), 0.13f, 0.52f, 0.75f)),
+	LOG_HOUSE(1, Msg.get("logHouse"), new BuildingText(Msg.get("logHouseText"), 0.35f, 0.5f, 0.46f)),
 	PIG_STALL(1, Msg.get("pigStall"), new BuildingText(Msg.get("immediately"), 0.4f, 0.5f, 0.4f),
-			new BuildingText(Msg.get("pigStallText"), 0.33f, 0.78f, 0.11f)),;
+			new BuildingText(Msg.get("pigStallText"), 0.33f, 0.78f, 0.11f)), ;
 
 	public final static List<BuildingType> SPECIAL_BUILDINGS_TYPES =
 			Collections.unmodifiableList(
@@ -40,13 +44,19 @@ public enum BuildingType {
 	public final static List<BuildingType> MORE_SPECIAL_BUILDINGS_TYPES =
 			Collections.unmodifiableList(
 					Arrays.asList(new BuildingType[] {
+							BuildingType.BARN_MANUFACTURER,
+							BuildingType.COW_STALL, BuildingType.DUCK_POND,
 							BuildingType.FARM_SHOP, BuildingType.FODDER_BEET_FARM,
 							BuildingType.HAY_RACK, BuildingType.INSEMINATION_CENTER,
-							BuildingType.COW_STALL, BuildingType.PIG_STALL}));
+							BuildingType.LOG_HOUSE, BuildingType.PIG_STALL }));
+
+	public final static List<BuildingType> EVEN_MORE_SPECIAL_BUILDINGS_TYPES =
+			Collections.unmodifiableList(
+					Arrays.asList(new BuildingType[] {}));
 
 //	private final int BY_FOREST = 0;
 	private final int BY_ROAD = 2;
-	
+
 	public final String name;
 	public final int set;
 	public final BuildingText[] texts;
@@ -60,12 +70,13 @@ public enum BuildingType {
 	public boolean canBuildAt(BuildingType placeType, DirPoint pos) {
 		switch (this) {
 		case HALF_TIMBERED_HOUSE:
+		case LOG_HOUSE:
 			return placeType == BuildingType.COTTAGE;
 		case STABLES:
 		case OPEN_STABLES:
 			return placeType == BuildingType.STALL;
 		case FARM_SHOP:
-			return placeType == EMPTY && pos.y == BY_ROAD;			
+			return placeType == EMPTY && pos.y == BY_ROAD;
 		default:
 			return placeType == EMPTY;
 		}

@@ -316,6 +316,18 @@ public class Farm extends SimpleObservable {
 				|| second != null && (second.isAlwaysEnclosed() || second.hasBorder(pos.dir.opposite()));
 	}
 
+	public List<Space> getUnusedSpaces() {
+		List<Space> unused = new ArrayList<Space>();
+		List<DirPoint> range = PointUtils.createGridRange(width, height);
+		for (DirPoint pos : range) {
+			Space s = getSpace(pos);
+			if (s != null && !s.isUsed()) {
+				unused.add(s);
+			}
+		}
+		return unused;
+	}
+
 	public List<Building> getFarmBuildings() {
 		// TODO let fencer precompute this
 		List<Building> buildings = new ArrayList<Building>();

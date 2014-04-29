@@ -1,6 +1,8 @@
 #TODO#
 
 	highlight current action
+	more buildings big and small
+	refactor actions to 
 	
 #Bugs#
 
@@ -14,4 +16,3 @@
 	stats
 	logging
 	global properties
-	more buildings big and small + expansion chooser

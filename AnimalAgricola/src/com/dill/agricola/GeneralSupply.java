@@ -3,12 +3,11 @@ package com.dill.agricola;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Stack;
-import java.util.TreeSet;
 
 import com.dill.agricola.model.Building;
 import com.dill.agricola.model.buildings.HalfTimberedHouse;
@@ -16,11 +15,14 @@ import com.dill.agricola.model.buildings.OpenStables;
 import com.dill.agricola.model.buildings.Shelter;
 import com.dill.agricola.model.buildings.Stall;
 import com.dill.agricola.model.buildings.StorageBuilding;
+import com.dill.agricola.model.buildings.more.BarnManufacturer;
 import com.dill.agricola.model.buildings.more.CowStall;
+import com.dill.agricola.model.buildings.more.DuckPond;
 import com.dill.agricola.model.buildings.more.FarmShop;
 import com.dill.agricola.model.buildings.more.FodderBeetFarm;
 import com.dill.agricola.model.buildings.more.HayRack;
 import com.dill.agricola.model.buildings.more.InseminationCenter;
+import com.dill.agricola.model.buildings.more.LogHouse;
 import com.dill.agricola.model.buildings.more.PigStall;
 import com.dill.agricola.model.types.BuildingType;
 
@@ -31,6 +33,8 @@ public class GeneralSupply {
 	}
 
 	public final static int MAX_TROUGHS = 10;
+	public final static int MORE_BUILDINGS = Main.DEBUG ? 4 : 4;
+	public final static int EVEN_MORE_BUILDINGS = Main.DEBUG ? 4 : 4;
 	public final static Integer[] EXTS = { 0, 1, 2, 3 };
 	public final static Stall[] STALLS = { new Stall(0), new Stall(1), new Stall(2), new Stall(3) };
 
@@ -40,7 +44,11 @@ public class GeneralSupply {
 	private static int troughsLeft;
 	private static final Stack<Integer> extsLeft = new Stack<Integer>();
 	private static final Stack<Integer> extsUsed = new Stack<Integer>();
-	private static final Set<BuildingType> buildingsLeft = new TreeSet<BuildingType>();
+	private static final List<BuildingType> buildingsAll = new ArrayList<BuildingType>();
+	private static final List<BuildingType> buildingsLeft = new ArrayList<BuildingType>();
+	
+	private static boolean useMoreBuildings;
+	private static boolean useEvenMoreBuildings;
 
 	static {
 		SPECIAL_BUILDINGS.put(BuildingType.HALF_TIMBERED_HOUSE, new HalfTimberedHouse());
@@ -48,15 +56,20 @@ public class GeneralSupply {
 		SPECIAL_BUILDINGS.put(BuildingType.SHELTER, new Shelter());
 		SPECIAL_BUILDINGS.put(BuildingType.OPEN_STABLES, new OpenStables());
 		// more
+		SPECIAL_BUILDINGS.put(BuildingType.BARN_MANUFACTURER, new BarnManufacturer());
 		SPECIAL_BUILDINGS.put(BuildingType.COW_STALL, new CowStall());
-		SPECIAL_BUILDINGS.put(BuildingType.PIG_STALL, new PigStall());
+		SPECIAL_BUILDINGS.put(BuildingType.DUCK_POND, new DuckPond());
 		SPECIAL_BUILDINGS.put(BuildingType.FARM_SHOP, new FarmShop());
 		SPECIAL_BUILDINGS.put(BuildingType.FODDER_BEET_FARM, new FodderBeetFarm());
 		SPECIAL_BUILDINGS.put(BuildingType.HAY_RACK, new HayRack());
 		SPECIAL_BUILDINGS.put(BuildingType.INSEMINATION_CENTER, new InseminationCenter());
+		SPECIAL_BUILDINGS.put(BuildingType.LOG_HOUSE, new LogHouse());
+		SPECIAL_BUILDINGS.put(BuildingType.PIG_STALL, new PigStall());
 	}
 
-	public static void reset() {
+	public static void reset(boolean useMoreBuildings, boolean useEvenMoreBuildings) {
+		GeneralSupply.useMoreBuildings = useMoreBuildings;
+		GeneralSupply.useEvenMoreBuildings = useEvenMoreBuildings;
 		stallsLeft.clear();
 		stallsLeft.addAll(Arrays.asList(STALLS));
 		Collections.shuffle(stallsLeft);
@@ -65,11 +78,10 @@ public class GeneralSupply {
 		extsLeft.addAll(Arrays.asList(EXTS));
 		Collections.shuffle(extsLeft);
 		extsUsed.clear();
+		buildingsAll.clear();
+		buildingsAll.addAll(generateRandomBuildings());
 		buildingsLeft.clear();
-		buildingsLeft.addAll(BuildingType.SPECIAL_BUILDINGS_TYPES);
-		if (Main.MORE_BUILDINGS) {
-			buildingsLeft.addAll(BuildingType.MORE_SPECIAL_BUILDINGS_TYPES);			
-		}
+		buildingsLeft.addAll(buildingsAll);
 	}
 
 	public static int getLeft(Supplyable type) {
@@ -87,15 +99,35 @@ public class GeneralSupply {
 		}
 	}
 
-	public static Set<BuildingType> getBuildingsLeft() {
+	public static List<BuildingType> getBuildingsLeft() {
 		return buildingsLeft;
 	}
-	
+
 	public static List<BuildingType> getBuildingsAll() {
+		return buildingsAll;
+	}
+
+	private static List<BuildingType> generateRandomBuildings() {
 		List<BuildingType> types = new ArrayList<BuildingType>(BuildingType.SPECIAL_BUILDINGS_TYPES);
-		if (Main.MORE_BUILDINGS) {
-			types.addAll(BuildingType.MORE_SPECIAL_BUILDINGS_TYPES);			
+		if (useMoreBuildings) {
+			List<BuildingType> moreTypes = new ArrayList<BuildingType>(BuildingType.MORE_SPECIAL_BUILDINGS_TYPES);
+			Collections.shuffle(moreTypes);
+			for (int i = 0; i < MORE_BUILDINGS && i < moreTypes.size(); i++) {
+				types.add(moreTypes.get(i));
+			}
 		}
+		if (useEvenMoreBuildings) {
+			List<BuildingType> moreTypes = new ArrayList<BuildingType>(BuildingType.EVEN_MORE_SPECIAL_BUILDINGS_TYPES);
+			Collections.shuffle(moreTypes);
+			for (int i = 0; i < EVEN_MORE_BUILDINGS && i < moreTypes.size(); i++) {
+				types.add(moreTypes.get(i));
+			}
+		}
+		Collections.sort(types, new Comparator<BuildingType>() {
+			public int compare(BuildingType o1, BuildingType o2) {
+				return o1.set != o1.set ? o1.set - o2.set : o1.compareTo(o2);
+			}
+		});
 		return types;
 	}
 
@@ -133,6 +165,14 @@ public class GeneralSupply {
 
 	public static int getNextExtensionId() {
 		return extsLeft.peek();
+	}
+	
+	public static boolean getUseMoreBuildings() {
+		return useMoreBuildings;
+	}
+	
+	public static boolean getUseEvenMoreBuildings() {
+		return useEvenMoreBuildings;
 	}
 
 }

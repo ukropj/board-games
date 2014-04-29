@@ -51,7 +51,7 @@ public class BuildStables extends BuildAction {
 			opts.add(opt);
 		}
 		Icon icon = AgriImages.getBuildingIcon(BuildingType.OPEN_STABLES, ImgSize.MEDIUM);
-		return UiFactory.showOptionDialog(null, "Choose cost", "Stables", icon, opts);
+		return UiFactory.showOptionDialog(null, "Choose cost", "Stables", icon, opts, 0);
 	}
 
 	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos, int doneSoFar) {

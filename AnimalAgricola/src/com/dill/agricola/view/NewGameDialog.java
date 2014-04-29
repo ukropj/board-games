@@ -3,10 +3,14 @@ package com.dill.agricola.view;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -21,13 +25,15 @@ import com.dill.agricola.view.utils.AgriImages.ImgSize;
 import com.dill.agricola.view.utils.Images;
 import com.dill.agricola.view.utils.UiFactory;
 
-public class NewGameDialog extends JDialog implements ActionListener {
+public class NewGameDialog extends JDialog implements ActionListener, ItemListener {
 	private static final long serialVersionUID = 1L;
 
 	private JLabel startPlayerLabel;
 
-	PlayerColor startingPlayer = PlayerColor.BLUE;
-	boolean done = false;
+	private PlayerColor startingPlayer = PlayerColor.BLUE;
+	private boolean useMoreBuildings = true;
+	private boolean useEvenMoreBuildings = false;
+	private boolean done = false;
 
 	public NewGameDialog(JFrame parent) {
 		super(parent);
@@ -41,33 +47,48 @@ public class NewGameDialog extends JDialog implements ActionListener {
 		pack();
 		setLocationRelativeTo(parent);
 
-		if (!Main.DEBUG) {
-			setVisible(true);
-		} else {
-			done = true;
-			dispose();
-		}
+//		if (!Main.DEBUG) {
+		setVisible(true);
+//		} else {
+//			done = true;
+//			dispose();
+//		}
 	}
 
 	private void buildOptions() {
-		JPanel main = UiFactory.createBorderPanel(5, 5);
+		JPanel main = UiFactory.createVerticalPanel();
 		main.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		getContentPane().add(main);
 
+		main.add(buildStartPlayerPanel());
+		if (Main.MORE_BUILDINGS || Main.EVEN_MORE_BUILDINGS) {
+			main.add(buildExpansionPanel());
+		}
+
+		JButton submitButton = UiFactory.createTextButton(Msg.get("startGameBtn"), this);
+		submitButton.setActionCommand(OptionCommand.SUBMIT.toString());
+		JPanel submitP = UiFactory.createFlowPanel();
+		submitP.add(submitButton);
+
+		main.add(Box.createVerticalStrut(5));
+		main.add(submitP);
+	}
+
+	private JPanel buildStartPlayerPanel() {
 		JPanel startPlayerP = UiFactory.createBorderPanel(5, 0);
 		startPlayerP.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder(Msg.get("startPlayer")),
-				BorderFactory.createEmptyBorder(5, 5, 5, 5)
+				BorderFactory.createEmptyBorder(0, 5, 5, 5)
 				));
 		startPlayerLabel = UiFactory.createLabel(AgriImages.getFirstTokenIcon(0, ImgSize.BIG));
 		startPlayerLabel.setOpaque(true);
 		startPlayerLabel.setBackground(PlayerColor.BLUE.getRealColor());
 		startPlayerP.add(startPlayerLabel, BorderLayout.LINE_START);
 
-		JRadioButton blueStarting = new JRadioButton(Msg.get("player", Msg.get("blue")), true);
+		JRadioButton blueStarting = new JRadioButton(Msg.get("player", Msg.get("blue")), startingPlayer == PlayerColor.BLUE);
 		blueStarting.setActionCommand(OptionCommand.BLUE_STARTS.toString());
 		blueStarting.addActionListener(this);
-		JRadioButton redStarting = new JRadioButton(Msg.get("player", Msg.get("red")));
+		JRadioButton redStarting = new JRadioButton(Msg.get("player", Msg.get("red")), startingPlayer == PlayerColor.RED);
 		redStarting.setActionCommand(OptionCommand.RED_STARTS.toString());
 		redStarting.addActionListener(this);
 		ButtonGroup startButtons = new ButtonGroup();
@@ -78,23 +99,37 @@ public class NewGameDialog extends JDialog implements ActionListener {
 		b.add(blueStarting);
 		b.add(redStarting);
 		startPlayerP.add(b, BorderLayout.CENTER);
-		main.add(startPlayerP, BorderLayout.CENTER);
+		return startPlayerP;
+	}
 
-		JButton submitButton = UiFactory.createTextButton(Msg.get("startGameBtn"), this);
-		submitButton.setActionCommand(OptionCommand.SUBMIT.toString());
-		JPanel submitP = UiFactory.createFlowPanel();
-		submitP.add(submitButton);
-
-		main.add(submitP, BorderLayout.SOUTH);
+	private JPanel buildExpansionPanel() {
+		JPanel expP = UiFactory.createBorderPanel(5, 0);
+		expP.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createTitledBorder(Msg.get("expansions")),
+				BorderFactory.createEmptyBorder(0, 5, 5, 5)
+				));
+		JCheckBox moreBuildings = new JCheckBox(Msg.get("moreBuildings"), useMoreBuildings);
+		moreBuildings.setActionCommand(OptionCommand.MORE_BUILDINGS.toString());
+		moreBuildings.addItemListener(this);
+		moreBuildings.setEnabled(Main.MORE_BUILDINGS);
+		JCheckBox evenMoreBuildings = new JCheckBox(Msg.get("evenMoreBuildings"), useEvenMoreBuildings);
+		evenMoreBuildings.setActionCommand(OptionCommand.EVEN_MORE_BUILDINGS.toString());
+		evenMoreBuildings.addItemListener(this);
+		evenMoreBuildings.setEnabled(Main.EVEN_MORE_BUILDINGS);
+		JPanel b = UiFactory.createVerticalPanel();
+		b.add(moreBuildings);
+		b.add(evenMoreBuildings);
+		expP.add(b, BorderLayout.CENTER);
+		return expP;
 	}
 
 	private static enum OptionCommand {
-		BLUE_STARTS, RED_STARTS, SUBMIT
+		BLUE_STARTS, RED_STARTS, MORE_BUILDINGS, EVEN_MORE_BUILDINGS, SUBMIT
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		OptionCommand o = OptionCommand.valueOf(e.getActionCommand());
-		switch (o) {
+		OptionCommand command = OptionCommand.valueOf(e.getActionCommand());
+		switch (command) {
 		case BLUE_STARTS:
 			startingPlayer = PlayerColor.BLUE;
 			startPlayerLabel.setBackground(startingPlayer.getRealColor());
@@ -110,6 +145,24 @@ public class NewGameDialog extends JDialog implements ActionListener {
 			setVisible(false);
 			dispose();
 			break;
+		default:
+			break;
+		}
+	}
+
+	public void itemStateChanged(ItemEvent e) {
+		JCheckBox source = (JCheckBox)e.getItemSelectable();
+		OptionCommand command = OptionCommand.valueOf(source.getActionCommand());
+		boolean selected = e.getStateChange() == ItemEvent.SELECTED;
+		switch (command) {
+		case MORE_BUILDINGS:
+			useMoreBuildings = selected;
+			break;
+		case EVEN_MORE_BUILDINGS:
+			useEvenMoreBuildings = selected;
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -119,6 +172,14 @@ public class NewGameDialog extends JDialog implements ActionListener {
 
 	public PlayerColor getStartingPlayer() {
 		return startingPlayer;
+	}
+	
+	public boolean getUseMoreBuildings() {
+		return useMoreBuildings;
+	}
+	
+	public boolean getUseEvenMoreBuildings() {
+		return useEvenMoreBuildings;
 	}
 
 }

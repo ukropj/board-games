@@ -1,12 +1,13 @@
 package com.dill.agricola.view;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -53,7 +54,6 @@ public class ActionPanelFactory {
 	
 	// shared listeners
 	private static ActionStateChangeListener stallSupplyChangeListener = null;
-	private static ActionStateChangeListener buildingChangeListener = null;
 
 	public static void createActionPanel(JPanel parent, Action action, JButton actionButton) {
 		JComponent actionPanel = null;
@@ -190,16 +190,6 @@ public class ActionPanelFactory {
 			c.weightx = 1;
 			break;
 		case SPECIAL:
-			c.gridx = 3;
-			c.gridy = 8;
-			c.gridwidth = 3;
-			c.weighty = 0;
-//			c.fill = GridBagConstraints.NONE;
-//			c.anchor = GridBagConstraints.CENTER;
-			JPanel bP = createBuildingPanel();
-			parent.add(bP, c);
-			action.addChangeListener(buildingChangeListener);
-
 			JLabel spec1 = UiFactory.createLabel(Msg.get("specBuildLabel"));
 			spec1.setFont(Fonts.ACTION_TEXT_BIG);
 			actionButton.add(spec1);
@@ -211,9 +201,6 @@ public class ActionPanelFactory {
 			c.gridy = 7;
 			break;
 		case SPECIAL2:
-			if (buildingChangeListener != null) {
-				action.addChangeListener(buildingChangeListener);
-			}
 			if (stallSupplyChangeListener != null) {
 				action.addChangeListener(stallSupplyChangeListener);
 			}
@@ -233,27 +220,39 @@ public class ActionPanelFactory {
 		parent.add(actionPanel != null ? actionPanel : actionButton, c);
 	}
 
-	private static JPanel createBuildingPanel() {
+	public static JPanel createBuildingPanel(JPanel parent) {
 		JPanel display = new JPanel(new GridLayout(0, 4, 2, 2));
 		display.setOpaque(false);
+		repopulateBuildingPanel(display);
+		JPanel bP = UiFactory.createBorderPanel(2, 0);
+		bP.add(display, BorderLayout.CENTER);
+
+		GridBagConstraints c = new GridBagConstraints();
+		c.fill = GridBagConstraints.BOTH;
+		c.ipadx = c.ipady = 3;
+		c.insets = new Insets(INSET,INSET,INSET,INSET);
+		c.weighty = 0.5;
+		c.gridx = 3;
+		c.gridy = 8;
+		c.gridwidth = 3;
+		c.weighty = 0;
+		parent.add(display, c);
+		return display;
+	}
+	
+	public static void repopulateBuildingPanel(JPanel p) {
+		p.removeAll();
 		List<BuildingLabel> labels = new ArrayList<BuildingLabel>();
 		for (BuildingType type : GeneralSupply.getBuildingsAll()) {
 			BuildingLabel bl = new BuildingLabel(type, ImgSize.SMALL);
 			bl.setToolTipText(type.name);
 			labels.add(bl);
-			display.add(bl);
+			p.add(bl);
 		}
-		JPanel bP = UiFactory.createBorderPanel(2, 0);
-		bP.add(display, BorderLayout.CENTER);
-
-//		JButton button = new JButton(Images.createIcon("system-search", ImgSize.MEDIUM));
-//		button.setToolTipText(Msg.get("buildingDetailTip"));
-//		button.setMargin(new Insets(INSET,INSET,INSET,INSET));
-//		button.addActionListener(new BuildingDetailListener());
-//		bP.add(button, BorderLayout.LINE_END);
-
-		buildingChangeListener = new BuildingChangeListener(labels);
-		return bP;
+	}
+	
+	public static void bindBuildingPanel(Action action, JPanel buildingDisplay) {
+		action.addChangeListener(new BuildingChangeListener(buildingDisplay));
 	}
 
 	private static void createRefillPanel(JPanel parent, int x, int y, Action action, JButton button, JComponent extraP, Materials materials) {
@@ -353,16 +352,18 @@ public class ActionPanelFactory {
 
 	private static class BuildingChangeListener implements ActionStateChangeListener {
 
-		private final List<BuildingLabel> labels;
+		private final JPanel display;
 
-		public BuildingChangeListener(List<BuildingLabel> labels) {
-			this.labels = labels;
+		public BuildingChangeListener(JPanel buildingDisplay) {
+			this.display = buildingDisplay;
 		}
 
 		public void stateChanges(Action action) {
-			Set<BuildingType> left = GeneralSupply.getBuildingsLeft();
-			for (BuildingLabel label : labels) {
-				label.setUsed(!left.contains(label.getType()));
+			Collection<BuildingType> left = GeneralSupply.getBuildingsLeft();
+			for (Component label : display.getComponents()) {
+				BuildingLabel bl = (BuildingLabel)label;
+				bl.setVisible(left.contains(bl.getType()));
+//				bl.setUsed(!left.contains(bl.getType()));
 			}
 		}
 	}

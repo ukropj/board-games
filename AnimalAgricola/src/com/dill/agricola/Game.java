@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.JFrame;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
@@ -86,6 +87,7 @@ public class Game {
 		board.pack();
 		if (Main.DEBUG) {
 			board.buildDebugPanel(players);
+			board.setExtendedState(JFrame.MAXIMIZED_BOTH);
 //			board.setSize(1100, 640 + (Main.DEBUG ? 50 : 0));
 		} else {
 //			board.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -163,7 +165,7 @@ public class Game {
 		undoManager.discardAllEdits();
 		ap.beginUpdate(""); // start "initial edit"
 		ap.invalidateUpdated(); // which cannot be undone
-		GeneralSupply.reset();
+		GeneralSupply.reset(newDialog.getUseMoreBuildings(), newDialog.getUseEvenMoreBuildings());
 
 		setStartingPlayer(newDialog.getStartingPlayer());
 		initialStartPlayer = startPlayer;
@@ -171,7 +173,7 @@ public class Game {
 		board.start();
 		startRound();
 		if (!board.isMaximized()) {
-			board.pack();			
+			board.pack();		
 		}
 	}
 
