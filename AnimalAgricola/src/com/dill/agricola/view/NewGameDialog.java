@@ -47,12 +47,12 @@ public class NewGameDialog extends JDialog implements ActionListener, ItemListen
 		pack();
 		setLocationRelativeTo(parent);
 
-//		if (!Main.DEBUG) {
-		setVisible(true);
-//		} else {
-//			done = true;
-//			dispose();
-//		}
+		if (!Main.DEBUG) {
+			setVisible(true);
+		} else {
+			done = true;
+			dispose();
+		}
 	}
 
 	private void buildOptions() {
@@ -151,7 +151,7 @@ public class NewGameDialog extends JDialog implements ActionListener, ItemListen
 	}
 
 	public void itemStateChanged(ItemEvent e) {
-		JCheckBox source = (JCheckBox)e.getItemSelectable();
+		JCheckBox source = (JCheckBox) e.getItemSelectable();
 		OptionCommand command = OptionCommand.valueOf(source.getActionCommand());
 		boolean selected = e.getStateChange() == ItemEvent.SELECTED;
 		switch (command) {
@@ -173,11 +173,11 @@ public class NewGameDialog extends JDialog implements ActionListener, ItemListen
 	public PlayerColor getStartingPlayer() {
 		return startingPlayer;
 	}
-	
+
 	public boolean getUseMoreBuildings() {
 		return useMoreBuildings;
 	}
-	
+
 	public boolean getUseEvenMoreBuildings() {
 		return useEvenMoreBuildings;
 	}

@@ -315,6 +315,7 @@ public class ActionPanelFactory {
 
 	private static JLabel createSupplyLabel(Action action, Supplyable type) {
 		JLabel l = UiFactory.createLabel(Msg.get("supplyableLeft", GeneralSupply.getLeft(type)));
+		l.setFont(Fonts.ACTION_TEXT);
 //		l.setForeground(Color.GRAY);
 		action.addChangeListener(new SupplyChangeListener(type, l));
 		return l;
