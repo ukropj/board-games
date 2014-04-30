@@ -284,9 +284,8 @@ public class ActionPanelFactory {
 	private static JPanel createPrefixPanel(Materials materials, Animal animal, Animal otherAnimal) {
 		JPanel refillP = UiFactory.createHorizontalPanel();
 		refillP.setToolTipText(Msg.get("actRefill"));
-		refillP.setOpaque(true);
+		refillP.setOpaque(false);
 		refillP.add(Box.createHorizontalGlue());
-//		refillP.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 0, Color.GRAY));
 		Animals animals = animal == null ? null : new Animals(animal, 1);
 		JPanel main = UiFactory.createResourcesPanel(materials, animals, UiFactory.Y_AXIS);
 		refillP.add(main);
@@ -316,7 +315,6 @@ public class ActionPanelFactory {
 	private static JLabel createSupplyLabel(Action action, Supplyable type) {
 		JLabel l = UiFactory.createLabel(Msg.get("supplyableLeft", GeneralSupply.getLeft(type)));
 		l.setFont(Fonts.ACTION_TEXT);
-//		l.setForeground(Color.GRAY);
 		action.addChangeListener(new SupplyChangeListener(type, l));
 		return l;
 	}

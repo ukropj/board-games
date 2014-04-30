@@ -31,7 +31,7 @@ public class NewGameDialog extends JDialog implements ActionListener, ItemListen
 	private JLabel startPlayerLabel;
 
 	private PlayerColor startingPlayer = PlayerColor.BLUE;
-	private boolean useMoreBuildings = true;
+	private boolean useMoreBuildings = false;
 	private boolean useEvenMoreBuildings = false;
 	private boolean done = false;
 

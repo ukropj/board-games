@@ -17,12 +17,12 @@ import com.dill.agricola.view.utils.UiFactory;
 
 public class Main {
 
-	public static boolean DEBUG = false;
+	public static boolean DEBUG = true;
 	public static boolean MORE_BUILDINGS = true; // TODO remove these flag when ready to release expansion
 	public static boolean EVEN_MORE_BUILDINGS = false;
 
 	private static String[] LANGS = { "en", "de", "cz" };
-	private static int DEFAULT_LANG = DEBUG ? 2 : 0; // 'en' is default
+	private static int DEFAULT_LANG = DEBUG ? 0 : 0; // 'en' is default
 
 	public static void main(String[] args) {
 
