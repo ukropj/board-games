@@ -89,10 +89,11 @@ public class ActionBoard extends JPanel {
 		add(tabPane, BorderLayout.CENTER);
 
 		JPanel actionPanel = new JPanel(new GridBagLayout());
-		actionPanel.setName("abc");
+//		actionPanel.setBackground(new Color(172, 198, 103));
+//		actionPanel.setBackground(new Color(154, 179, 98));
 
 		buildingDisplay = ActionPanelFactory.createBuildingPanel(actionPanel);
-		
+
 		for (final Action action : actions) {
 			ActionType type = action.getType();
 			this.actions.put(type, action);
@@ -116,7 +117,7 @@ public class ActionBoard extends JPanel {
 
 			actionButtons.put(type, b);
 			ActionPanelFactory.createActionPanel(actionPanel, action, b);
-			
+
 			if (type == ActionType.SPECIAL || type == ActionType.SPECIAL2) {
 				ActionPanelFactory.bindBuildingPanel(action, buildingDisplay);
 			}
@@ -131,7 +132,7 @@ public class ActionBoard extends JPanel {
 		tabPane.addTab(Msg.get("buildingsTitle"), Images.createIcon("go-home", ImgSize.SMALL), buildingPanel);
 		tabPane.addTab(Msg.get("animalTitle"), AgriImages.getAnimalIcon(Animal.HORSE, ImgSize.SMALL), new AnimalScoringPanel());
 		tabPane.addTab(Msg.get("scoresTitle"), Images.createIcon("application-certificate", ImgSize.SMALL), scorePanel);
-		
+
 		tabPane.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				if (tabPane.getSelectedComponent() == scorePanel) {
@@ -152,7 +153,7 @@ public class ActionBoard extends JPanel {
 	public void showScoring() {
 		tabPane.setSelectedIndex(scoringTabIndex);
 	}
-	
+
 	public void resetBuildings() {
 		buildingPanel.resetBuildings();
 		ActionPanelFactory.repopulateBuildingPanel(buildingDisplay);
@@ -204,7 +205,7 @@ public class ActionBoard extends JPanel {
 			b.setEnabled(false);
 		}
 	}
-	
+
 	private static Border createPlayerBorder(PlayerColor c) {
 		return BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(
 				Board.BORDER_WIDTH,

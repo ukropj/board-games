@@ -204,6 +204,7 @@ public class UiFactory {
 				l.setFont(Fonts.ACTION_TEXT);
 			}
 		}
+		l.setForeground(new Color(35, 35, 35));
 		return l;
 	}
 
@@ -234,16 +235,16 @@ public class UiFactory {
 						pane.setValue(value);
 					}
 				});
-				buttons[i] = button;				
+				buttons[i] = button;
 			}
 			i++;
 		}
 		pane.setOptions(buttons);
 		if (cols > 0) {
-			((JPanel)pane.getComponent(1)).setLayout(new GridLayout(0, cols, 5, 5));			
+			((JPanel) pane.getComponent(1)).setLayout(new GridLayout(0, cols, 5, 5));
 		}
 		JDialog dialog = pane.createDialog(parent, title);
-		
+
 		dialog.setVisible(true);
 		Object retVal = pane.getValue();
 		return retVal == null ? UiFactory.NO_OPTION : (Integer) retVal;
@@ -288,7 +289,7 @@ public class UiFactory {
 
 	public static JButton createTextButton(String text, ActionListener actionListener) {
 		JButton b = new JButton(text);
-		b.setMargin(new Insets(2,8,2,8));
+		b.setMargin(new Insets(2, 8, 2, 8));
 		b.setAlignmentX(JButton.CENTER_ALIGNMENT);
 		b.addActionListener(actionListener);
 		return b;
