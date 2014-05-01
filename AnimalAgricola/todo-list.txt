@@ -2,7 +2,8 @@
 
 	highlight current action
 	more buildings big and small
-	refactor actions to 
+	extra stall/stable + extension for MBBAS
+	refactor actions to atomic actions
 	
 #Bugs#
 

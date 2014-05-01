@@ -172,9 +172,9 @@ public class Game {
 
 		board.start();
 		startRound();
-		if (!board.isMaximized()) {
-			board.pack();		
-		}
+//		if (!board.isMaximized()) {
+//			board.pack();		
+//		}
 	}
 
 	private void startRound() {

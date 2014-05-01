@@ -17,17 +17,26 @@ import com.dill.agricola.view.utils.UiFactory;
 
 public class Main {
 
-	public static boolean DEBUG = true;
+	private static enum Lang {
+		EN, DE, CZ;
+
+		public String toString() {
+			return super.toString().toLowerCase();
+		};
+	};
+
+	public static boolean DEBUG = false;
+	public static boolean DEBUG_LANG = true;
 	public static boolean MORE_BUILDINGS = true; // TODO remove these flag when ready to release expansion
 	public static boolean EVEN_MORE_BUILDINGS = false;
 
-	private static String[] LANGS = { "en", "de", "cz" };
-	private static int DEFAULT_LANG = DEBUG ? 0 : 0; // 'en' is default
+	private static Lang DEFAULT_LANG = Lang.EN; // 'en' is default
 
 	public static void main(String[] args) {
 
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
+
 				setLookAndFeel();
 				chooseLanguage();
 
@@ -51,20 +60,20 @@ public class Main {
 
 			private void chooseLanguage() {
 				List<JComponent> opts = new ArrayList<JComponent>();
-				for (String lang : LANGS) {
+				for (Lang lang : Lang.values()) {
 					JComponent opt = UiFactory.createLabel(getLangIcon(lang));
 					opts.add(opt);
 				}
-				int chosenLang = DEBUG ? DEFAULT_LANG :
-						UiFactory.showOptionDialog(null, "Select language", "Agricola: All Creatures Big and Small", null, opts, 0);
-				if (chosenLang == UiFactory.NO_OPTION) {
-					chosenLang = DEFAULT_LANG;
+				int chosenLang = DEBUG_LANG ? DEFAULT_LANG.ordinal() : UiFactory.showOptionDialog(null, "Select language", "Agricola: All Creatures Big and Small", null, opts, 0);
+				Lang l = DEFAULT_LANG;
+				if (chosenLang != UiFactory.NO_OPTION) {
+					l = Lang.values()[chosenLang];
 				}
-				Msg.load(new Locale(LANGS[chosenLang]));
+				Msg.load(new Locale(l.toString()));
 			}
 
-			private ImageIcon getLangIcon(String lang) {
-				BufferedImage img = Images.createImage("lang_" + lang);
+			private ImageIcon getLangIcon(Lang lang) {
+				BufferedImage img = Images.createImage("lang_" + lang.toString());
 				img = Images.getBestScaledInstance(img, 50);
 				return new ImageIcon(img);
 			}

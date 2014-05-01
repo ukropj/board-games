@@ -19,6 +19,8 @@ import javax.swing.JRadioButton;
 
 import com.dill.agricola.Main;
 import com.dill.agricola.model.types.PlayerColor;
+import com.dill.agricola.support.Config;
+import com.dill.agricola.support.Config.ConfigKey;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
@@ -30,9 +32,9 @@ public class NewGameDialog extends JDialog implements ActionListener, ItemListen
 
 	private JLabel startPlayerLabel;
 
-	private PlayerColor startingPlayer = PlayerColor.BLUE;
-	private boolean useMoreBuildings = false;
-	private boolean useEvenMoreBuildings = false;
+	private PlayerColor startingPlayer;
+	private boolean useMoreBuildings;
+	private boolean useEvenMoreBuildings;
 	private boolean done = false;
 
 	public NewGameDialog(JFrame parent) {
@@ -42,7 +44,11 @@ public class NewGameDialog extends JDialog implements ActionListener, ItemListen
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setModalityType(ModalityType.APPLICATION_MODAL);
 		setResizable(false);
-
+		
+		startingPlayer = Config.getEnum(ConfigKey.LAST_STARTING_PLAYER, PlayerColor.class, PlayerColor.BLUE);
+		useMoreBuildings = Main.MORE_BUILDINGS && Config.getBoolean(ConfigKey.MORE_BUILDINGS, false);
+		useEvenMoreBuildings = Main.EVEN_MORE_BUILDINGS && Config.getBoolean(ConfigKey.EVEN_MORE_BUILDINGS, false);
+		
 		buildOptions();
 		pack();
 		setLocationRelativeTo(parent);
@@ -80,9 +86,9 @@ public class NewGameDialog extends JDialog implements ActionListener, ItemListen
 				BorderFactory.createTitledBorder(Msg.get("startPlayer")),
 				BorderFactory.createEmptyBorder(0, 5, 5, 5)
 				));
-		startPlayerLabel = UiFactory.createLabel(AgriImages.getFirstTokenIcon(0, ImgSize.BIG));
+		startPlayerLabel = UiFactory.createLabel("");
 		startPlayerLabel.setOpaque(true);
-		startPlayerLabel.setBackground(PlayerColor.BLUE.getRealColor());
+		updateStartPLayerLabel();
 		startPlayerP.add(startPlayerLabel, BorderLayout.LINE_START);
 
 		JRadioButton blueStarting = new JRadioButton(Msg.get("player", Msg.get("blue")), startingPlayer == PlayerColor.BLUE);
@@ -122,6 +128,11 @@ public class NewGameDialog extends JDialog implements ActionListener, ItemListen
 		expP.add(b, BorderLayout.CENTER);
 		return expP;
 	}
+	
+	private void updateStartPLayerLabel() {
+		startPlayerLabel.setBackground(startingPlayer.getRealColor());
+		startPlayerLabel.setIcon(AgriImages.getFirstTokenIcon(startingPlayer.ordinal(), ImgSize.BIG));
+	}
 
 	private static enum OptionCommand {
 		BLUE_STARTS, RED_STARTS, MORE_BUILDINGS, EVEN_MORE_BUILDINGS, SUBMIT
@@ -132,22 +143,27 @@ public class NewGameDialog extends JDialog implements ActionListener, ItemListen
 		switch (command) {
 		case BLUE_STARTS:
 			startingPlayer = PlayerColor.BLUE;
-			startPlayerLabel.setBackground(startingPlayer.getRealColor());
-			startPlayerLabel.setIcon(AgriImages.getFirstTokenIcon(startingPlayer.ordinal(), ImgSize.BIG));
+			updateStartPLayerLabel();
 			break;
 		case RED_STARTS:
 			startingPlayer = PlayerColor.RED;
-			startPlayerLabel.setBackground(startingPlayer.getRealColor());
-			startPlayerLabel.setIcon(AgriImages.getFirstTokenIcon(startingPlayer.ordinal(), ImgSize.BIG));
+			updateStartPLayerLabel();
 			break;
 		case SUBMIT:
 			done = true;
 			setVisible(false);
+			writePrefs();
 			dispose();
 			break;
 		default:
 			break;
 		}
+	}
+
+	private void writePrefs() {
+		Config.putEnum(ConfigKey.LAST_STARTING_PLAYER, getStartingPlayer());
+		Config.putBoolean(ConfigKey.MORE_BUILDINGS, getUseMoreBuildings());
+		Config.putBoolean(ConfigKey.EVEN_MORE_BUILDINGS, getUseEvenMoreBuildings());		
 	}
 
 	public void itemStateChanged(ItemEvent e) {
