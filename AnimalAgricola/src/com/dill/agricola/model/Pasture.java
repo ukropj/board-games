@@ -1,5 +1,6 @@
 package com.dill.agricola.model;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,7 +33,7 @@ public class Pasture extends Space {
 
 	public Set<Animal> getRequiredAnimals() {
 		if (extraAnimalCaps.isEmpty()) {
-			return null;
+			return Collections.emptySet();
 		} else {
 			Set<Animal> req = new HashSet<Animal>();
 			for (Animals combo : extraAnimalCaps) {

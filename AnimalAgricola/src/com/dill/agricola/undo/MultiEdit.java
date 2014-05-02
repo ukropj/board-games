@@ -17,6 +17,7 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 	private boolean alive;
 
 	private final PlayerColor currentPlayer;
+	private final String currentPlayerName;
 	private final String name;
 
 	public MultiEdit() {
@@ -30,6 +31,11 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 
 		hasBeenDone = true;
 		alive = true;
+		
+		currentPlayerName = currentPlayer != null 
+				? " (" + Msg.get(currentPlayer.toString().toLowerCase()) + ")"
+						: "";
+
 	}
 
 	public boolean isEmpty() {
@@ -101,7 +107,7 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 	}*/
 
 	public String getPresentationName() {
-		return !isSignificant() ? "Cleanup" : name;
+		return !isSignificant() ? "Cleanup" : name + currentPlayerName;
 	}
 
 	public String getUndoPresentationName() {

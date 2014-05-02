@@ -32,6 +32,7 @@ public class Player extends SimpleObservable {
 
 	private boolean starting;
 	private int workers;
+	private Animals lastBorn = new Animals();
 
 	public Player(PlayerColor color) {
 		this.color = color;
@@ -44,14 +45,15 @@ public class Player extends SimpleObservable {
 		starting = false;
 		material.clear();
 		animals.clear();
+		lastBorn.clear();
 		farm.init(FARM_W, FARM_H);
 		farm.build(new Cottage(), new DirPoint(0, 2));
 		addMaterial(Material.BORDER, INIT_BORDERS);
 
 		if (Main.DEBUG) {
-//			addMaterial(new Materials(Material.WOOD, 10));
-//			addMaterial(new Materials(Material.STONE, 20));
-//			addMaterial(new Materials(Material.REED, 20));
+			addMaterial(new Materials(Material.WOOD, 10));
+			addMaterial(new Materials(Material.STONE, 20));
+			addMaterial(new Materials(Material.REED, 20));
 
 			DirPoint pos = new DirPoint(1, 1);
 			farm.put(Purchasable.FENCE, new DirPoint(pos, Dir.N));
@@ -61,7 +63,7 @@ public class Player extends SimpleObservable {
 			Fencer.calculateFences(farm);
 			purchaseAnimal(Animal.COW, 1);
 			farm.putAnimals(pos, Animal.COW, 1);
-			
+
 //			DirPoint pos2 = new DirPoint(0, 1);
 //			farm.build(new Stall(0), pos2);
 //			farm.build(new Stables(), pos2);
@@ -259,17 +261,12 @@ public class Player extends SimpleObservable {
 		return farm.hasValidAnimals();
 	}
 
-	public Animals breedAnimals() {
-		Animals newAnimals = new Animals();
-		boolean hasInseminationCenter = farm.hasBuilding(BuildingType.INSEMINATION_CENTER);
-		for (Animal type : Animal.values()) {
-			int count = animals.get(type);
-			if (count >= 2 || (hasInseminationCenter && count == 1)) {
-				purchaseAnimal(type, 1);
-				newAnimals.add(type, 1);
-			}
-		}
-		return newAnimals;
+	public void setLastBornAnimals(Animals lastBorn) {
+		this.lastBorn.set(lastBorn);
+	}
+	
+	public Animals getLastBornAnimals() {
+		return lastBorn;
 	}
 
 	public Animals releaseAnimals() {
@@ -286,7 +283,7 @@ public class Player extends SimpleObservable {
 	public boolean hasLooseAnimals() {
 		return farm.getLooseAnimals().size() > 0;
 	}
-	
+
 	public int getWorkers() {
 		return workers;
 	}
@@ -309,7 +306,7 @@ public class Player extends SimpleObservable {
 		workers = 0;
 		setChanged();
 	}
-	
+
 	public void returnAllWorkers() {
 		workers = MAX_WORKERS;
 		setChanged();

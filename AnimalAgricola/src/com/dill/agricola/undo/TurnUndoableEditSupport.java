@@ -27,10 +27,6 @@ public class TurnUndoableEditSupport extends UndoableEditSupport {
 		}
 	}
 
-	public synchronized void beginUpdate(String name) {
-		beginUpdate(null, name);
-	}
-
 	public synchronized void beginUpdate(PlayerColor currentPlayer, ActionType actionType) {
 		beginUpdate(currentPlayer, actionType.shortDesc);
 	}

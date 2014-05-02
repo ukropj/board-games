@@ -107,6 +107,7 @@ public class ActionBoard extends JPanel {
 							updateActions();
 
 							if (ap.isFinished()) {
+								e.setSource(ap.getPlayer().getColor());
 								submitListener.actionPerformed(e);
 							}
 						}

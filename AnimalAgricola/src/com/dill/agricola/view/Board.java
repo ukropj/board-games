@@ -241,11 +241,21 @@ public class Board extends JFrame {
 		}
 	}
 
-	public void endRound() {
-		playerBoards[0].setActive(true, true);
-		playerBoards[1].setActive(true, true);
+//	public void startBreeding() {
+//		playerBoards[0].setActive(true, true);
+//		playerBoards[1].setActive(true, true);
+//		updateState(-1, null);
+//		actionBoard.disableActions();
+//	}
+	
+	public void startBreeding(Player breedingPlayer) {
+		playerBoards[breedingPlayer.getColor().ordinal()].setActive(true, true);
 		updateState(-1, null);
 		actionBoard.disableActions();
+	}
+
+	public void deactivate(Player breedingPlayer) {
+		playerBoards[breedingPlayer.getColor().ordinal()].setActive(false, false);
 	}
 
 	public void startingPlayerChanged() {

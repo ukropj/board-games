@@ -18,18 +18,18 @@ public abstract class Building extends Space {
 	private final Animal reqiredAnimal;
 	private final Animals[] arewards;
 	private final Materials[] mrewards;
-	
+
 	protected Space buildSpace = null;
 	protected Materials paidCost; // actual cost payed for this building instance
-	
+
 	public Building(BuildingType type, int vp, int cap) {
 		this(type, vp, cap, null, null, null);
 	}
-	
+
 	public Building(BuildingType type, int vp, int cap, Animal reqiredAnimal) {
 		this(type, vp, cap, reqiredAnimal, null, null);
 	}
-	
+
 	public Building(BuildingType type, int vp, int cap, Animals[] arewards, Materials[] mrewards) {
 		this(type, vp, cap, null, arewards, mrewards);
 	}
@@ -46,15 +46,15 @@ public abstract class Building extends Space {
 	public BuildingType getType() {
 		return type;
 	}
-	
+
 	public Materials getPaidCost() {
 		return paidCost;
 	}
-	
+
 	public void setPaidCost(Materials paidCost) {
 		this.paidCost = paidCost;
 	}
-	
+
 	public float getVictoryPoints(Player player) {
 		return vp;
 	}
@@ -62,11 +62,15 @@ public abstract class Building extends Space {
 	public int getMaxCapacity() {
 		return hasTrough() ? cap * FEEDER_MULTI : cap;
 	}
-	
+
 	public Set<Animal> getRequiredAnimals() {
-		return Collections.singleton(reqiredAnimal);
+		if (reqiredAnimal != null) {
+			return Collections.singleton(reqiredAnimal);
+		} else {
+			return Collections.emptySet();
+		}
 	}
-	
+
 	public Animals[] getAnimalRewards() {
 		return arewards;
 	}
@@ -74,7 +78,7 @@ public abstract class Building extends Space {
 	public Materials[] getMaterialRewards() {
 		return mrewards;
 	}
-	
+
 	public boolean isAlwaysEnclosed() {
 		return true;
 	}
@@ -82,7 +86,7 @@ public abstract class Building extends Space {
 	public int getTroughCount() {
 		return trough ? 1 : 0;
 	}
-	
+
 	public boolean isUsed() {
 		return true;
 	}
@@ -117,7 +121,7 @@ public abstract class Building extends Space {
 		reset();
 		return space;
 	}
-	
+
 	protected void reset() {
 		for (int i = 0; i < borders.length; i++) {
 			borders[i] = false;
@@ -127,24 +131,24 @@ public abstract class Building extends Space {
 		animalType = null;
 		animals = 0;
 	}
-	
+
 	protected void insertIntermediary(Building intermediary) {
 		if (intermediary != null) {
 			intermediary.buildSpace = this.buildSpace;
-			this.buildSpace = intermediary;			
+			this.buildSpace = intermediary;
 		}
 	}
-	
+
 	protected Building removeIntermediary() {
 		if (buildSpace != null && buildSpace instanceof Building) {
-			Building intermediary = (Building)buildSpace;
+			Building intermediary = (Building) buildSpace;
 			this.buildSpace = intermediary.buildSpace;
 			intermediary.reset();
 			return intermediary;
 		}
 		return null;
 	}
-	
+
 	public String toString() {
 		return Namer.getShortName(this) + " " + super.toString();
 	}

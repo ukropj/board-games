@@ -209,6 +209,7 @@ public class FarmPanel extends JPanel {
 		finishBtn.setActionCommand(ActionCommand.SUBMIT.toString());
 		finishBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				e.setSource(player.getColor());
 				if (ap.hasAction()) {
 					if (ap.finishAction()) {
 						submitListener.actionPerformed(e);
@@ -216,6 +217,7 @@ public class FarmPanel extends JPanel {
 				} else if (breeding) {
 					submitListener.actionPerformed(e);
 					finishBtn.setEnabled(false);
+					finishBtn.setVisible(false);
 				}
 			}
 		});
@@ -314,8 +316,10 @@ public class FarmPanel extends JPanel {
 			finishBtn.setVisible(true);
 			finishBtn.setEnabled(breeding || ap.canFinish());
 
-			cancelBtn.setVisible(true);
-			cancelBtn.setEnabled(ap.hasAction() && !ap.isFinished());
+			if (ap.hasAction() && !ap.isFinished()) {
+				cancelBtn.setVisible(true);
+				cancelBtn.setEnabled(true);				
+			}
 			if (player.hasLooseAnimals()) {
 				int n = farm.getLooseAnimals().size();
 				finishBtn.setText(String.valueOf(n));
