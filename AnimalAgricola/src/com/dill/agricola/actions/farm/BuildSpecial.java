@@ -23,7 +23,9 @@ import com.dill.agricola.model.buildings.OpenStables;
 import com.dill.agricola.model.buildings.Shelter;
 import com.dill.agricola.model.buildings.StorageBuilding;
 import com.dill.agricola.model.buildings.more.BarnManufacturer;
+import com.dill.agricola.model.buildings.more.BreedingStation;
 import com.dill.agricola.model.buildings.more.CowStall;
+import com.dill.agricola.model.buildings.more.DogHouse;
 import com.dill.agricola.model.buildings.more.DuckPond;
 import com.dill.agricola.model.buildings.more.FarmShop;
 import com.dill.agricola.model.buildings.more.FodderBeetFarm;
@@ -31,6 +33,7 @@ import com.dill.agricola.model.buildings.more.HayRack;
 import com.dill.agricola.model.buildings.more.InseminationCenter;
 import com.dill.agricola.model.buildings.more.LogHouse;
 import com.dill.agricola.model.buildings.more.PigStall;
+import com.dill.agricola.model.buildings.more.WildBoarPen;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
@@ -54,7 +57,9 @@ public class BuildSpecial extends BuildAction {
 		COSTS.put(BuildingType.OPEN_STABLES, null);
 		// more
 		COSTS.put(BuildingType.BARN_MANUFACTURER, BarnManufacturer.COST);
+		COSTS.put(BuildingType.BREEDING_STATION, BreedingStation.COST);
 		COSTS.put(BuildingType.COW_STALL, CowStall.COST);
+		COSTS.put(BuildingType.DOG_HOUSE, DogHouse.COST);
 		COSTS.put(BuildingType.DUCK_POND, DuckPond.COST);
 		COSTS.put(BuildingType.FARM_SHOP, FarmShop.COST);
 		COSTS.put(BuildingType.FODDER_BEET_FARM, FodderBeetFarm.COST);
@@ -62,6 +67,7 @@ public class BuildSpecial extends BuildAction {
 		COSTS.put(BuildingType.INSEMINATION_CENTER, InseminationCenter.COST);
 		COSTS.put(BuildingType.LOG_HOUSE, LogHouse.COST);
 		COSTS.put(BuildingType.PIG_STALL, PigStall.COST);
+		COSTS.put(BuildingType.WILD_BOAR_PEN, WildBoarPen.COST);
 	}
 	private final Materials[] OS_COSTS = new Materials[] { OpenStables.COST_WOOD, OpenStables.COST_STONE };
 	private int osCostNo;

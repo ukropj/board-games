@@ -16,7 +16,9 @@ import com.dill.agricola.model.buildings.Shelter;
 import com.dill.agricola.model.buildings.Stall;
 import com.dill.agricola.model.buildings.StorageBuilding;
 import com.dill.agricola.model.buildings.more.BarnManufacturer;
+import com.dill.agricola.model.buildings.more.BreedingStation;
 import com.dill.agricola.model.buildings.more.CowStall;
+import com.dill.agricola.model.buildings.more.DogHouse;
 import com.dill.agricola.model.buildings.more.DuckPond;
 import com.dill.agricola.model.buildings.more.FarmShop;
 import com.dill.agricola.model.buildings.more.FodderBeetFarm;
@@ -24,6 +26,7 @@ import com.dill.agricola.model.buildings.more.HayRack;
 import com.dill.agricola.model.buildings.more.InseminationCenter;
 import com.dill.agricola.model.buildings.more.LogHouse;
 import com.dill.agricola.model.buildings.more.PigStall;
+import com.dill.agricola.model.buildings.more.WildBoarPen;
 import com.dill.agricola.model.types.BuildingType;
 
 public class GeneralSupply {
@@ -33,7 +36,7 @@ public class GeneralSupply {
 	}
 
 	public final static int MAX_TROUGHS = 10;
-	public final static int MORE_BUILDINGS = Main.DEBUG ? 4 : 4;
+	public final static int MORE_BUILDINGS = Main.DEBUG ? 27 : 4;
 	public final static int EVEN_MORE_BUILDINGS = Main.DEBUG ? 4 : 4;
 	public final static Integer[] EXTS = { 0, 1, 2, 3 };
 	public final static Stall[] STALLS = { new Stall(0), new Stall(1), new Stall(2), new Stall(3) };
@@ -57,7 +60,9 @@ public class GeneralSupply {
 		SPECIAL_BUILDINGS.put(BuildingType.OPEN_STABLES, new OpenStables());
 		// more
 		SPECIAL_BUILDINGS.put(BuildingType.BARN_MANUFACTURER, new BarnManufacturer());
+		SPECIAL_BUILDINGS.put(BuildingType.BREEDING_STATION, new BreedingStation());
 		SPECIAL_BUILDINGS.put(BuildingType.COW_STALL, new CowStall());
+		SPECIAL_BUILDINGS.put(BuildingType.DOG_HOUSE, new DogHouse());
 		SPECIAL_BUILDINGS.put(BuildingType.DUCK_POND, new DuckPond());
 		SPECIAL_BUILDINGS.put(BuildingType.FARM_SHOP, new FarmShop());
 		SPECIAL_BUILDINGS.put(BuildingType.FODDER_BEET_FARM, new FodderBeetFarm());
@@ -65,6 +70,7 @@ public class GeneralSupply {
 		SPECIAL_BUILDINGS.put(BuildingType.INSEMINATION_CENTER, new InseminationCenter());
 		SPECIAL_BUILDINGS.put(BuildingType.LOG_HOUSE, new LogHouse());
 		SPECIAL_BUILDINGS.put(BuildingType.PIG_STALL, new PigStall());
+		SPECIAL_BUILDINGS.put(BuildingType.WILD_BOAR_PEN, new WildBoarPen());
 	}
 
 	public static void reset(boolean useMoreBuildings, boolean useEvenMoreBuildings) {

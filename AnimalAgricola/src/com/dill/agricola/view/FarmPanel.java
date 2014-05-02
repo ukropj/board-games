@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -47,10 +48,10 @@ import com.dill.agricola.model.Space;
 import com.dill.agricola.model.buildings.MultiImaged;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
+import com.dill.agricola.model.types.BuildingType.BuildingText;
 import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.model.types.Material;
 import com.dill.agricola.model.types.Purchasable;
-import com.dill.agricola.model.types.BuildingType.BuildingText;
 import com.dill.agricola.support.Fonts;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.AgriImages;
@@ -508,12 +509,16 @@ public class FarmPanel extends JPanel {
 
 		Animal type = space.getAnimalType();
 		if (type == null) {
-			type = space.getRequiredAnimal();
-			if (type == null) {
+			Set<Animal> reqTypes = space.getRequiredAnimals();
+			if (!reqTypes.isEmpty()) {
+				if (reqTypes.size() == 1) {
+					type = reqTypes.iterator().next();
+				}
+			} else {
 				List<Animal> pastureTypes = new ArrayList<Animal>(space.getAnimalTypesPerPasture());
 				if (pastureTypes.size() == 1) {
 					type = pastureTypes.get(0);
-				}
+				}				
 			}
 		}
 		int count = space.getAnimals();

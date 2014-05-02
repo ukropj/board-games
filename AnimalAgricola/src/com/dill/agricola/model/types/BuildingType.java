@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.dill.agricola.common.DirPoint;
+import com.dill.agricola.model.Farm;
 import com.dill.agricola.support.Msg;
 
 public enum BuildingType {
@@ -30,10 +31,13 @@ public enum BuildingType {
 	FODDER_BEET_FARM(1, Msg.get("fodderBeetFarm"), new BuildingText(Msg.get("immediately"), 0.33f, 0.495f, 0.4f),
 			new BuildingText(Msg.get("haveOfEach"), 0.1f, 0.18f, 0.78f)),
 	HAY_RACK(1, Msg.get("hayRack"), new BuildingText(Msg.get("immediately"), 0.33f, 0.51f, 0.4f)),
-	INSEMINATION_CENTER(1, Msg.get("inseminationCenter"), new BuildingText(Msg.get("inseminationCenterText"), 0.13f, 0.52f, 0.75f)),
+	INSEMINATION_CENTER(1, Msg.get("inseminationCenter"), new BuildingText(Msg.get("inseminationCenterText"), 0.13f, 0.52f, 0.74f)),
 	LOG_HOUSE(1, Msg.get("logHouse"), new BuildingText(Msg.get("logHouseText"), 0.35f, 0.5f, 0.46f)),
 	PIG_STALL(1, Msg.get("pigStall"), new BuildingText(Msg.get("immediately"), 0.4f, 0.5f, 0.4f),
-			new BuildingText(Msg.get("pigStallText"), 0.33f, 0.78f, 0.11f)), ;
+			new BuildingText(Msg.get("pigStallText"), 0.33f, 0.78f, 0.11f)),
+	BREEDING_STATION(1, Msg.get("breedingStation"), new BuildingText(Msg.get("breedingStationText"), 0.13f, 0.52f, 0.72f)),
+	DOG_HOUSE(1, Msg.get("dogHouse"), new BuildingText(Msg.get("dogHouseText"), 0.13f, 0.52f, 0.72f)),
+	WILD_BOAR_PEN(1, Msg.get("wildBoarPen"), new BuildingText(Msg.get("wildBoarPenText"), 0.13f, 0.52f, 0.74f));
 
 	public final static List<BuildingType> SPECIAL_BUILDINGS_TYPES =
 			Collections.unmodifiableList(
@@ -44,18 +48,17 @@ public enum BuildingType {
 	public final static List<BuildingType> MORE_SPECIAL_BUILDINGS_TYPES =
 			Collections.unmodifiableList(
 					Arrays.asList(new BuildingType[] {
-							BuildingType.BARN_MANUFACTURER,
+							BuildingType.BARN_MANUFACTURER, BuildingType.BREEDING_STATION,
+							BuildingType.DOG_HOUSE,
 							BuildingType.COW_STALL, BuildingType.DUCK_POND,
 							BuildingType.FARM_SHOP, BuildingType.FODDER_BEET_FARM,
 							BuildingType.HAY_RACK, BuildingType.INSEMINATION_CENTER,
-							BuildingType.LOG_HOUSE, BuildingType.PIG_STALL }));
+							BuildingType.LOG_HOUSE, BuildingType.PIG_STALL,
+							BuildingType.WILD_BOAR_PEN }));
 
 	public final static List<BuildingType> EVEN_MORE_SPECIAL_BUILDINGS_TYPES =
 			Collections.unmodifiableList(
 					Arrays.asList(new BuildingType[] {}));
-
-//	private final int BY_FOREST = 0;
-	private final int BY_ROAD = 2;
 
 	public final String name;
 	public final int set;
@@ -76,7 +79,7 @@ public enum BuildingType {
 		case OPEN_STABLES:
 			return placeType == BuildingType.STALL;
 		case FARM_SHOP:
-			return placeType == EMPTY && pos.y == BY_ROAD;
+			return placeType == EMPTY && pos.y == Farm.BY_ROAD;
 		default:
 			return placeType == EMPTY;
 		}

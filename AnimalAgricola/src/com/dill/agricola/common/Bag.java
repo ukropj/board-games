@@ -1,8 +1,10 @@
 package com.dill.agricola.common;
 
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 public class Bag<T extends Enum<T>> {
 
@@ -115,6 +117,24 @@ public class Bag<T extends Enum<T>> {
 			s += map.get(t);
 		}
 		return s;
+	}
+	
+	public int subSize(Set<T> types) {
+		int s = 0;
+		for (T t : types) {
+			s += map.get(t);
+		}
+		return s;
+	}
+	
+	public Set<T> types() {
+		Set<T> types = new HashSet<T>();
+		for (T t : values) {
+			if (map.get(t) > 0) {
+				types.add(t);
+			}
+		}
+		return types;
 	}
 	
 	/*

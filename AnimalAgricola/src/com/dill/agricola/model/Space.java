@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.dill.agricola.Main;
+import com.dill.agricola.common.Animals;
 import com.dill.agricola.common.Dir;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
@@ -24,6 +25,7 @@ public abstract class Space {
 	protected boolean enclosed = false;
 	private Set<Animal> animalTypesPerPasture = new HashSet<Animal>();
 	private Set<Space> pastureSpaces = new HashSet<Space>();
+	protected Set<Animals> extraAnimalCaps = new HashSet<Animals>();
 
 	public Space() {
 		if (isAlwaysEnclosed()) {
@@ -89,11 +91,11 @@ public abstract class Space {
 
 	public abstract int getMaxCapacity();
 	
-	public abstract Animal getRequiredAnimal();
+	public abstract Set<Animal> getRequiredAnimals();
 
 	public int getActualCapacity(Animal type) {
-		Animal req = getRequiredAnimal();
-		return (animalType == null || animalType == type) && (req == null || req == type) ? Math.max(0, getMaxCapacity() - getAnimals()) : 0;
+		Set<Animal> req = getRequiredAnimals();
+		return (animalType == null || animalType == type) && (req.isEmpty() || req.contains(type)) ? Math.max(0, getMaxCapacity() - getAnimals()) : 0;
 	}
 
 	public boolean isUsed() {
@@ -112,6 +114,16 @@ public abstract class Space {
 		int extraAnimals = Math.max(0, getAnimals() - getMaxCapacity());
 		int animalTypes = animalTypesPerPasture.size();
 		return extraAnimals == 0 && animalTypes <= 1;
+	}
+	
+	public void clearExtraCapacity() {
+		this.extraAnimalCaps.clear();
+	}
+	
+	public void addExtraCapacity(Animals animalCombo) {
+		if (animalCombo != null) {
+			this.extraAnimalCaps.add(animalCombo);			
+		}
 	}
 
 	public void setPasture(List<Space> spaces) {
@@ -137,5 +149,6 @@ public abstract class Space {
 	public Set<Space> getPastureSpaces() {
 		return pastureSpaces;
 	}
+
 
 }

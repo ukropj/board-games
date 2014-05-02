@@ -9,6 +9,7 @@ import java.util.Map;
 import com.dill.agricola.common.Dir;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.PointUtils;
+import com.dill.agricola.model.buildings.more.ExtraCapacityProvider;
 
 public class Fencer {
 
@@ -68,6 +69,8 @@ public class Fencer {
 		} while (changed && counter < 10);
 		
 		// one more pass to fill maps
+		List<Building> buildings = new ArrayList<Building>();
+		List<ExtraCapacityProvider> ecps = new ArrayList<ExtraCapacityProvider>();
 		Map<Integer, List<Space>> spaceMap = new HashMap<Integer, List<Space>>();
 		for (DirPoint pos : range) {
 			int pastureNo = floodMap[pos.x][pos.y];
@@ -79,17 +82,29 @@ public class Fencer {
 				}
 				spaceMap.get(pastureNo).add(space);
 			}
+			Building b = farm.getBuilding(pos);
+			if (b!= null) {
+				buildings.add(b);
+				if (b instanceof ExtraCapacityProvider) {
+					ecps.add((ExtraCapacityProvider)b);
+				}
+			}
 		}
-
+		
 		// process results
 		boolean farmValid = true;
 		for (DirPoint pos : range) {
 			int pastureNo = floodMap[pos.x][pos.y];
 			Space space = farm.getSpace(pos);
 			space.setPasture(spaceMap.get(pastureNo));
+			space.clearExtraCapacity();
+			for (ExtraCapacityProvider p : ecps) {
+				space.addExtraCapacity(p.getExtraCapacity(pos, space));
+			}
 			// check
 			farmValid = farmValid && space.isValid();
 		}
+		farm.setBuildingList(buildings);
 		farm.setValidAnimals(farmValid);
 	}
 

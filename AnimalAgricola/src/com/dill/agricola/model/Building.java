@@ -1,5 +1,8 @@
 package com.dill.agricola.model;
 
+import java.util.Collections;
+import java.util.Set;
+
 import com.dill.agricola.Main;
 import com.dill.agricola.common.Animals;
 import com.dill.agricola.common.Materials;
@@ -20,7 +23,11 @@ public abstract class Building extends Space {
 	protected Materials paidCost; // actual cost payed for this building instance
 	
 	public Building(BuildingType type, int vp, int cap) {
-		this(type, vp, cap, null, null);
+		this(type, vp, cap, null, null, null);
+	}
+	
+	public Building(BuildingType type, int vp, int cap, Animal reqiredAnimal) {
+		this(type, vp, cap, reqiredAnimal, null, null);
 	}
 	
 	public Building(BuildingType type, int vp, int cap, Animals[] arewards, Materials[] mrewards) {
@@ -56,8 +63,8 @@ public abstract class Building extends Space {
 		return hasTrough() ? cap * FEEDER_MULTI : cap;
 	}
 	
-	public Animal getRequiredAnimal() {
-		return reqiredAnimal;
+	public Set<Animal> getRequiredAnimals() {
+		return Collections.singleton(reqiredAnimal);
 	}
 	
 	public Animals[] getAnimalRewards() {

@@ -73,6 +73,10 @@ public abstract class AbstractAction implements Action {
 	public Animals getAccumulatedAnimals() {
 		return null;
 	}
+	
+	protected MultiEdit joinEdits(List<UndoableFarmEdit> edits) {
+		return joinEdits(edits.toArray(new UndoableFarmEdit[0]));
+	}
 
 	protected MultiEdit joinEdits(UndoableFarmEdit... edits) {
 		MultiEdit edit = new MultiEdit();

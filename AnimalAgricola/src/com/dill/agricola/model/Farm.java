@@ -21,6 +21,9 @@ import com.dill.agricola.model.types.Purchasable;
 
 public class Farm extends SimpleObservable {
 
+	public final static int BY_FOREST = 0;
+	public final static int BY_ROAD = 2;
+
 	private int width;
 	private int height;
 
@@ -33,6 +36,7 @@ public class Farm extends SimpleObservable {
 	private final Set<DirPoint> activeSpots = new HashSet<DirPoint>();
 
 	private boolean animalsValid = true;
+	private List<Building> buildingList = new ArrayList<Building>();
 
 	public Farm() {
 	}
@@ -45,6 +49,7 @@ public class Farm extends SimpleObservable {
 		activeType = null;
 		activeSpots.clear();
 		animalsValid = true;
+		buildingList.clear();
 	}
 
 	public int getWidth() {
@@ -328,19 +333,14 @@ public class Farm extends SimpleObservable {
 		return unused;
 	}
 
-	public List<Building> getFarmBuildings() {
-		// TODO let fencer precompute this
-		List<Building> buildings = new ArrayList<Building>();
-		List<DirPoint> range = PointUtils.createGridRange(width, height);
-		for (DirPoint pos : range) {
-			Building b = getBuilding(pos);
-			if (b != null) {
-				buildings.add(b);
-			}
-		}
-		return buildings;
+	public void setBuildingList(List<Building> buildingList) {
+		this.buildingList = buildingList;
 	}
 	
+	public List<Building> getFarmBuildings() {
+		return this.buildingList;
+	}
+
 	public boolean hasBuilding(BuildingType type) {
 		for (Building b : getFarmBuildings()) {
 			if (b.getType() == type) {
@@ -583,13 +583,13 @@ public class Farm extends SimpleObservable {
 		List<Animal> types = new ArrayList<Animal>();
 		Space space = getSpace(pos);
 		if (space != null) {
-			Animal requiredType = space.getRequiredAnimal();
-			boolean unusedOk = !onlyWhenUnused || (requiredType == null ? looseAnimals.size() > 0 : looseAnimals.get(requiredType) > 0);
-			
+			Set<Animal> requiredTypes = space.getRequiredAnimals();
+			boolean unusedOk = !onlyWhenUnused || (requiredTypes.isEmpty() ? looseAnimals.size() > 0 : looseAnimals.subSize(requiredTypes) > 0);
+
 			if (space.getMaxCapacity() > 0 && unusedOk) {
-				if (requiredType != null) {
+				if (!requiredTypes.isEmpty()) {
 					// if there is a required type use it
-					types.add(requiredType);
+					types.addAll(requiredTypes);
 				} else if (space.getAnimals() > 0) {
 					// if animals are present on space use their type
 					types.add(space.getAnimalType());
