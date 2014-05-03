@@ -5,13 +5,13 @@ import com.dill.agricola.model.Building;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Material;
 
-public class DuckPond extends Building {
+public class Sawmill extends Building {
 
-	// requires 6 empty spaces
-	public final static Materials COST = new Materials();
+	public final static Materials COST = new Materials(Material.STONE, 5);
 
-	public DuckPond() {
-		super(BuildingType.DUCK_POND, 1, 0, null, new Materials[] { new Materials(Material.REED) });
+	public Sawmill() {
+		super(BuildingType.SAWMILL, 4, 0);
 	}
 
+	// buildings and troughs cost one wood less
 }

@@ -34,12 +34,14 @@ import com.dill.agricola.model.buildings.more.InseminationCenter;
 import com.dill.agricola.model.buildings.more.LargeExtension;
 import com.dill.agricola.model.buildings.more.LogHouse;
 import com.dill.agricola.model.buildings.more.PigStall;
+import com.dill.agricola.model.buildings.more.Sawmill;
 import com.dill.agricola.model.buildings.more.SmallExtension;
 import com.dill.agricola.model.buildings.more.Stud;
 import com.dill.agricola.model.buildings.more.WildBoarPen;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
+import com.dill.agricola.model.types.Material;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.undo.SimpleEdit;
 import com.dill.agricola.undo.UndoableFarmEdit;
@@ -71,15 +73,34 @@ public class BuildSpecial extends BuildAction {
 		COSTS.put(BuildingType.LARGE_EXTENSION, LargeExtension.COST);
 		COSTS.put(BuildingType.LOG_HOUSE, LogHouse.COST);
 		COSTS.put(BuildingType.PIG_STALL, PigStall.COST);
+		COSTS.put(BuildingType.SAWMILL, Sawmill.COST);
 		COSTS.put(BuildingType.SMALL_EXTENSION, SmallExtension.COST);
 		COSTS.put(BuildingType.STUD, Stud.COST);
 		COSTS.put(BuildingType.WILD_BOAR_PEN, WildBoarPen.COST);
 	}
-	private final Materials[] OS_COSTS = new Materials[] { OpenStables.COST_WOOD, OpenStables.COST_STONE };
+	private final static Materials[] OS_COSTS = new Materials[] { OpenStables.COST_WOOD, OpenStables.COST_STONE };
 	private int osCostNo;
 
 	public BuildSpecial() {
 		super(counter++ % 2 == 0 ? ActionType.SPECIAL : ActionType.SPECIAL2);
+	}
+
+	public static Materials getBuildingCost(Player player, BuildingType type) {
+		return getBuildingCost(player, type, 0);
+	}
+
+	public static Materials getBuildingCost(Player player, BuildingType type, int variant) {
+		Materials cost = null;
+		if (type == BuildingType.OPEN_STABLES) {
+			cost = OS_COSTS[variant];
+		} else {
+			cost = COSTS.get(type);
+		}
+		if (cost.get(Material.WOOD) > 0 && player.getFarm().hasBuilding(BuildingType.SAWMILL)) {
+			cost = new Materials(cost);
+			cost.substract(Material.WOOD, 1);
+		}
+		return cost;
 	}
 
 	public UndoableFarmEdit init() {
@@ -87,8 +108,8 @@ public class BuildSpecial extends BuildAction {
 		return super.init();
 	}
 
-	protected Materials getCost(int doneSoFar) {
-		return toBuild == null ? null : toBuild == BuildingType.OPEN_STABLES ? OS_COSTS[osCostNo] : COSTS.get(toBuild);
+	protected Materials getCost(Player player, int doneSoFar) {
+		return toBuild == null ? null : getBuildingCost(player, toBuild, osCostNo);
 	}
 
 	protected boolean isAnyLeft() {
@@ -119,9 +140,10 @@ public class BuildSpecial extends BuildAction {
 
 	private boolean canPurchase(Player player, BuildingType type, DirPoint pos) {
 		if (type == BuildingType.OPEN_STABLES) {
-			return player.canPurchase(type, OS_COSTS[0], pos) || player.canPurchase(type, OS_COSTS[1], pos);
+			return player.canPurchase(type, getBuildingCost(player, type, 0), pos)
+					|| player.canPurchase(type, getBuildingCost(player, type, 1), pos);
 		} else {
-			return passesCondition(player, type, pos) && player.canPurchase(type, COSTS.get(type), pos);
+			return passesCondition(player, type, pos) && player.canPurchase(type, getBuildingCost(player, type), pos);
 		}
 	}
 
@@ -152,7 +174,7 @@ public class BuildSpecial extends BuildAction {
 			if (left.contains(type)) {
 				JComponent opt = UiFactory.createLabel(AgriImages.getBuildingIcon(type, ImgSize.BIG));
 				opt.setEnabled(canPurchase(player, type, null));
-				opts.add(opt);				
+				opts.add(opt);
 			} else {
 				opts.add(null);
 			}
@@ -163,7 +185,8 @@ public class BuildSpecial extends BuildAction {
 
 	private int chooseOpenStablesCost(Player player) {
 		List<JComponent> opts = new ArrayList<JComponent>();
-		for (Materials cost : OS_COSTS) {
+		for (int i = 0; i < OS_COSTS.length; i++) {
+			Materials cost = getBuildingCost(player, BuildingType.OPEN_STABLES, i);
 			JComponent opt = UiFactory.createResourcesPanel(cost, null, UiFactory.X_AXIS);
 			opt.setEnabled(player.canPay(cost));
 			opts.add(opt);
@@ -230,9 +253,9 @@ public class BuildSpecial extends BuildAction {
 		if (toBuild == BuildingType.OPEN_STABLES) {
 			osCostNo = UiFactory.NO_OPTION;
 			// TODO move logic to chooseOpenStablesCost
-			if (!player.canPay(OS_COSTS[0])) {
+			if (!player.canPay(getBuildingCost(player, toBuild, 0))) {
 				osCostNo = 1;
-			} else if (!player.canPay(OS_COSTS[1])) {
+			} else if (!player.canPay(getBuildingCost(player, toBuild, 1))) {
 				osCostNo = 0;
 			}
 			if (osCostNo == UiFactory.NO_OPTION) {

@@ -30,11 +30,11 @@ public abstract class BuildAction extends PurchaseAction {
 	abstract protected Building getBuildingInstance(BuildingType type);
 
 	public boolean canDo(Player player) {
-		return isAnyLeft() && (toBuild == null || player.canPurchase(toBuild, getCost(0), null));
+		return isAnyLeft() && (toBuild == null || player.canPurchase(toBuild, getCost(player, 0), null));
 	}
 
 	public boolean canDoOnFarm(Player player, DirPoint pos, int doneSoFar) {
-		return isAnyLeft() && toBuild != null && player.canPurchase(toBuild, getCost(doneSoFar), pos);
+		return isAnyLeft() && toBuild != null && player.canPurchase(toBuild, getCost(player, doneSoFar), pos);
 	}
 
 	public boolean canUndoOnFarm(Player player, DirPoint pos, int doneSoFar) {
@@ -44,7 +44,7 @@ public abstract class BuildAction extends PurchaseAction {
 	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos, int doneSoFar) {
 		if (canDoOnFarm(player, pos, doneSoFar)) {
 			Building b = getBuildingInstance(toBuild);
-			Materials cost = getCost(doneSoFar);
+			Materials cost = getCost(player, doneSoFar);
 			UndoableFarmEdit edit = new PurchaseBuilding(player, b, cost, pos);
 			player.purchase(b, cost, pos);
 			UndoableFarmEdit postEdit = postActivate(player, b);

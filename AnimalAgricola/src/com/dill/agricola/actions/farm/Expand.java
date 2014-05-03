@@ -52,7 +52,7 @@ public class Expand extends PurchaseAction {
 		return (hadExp || isAnyLeft()) ? 2 : 1; 
 	}
 
-	protected Materials getCost(int doneSoFar) {
+	protected Materials getCost(Player player, int doneSoFar) {
 		return COST;
 	}
 
@@ -65,7 +65,7 @@ public class Expand extends PurchaseAction {
 	}
 
 	public boolean canDoOnFarm(Player player, DirPoint pos, int doneSoFar) {
-		return doneSoFar == 1 && isAnyLeft() && player.canPurchase(thing, getCost(doneSoFar), pos);
+		return doneSoFar == 1 && isAnyLeft() && player.canPurchase(thing, getCost(player, doneSoFar), pos);
 	}
 
 	public boolean canUndoOnFarm(Player player, DirPoint pos, int doneSoFar) {

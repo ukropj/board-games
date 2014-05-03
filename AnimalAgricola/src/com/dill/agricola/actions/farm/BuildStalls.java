@@ -25,7 +25,7 @@ public class BuildStalls extends BuildAction {
 		return GeneralSupply.getLeft(Supplyable.STALL) > 0;
 	}
 	
-	protected Materials getCost(int doneSoFar) {
+	protected Materials getCost(Player player, int doneSoFar) {
 		return Stall.COST;
 	}
 	

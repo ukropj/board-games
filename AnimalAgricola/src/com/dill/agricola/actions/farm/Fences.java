@@ -1,6 +1,7 @@
 package com.dill.agricola.actions.farm;
 
 import com.dill.agricola.common.Materials;
+import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Material;
 import com.dill.agricola.model.types.Purchasable;
@@ -13,7 +14,7 @@ public class Fences extends PurchaseAction {
 		super(ActionType.FENCES, Purchasable.FENCE);
 	}
 
-	protected Materials getCost(int doneSoFar) {
+	protected Materials getCost(Player player, int doneSoFar) {
 		return COST;
 	}
 

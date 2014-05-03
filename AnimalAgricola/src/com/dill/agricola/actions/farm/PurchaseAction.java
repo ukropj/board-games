@@ -21,7 +21,7 @@ public abstract class PurchaseAction extends AbstractAction {
 		this.thing = thing;
 	}
 
-	abstract protected Materials getCost(int doneSoFar);
+	abstract protected Materials getCost(Player player, int doneSoFar);
 
 	protected boolean isAnyLeft() {
 		return true;
@@ -36,11 +36,11 @@ public abstract class PurchaseAction extends AbstractAction {
 	}
 
 	public boolean canDo(Player player) {
-		return isAnyLeft() && player.canPurchase(thing, getCost(0), null);
+		return isAnyLeft() && player.canPurchase(thing, getCost(player, 0), null);
 	}
 
 	public boolean canDoOnFarm(Player player, DirPoint pos, int doneSoFar) {
-		return isAnyLeft() && player.canPurchase(thing, getCost(doneSoFar), pos);
+		return isAnyLeft() && player.canPurchase(thing, getCost(player, doneSoFar), pos);
 	}
 
 	public boolean canUndoOnFarm(Player player, DirPoint pos, int doneSoFar) {
@@ -56,7 +56,7 @@ public abstract class PurchaseAction extends AbstractAction {
 
 	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos, int doneSoFar) {
 		if (canDoOnFarm(player, pos, doneSoFar)) {
-			Materials cost = getCost(doneSoFar);
+			Materials cost = getCost(player, doneSoFar);
 			UndoableFarmEdit edit = new PurchaseThing(player, new Materials(cost), new DirPoint(pos));
 			player.purchase(thing, cost, pos);
 			UndoableFarmEdit postEdit = postActivate();

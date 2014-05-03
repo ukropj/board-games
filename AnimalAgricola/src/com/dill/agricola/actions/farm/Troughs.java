@@ -6,7 +6,9 @@ import javax.swing.undo.CannotUndoException;
 import com.dill.agricola.GeneralSupply;
 import com.dill.agricola.GeneralSupply.Supplyable;
 import com.dill.agricola.common.Materials;
+import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
+import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Material;
 import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.undo.SimpleEdit;
@@ -26,8 +28,14 @@ public class Troughs extends PurchaseAction {
 		setChanged();  // to update available trough count
 	}
 
-	protected Materials getCost(int doneSoFar) {
-		return doneSoFar < 1 ? FIRST_COST : COST;
+	protected Materials getCost(Player player, int doneSoFar) {
+		Materials cost = doneSoFar < 1 ? FIRST_COST : COST;
+		
+		if (cost.get(Material.WOOD) > 0 && player.getFarm().hasBuilding(BuildingType.SAWMILL)) {
+			cost = new Materials(COST);
+			cost.substract(Material.WOOD, 1);
+		}
+		return cost;
 	}
 
 	protected boolean isAnyLeft() {
