@@ -25,7 +25,4 @@ public class StorageBuilding extends Building {
 		return ((float)material)/2;
 	}
 	
-	public String getShortName() {
-		return "Sg";
-	}
 }

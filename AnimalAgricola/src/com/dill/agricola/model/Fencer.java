@@ -84,6 +84,7 @@ public class Fencer {
 			}
 			Building b = farm.getBuilding(pos);
 			if (b!= null) {
+				b.setPosition(pos);
 				buildings.add(b);
 				if (b instanceof ExtraCapacityProvider) {
 					ecps.add((ExtraCapacityProvider)b);

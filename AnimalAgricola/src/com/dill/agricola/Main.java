@@ -25,7 +25,7 @@ public class Main {
 		};
 	};
 
-	public static boolean DEBUG = true;
+	public static boolean DEBUG = false;
 	public static boolean DEBUG_LANG = true;
 	public static boolean MORE_BUILDINGS = true; // TODO remove these flag when ready to release expansion
 	public static boolean EVEN_MORE_BUILDINGS = false;

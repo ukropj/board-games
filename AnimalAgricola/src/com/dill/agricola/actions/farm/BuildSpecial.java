@@ -31,8 +31,11 @@ import com.dill.agricola.model.buildings.more.FarmShop;
 import com.dill.agricola.model.buildings.more.FodderBeetFarm;
 import com.dill.agricola.model.buildings.more.HayRack;
 import com.dill.agricola.model.buildings.more.InseminationCenter;
+import com.dill.agricola.model.buildings.more.LargeExtension;
 import com.dill.agricola.model.buildings.more.LogHouse;
 import com.dill.agricola.model.buildings.more.PigStall;
+import com.dill.agricola.model.buildings.more.SmallExtension;
+import com.dill.agricola.model.buildings.more.Stud;
 import com.dill.agricola.model.buildings.more.WildBoarPen;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Animal;
@@ -65,8 +68,11 @@ public class BuildSpecial extends BuildAction {
 		COSTS.put(BuildingType.FODDER_BEET_FARM, FodderBeetFarm.COST);
 		COSTS.put(BuildingType.HAY_RACK, HayRack.COST);
 		COSTS.put(BuildingType.INSEMINATION_CENTER, InseminationCenter.COST);
+		COSTS.put(BuildingType.LARGE_EXTENSION, LargeExtension.COST);
 		COSTS.put(BuildingType.LOG_HOUSE, LogHouse.COST);
 		COSTS.put(BuildingType.PIG_STALL, PigStall.COST);
+		COSTS.put(BuildingType.SMALL_EXTENSION, SmallExtension.COST);
+		COSTS.put(BuildingType.STUD, Stud.COST);
 		COSTS.put(BuildingType.WILD_BOAR_PEN, WildBoarPen.COST);
 	}
 	private final Materials[] OS_COSTS = new Materials[] { OpenStables.COST_WOOD, OpenStables.COST_STONE };

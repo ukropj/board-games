@@ -22,8 +22,10 @@ public enum BuildingType {
 	OPEN_STABLES(0, Msg.get("openStables"), new BuildingText(Msg.get("immediately"), 0.14f, 0.535f, 0.37f)),
 	// more special buildings
 	BARN_MANUFACTURER(1, Msg.get("barnManufacturer"), new BuildingText(Msg.get("immediately"), 0.13f, 0.56f, 0.38f)),
+	BREEDING_STATION(1, Msg.get("breedingStation"), new BuildingText(Msg.get("breedingStationText"), 0.13f, 0.52f, 0.72f)),
 	COW_STALL(1, Msg.get("cowStall"), new BuildingText(Msg.get("immediately"), 0.4f, 0.5f, 0.4f),
 			new BuildingText(Msg.get("cowStallText"), 0.33f, 0.78f, 0.11f)),
+	DOG_HOUSE(1, Msg.get("dogHouse"), new BuildingText(Msg.get("dogHouseText"), 0.13f, 0.52f, 0.74f)),
 	DUCK_POND(1, Msg.get("duckPond"), new BuildingText(Msg.get("immediately"), 0.13f, 0.51f, 0.37f),
 			new BuildingText(Msg.get("duckPondText"), 0.30f, 0.18f, 0.6f)),
 	FARM_SHOP(1, Msg.get("farmShop"), new BuildingText(Msg.get("immediately"), 0.33f, 0.49f, 0.4f),
@@ -32,12 +34,14 @@ public enum BuildingType {
 			new BuildingText(Msg.get("haveOfEach"), 0.1f, 0.18f, 0.78f)),
 	HAY_RACK(1, Msg.get("hayRack"), new BuildingText(Msg.get("immediately"), 0.33f, 0.51f, 0.4f)),
 	INSEMINATION_CENTER(1, Msg.get("inseminationCenter"), new BuildingText(Msg.get("inseminationCenterText"), 0.13f, 0.52f, 0.74f)),
+	LARGE_EXTENSION(1, Msg.get("largeExtension"), new BuildingText(Msg.get("perAdjacentBuilding"), 0.34f, 0.5f, 0.55f)),
 	LOG_HOUSE(1, Msg.get("logHouse"), new BuildingText(Msg.get("logHouseText"), 0.35f, 0.5f, 0.46f)),
 	PIG_STALL(1, Msg.get("pigStall"), new BuildingText(Msg.get("immediately"), 0.4f, 0.5f, 0.4f),
 			new BuildingText(Msg.get("pigStallText"), 0.33f, 0.78f, 0.11f)),
-	BREEDING_STATION(1, Msg.get("breedingStation"), new BuildingText(Msg.get("breedingStationText"), 0.13f, 0.52f, 0.72f)),
-	DOG_HOUSE(1, Msg.get("dogHouse"), new BuildingText(Msg.get("dogHouseText"), 0.13f, 0.52f, 0.72f)),
-	WILD_BOAR_PEN(1, Msg.get("wildBoarPen"), new BuildingText(Msg.get("wildBoarPenText"), 0.13f, 0.52f, 0.74f));
+			SMALL_EXTENSION(1, Msg.get("smallExtension"), new BuildingText(Msg.get("perAdjacentBuilding"), 0.34f, 0.5f, 0.55f)),
+			STUD(1, Msg.get("stud"), new BuildingText(Msg.get("studText"), 0.12f, 0.52f, 0.76f)),
+	WILD_BOAR_PEN(1, Msg.get("wildBoarPen"), new BuildingText(Msg.get("wildBoarPenText"), 0.13f, 0.52f, 0.74f)),;
+
 
 	public final static List<BuildingType> SPECIAL_BUILDINGS_TYPES =
 			Collections.unmodifiableList(
@@ -53,7 +57,9 @@ public enum BuildingType {
 							BuildingType.COW_STALL, BuildingType.DUCK_POND,
 							BuildingType.FARM_SHOP, BuildingType.FODDER_BEET_FARM,
 							BuildingType.HAY_RACK, BuildingType.INSEMINATION_CENTER,
+							BuildingType.LARGE_EXTENSION,
 							BuildingType.LOG_HOUSE, BuildingType.PIG_STALL,
+							BuildingType.SMALL_EXTENSION, BuildingType.STUD,
 							BuildingType.WILD_BOAR_PEN }));
 
 	public final static List<BuildingType> EVEN_MORE_SPECIAL_BUILDINGS_TYPES =

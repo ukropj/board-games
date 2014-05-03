@@ -5,6 +5,7 @@ import java.util.Set;
 
 import com.dill.agricola.Main;
 import com.dill.agricola.common.Animals;
+import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
@@ -21,6 +22,7 @@ public abstract class Building extends Space {
 
 	protected Space buildSpace = null;
 	protected Materials paidCost; // actual cost payed for this building instance
+	protected DirPoint buildPos;
 
 	public Building(BuildingType type, int vp, int cap) {
 		this(type, vp, cap, null, null, null);
@@ -147,6 +149,10 @@ public abstract class Building extends Space {
 			return intermediary;
 		}
 		return null;
+	}
+	
+	public void setPosition(DirPoint pos) {
+		this.buildPos = pos;
 	}
 
 	public String toString() {

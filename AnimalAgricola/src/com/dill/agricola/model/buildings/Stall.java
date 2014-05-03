@@ -19,9 +19,5 @@ public class Stall extends Building implements MultiImaged {
 	public int getId() {
 		return id;
 	}
-
-	public String getShortName() {
-		return "Sl";
-	}
 	
 }

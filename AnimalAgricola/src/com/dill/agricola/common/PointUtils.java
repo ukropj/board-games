@@ -32,6 +32,12 @@ public class PointUtils {
 		}
 		return ret;
 	}
+	
+	public static boolean isNextTo(DirPoint pos1, DirPoint pos2) {
+		int dx = Math.abs(pos1.x - pos2.x);
+		int dy = Math.abs(pos1.y - pos2.y);
+		return dx + dy == 1;
+	}
 
 	public static List<DirPoint> createGridRange(int minX, int maxX, int minY, int maxY) {
 		List<DirPoint> range = new ArrayList<DirPoint>();

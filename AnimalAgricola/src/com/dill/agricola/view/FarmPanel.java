@@ -234,6 +234,7 @@ public class FarmPanel extends JPanel {
 		cancelBtn.setActionCommand(ActionCommand.CANCEL.toString());
 		cancelBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				e.setSource(player.getColor());
 				if (ap.hasAction()) {
 					submitListener.actionPerformed(e);
 				}
