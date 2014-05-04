@@ -83,10 +83,26 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		}
 	}
 
-	public boolean canDoFarmAction(DirPoint pos) {
+	public boolean canDoOrUndoFarmAction(DirPoint pos) {
 		return action.canDoOnFarm(player, pos, count) || action.canUndoOnFarm(player, pos, count);
 	}
+	
+	public boolean canDoFarmAction(DirPoint pos) {
+		return action.canDoOnFarm(player, pos, count);
+	}
+	
+	public boolean canUndoFarmAction(DirPoint pos) {
+		return action.canUndoOnFarm(player, pos, count);
+	}
 
+	public boolean doOrUndoFarmAction(DirPoint pos, Purchasable thing) {
+		boolean done = doFarmAction(pos, thing);
+		if (!done) {
+			done = undoFarmAction(pos, thing);
+		}
+		return done;
+	}
+	
 	public boolean doFarmAction(DirPoint pos, Purchasable thing) {
 		checkState();
 		if (action.canDoOnFarm(player, pos, count)) {
@@ -101,10 +117,17 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 				return true;
 			}
 		}
-		if (undoFarmAction(player, pos, thing)) {
-			count--;
-			setChanged();
-			return true;
+		return false;
+	}
+	
+	public boolean undoFarmAction(DirPoint pos, Purchasable thing) {
+		checkState();
+		if (action.canUndoOnFarm(player, pos, count)) {
+			if (undoFarmAction(player, pos, thing)) {
+				count--;
+				setChanged();
+				return true;
+			}
 		}
 		return false;
 	}

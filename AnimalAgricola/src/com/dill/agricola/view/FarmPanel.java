@@ -11,6 +11,7 @@ import java.awt.Insets;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -59,6 +60,13 @@ import com.dill.agricola.view.utils.AgriImages.ImgSize;
 import com.dill.agricola.view.utils.UiFactory;
 
 public class FarmPanel extends JPanel {
+
+	private static enum PurchasableState {
+		CAN_DO,
+		CAN_UNDO,
+		NA
+	}
+
 	private static final long serialVersionUID = 1L;
 
 	public final static Color RED = new Color(154, 0, 25);
@@ -121,8 +129,10 @@ public class FarmPanel extends JPanel {
 			new int[] { 7 * M, 4 * M, 2 * M, 4 * M, 7 * M },
 			5);
 	private final static Rectangle buildingRect = new Rectangle(M, M, L, L);
+	private final static Rectangle buildingOffRect = new Rectangle(M, M, L / 3, L / 3);
 	//	private final static Area buildingSansAnimalRect = subtract(new Area(buildingRect), animalArea);
-	private final static Rectangle extRect = new Rectangle(M, Y1 + M, L, 3 * S - 2 * M);
+	private final static Rectangle extRect = new Rectangle(M, M, L, 3 * S - 2 * M);
+	private final static Rectangle extOffRect = new Rectangle(M, M, L / 3, L / 3);
 	private final static Map<Dir, Rectangle> fenceRects = new EnumMap<Dir, Rectangle>(Dir.class) {
 		private static final long serialVersionUID = 1L;
 		{
@@ -143,6 +153,13 @@ public class FarmPanel extends JPanel {
 			}
 		}
 	};
+	private final static int R = M/2;
+	
+	private final static Polygon removeShape = new Polygon(
+			new int[] { -2 * R, -R, 0, R, 2 * R, R, 2 * R, R, 0, -R, -2 * R, -R },
+			new int[] { -R, -2 * R, -R, -2 * R, -R, 0, R, 2 * R, R, 2 * R, R, 0 },
+			12);
+	private final static Area removeBack = new Area(new Ellipse2D.Float(-4*R, -4*R, 8*R, 8*R));
 
 	public final static Stroke NORMAL_STROKE = new BasicStroke();
 	public final static Stroke THICK_STROKE = new BasicStroke(2.0f);
@@ -319,7 +336,7 @@ public class FarmPanel extends JPanel {
 
 			if (ap.hasAction() && !ap.isFinished()) {
 				cancelBtn.setVisible(true);
-				cancelBtn.setEnabled(true);				
+				cancelBtn.setEnabled(true);
 			}
 			if (player.hasLooseAnimals()) {
 				int n = farm.getLooseAnimals().size();
@@ -369,6 +386,10 @@ public class FarmPanel extends JPanel {
 		area.subtract(subtractor);
 		return area;
 	}*/
+
+	private DirPoint rectCenter(Rectangle r) {
+		return new DirPoint(r.x + r.width / 2, r.y + r.height / 2);
+	}
 
 	private static DirPoint toRealPos(DirPoint farmPos) {
 		return new DirPoint(X1 + S * farmPos.x, Y1 + S * farmPos.y);
@@ -425,6 +446,12 @@ public class FarmPanel extends JPanel {
 		for (DirPoint pos : grid) {
 			drawSpace(g, pos, farm.getSpace(pos));
 		}
+		// fences
+		for (DirPoint pos : grid) {
+			for (Dir d : Dir.values()) {
+				drawFence(g, new DirPoint(pos, d));
+			}
+		}
 
 		// loose animals
 		drawLooseAnimals(g);
@@ -435,6 +462,17 @@ public class FarmPanel extends JPanel {
 		drawPad(g);
 
 //		paintChildren(g);
+	}
+
+	private void drawRemoveShape(Graphics2D g, DirPoint pos) {
+		AffineTransform tr = AffineTransform.getTranslateInstance(pos.x, pos.y);
+		Shape back = tr.createTransformedShape(removeBack);
+		Shape front = tr.createTransformedShape(removeShape);
+		
+		g.setColor(UiFactory.makeTranslucent(player.getColor().getRealColor(), 150));
+		g.fill(back);
+		g.setColor(Color.BLACK);
+		g.fill(front);
 	}
 
 	private void drawPad(Graphics2D g) {
@@ -481,12 +519,20 @@ public class FarmPanel extends JPanel {
 		g.drawImage(img, X1 + S * farm.getWidth(), 0, S / 2, H, null);
 
 		for (DirPoint pos : PointUtils.createGridRange(-1, farm.getWidth() + 1, 0, 1)) {
-			if (isActive(pos, Purchasable.EXTENSION)) {
+			switch (getState(pos, Purchasable.EXTENSION)) {
+			case CAN_DO:
 				g.setColor(UiFactory.makeTranslucent(player.getColor().getRealColor(), 140));
-				Rectangle r = extRect;
-				r.translate(X1 + pos.x * S, 0);
-				g.fill(r);
-				r.translate(-(X1 + pos.x * S), 0);
+				extRect.translate(X1 + pos.x * S, Y1);
+				g.fill(extRect);
+				extRect.translate(-(X1 + pos.x * S), -Y1);
+				break;
+			case CAN_UNDO:
+				Rectangle r = extOffRect.getBounds();
+				r.translate(X1 + pos.x * S, Y1);
+				drawRemoveShape(g, rectCenter(r));
+				break;
+			default:
+				break;
 			}
 		}
 	}
@@ -496,11 +542,6 @@ public class FarmPanel extends JPanel {
 
 		// building
 		drawBuilding(g, pos, space, farm.getBuilding(pos), availableAnimals);
-
-		// fences
-		for (Dir d : Dir.values()) {
-			drawFence(g, new DirPoint(pos, d));
-		}
 
 		// trough
 		drawTrough(g, pos, space);
@@ -523,7 +564,7 @@ public class FarmPanel extends JPanel {
 				List<Animal> pastureTypes = new ArrayList<Animal>(space.getAnimalTypesPerPasture());
 				if (pastureTypes.size() == 1) {
 					type = pastureTypes.get(0);
-				}				
+				}
 			}
 		}
 		int count = space.getAnimals();
@@ -590,11 +631,20 @@ public class FarmPanel extends JPanel {
 			g.drawImage(img, realPos.x + S - 6 * M, realPos.y + 2 * M + 2, img.getWidth(), img.getHeight(), null);
 		}
 
-		if (isActive(pos, Purchasable.TROUGH)) {
+		switch (getState(pos, Purchasable.TROUGH)) {
+		case CAN_DO:
 			troughShape.translate(realPos.x, realPos.y);
 			g.setColor(UiFactory.makeTranslucent(player.getColor().getRealColor(), 140));
 			g.fill(troughShape);
 			troughShape.translate(-realPos.x, -realPos.y);
+			break;
+		case CAN_UNDO:
+			Rectangle r = troughShape.getBounds();
+			r.translate(realPos.x, realPos.y + M / 2);
+			drawRemoveShape(g, rectCenter(r));
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -647,11 +697,19 @@ public class FarmPanel extends JPanel {
 			}
 		}
 
-		if (isActive(pos, Purchasable.BUILDING)) {
+		switch (getState(pos, Purchasable.BUILDING)) {
+		case CAN_DO:
 			g.setColor(UiFactory.makeTranslucent(player.getColor().getRealColor(), 120));
 			g.fill(r);
+			break;
+		case CAN_UNDO:
+			buildingOffRect.translate(realPos.x, realPos.y);
+			drawRemoveShape(g, rectCenter(buildingOffRect));
+			buildingOffRect.translate(-realPos.x, -realPos.y);
+			break;
+		default:
+			break;
 		}
-
 	}
 
 	private void drawFence(Graphics2D g, DirPoint dirPos) {
@@ -670,14 +728,29 @@ public class FarmPanel extends JPanel {
 			g.drawImage(img, r.x, r.y, r.width, r.height, null);
 		}
 
-		if (isActive(dirPos, Purchasable.FENCE)) {
+		switch (getState(dirPos, Purchasable.FENCE)) {
+		case CAN_DO:
 			g.setColor(UiFactory.makeTranslucent(player.getColor().getRealColor(), 130));
 			g.fill(r);
+			break;
+		case CAN_UNDO:
+			drawRemoveShape(g, rectCenter(r));
+			break;
+		default:
+			break;
 		}
 	}
 
-	private boolean isActive(DirPoint pos, Purchasable type) {
-		return active && farm.getActiveType() == type && ap.canDoFarmAction(pos);
+	private PurchasableState getState(DirPoint pos, Purchasable type) {
+		if (active && farm.getActiveType() == type) {
+			if (ap.canDoFarmAction(pos)) {
+				return PurchasableState.CAN_DO;
+			}
+			if (ap.canUndoFarmAction(pos)) {
+				return PurchasableState.CAN_UNDO;
+			}
+		}
+		return PurchasableState.NA;
 	}
 
 	private void drawLooseAnimals(Graphics2D g) {
@@ -809,16 +882,16 @@ public class FarmPanel extends JPanel {
 				case EXTENSION:
 					Dir extDir = null;
 					if (pos.x < 0 ||
-							(pos.x == 0 &&
+							(pos.x == 0 && extOffRect.contains(relativeDirPoint) &&
 							farm.isActiveSpot(new DirPoint(0, 0), Purchasable.EXTENSION))) {
 						extDir = Dir.W;
 					} else if (pos.x >= farm.getWidth() ||
-							(pos.x == farm.getWidth() - 1 &&
+							(pos.x == farm.getWidth() - 1 && extOffRect.contains(relativeDirPoint) &&
 							farm.isActiveSpot(new DirPoint(farm.getWidth() - 1, 0), Purchasable.EXTENSION))) {
 						extDir = Dir.E;
 					}
 					if (extDir != null) {
-						done = ap.doFarmAction(new DirPoint(pos.x, 0), Purchasable.EXTENSION);
+						done = ap.doOrUndoFarmAction(new DirPoint(pos.x, 0), Purchasable.EXTENSION);
 						changeType = ChangeType.FARM_RESIZE;
 					}
 					break;
@@ -836,19 +909,22 @@ public class FarmPanel extends JPanel {
 							// normalize to N/W
 							fencePoint = PointUtils.getNext(fencePoint);
 						}
-						done = ap.doFarmAction(fencePoint, Purchasable.FENCE);
+						done = ap.doOrUndoFarmAction(fencePoint, Purchasable.FENCE);
 					}
 					break;
 				case TROUGH:
 					if (troughShape.contains(relativeDirPoint)) {
-						done = ap.doFarmAction(pos, Purchasable.TROUGH);
+						done = ap.doOrUndoFarmAction(pos, Purchasable.TROUGH);
 					}
 					break;
 				case BUILDING:
-					if (buildingRect.contains(relativeDirPoint)) {
+					if (ap.canUndoFarmAction(pos) && buildingOffRect.contains(relativeDirPoint)) {
+						done = ap.undoFarmAction(pos, Purchasable.BUILDING);
+					} else if (buildingRect.contains(relativeDirPoint)) {
 						availableAnimals = farm.guessAnimalTypesToPut(pos, true);
 						if (!animalArea.contains(relativeDirPoint) // not clicked in animal area OR
-								|| ((availableAnimals.size() == 0 && leftClick) || (farm.getAnimals(pos) == 0 && !leftClick))) {// no animals available AND no animals present
+								// no animals available OR no animals present
+								|| ((availableAnimals.size() == 0 && leftClick) || (farm.getAnimals(pos) == 0 && !leftClick))) {
 							done = ap.doFarmAction(pos, Purchasable.BUILDING);
 						}
 					}

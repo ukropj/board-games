@@ -240,13 +240,6 @@ public class Board extends JFrame {
 			debugPanel.setCurrentPlayer(currentPlayer.getColor());
 		}
 	}
-
-//	public void startBreeding() {
-//		playerBoards[0].setActive(true, true);
-//		playerBoards[1].setActive(true, true);
-//		updateState(-1, null);
-//		actionBoard.disableActions();
-//	}
 	
 	public void startBreeding(Player breedingPlayer) {
 		playerBoards[breedingPlayer.getColor().ordinal()].setActive(true, true);
