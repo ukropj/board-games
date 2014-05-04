@@ -29,8 +29,8 @@ public class AgriImages {
 	private final static BufferedImage[] farmsAndMargins = new BufferedImage[4];
 	private final static BufferedImage[] workers = new BufferedImage[PlayerColor.values().length + 1];
 	private static BufferedImage[] cottages = new BufferedImage[PlayerColor.values().length];
-	private static BufferedImage[] stallsAndStables = new BufferedImage[8];
-	private static BufferedImage[] exts = new BufferedImage[4];
+	private static BufferedImage[] stallsAndStables = new BufferedImage[10];
+	private static BufferedImage[] exts = new BufferedImage[5];
 	private static BufferedImage[] pads = new BufferedImage[3];
 
 	private final static BufferedImage[] arrowsMedium = new BufferedImage[Dir.values().length];
@@ -238,7 +238,7 @@ public class AgriImages {
 	}
 
 	public static BufferedImage getStableImage(int id) {
-		int arrId = id + 4;
+		int arrId = id + stallsAndStables.length / 2;
 		if (stallsAndStables[arrId] == null) {
 			stallsAndStables[arrId] = Images.createImage("b_stables" + (id + 1));
 		}
