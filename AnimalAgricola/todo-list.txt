@@ -8,7 +8,6 @@
 
 	when removing free walls/troughs, returned cost depends on build cost
 	extra capacity providers should stack
-	cannot undo left extension (pos shifts from -1 to 0)
 
 #Nice to have#
 
