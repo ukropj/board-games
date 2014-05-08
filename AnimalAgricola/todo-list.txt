@@ -3,6 +3,7 @@
 	highlight current action
 	more buildings big and small
 	refactor actions to atomic actions
+	nicer flags (search online)
 	
 #Bugs#
 
@@ -14,7 +15,6 @@
 	sk localization
 	single player
 	farm cursors
-	actual single animals instead of count
 	condensed layout (p1+p2 on tabs)
 	stats
 	logging

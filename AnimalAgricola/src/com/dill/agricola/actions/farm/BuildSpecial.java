@@ -1,6 +1,5 @@
 package com.dill.agricola.actions.farm;
 
-import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -14,8 +13,6 @@ import javax.swing.undo.CannotUndoException;
 import com.dill.agricola.GeneralSupply;
 import com.dill.agricola.GeneralSupply.Supplyable;
 import com.dill.agricola.actions.Action;
-import com.dill.agricola.actions.extra.OneFreeTrough;
-import com.dill.agricola.common.Animals;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Building;
@@ -199,45 +196,6 @@ public class BuildSpecial extends BuildAction {
 		return UiFactory.showOptionDialog(null, Msg.get("chooseCost"), Msg.get("openStables"), icon, opts, 0);
 	}
 
-	private Materials chooseMaterialReward(Building building) {
-		Materials[] materialRewards = building.getMaterialRewards();
-		if (materialRewards == null) {
-			return null;
-		}
-		if (materialRewards.length == 1) {
-			return materialRewards[0];
-		}
-		List<JComponent> opts = new ArrayList<JComponent>();
-		for (int i = 0; i < materialRewards.length; i++) {
-			JComponent opt = UiFactory.createResourcesPanel(materialRewards[i], null, UiFactory.X_AXIS);
-			opt.setPreferredSize(new Dimension(40, 30));
-			opts.add(opt);
-		}
-		Icon icon = AgriImages.getBuildingIcon(building.getType(), ImgSize.MEDIUM);
-		int result = UiFactory.showOptionDialog(null, Msg.get("chooseMaterial"), building.getType().name, icon, opts, 0);
-		return result != UiFactory.NO_OPTION ? materialRewards[result] : materialRewards[0];
-	}
-
-	private Animals chooseAnimalReward(Building building) {
-		// TODO refactor
-		Animals[] animalRewards = building.getAnimalRewards();
-		if (animalRewards == null) {
-			return null;
-		}
-		if (animalRewards.length == 1) {
-			return animalRewards[0];
-		}
-		List<JComponent> opts = new ArrayList<JComponent>();
-		for (int i = 0; i < animalRewards.length; i++) {
-			JComponent opt = UiFactory.createResourcesPanel(null, animalRewards[i], UiFactory.X_AXIS);
-			opt.setPreferredSize(new Dimension(40, 30));
-			opts.add(opt);
-		}
-		Icon icon = AgriImages.getBuildingIcon(building.getType(), ImgSize.MEDIUM);
-		int result = UiFactory.showOptionDialog(null, Msg.get("chooseAnimal"), building.getType().name, icon, opts, 0);
-		return result != UiFactory.NO_OPTION ? animalRewards[result] : animalRewards[0];
-	}
-
 	public boolean isCancelled() {
 		return toBuild == null;
 	}
@@ -275,50 +233,24 @@ public class BuildSpecial extends BuildAction {
 
 	protected UndoableFarmEdit postActivate(Player player, Building b) {
 		GeneralSupply.useBuilding(toBuild, true);
-
-		Materials materialReward = chooseMaterialReward(b);
-		Animals animalReward = chooseAnimalReward(b);
-		if (materialReward != null) {
-			player.addMaterial(materialReward);
-		}
-		if (animalReward != null) {
-			player.purchaseAnimals(animalReward);
-		}
-		return new UseBuilding(toBuild, player, materialReward, animalReward);
+		return new UseBuilding(toBuild);
 	}
 
 	public Action getSubAction() {
-		switch (toBuild) {
-		case FEED_STOREHOUSE:
-			return new OneFreeTrough();
-		default:
-			return null;
-		}
+		return toBuild != null ? getBuildingInstance(toBuild).getSubAction() : null;
 	}
 
 	protected class UseBuilding extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
 
 		private final BuildingType built;
-		private final Player player;
-		private final Materials takenMaterials;
-		private final Animals takenAnimals;
 
-		public UseBuilding(BuildingType built, Player player, Materials materials, Animals animals) {
+		public UseBuilding(BuildingType built) {
 			this.built = built;
-			this.player = player;
-			this.takenMaterials = materials;
-			this.takenAnimals = animals;
 		}
 
 		public void undo() throws CannotUndoException {
 			super.undo();
-			if (takenMaterials != null) {
-				player.removeMaterial(takenMaterials);
-			}
-			if (takenAnimals != null) {
-				player.unpurchaseAnimals(takenAnimals);
-			}
 			GeneralSupply.useBuilding(built, false);
 			setChanged();
 		}
@@ -326,17 +258,8 @@ public class BuildSpecial extends BuildAction {
 		public void redo() throws CannotRedoException {
 			super.redo();
 			GeneralSupply.useBuilding(built, true);
-			if (takenMaterials != null) {
-				player.addMaterial(takenMaterials);
-			}
-			if (takenAnimals != null) {
-				player.purchaseAnimals(takenAnimals);
-			}
 			setChanged();
 		}
 
-		public boolean isAnimalEdit() {
-			return takenAnimals != null && takenAnimals.size() > 0;
-		}
 	}
 }

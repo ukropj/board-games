@@ -21,6 +21,7 @@ public enum ActionType {
 	COW_AND_PIGS("cowPigs"),
 	HORSE_AND_SHEEP("horseSheep"),
 	//
+	BUILDING_REWARD("buildReward"),
 	ONE_FREE_TROUGH();
 	
 	public final String desc;

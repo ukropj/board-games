@@ -1,7 +1,5 @@
 package com.dill.agricola.actions;
 
-import javax.swing.undo.UndoableEdit;
-
 import com.dill.agricola.common.Animals;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
@@ -16,7 +14,7 @@ public interface Action {
 
 	void reset();
 
-	UndoableEdit init();
+	UndoableFarmEdit init();
 
 	void setUsed(PlayerColor playerColor);
 

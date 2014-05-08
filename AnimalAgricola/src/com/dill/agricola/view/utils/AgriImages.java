@@ -21,8 +21,8 @@ import com.dill.agricola.support.Msg;
 public class AgriImages {
 
 	private final static BufferedImage[] buildings = new BufferedImage[BuildingType.values().length];
-	private final static BufferedImage[] animals = new BufferedImage[ImgSize.values().length * Animal.values().length];
-	private final static BufferedImage[] materials = new BufferedImage[Material.values().length];
+	private final static BufferedImage[] animals = new BufferedImage[ImgSize.values().length * (Animal.values().length + 1)];
+	private final static BufferedImage[] materials = new BufferedImage[Material.values().length + 1];
 	private final static BufferedImage[] fences = new BufferedImage[Dir.values().length];
 	private final static BufferedImage[] troughs = new BufferedImage[ImgSize.values().length];
 	private final static BufferedImage[] firstTokens = new BufferedImage[ImgSize.values().length * PlayerColor.values().length];
@@ -147,10 +147,10 @@ public class AgriImages {
 	}
 
 	public static BufferedImage getAnimalImage(Animal type, ImgSize size) {
-		int index = type.ordinal() + size.ordinal() * Animal.values().length;
+		int index = (type != null ? type.ordinal() : Animal.values().length) + size.ordinal() * (Animal.values().length + 1);
 		float[] ratios = new float[] { 0.25f, 0.3f, 0.5f };
 		if (animals[index] == null) {
-			BufferedImage img = Images.createImage("a_" + type.toString().toLowerCase() + (size != ImgSize.BIG ? "" : "1"));
+			BufferedImage img = Images.createImage("a_" + (type != null ? type.toString().toLowerCase() : "all") + (size != ImgSize.BIG ? "" : "1"));
 			img = Images.getBestScaledInstance(img, ratios[size.ordinal()]);
 			animals[index] = img;
 		}
@@ -166,13 +166,14 @@ public class AgriImages {
 	}
 
 	public static BufferedImage getMaterialImage(Material type) {
-		if (materials[type.ordinal()] == null) {
-			BufferedImage img = Images.createImage("m_" + type.toString().toLowerCase());
+		int index = type != null ? type.ordinal() : Material.values().length;
+		if (materials[index] == null) {
+			BufferedImage img = Images.createImage("m_" + (type != null ? type.toString().toLowerCase() : "all"));
 			img = Images.getBestScaledInstance(img, 0.4f);
-			materials[type.ordinal()] = img;
+			materials[index] = img;
 			return img;
 		}
-		return materials[type.ordinal()];
+		return materials[index];
 	}
 
 	public static ImageIcon getMaterialIcon(Material type) {

@@ -3,7 +3,7 @@ package com.dill.agricola.actions.simple;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Animal;
 
-public class PigSheep extends AnimalAction {
+public class PigSheep extends AnimalRefillAction {
 
 	public static final Animal FIRST_ANIMAL = Animal.PIG;
 	public static final Animal OTHER_ANIMAL = Animal.SHEEP;

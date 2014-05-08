@@ -12,7 +12,7 @@ import com.dill.agricola.model.types.Material;
 import com.dill.agricola.undo.SimpleEdit;
 import com.dill.agricola.undo.UndoableFarmEdit;
 
-public class Millpond extends AnimalAction {
+public class Millpond extends AnimalRefillAction {
 
 	public static final Materials REFILL = new Materials(Material.REED, 1);
 

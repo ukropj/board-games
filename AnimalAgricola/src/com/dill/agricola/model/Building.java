@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import com.dill.agricola.Main;
-import com.dill.agricola.common.Animals;
+import com.dill.agricola.actions.Action;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.types.Animal;
@@ -17,32 +17,30 @@ public abstract class Building extends Space {
 	private final int cap;
 	private final int vp;
 	private final Animal reqiredAnimal;
-	private final Animals[] arewards;
-	private final Materials[] mrewards;
+	private final Action subAction;
 
 	protected Space buildSpace = null;
 	protected Materials paidCost; // actual cost payed for this building instance
 	protected DirPoint buildPos;
 
 	public Building(BuildingType type, int vp, int cap) {
-		this(type, vp, cap, null, null, null);
+		this(type, vp, cap, null, null);
 	}
 
 	public Building(BuildingType type, int vp, int cap, Animal reqiredAnimal) {
-		this(type, vp, cap, reqiredAnimal, null, null);
+		this(type, vp, cap, reqiredAnimal, null);
 	}
-
-	public Building(BuildingType type, int vp, int cap, Animals[] arewards, Materials[] mrewards) {
-		this(type, vp, cap, null, arewards, mrewards);
+	
+	public Building(BuildingType type, int vp, int cap, Action subAction) {
+		this(type, vp, cap, null, subAction);
 	}
-
-	public Building(BuildingType type, int vp, int cap, Animal reqiredAnimal, Animals[] arewards, Materials[] mrewards) {
+	
+	public Building(BuildingType type, int vp, int cap, Animal reqiredAnimal, Action subAction) {
 		this.type = type;
 		this.vp = vp;
 		this.cap = cap;
 		this.reqiredAnimal = reqiredAnimal;
-		this.arewards = arewards;
-		this.mrewards = mrewards;
+		this.subAction = subAction;
 	}
 
 	public BuildingType getType() {
@@ -72,13 +70,9 @@ public abstract class Building extends Space {
 			return Collections.emptySet();
 		}
 	}
-
-	public Animals[] getAnimalRewards() {
-		return arewards;
-	}
-
-	public Materials[] getMaterialRewards() {
-		return mrewards;
+	
+	public Action getSubAction() {
+		return subAction;
 	}
 
 	public boolean isAlwaysEnclosed() {

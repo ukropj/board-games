@@ -13,7 +13,7 @@ import com.dill.agricola.support.Namer;
 import com.dill.agricola.undo.SimpleEdit;
 import com.dill.agricola.undo.UndoableFarmEdit;
 
-public class StartOneWood extends RefillAction {
+public class StartOneWood extends MaterialRefillAction {
 
 	public final static Materials REFILL = new Materials(Material.WOOD, 1);
 	

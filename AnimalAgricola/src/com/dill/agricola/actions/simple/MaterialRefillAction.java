@@ -11,13 +11,13 @@ import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.undo.SimpleEdit;
 import com.dill.agricola.undo.UndoableFarmEdit;
 
-public abstract class RefillAction extends AbstractAction {
+public abstract class MaterialRefillAction extends AbstractAction {
 
 	protected final Materials refill;
 
 	protected final Materials materials = new Materials();
 
-	public RefillAction(ActionType type, Materials refill) {
+	public MaterialRefillAction(ActionType type, Materials refill) {
 		super(type);
 		this.refill = refill;
 	}
