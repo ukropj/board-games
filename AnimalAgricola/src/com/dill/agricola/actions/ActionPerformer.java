@@ -91,6 +91,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 	private boolean startSubAction(Action subAction) {
 		this.subAction = subAction;
 		this.subCount = 0;
+		subAction.addChangeListener(new SubActionStateChangeListener());
 
 		boolean canDo = subAction.canDo(player);
 		UndoableFarmEdit edit = null;
@@ -101,8 +102,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 				return false;
 			}
 
-//			beginUpdate(player.getColor(), subAction.getType()); // start "action edit"
-			postEdit(new StartSubAction(player, subAction));
+			postEdit(new StartSubAction(player));
 
 			if (edit != null) {
 				subCount++;
@@ -210,30 +210,14 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 
 	public boolean finishSubAction() {
 		if (canSubFinish()) {
-//			postEdit(new EndAction());
 			player.getFarm().setActiveSubType(null);
+			subAction.removeChangeListeners();
 			subAction = null;
 			player.notifyObservers(ChangeType.ACTION_DONE);
 			return true;
 		}
 		return false;
 	}
-
-	/*private boolean canFinishSub() {
-		return subAction != null && player != null
-				&& subCount >= subAction.getMinimalCount() && player.validate();
-	}
-
-	private boolean finishSubAction() {
-		if (canFinishSub()) {
-			postEdit(new EndAction());
-			player.setActiveType(null);
-			subAction = null;
-			player.notifyObservers(ChangeType.ACTION_DONE);
-			return true;
-		}
-		return false;
-	}*/
 
 	public boolean isFinished() {
 		return action == null;
@@ -271,13 +255,10 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		private static final long serialVersionUID = 1L;
 
 		private final Player p;
-		@SuppressWarnings("unused")
-		private final Action a;
 
-		public StartSubAction(Player player, Action action) {
+		public StartSubAction(Player player) {
 			super(true);
 			this.p = player;
-			this.a = action;
 		}
 
 		public void undo() throws CannotUndoException {
@@ -303,6 +284,14 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 			super.redo();
 		}
 
+	}
+	
+	private class SubActionStateChangeListener implements ActionStateChangeListener {
+		public void stateChanges(Action subAction) {
+			if (action != null) {
+				action.setChanged();				
+			}
+		}
 	}
 
 }

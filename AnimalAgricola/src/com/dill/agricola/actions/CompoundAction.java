@@ -15,6 +15,9 @@ public class CompoundAction extends AbstractAction {
 	public CompoundAction(Action... actions) {
 		super(null);
 		this.actions = Arrays.asList(actions);
+		for (Action a : actions) {
+			a.addChangeListener(new CompoundActionStateChangeListener());
+		}
 	}
 
 	public void reset() {
@@ -28,7 +31,7 @@ public class CompoundAction extends AbstractAction {
 		for (Action a : actions) {
 			UndoableFarmEdit e = a.init();
 			if (e != null) {
-				edits.add(e);				
+				edits.add(e);
 			}
 		}
 		return !edits.isEmpty() ? joinEdits(edits) : null;
@@ -37,7 +40,7 @@ public class CompoundAction extends AbstractAction {
 	public int getMinimalCount() {
 		return 1;
 	}
-	
+
 	public boolean canDo(Player player) {
 		for (Action a : actions) {
 			if (a.canDo(player)) {
@@ -53,7 +56,7 @@ public class CompoundAction extends AbstractAction {
 			if (a.canDo(player)) {
 				UndoableFarmEdit e = a.doo(player);
 				if (e != null) {
-					edits.add(e);				
+					edits.add(e);
 				}
 			}
 		}
@@ -90,8 +93,10 @@ public class CompoundAction extends AbstractAction {
 		return false;
 	}
 
-//	public String toString() {
-//		return Namer.getName(this) + " user:" + user;
-//	}
+	private class CompoundActionStateChangeListener implements ActionStateChangeListener {
+		public void stateChanges(Action action) {
+			CompoundAction.this.setChanged();
+		}
+	}
 
 }

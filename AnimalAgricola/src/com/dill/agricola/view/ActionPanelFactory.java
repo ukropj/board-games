@@ -54,6 +54,7 @@ public class ActionPanelFactory {
 	
 	// shared listeners
 	private static ActionStateChangeListener stallSupplyChangeListener = null;
+	private static ActionStateChangeListener troughSupplyChangeListener = null;
 
 	public static void createActionPanel(JPanel parent, Action action, JButton actionButton) {
 		JComponent actionPanel = null;
@@ -135,7 +136,9 @@ public class ActionPanelFactory {
 			tro1P.add(UiFactory.createArrowLabel(Dir.E, false));
 			tro1P.add(UiFactory.createLabel(AgriImages.getPurchasableIcon(Purchasable.TROUGH)));
 			troP.add(tro1P);
-			troP.add(createSupplyLabel(action, Supplyable.TROUGH));
+			JLabel troughSupplyL = createSupplyLabel(action, Supplyable.TROUGH);
+			troughSupplyChangeListener = new SupplyChangeListener(Supplyable.TROUGH, troughSupplyL);
+			troP.add(troughSupplyL);
 			actionButton.add(troP);
 			c.gridx = 3;
 			c.gridy = 4;
@@ -190,12 +193,15 @@ public class ActionPanelFactory {
 			c.weightx = 1;
 			break;
 		case SPECIAL:
-			JLabel spec1 = UiFactory.createLabel(Msg.get("specBuildLabel"));
-			spec1.setFont(Fonts.ACTION_TEXT_BIG);
-			actionButton.add(spec1);
 			if (stallSupplyChangeListener != null) {
 				action.addChangeListener(stallSupplyChangeListener);
 			}
+			if (troughSupplyChangeListener != null) {
+				action.addChangeListener(troughSupplyChangeListener);
+			}
+			JLabel spec1 = UiFactory.createLabel(Msg.get("specBuildLabel"));
+			spec1.setFont(Fonts.ACTION_TEXT_BIG);
+			actionButton.add(spec1);
 			c.fill = GridBagConstraints.BOTH;
 			c.weighty = 0.5;
 			c.gridy = 7;
@@ -203,6 +209,9 @@ public class ActionPanelFactory {
 		case SPECIAL2:
 			if (stallSupplyChangeListener != null) {
 				action.addChangeListener(stallSupplyChangeListener);
+			}
+			if (troughSupplyChangeListener != null) {
+				action.addChangeListener(troughSupplyChangeListener);
 			}
 			JLabel spec2 = UiFactory.createLabel(Msg.get("specBuildLabel"));
 			spec2.setFont(Fonts.ACTION_TEXT_BIG);

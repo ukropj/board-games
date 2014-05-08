@@ -50,6 +50,10 @@ public interface Action {
 	
 	Action getSubAction();
 	
+	void setChanged();
+	
 	void addChangeListener(ActionStateChangeListener changeListener);
+
+	void removeChangeListeners();
 
 }

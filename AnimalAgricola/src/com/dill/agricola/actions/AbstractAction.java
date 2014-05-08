@@ -102,8 +102,12 @@ public abstract class AbstractAction implements Action {
 	public void addChangeListener(ActionStateChangeListener changeListener) {
 		changeListeners.add(changeListener);
 	}
+	
+	public void removeChangeListeners() {
+		changeListeners.clear();
+	}
 
-	protected void setChanged() {
+	public void setChanged() {
 		for (ActionStateChangeListener listener : changeListeners) {
 			listener.stateChanges(this);
 		}
