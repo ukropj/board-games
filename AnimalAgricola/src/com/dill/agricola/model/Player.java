@@ -129,14 +129,10 @@ public class Player extends SimpleObservable {
 		return material.get(m);
 	}
 
-	public void setActiveType(Purchasable type) {
-		farm.setActiveType(type);
-		setChanged();
-	}
-
-	public Purchasable getActiveType() {
-		return farm.getActiveType();
-	}
+//	public void setActiveType(Purchasable type) {
+//		farm.setActiveType(type);
+//		setChanged();
+//	}
 
 	public boolean canPay(Materials cost) {
 		return material.isSuperset(cost);

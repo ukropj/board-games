@@ -21,6 +21,7 @@ import com.dill.agricola.model.buildings.more.CowStall;
 import com.dill.agricola.model.buildings.more.DogHouse;
 import com.dill.agricola.model.buildings.more.DuckPond;
 import com.dill.agricola.model.buildings.more.FarmShop;
+import com.dill.agricola.model.buildings.more.FeedStorehouse;
 import com.dill.agricola.model.buildings.more.FodderBeetFarm;
 import com.dill.agricola.model.buildings.more.HayRack;
 import com.dill.agricola.model.buildings.more.InseminationCenter;
@@ -69,6 +70,7 @@ public class GeneralSupply {
 		SPECIAL_BUILDINGS.put(BuildingType.DOG_HOUSE, new DogHouse());
 		SPECIAL_BUILDINGS.put(BuildingType.DUCK_POND, new DuckPond());
 		SPECIAL_BUILDINGS.put(BuildingType.FARM_SHOP, new FarmShop());
+		SPECIAL_BUILDINGS.put(BuildingType.FEED_STOREHOUSE, new FeedStorehouse());
 		SPECIAL_BUILDINGS.put(BuildingType.FODDER_BEET_FARM, new FodderBeetFarm());
 		SPECIAL_BUILDINGS.put(BuildingType.HAY_RACK, new HayRack());
 		SPECIAL_BUILDINGS.put(BuildingType.INSEMINATION_CENTER, new InseminationCenter());

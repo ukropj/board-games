@@ -19,10 +19,17 @@ public enum ActionType {
 	MILLPOND("millpond"),
 	PIG_AND_SHEEP("pigSheep"),
 	COW_AND_PIGS("cowPigs"),
-	HORSE_AND_SHEEP("horseSheep");
+	HORSE_AND_SHEEP("horseSheep"),
+	//
+	ONE_FREE_TROUGH();
 	
 	public final String desc;
 	public final String shortDesc;
+	
+	private ActionType() {
+		this.desc = "";
+		this.shortDesc = "";
+	}
 	
 	private ActionType(String code) {
 		this.desc = Msg.get(code + "Act");

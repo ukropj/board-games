@@ -8,6 +8,7 @@ import javax.swing.undo.UndoableEdit;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.model.types.Purchasable;
+import com.dill.agricola.support.Logger;
 import com.dill.agricola.support.Msg;
 
 public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
@@ -67,14 +68,14 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 			return false;
 		}
 		boolean retVal = super.addEdit(anEdit);
-//		if (retVal && anEdit.isSignificant() && isSignificant()) {
-//			System.out.println("# Atomic Edit: " + anEdit.getPresentationName() + " into " + getPresentationName());
-//		}
+		if (retVal/* && anEdit.isSignificant() && isSignificant()*/) {
+			Logger.logUndo("Atomic Edit: " + anEdit.getPresentationName() + " into " + getPresentationName());
+		}
 		return retVal;
 	}
 
 	public void undo() throws CannotUndoException {
-//		System.out.println("#" + (isSignificant() ? " " : "-") + getUndoPresentationName());
+		Logger.logUndo((isSignificant() ? "" : "-") + getUndoPresentationName());
 		super.undo();
 		hasBeenDone = false;
 		if (isInProgress()) {
@@ -88,7 +89,7 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 	}
 
 	public void redo() throws CannotRedoException {
-//		System.out.println("#" + (isSignificant() ? " " : "-") + getRedoPresentationName());
+		Logger.logUndo((isSignificant() ? "" : "-") + getRedoPresentationName());
 		super.redo();
 		hasBeenDone = true;
 	}
@@ -105,9 +106,21 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 	/*public boolean isSignificant() {
 		return significant && super.isSignificant();
 	}*/
+	
+	private String getName() {
+		if (name != null) {
+			return name;			
+		}
+		StringBuilder sb = new StringBuilder("[");
+		for (UndoableEdit e : edits) {
+			sb.append(e.getPresentationName()).append(",");
+		}
+		sb.append("]");
+		return sb.toString();
+	}
 
 	public String getPresentationName() {
-		return !isSignificant() ? "Cleanup" : name + currentPlayerName;
+		return !isSignificant() ? "Cleanup" : getName() + currentPlayerName;
 	}
 
 	public String getUndoPresentationName() {
@@ -132,7 +145,7 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 		return false;
 	}
 
-	public boolean undoFarmAction(PlayerColor player, DirPoint pos, Purchasable thing) throws CannotUndoException {
+	public boolean undoFarmAction(PlayerColor player, DirPoint pos, Purchasable thing, boolean undoAllAfter) throws CannotUndoException {
 		// TODO refactor ugly
 		// or at least document
 		if (matchesFarmAction(player, pos, thing)) {
@@ -140,12 +153,25 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 			while (i-- > 0) {
 				try {
 					UndoableFarmEdit e = (UndoableFarmEdit) edits.elementAt(i);
+					Logger.logUndo("Inspect " + e.getPresentationName() + " " + i);
 					if (e.canUndo() && e.matchesFarmAction(player, pos, thing)) {
 						e.undo();
 						e.die();
 						edits.removeElementAt(i);
-//						System.out.println("# Unedit " + e.getPresentationName());
-						return true;
+						Logger.logUndo("Unedit " + e.getPresentationName());
+						if (undoAllAfter) {
+							Logger.logUndo("Undo all after:");
+							int j = edits.size();
+							while (j-- > i) {
+								UndoableEdit ed = edits.elementAt(j);
+								Logger.logUndo("Inspect " + ed.getPresentationName() + " " + j);
+								ed.undo();
+								ed.die();
+								edits.removeElementAt(j);
+								Logger.logUndo("Unedit " + ed.getPresentationName() + " " + j);
+							}
+						}
+						return true;							
 					}
 				} catch (ClassCastException e) {
 					return false;

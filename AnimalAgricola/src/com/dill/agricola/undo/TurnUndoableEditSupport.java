@@ -9,6 +9,7 @@ import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.model.types.Purchasable;
+import com.dill.agricola.support.Logger;
 
 public class TurnUndoableEditSupport extends UndoableEditSupport {
 
@@ -19,7 +20,7 @@ public class TurnUndoableEditSupport extends UndoableEditSupport {
 			_postEdit(e);
 		} else {
 			if (compoundEdit.isEmpty() && compoundEdit.addEdit(e)) {
-//				System.out.println("# Start: " + compoundEdit.getPresentationName());
+				Logger.logUndo("Start: " + compoundEdit.getPresentationName());
 				_postEdit(compoundEdit);
 			} else {
 				compoundEdit.addEdit(e);
@@ -49,9 +50,9 @@ public class TurnUndoableEditSupport extends UndoableEditSupport {
 		if (updateLevel > 0) {
 			updateLevel = 0;
 			compoundEdit.end();
-//			if (!compoundEdit.isEmpty()) {
-//				System.out.println("# End: " + compoundEdit.getPresentationName());
-//			}
+			if (!compoundEdit.isEmpty()) {
+				Logger.logUndo("End: " + compoundEdit.getPresentationName());
+			}
 			compoundEdit = null;
 		}
 	}
@@ -62,8 +63,8 @@ public class TurnUndoableEditSupport extends UndoableEditSupport {
 		}
 	}
 
-	protected boolean undoFarmAction(Player player, DirPoint pos, Purchasable thing) throws CannotUndoException {
-		return compoundEdit != null && compoundEdit.undoFarmAction(player.getColor(), pos, thing);
+	protected boolean undoSpecificAction(Player player, DirPoint pos, Purchasable thing, boolean undoAllAfter) throws CannotUndoException {
+		return compoundEdit != null && compoundEdit.undoFarmAction(player.getColor(), pos, thing, undoAllAfter);
 	}
 
 }

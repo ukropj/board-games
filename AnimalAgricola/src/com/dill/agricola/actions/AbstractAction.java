@@ -74,6 +74,14 @@ public abstract class AbstractAction implements Action {
 		return null;
 	}
 	
+	public boolean isSubAction() {
+		return false;
+	}
+	
+	public Action getSubAction() {
+		return null;
+	}
+	
 	protected MultiEdit joinEdits(List<UndoableFarmEdit> edits) {
 		return joinEdits(edits.toArray(new UndoableFarmEdit[0]));
 	}
@@ -89,6 +97,8 @@ public abstract class AbstractAction implements Action {
 		return edit;
 	}
 
+	
+	
 	public void addChangeListener(ActionStateChangeListener changeListener) {
 		changeListeners.add(changeListener);
 	}

@@ -153,13 +153,17 @@ public class FarmPanel extends JPanel {
 			}
 		}
 	};
-	private final static int R = M/2;
-	
+	private final static int R = M / 2;
+
 	private final static Polygon removeShape = new Polygon(
 			new int[] { -2 * R, -R, 0, R, 2 * R, R, 2 * R, R, 0, -R, -2 * R, -R },
 			new int[] { -R, -2 * R, -R, -2 * R, -R, 0, R, 2 * R, R, 2 * R, R, 0 },
 			12);
-	private final static Area removeBack = new Area(new Ellipse2D.Float(-4*R, -4*R, 8*R, 8*R));
+	private final static Area removeBack = new Area(new Ellipse2D.Float(-4 * R, -4 * R, 8 * R, 8 * R));
+	private final static Polygon removeTroughBack = new Polygon(
+			new int[] { -2 * M, -2 * M, 0, 2 * M, 2 * M },
+			new int[] { (5 * M) / 2, -M / 2, -(5 * M) / 2, -M / 2, (5 * M) / 2 },
+			5);
 
 	public final static Stroke NORMAL_STROKE = new BasicStroke();
 	public final static Stroke THICK_STROKE = new BasicStroke(2.0f);
@@ -456,19 +460,18 @@ public class FarmPanel extends JPanel {
 		// loose animals
 		drawLooseAnimals(g);
 
-		// unused stuff
-		drawUnused(g);
-
 		drawPad(g);
-
-//		paintChildren(g);
 	}
 
 	private void drawRemoveShape(Graphics2D g, DirPoint pos) {
+		drawRemoveShape(g, pos, false);
+	}
+
+	private void drawRemoveShape(Graphics2D g, DirPoint pos, boolean trough) {
 		AffineTransform tr = AffineTransform.getTranslateInstance(pos.x, pos.y);
-		Shape back = tr.createTransformedShape(removeBack);
+		Shape back = tr.createTransformedShape(trough ? removeTroughBack : removeBack);
 		Shape front = tr.createTransformedShape(removeShape);
-		
+
 		g.setColor(UiFactory.makeTranslucent(player.getColor().getRealColor(), 150));
 		g.fill(back);
 		g.setColor(Color.BLACK);
@@ -640,8 +643,8 @@ public class FarmPanel extends JPanel {
 			break;
 		case CAN_UNDO:
 			Rectangle r = troughShape.getBounds();
-			r.translate(realPos.x, realPos.y + M / 2);
-			drawRemoveShape(g, rectCenter(r));
+			r.translate(realPos.x, realPos.y);
+			drawRemoveShape(g, rectCenter(r), true);
 			break;
 		default:
 			break;
@@ -742,11 +745,13 @@ public class FarmPanel extends JPanel {
 	}
 
 	private PurchasableState getState(DirPoint pos, Purchasable type) {
-		if (active && farm.getActiveType() == type) {
-			if (ap.canDoFarmAction(pos)) {
+		boolean isActive = farm.getActiveType() == type;
+		boolean isSubActive = farm.getActiveSubType() == type;
+		if (active && (isActive || isSubActive)) {
+			if (ap.canDoFarmAction(pos, type, !isActive)) {
 				return PurchasableState.CAN_DO;
 			}
-			if (ap.canUndoFarmAction(pos)) {
+			if (ap.canUndoFarmAction(pos, type, !isActive)) {
 				return PurchasableState.CAN_UNDO;
 			}
 		}
@@ -798,51 +803,6 @@ public class FarmPanel extends JPanel {
 //		}
 	}
 
-	private void drawUnused(Graphics2D g) {
-		/*int total = farm.getAllUnusedCount() + farm.getUnusedBuildings().size();
-		if (total > 0) {
-			int maxHeight = farm.getHeight() * S - S / 2;
-			int l = Math.min(S / 3, maxHeight / total);
-			int x = 0;
-			int y = Y1 + S / 4;
-			int j = 0;
-
-			for (Building b : farm.getUnusedBuildings()) {
-				BufferedImage img = AgriImages.getBuildingImage(b.getType());
-				g.drawImage(img, x + (X1 - S / 3) / 2, y + j * l, S / 3, S / 3, null);
-				j++;
-			}
-
-			for (Purchasable type : Purchasable.values()) {
-				int count = farm.getUnused(type);
-				float r = 1.0f;
-				BufferedImage img = null;
-				switch (type) {
-				case FENCE:
-					img = AgriImages.getUnusedFenceImage();
-					r = 0.4f;
-					break;
-				case TROUGH:
-					img = AgriImages.getTroughImage(ImgSize.BIG);
-					r = 1;
-					break;
-				case EXTENSION:
-					continue;
-				case BUILDING:
-					continue;
-				}
-				for (int i = 0; i < count; i++) {
-					int w = (int) (img.getWidth() * r), h = (int) (img.getHeight() * r);
-					g.drawImage(img, x + (X1 - w) / 2, y + j * l, w, h, null);
-					j++;
-				}
-			}
-
-			BufferedImage arrowImg = AgriImages.getArrowImage(Dir.S, true, ImgSize.BIG);
-			g.drawImage(arrowImg, 2 * M, 2 * M, arrowImg.getWidth(), arrowImg.getHeight(), null);
-		}*/
-	}
-
 	private class SpaceListener extends MouseAdapter {
 
 		private final Farm farm;
@@ -875,60 +835,70 @@ public class FarmPanel extends JPanel {
 			List<Animal> availableAnimals = null;
 
 			boolean done = false, hadAction = ap.hasAction();
-			Purchasable activeThing = farm.getActiveType();
+			Purchasable[] activeTypes = { farm.getActiveType(), farm.getActiveSubType() };
 
-			if (active && !breeding && activeThing != null) {
-				switch (activeThing) {
-				case EXTENSION:
-					Dir extDir = null;
-					if (pos.x < 0 ||
-							(pos.x == 0 && extOffRect.contains(relativeDirPoint) &&
-							farm.isActiveSpot(new DirPoint(0, 0), Purchasable.EXTENSION))) {
-						extDir = Dir.W;
-					} else if (pos.x >= farm.getWidth() ||
-							(pos.x == farm.getWidth() - 1 && extOffRect.contains(relativeDirPoint) &&
-							farm.isActiveSpot(new DirPoint(farm.getWidth() - 1, 0), Purchasable.EXTENSION))) {
-						extDir = Dir.E;
+			// TODO refactor to more functions
+			if (active && !breeding && activeTypes[0] != null) {
+				for (int i = 0; i < activeTypes.length; i++) {
+					Purchasable activeType = activeTypes[i];
+					if (activeType == null) {
+						continue;
 					}
-					if (extDir != null) {
-						done = ap.doOrUndoFarmAction(new DirPoint(pos.x, 0), Purchasable.EXTENSION);
-						changeType = ChangeType.FARM_RESIZE;
-					}
-					break;
-				case FENCE:
-					Dir fenceDir = null;
-					for (Dir d : Dir.values()) {
-						if (fenceClickRects.get(d).contains(relativeDirPoint)) {
-							fenceDir = d;
-							break;
+					switch (activeType) {
+					case EXTENSION:
+						Dir extDir = null;
+						if (pos.x < 0 ||
+								(pos.x == 0 && extOffRect.contains(relativeDirPoint) &&
+								farm.isActiveSpot(new DirPoint(0, 0), Purchasable.EXTENSION))) {
+							extDir = Dir.W;
+						} else if (pos.x >= farm.getWidth() ||
+								(pos.x == farm.getWidth() - 1 && extOffRect.contains(relativeDirPoint) &&
+								farm.isActiveSpot(new DirPoint(farm.getWidth() - 1, 0), Purchasable.EXTENSION))) {
+							extDir = Dir.E;
 						}
-					}
-					if (fenceDir != null) {
-						DirPoint fencePoint = new DirPoint(pos, fenceDir);
-						if (fenceDir.ordinal() >= 2) {
-							// normalize to N/W
-							fencePoint = PointUtils.getNext(fencePoint);
+						if (extDir != null) {
+							done = ap.doOrUndoFarmAction(new DirPoint(pos.x, 0), Purchasable.EXTENSION);
+							changeType = ChangeType.FARM_RESIZE;
 						}
-						done = ap.doOrUndoFarmAction(fencePoint, Purchasable.FENCE);
-					}
-					break;
-				case TROUGH:
-					if (troughShape.contains(relativeDirPoint)) {
-						done = ap.doOrUndoFarmAction(pos, Purchasable.TROUGH);
-					}
-					break;
-				case BUILDING:
-					if (ap.canUndoFarmAction(pos) && buildingOffRect.contains(relativeDirPoint)) {
-						done = ap.undoFarmAction(pos, Purchasable.BUILDING);
-					} else if (buildingRect.contains(relativeDirPoint)) {
-						availableAnimals = farm.guessAnimalTypesToPut(pos, true);
-						if (!animalArea.contains(relativeDirPoint) // not clicked in animal area OR
-								// no animals available OR no animals present
-								|| ((availableAnimals.size() == 0 && leftClick) || (farm.getAnimals(pos) == 0 && !leftClick))) {
-							done = ap.doFarmAction(pos, Purchasable.BUILDING);
+						break;
+					case FENCE:
+						Dir fenceDir = null;
+						for (Dir d : Dir.values()) {
+							if (fenceClickRects.get(d).contains(relativeDirPoint)) {
+								fenceDir = d;
+								break;
+							}
 						}
+						if (fenceDir != null) {
+							DirPoint fencePoint = new DirPoint(pos, fenceDir);
+							if (fenceDir.ordinal() >= 2) {
+								// normalize to N/W
+								fencePoint = PointUtils.getNext(fencePoint);
+							}
+							done = ap.doOrUndoFarmAction(fencePoint, Purchasable.FENCE);
+						}
+						break;
+					case TROUGH:
+						if (troughShape.contains(relativeDirPoint)) {
+							done = ap.doOrUndoFarmAction(pos, Purchasable.TROUGH);
+						}
+						break;
+					case BUILDING:
+						if (ap.canUndoFarmAction(pos, Purchasable.BUILDING, i > 0) && buildingOffRect.contains(relativeDirPoint)) {
+							done = ap.undoFarmAction(pos, Purchasable.BUILDING);
+						} else if (buildingRect.contains(relativeDirPoint)) {
+							availableAnimals = farm.guessAnimalTypesToPut(pos, true);
+							if (!animalArea.contains(relativeDirPoint) // not clicked in animal area OR
+									// no animals available OR no animals present
+									|| ((availableAnimals.size() == 0 && leftClick) || (farm.getAnimals(pos) == 0 && !leftClick))) {
+								done = ap.doFarmAction(pos, Purchasable.BUILDING);
+							}
+						}
+						break;
 					}
-					break;
+					if (done) {
+						break;
+					}
 				}
 			}
 
@@ -953,7 +923,7 @@ public class FarmPanel extends JPanel {
 			if (done) {
 				farm.notifyObservers(changeType);
 				if (hadAction && ap.isFinished()) {
-					ActionEvent evt = new ActionEvent(FarmPanel.this,
+					ActionEvent evt = new ActionEvent(player.getColor(),
 							ActionEvent.ACTION_PERFORMED,
 							ActionCommand.SUBMIT.toString(),
 							e.getWhen(),

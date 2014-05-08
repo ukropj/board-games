@@ -77,7 +77,7 @@ public class Expand extends PurchaseAction {
 			UndoableFarmEdit edit = new TakeMaterials(player, new Materials(materials));
 			player.addMaterial(materials);
 			materials.clear();
-			player.setActiveType(thing);
+			setPlayerActive(player);
 			setChanged();
 			return edit;
 		}

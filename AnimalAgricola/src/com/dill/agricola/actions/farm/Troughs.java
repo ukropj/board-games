@@ -18,9 +18,13 @@ public class Troughs extends PurchaseAction {
 
 	public final static Materials FIRST_COST = new Materials();
 	public final static Materials COST = new Materials(Material.WOOD, 3);
-
+	
 	public Troughs() {
-		super(ActionType.TROUGHS, Purchasable.TROUGH);
+		this(ActionType.TROUGHS);
+	}
+
+	public Troughs(ActionType type) {
+		super(type, Purchasable.TROUGH);
 	}
 
 	public void reset() {

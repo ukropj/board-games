@@ -26,7 +26,7 @@ public class Main {
 	};
 
 	public static boolean DEBUG = true;
-	public static boolean DEBUG_LANG = true;
+	public static boolean SKIP_LANG = true;
 	public static boolean MORE_BUILDINGS = true; // TODO remove these flag when ready to release expansion
 	public static boolean EVEN_MORE_BUILDINGS = false;
 
@@ -63,7 +63,7 @@ public class Main {
 					JComponent opt = UiFactory.createLabel(getLangIcon(lang));
 					opts.add(opt);
 				}
-				int chosenLang = DEBUG_LANG ? DEFAULT_LANG.ordinal() : UiFactory.showOptionDialog(null, "Select language", "Agricola: All Creatures Big and Small", null, opts, 0);
+				int chosenLang = SKIP_LANG ? DEFAULT_LANG.ordinal() : UiFactory.showOptionDialog(null, "Select language", "Agricola: All Creatures Big and Small", null, opts, 0);
 				Lang l = DEFAULT_LANG;
 				if (chosenLang != UiFactory.NO_OPTION) {
 					l = Lang.values()[chosenLang];

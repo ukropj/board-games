@@ -13,6 +13,8 @@ import javax.swing.undo.CannotUndoException;
 
 import com.dill.agricola.GeneralSupply;
 import com.dill.agricola.GeneralSupply.Supplyable;
+import com.dill.agricola.actions.Action;
+import com.dill.agricola.actions.extra.OneFreeTrough;
 import com.dill.agricola.common.Animals;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
@@ -28,6 +30,7 @@ import com.dill.agricola.model.buildings.more.CowStall;
 import com.dill.agricola.model.buildings.more.DogHouse;
 import com.dill.agricola.model.buildings.more.DuckPond;
 import com.dill.agricola.model.buildings.more.FarmShop;
+import com.dill.agricola.model.buildings.more.FeedStorehouse;
 import com.dill.agricola.model.buildings.more.FodderBeetFarm;
 import com.dill.agricola.model.buildings.more.HayRack;
 import com.dill.agricola.model.buildings.more.InseminationCenter;
@@ -67,6 +70,7 @@ public class BuildSpecial extends BuildAction {
 		COSTS.put(BuildingType.DOG_HOUSE, DogHouse.COST);
 		COSTS.put(BuildingType.DUCK_POND, DuckPond.COST);
 		COSTS.put(BuildingType.FARM_SHOP, FarmShop.COST);
+		COSTS.put(BuildingType.FEED_STOREHOUSE, FeedStorehouse.COST);
 		COSTS.put(BuildingType.FODDER_BEET_FARM, FodderBeetFarm.COST);
 		COSTS.put(BuildingType.HAY_RACK, HayRack.COST);
 		COSTS.put(BuildingType.INSEMINATION_CENTER, InseminationCenter.COST);
@@ -242,7 +246,7 @@ public class BuildSpecial extends BuildAction {
 		if (canDo(player)) {
 			toBuild = chooseBuilding(player);
 			if (toBuild != null) {
-				player.setActiveType(thing);
+				setPlayerActive(player);
 				setChanged();
 			}
 		}
@@ -281,6 +285,15 @@ public class BuildSpecial extends BuildAction {
 			player.purchaseAnimals(animalReward);
 		}
 		return new UseBuilding(toBuild, player, materialReward, animalReward);
+	}
+
+	public Action getSubAction() {
+		switch (toBuild) {
+		case FEED_STOREHOUSE:
+			return new OneFreeTrough();
+		default:
+			return null;
+		}
 	}
 
 	protected class UseBuilding extends SimpleEdit {

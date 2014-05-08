@@ -45,10 +45,10 @@ import com.dill.agricola.view.NewGameDialog;
 public class Game {
 
 	private static enum Phase {
-		CLEANUP, WORK, BREEDING, EXTRA_BREEDING;
+		CLEANUP, WORK, BEFORE_BREEDING, BREEDING/*, AFTER_BREEDING*/, EXTRA_BREEDING;
 	}
 
-	public final static int ROUNDS = Main.DEBUG ? 5 : 8;
+	public final static int ROUNDS = Main.DEBUG ? 8 : 8;
 
 	private final Player[] players;
 	private final Board board;
@@ -214,11 +214,17 @@ public class Game {
 			startTurn();
 		} else {
 			// else end work phase II
-			endWorkPhase();
+			preBreedingPhase();
 		}
 	}
 
-	private void endWorkPhase() {
+	private void preBreedingPhase() {
+		ap.postEdit(new ChangePhase(phase, Phase.BEFORE_BREEDING));
+		phase = Phase.BEFORE_BREEDING;
+		breedingPhase();
+	}
+	
+	private void breedingPhase() {
 		// end work
 		ap.postEdit(new ChangePhase(phase, Phase.BREEDING));
 		phase = Phase.BREEDING;
@@ -237,7 +243,7 @@ public class Game {
 
 		boolean isBreeding = submitListener.getBreedingCount() > 0;
 		if (!isBreeding) {
-			endRound();
+			postBreedingPhase();
 		}
 	}
 
@@ -263,6 +269,15 @@ public class Game {
 		// animals run away after breeding
 		releaseAnimals(player);
 	}
+	
+	private void postBreedingPhase() {
+//		ap.postEdit(new ChangePhase(phase, Phase.AFTER_BREEDING));
+//		phase = Phase.AFTER_BREEDING;
+		if (handleExtraBreedingPhase()) {
+			return;
+		}
+		endRound();
+	}
 
 	private void endRound() {
 		ap.postEdit(new ChangePhase(phase, Phase.CLEANUP));
@@ -273,13 +288,15 @@ public class Game {
 			startRound();
 		} else {
 			// or end game
-			if (!handleExtraBreedingPhase()) {
-				endGame();
-			}
+			endGame();
 		}
 	}
 
 	private boolean handleExtraBreedingPhase() {
+		if (round < ROUNDS) {
+			// only for last round
+			return false;
+		}
 		List<Player> extraBreeders = new ArrayList<Player>();
 		for (Player p : players) {
 			if (p.farm.hasBuilding(BuildingType.BREEDING_STATION)) {
@@ -345,17 +362,23 @@ public class Game {
 					// turn end
 					endTurn();
 					break;
+				case BEFORE_BREEDING:
+					breedingPhase();
+					break;
 				case BREEDING:
 					// one or both players must submit
 					endBreeding(players[color.ordinal()]);
 					if (breedingCount == 0) {
-						endRound();
+						postBreedingPhase();
 					}
 					break;
+				/*case AFTER_BREEDING:
+					endRound();
+					break;*/
 				case EXTRA_BREEDING:
 					endBreeding(players[color.ordinal()]);
 					if (breedingCount == 0) {
-						endGame();
+						endRound();
 					}
 					break;
 				default:

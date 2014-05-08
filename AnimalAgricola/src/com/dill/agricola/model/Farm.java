@@ -3,6 +3,7 @@ package com.dill.agricola.model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -33,12 +34,16 @@ public class Farm extends SimpleObservable {
 	private final Animals looseAnimals = new Animals();
 
 	private Purchasable activeType = null;
-	private final Set<DirPoint> activeSpots = new HashSet<DirPoint>();
+	private Purchasable activeSubType = null;
+	private final Map<Purchasable, Set<DirPoint>> activeSpots = new HashMap<Purchasable, Set<DirPoint>>();
 
 	private boolean animalsValid = true;
 	private List<Building> buildingList = new ArrayList<Building>();
 
 	public Farm() {
+		for (Purchasable p : Purchasable.values()) {
+			activeSpots.put(p, new HashSet<DirPoint>());
+		}
 	}
 
 	public void init(int w, int h) {
@@ -46,8 +51,7 @@ public class Farm extends SimpleObservable {
 		extensions.put(Dir.E, new Stack<Integer>());
 		extensions.put(Dir.W, new Stack<Integer>());
 		looseAnimals.clear();
-		activeType = null;
-		activeSpots.clear();
+		clearActive();
 		animalsValid = true;
 		buildingList.clear();
 	}
@@ -77,34 +81,59 @@ public class Farm extends SimpleObservable {
 		}
 		return col;
 	}
+	
+	private final void clearActive() {
+		activeType = null;
+		activeSubType = null;
+		for (Set<DirPoint> spots : activeSpots.values()) {
+			spots.clear();
+		}
+	}
 
 	public void setActiveType(Purchasable activeType) {
 		if (this.activeType != activeType) {
+			clearActive();
 			this.activeType = activeType;
-			activeSpots.clear();
-			setChanged();
+			setChanged();			
+		}
+	}
+	
+	public void setActiveSubType(Purchasable activeSubType) {
+		if (this.activeSubType != activeSubType) {
+			if (this.activeSubType != null) {
+				activeSpots.get(this.activeSubType).clear();
+			}
+			this.activeSubType = activeSubType;
+			setChanged();			
 		}
 	}
 
 	public Purchasable getActiveType() {
 		return activeType;
 	}
-
-	public boolean isActiveSpot(DirPoint pos, Purchasable forType) {
-		return activeType == forType && activeSpots.contains(pos);
+	
+	public Purchasable getActiveSubType() {
+		return activeSubType;
 	}
 
-	private void addActiveSpot(DirPoint pos) {
-		activeSpots.add(pos);
+	public boolean isActiveSpot(DirPoint pos, Purchasable forType) {
+		return (activeType == forType || activeSubType == forType) 
+				&& activeSpots.get(forType).contains(pos);
+	}
+
+	private void addActiveSpot(DirPoint pos, Purchasable forType) {
+		Set<DirPoint> spots = activeSpots.get(forType);
+		spots.add(pos);
 		if (pos.dir != null) {
-			activeSpots.add(PointUtils.getNext(pos));
+			spots.add(PointUtils.getNext(pos));
 		}
 	}
 
-	private void removeActiveSpot(DirPoint pos) {
-		activeSpots.remove(pos);
+	private void removeActiveSpot(DirPoint pos, Purchasable forType) {
+		Set<DirPoint> spots = activeSpots.get(forType);
+		spots.remove(pos);
 		if (pos.dir != null) {
-			activeSpots.remove(PointUtils.getNext(pos));
+			spots.remove(PointUtils.getNext(pos));
 		}
 	}
 
@@ -175,18 +204,19 @@ public class Farm extends SimpleObservable {
 		default:
 			return false;
 		}
-		addActiveSpot(pos);
+		addActiveSpot(pos, type);
 		setChanged();
 		return true;
 	}
 
 	public boolean take(Purchasable type, DirPoint pos) {
-		if (pos == null) {
+		Main.asrtNotNull(pos, "Cannot unbuild on null position");
+		/*if (pos == null) {
 			if (activeType == type) {
 				return takeLastActive();
 			}
 			return false;
-		}
+		}*/
 		Space space = getSpace(pos);
 
 		switch (type) {
@@ -224,7 +254,7 @@ public class Farm extends SimpleObservable {
 			return false;
 		}
 
-		removeActiveSpot(pos);
+		removeActiveSpot(pos, type);
 		setChanged();
 		return true;
 	}
@@ -253,17 +283,6 @@ public class Farm extends SimpleObservable {
 		}
 		return used;
 	}
-
-//	public boolean moveExtension(Dir target) {
-//		Dir source = target.opposite();
-//		boolean canUnextend = unextend(source, true);
-//		if (canUnextend) {
-//			extend(target);
-//			return true;
-//		} else {
-//			return false;
-//		}
-//	}
 
 	private boolean extend(Dir d) {
 		int targetCol;
@@ -333,10 +352,22 @@ public class Farm extends SimpleObservable {
 		return unused;
 	}
 
+	public int getTroughs() {
+		int count = 0;
+		List<DirPoint> range = PointUtils.createGridRange(width, height);
+		for (DirPoint pos : range) {
+			Space s = getSpace(pos);
+			if (s != null && s.hasTrough()) {
+				count++;
+			}
+		}
+		return count;
+	}
+
 	public void setBuildingList(List<Building> buildingList) {
 		this.buildingList = buildingList;
 	}
-	
+
 	public List<Building> getFarmBuildings() {
 		return this.buildingList;
 	}
@@ -383,29 +414,30 @@ public class Farm extends SimpleObservable {
 		if (space != null && b.getType().canBuildAt(space.getType(), pos)) {
 			b.buildAt(space);
 			putSpace(pos, b);
-			addActiveSpot(pos);
+			addActiveSpot(pos, Purchasable.BUILDING);
 			setChanged();
 			return true;
 		}
 		return false;
 	}
 
-	private Building takenBuilding = null;
+//	private Building takenBuilding = null;
 
 	public Building unbuild(DirPoint pos) {
-		if (pos == null) {
+		Main.asrtNotNull(pos, "Cannot unbuild on null position");
+		/*if (pos == null) {
 			if (activeType == Purchasable.BUILDING) {
 				if (takeLastActive()) {
 					return takenBuilding;
 				}
 			}
 			return null;
-		}
+		}*/
 		Building building = getBuilding(pos);
 		if (building != null) {
 			Space original = building.unbuild();
 			putSpace(pos, original);
-			removeActiveSpot(pos);
+			removeActiveSpot(pos, Purchasable.BUILDING);
 			setChanged();
 			return building;
 		}
@@ -623,13 +655,13 @@ public class Farm extends SimpleObservable {
 	public boolean hasValidAnimals() {
 		return animalsValid;
 	}
-
-	private boolean takeLastActive() {
+	
+	/*private boolean takeLastActive() {
 		if (activeType == null) {
 			return false;
 		}
 		if (!activeSpots.isEmpty()) {
-			DirPoint pos = new ArrayList<DirPoint>(activeSpots).get(0);
+			DirPoint pos = new ArrayList<DirPoint>(activeSpots.get(activeType)).get(0);
 			switch (activeType) {
 			case FENCE:
 			case EXTENSION:
@@ -643,6 +675,6 @@ public class Farm extends SimpleObservable {
 			}
 		}
 		return false;
-	}
+	}*/
 
 }

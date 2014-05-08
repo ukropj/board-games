@@ -49,9 +49,17 @@ public abstract class PurchaseAction extends AbstractAction {
 
 	public UndoableFarmEdit doo(Player player) {
 		if (canDo(player)) {
-			player.setActiveType(thing);
+			setPlayerActive(player);
 		}
 		return null;
+	}
+	
+	protected void setPlayerActive(Player player) {
+		if (!isSubAction()) {
+			player.getFarm().setActiveType(thing);				
+		} else {
+			player.getFarm().setActiveSubType(thing);								
+		}
 	}
 
 	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos, int doneSoFar) {

@@ -48,6 +48,10 @@ public interface Action {
 
 	Animals getAccumulatedAnimals();
 
+	boolean isSubAction();
+	
+	Action getSubAction();
+	
 	void addChangeListener(ActionStateChangeListener changeListener);
 
 }

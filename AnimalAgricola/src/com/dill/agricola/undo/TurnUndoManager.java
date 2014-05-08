@@ -7,6 +7,8 @@ import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
 
+import com.dill.agricola.support.Logger;
+
 public class TurnUndoManager extends UndoManager {
 	private static final long serialVersionUID = 1L;
 
@@ -17,14 +19,14 @@ public class TurnUndoManager extends UndoManager {
 			return false;
 		}
 		boolean retVal = super.addEdit(anEdit);
-//		if (retVal) {
-//			System.out.println("#" + (anEdit.isSignificant() ? " " : "-") + "Edit: " + anEdit.getPresentationName());
-//		}
+		if (retVal) {
+			Logger.logUndo((anEdit.isSignificant() ? "" : "-") + "Edit: " + anEdit.getPresentationName());
+		}
 		return retVal;
 	}
 
 	public synchronized void undo() throws CannotUndoException {
-//		System.out.println("# Undo: " + getUndoPresentationName());
+		Logger.logUndo("Undo: " + getUndoPresentationName());
 		super.undo();
 		for (UndoRedoListener l : listeners) {
 			l.undoOrRedoPerformed(true);
@@ -32,7 +34,7 @@ public class TurnUndoManager extends UndoManager {
 	}
 	
 	public synchronized void redo() throws CannotRedoException {
-//		System.out.println("# Redo: " + getRedoPresentationName());
+		Logger.logUndo("Redo: " + getRedoPresentationName());
 		super.redo();
 		for (UndoRedoListener l : listeners) {
 			l.undoOrRedoPerformed(false);
