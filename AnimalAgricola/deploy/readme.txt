@@ -41,7 +41,9 @@ There is no AI or networking present. Two players play on one computer.
  
 ## Version history
 
+1.1
+ - added "More Buildings Big and Small" expansion
 1.0
- - first release, available in English, German an Czech
+ - first release, available in English, German, Czech and Slovak
 
 by Jakub Ukrop, April 2014

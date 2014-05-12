@@ -17,9 +17,11 @@ import com.dill.agricola.view.utils.Images;
 import com.dill.agricola.view.utils.UiFactory;
 
 public class Main {
+	
+	public static final String VERSION = "1.1";
 
 	private static enum Lang {
-		EN, DE, CZ;
+		EN, DE, CZ, SK;
 
 		public String toString() {
 			return super.toString().toLowerCase();
@@ -31,7 +33,7 @@ public class Main {
 	public static boolean MORE_BUILDINGS = true; // TODO remove these flag when ready to release expansion
 	public static boolean EVEN_MORE_BUILDINGS = false;
 
-	private static Lang DEFAULT_LANG = Lang.EN; // 'en' is default
+	private static final Lang DEFAULT_LANG = Lang.EN; // 'en' is default
 
 	public static void main(String[] args) {
 

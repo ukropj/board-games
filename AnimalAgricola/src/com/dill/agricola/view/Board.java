@@ -185,7 +185,7 @@ public class Board extends JFrame {
 		debugPanel = new DebugPanel(players);
 		getContentPane().add(debugPanel, BorderLayout.PAGE_END);
 	}
-	
+
 	public boolean isMaximized() {
 		return (getExtendedState() & JFrame.MAXIMIZED_BOTH) != 0;
 	}
@@ -204,7 +204,7 @@ public class Board extends JFrame {
 		if (playerColor != null) {
 			playerL.setText(Msg.get(playerColor.toString().toLowerCase()));
 			playerL.setForeground(playerColor.getRealColor());
-			turnL.setText(Msg.get("turnLab"));			
+			turnL.setText(Msg.get("turnLab"));
 		} else {
 			playerL.setText("");
 			turnL.setText(Msg.get("breedingLab"));
@@ -240,7 +240,7 @@ public class Board extends JFrame {
 			debugPanel.setCurrentPlayer(currentPlayer.getColor());
 		}
 	}
-	
+
 	public void startBreeding(Player breedingPlayer) {
 		playerBoards[breedingPlayer.getColor().ordinal()].setActive(true, true);
 		updateState(-1, null);
@@ -259,7 +259,7 @@ public class Board extends JFrame {
 	public void endGame() {
 		playerBoards[0].setActive(false, false);
 		playerBoards[1].setActive(false, false);
-		
+
 		PlayerColor winner = game.getWinner();
 		playerL.setText(Msg.get(winner.toString().toLowerCase()));
 		playerL.setForeground(winner.getRealColor());
@@ -298,7 +298,8 @@ public class Board extends JFrame {
 //				break;
 			case ABOUT:
 				BufferedImage img = Images.getBestScaledInstance(Images.createImage("a"), 50);
-				JOptionPane.showMessageDialog(Board.this, Msg.get("aboutMsg"), Msg.get("aboutTitle"), JOptionPane.INFORMATION_MESSAGE, new ImageIcon(img));
+				JOptionPane.showMessageDialog(Board.this, Msg.get("aboutMsg", Main.VERSION), 
+						Msg.get("aboutTitle"), JOptionPane.INFORMATION_MESSAGE, new ImageIcon(img));
 				break;
 			case EXIT:
 				quitGame();
