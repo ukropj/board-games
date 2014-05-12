@@ -23,6 +23,7 @@ public enum BuildingType {
 	// more special buildings
 	BARN_MANUFACTURER(1, Msg.get("barnManufacturer"), new BuildingText(Msg.get("immediately"), 0.13f, 0.56f, 0.38f)),
 	BREEDING_STATION(1, Msg.get("breedingStation"), new BuildingText(Msg.get("breedingStationText"), 0.13f, 0.52f, 0.72f)),
+	COUNTRY_HOUSE(1, Msg.get("countryHouse"), new BuildingText(Msg.get("immediately"), 0.33f, 0.49f, 0.4f)),
 	COW_STALL(1, Msg.get("cowStall"), new BuildingText(Msg.get("immediately"), 0.4f, 0.5f, 0.4f),
 			new BuildingText(Msg.get("cowStallText"), 0.33f, 0.78f, 0.11f)),
 	DOG_HOUSE(1, Msg.get("dogHouse"), new BuildingText(Msg.get("dogHouseText"), 0.13f, 0.52f, 0.74f)),
@@ -30,6 +31,7 @@ public enum BuildingType {
 			new BuildingText(Msg.get("duckPondText"), 0.30f, 0.18f, 0.6f)),
 	FARM_SHOP(1, Msg.get("farmShop"), new BuildingText(Msg.get("immediately"), 0.33f, 0.49f, 0.4f),
 			new BuildingText(Msg.get("nextToRoad"), 0.33f, 0.18f, 0.58f)),
+	FENCE_MANUFACTURER(1, Msg.get("fenceManufacturer"), new BuildingText(Msg.get("fenceManufacturerText"), 0.12f, 0.52f, 0.76f)),
 	FEED_STOREHOUSE(1, Msg.get("feedStorehouse"), new BuildingText(Msg.get("immediately"), 0.13f, 0.54f, 0.38f),
 			new BuildingText(Msg.get("feedStorehouseText"), 0.33f, 0.78f, 0.11f)),
 	FODDER_BEET_FARM(1, Msg.get("fodderBeetFarm"), new BuildingText(Msg.get("immediately"), 0.33f, 0.495f, 0.4f),
@@ -56,9 +58,10 @@ public enum BuildingType {
 					Arrays.asList(new BuildingType[] {
 							BuildingType.BARN_MANUFACTURER, BuildingType.BREEDING_STATION,
 							BuildingType.DOG_HOUSE,
-							BuildingType.COW_STALL, BuildingType.DUCK_POND,
+							BuildingType.COW_STALL, BuildingType.COUNTRY_HOUSE,
+							BuildingType.DUCK_POND,
 							BuildingType.FARM_SHOP, BuildingType.FEED_STOREHOUSE,
-							BuildingType.FODDER_BEET_FARM,
+							BuildingType.FENCE_MANUFACTURER, BuildingType.FODDER_BEET_FARM,
 							BuildingType.HAY_RACK, BuildingType.INSEMINATION_CENTER,
 							BuildingType.LARGE_EXTENSION,
 							BuildingType.LOG_HOUSE, BuildingType.PIG_STALL,

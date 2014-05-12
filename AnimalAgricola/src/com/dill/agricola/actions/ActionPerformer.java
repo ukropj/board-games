@@ -19,9 +19,6 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 	private Action action = null;
 	private Action subAction = null;
 
-	private int count = 0;
-	private int subCount = 0;
-
 	private void checkState() throws IllegalStateException {
 		Main.asrtNotNull(player, "Cannot perform action without player");
 		Main.asrtNotNull(action, "Cannot perform action without action");
@@ -54,7 +51,6 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 	public boolean startAction(Action action) {
 		this.action = action;
 		this.subAction = null;
-		this.count = this.subCount = 0;
 		checkState();
 
 		boolean canDo = action.canDo(player);
@@ -72,10 +68,8 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 			action.setUsed(player.getColor());
 
 			if (edit != null) {
-				count++;
 				postEdit(edit);
-
-				if (!action.canDoOnFarm(player, count) && !edit.isAnimalEdit() && !player.hasLooseAnimals()) {
+				if (!action.canDoOnFarm(player) && !edit.isAnimalEdit() && !player.hasLooseAnimals()) {
 					return finishAction();
 				}
 			}
@@ -90,8 +84,8 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 
 	private boolean startSubAction(Action subAction) {
 		this.subAction = subAction;
-		this.subCount = 0;
 		subAction.addChangeListener(new SubActionStateChangeListener());
+		subAction.useAsSubaction();
 
 		boolean canDo = subAction.canDo(player);
 		UndoableFarmEdit edit = null;
@@ -105,10 +99,8 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 			postEdit(new StartSubAction(player));
 
 			if (edit != null) {
-				subCount++;
 				postEdit(edit);
-
-				if (!subAction.canDoOnFarm(player, subCount) && !edit.isAnimalEdit() && !player.hasLooseAnimals()) {
+				if (!subAction.canDoOnFarm(player) && !edit.isAnimalEdit() && !player.hasLooseAnimals()) {
 					return finishSubAction();
 				}
 			}
@@ -122,13 +114,13 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 	}
 
 	public boolean canDoFarmAction(DirPoint pos, Purchasable thing, boolean isSub) {
-		return !isSub ? player.getFarm().getActiveType() == thing && action.canDoOnFarm(player, pos, count)
-				: subAction != null && player.getFarm().getActiveSubType() == thing && subAction.canDoOnFarm(player, pos, subCount);
+		return !isSub ? player.getFarm().getActiveType() == thing && action.canDoOnFarm(player, pos)
+				: subAction != null && player.getFarm().getActiveSubType() == thing && subAction.canDoOnFarm(player, pos);
 	}
 
 	public boolean canUndoFarmAction(DirPoint pos, Purchasable thing, boolean isSub) {
-		return !isSub ? player.getFarm().getActiveType() == thing && action.canUndoOnFarm(player, pos, count)
-				: subAction != null && player.getFarm().getActiveSubType() == thing && subAction.canUndoOnFarm(player, pos, subCount);
+		return !isSub ? player.getFarm().getActiveType() == thing && action.canUndoOnFarm(player, pos)
+				: subAction != null && player.getFarm().getActiveSubType() == thing && subAction.canUndoOnFarm(player, pos);
 	}
 
 	public boolean doOrUndoFarmAction(DirPoint pos, Purchasable thing) {
@@ -142,12 +134,11 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 	public boolean doFarmAction(DirPoint pos, Purchasable thing) {
 		checkState();
 		if (canDoFarmAction(pos, thing, false)) {
-			UndoableFarmEdit edit = action.doOnFarm(player, pos, count);
+			UndoableFarmEdit edit = action.doOnFarm(player, pos);
 			if (edit != null) {
 				postEdit(edit);
-				count++;
 				if (this.subAction == null) {
-					Action subAction = action.getSubAction();
+					Action subAction = action.getSubAction(true);
 					if (subAction != null) {
 						startSubAction(subAction);
 					}					
@@ -156,10 +147,9 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 			}
 		}
 		if (canDoFarmAction(pos, thing, true)) {
-			UndoableFarmEdit edit = subAction.doOnFarm(player, pos, subCount);
+			UndoableFarmEdit edit = subAction.doOnFarm(player, pos);
 			if (edit != null) {
 				postEdit(edit);
-				subCount++;
 				return true;
 			}
 		}
@@ -170,13 +160,11 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		checkState();
 		if (canUndoFarmAction(pos, thing, false)) {
 			if (undoSpecificAction(player, pos, thing, subAction != null)) {
-				count--;
 				return true;
 			}
 		}
 		if (canUndoFarmAction(pos, thing, true)) {
 			if (undoSpecificAction(player, pos, thing, false)) {
-				subCount--;
 				return true;
 			}
 		}
@@ -185,13 +173,13 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 
 	public boolean canFinish() {
 		return action != null && player != null
-				&& count >= action.getMinimalCount()
+				&& action.isUsedEnough()
 				&& canSubFinish()
 				&& player.validate();
 	}
 
 	public boolean canSubFinish() {
-		return subAction == null || subCount >= subAction.getMinimalCount();
+		return subAction == null || subAction.isUsedEnough();
 	}
 
 	public boolean finishAction() {

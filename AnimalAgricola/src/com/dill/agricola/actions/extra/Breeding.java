@@ -43,22 +43,21 @@ public class Breeding extends AbstractAction {
 		}
 		if (newAnimals.size() > 0) {
 			UndoableFarmEdit edit = new BreedAnimals(player, new Animals(newAnimals));
-			player.purchaseAnimals(newAnimals);
 			player.setLastBornAnimals(newAnimals);
-			return edit;
+			return joinEdits(true, edit, new ActionUse());
 		}
 		return null;
 	}
 
-	public boolean canDoOnFarm(Player player, DirPoint pos, int count) {
+	public boolean canDoOnFarm(Player player, DirPoint pos) {
 		return false;
 	}
 
-	public boolean canUndoOnFarm(Player player, DirPoint pos, int count) {
+	public boolean canUndoOnFarm(Player player, DirPoint pos) {
 		return false;
 	}
 
-	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos, int count) {
+	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos) {
 		return null;
 	}
 

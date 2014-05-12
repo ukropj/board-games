@@ -23,11 +23,13 @@ import com.dill.agricola.model.buildings.Shelter;
 import com.dill.agricola.model.buildings.StorageBuilding;
 import com.dill.agricola.model.buildings.more.BarnManufacturer;
 import com.dill.agricola.model.buildings.more.BreedingStation;
+import com.dill.agricola.model.buildings.more.CountryHouse;
 import com.dill.agricola.model.buildings.more.CowStall;
 import com.dill.agricola.model.buildings.more.DogHouse;
 import com.dill.agricola.model.buildings.more.DuckPond;
 import com.dill.agricola.model.buildings.more.FarmShop;
 import com.dill.agricola.model.buildings.more.FeedStorehouse;
+import com.dill.agricola.model.buildings.more.FenceManufacturer;
 import com.dill.agricola.model.buildings.more.FodderBeetFarm;
 import com.dill.agricola.model.buildings.more.HayRack;
 import com.dill.agricola.model.buildings.more.InseminationCenter;
@@ -63,10 +65,12 @@ public class BuildSpecial extends BuildAction {
 		// more
 		COSTS.put(BuildingType.BARN_MANUFACTURER, BarnManufacturer.COST);
 		COSTS.put(BuildingType.BREEDING_STATION, BreedingStation.COST);
+		COSTS.put(BuildingType.COUNTRY_HOUSE, CountryHouse.COST);
 		COSTS.put(BuildingType.COW_STALL, CowStall.COST);
 		COSTS.put(BuildingType.DOG_HOUSE, DogHouse.COST);
 		COSTS.put(BuildingType.DUCK_POND, DuckPond.COST);
 		COSTS.put(BuildingType.FARM_SHOP, FarmShop.COST);
+		COSTS.put(BuildingType.FENCE_MANUFACTURER, FenceManufacturer.COST);
 		COSTS.put(BuildingType.FEED_STOREHOUSE, FeedStorehouse.COST);
 		COSTS.put(BuildingType.FODDER_BEET_FARM, FodderBeetFarm.COST);
 		COSTS.put(BuildingType.HAY_RACK, HayRack.COST);
@@ -109,7 +113,7 @@ public class BuildSpecial extends BuildAction {
 		return super.init();
 	}
 
-	protected Materials getCost(Player player, int doneSoFar) {
+	protected Materials getCost(Player player) {
 		return toBuild == null ? null : getBuildingCost(player, toBuild, osCostNo);
 	}
 
@@ -134,9 +138,9 @@ public class BuildSpecial extends BuildAction {
 		return false;
 	}
 
-	public boolean canDoOnFarm(Player player, DirPoint pos, int doneSoFar) {
+	public boolean canDoOnFarm(Player player, DirPoint pos) {
 		// there does not need to be "any left", since building was already chosen
-		return doneSoFar < 1 && toBuild != null && canPurchase(player, toBuild, pos);
+		return getUseCount() < 1 && toBuild != null && canPurchase(player, toBuild, pos);
 	}
 
 	private boolean canPurchase(Player player, BuildingType type, DirPoint pos) {
@@ -211,7 +215,7 @@ public class BuildSpecial extends BuildAction {
 		return null;
 	}
 
-	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos, int doneSoFar) {
+	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos) {
 		if (toBuild == BuildingType.OPEN_STABLES) {
 			osCostNo = UiFactory.NO_OPTION;
 			// TODO move logic to chooseOpenStablesCost
@@ -228,7 +232,7 @@ public class BuildSpecial extends BuildAction {
 				return null;
 			}
 		}
-		return super.doOnFarm(player, pos, doneSoFar);
+		return super.doOnFarm(player, pos);
 	}
 
 	protected UndoableFarmEdit postActivate(Player player, Building b) {
@@ -236,8 +240,8 @@ public class BuildSpecial extends BuildAction {
 		return new UseBuilding(toBuild);
 	}
 
-	public Action getSubAction() {
-		return toBuild != null ? getBuildingInstance(toBuild).getSubAction() : null;
+	public Action getSubAction(boolean afterFarmAction) {
+		return afterFarmAction && toBuild != null ? getBuildingInstance(toBuild).getSubAction() : null;
 	}
 
 	protected class UseBuilding extends SimpleEdit {

@@ -52,7 +52,7 @@ public abstract class MaterialRefillAction extends AbstractAction {
 			player.addMaterial(materials);
 			materials.clear();
 			setChanged();
-			return edit;
+			return joinEdits(true, edit);
 		}
 		return null;
 	}
@@ -61,15 +61,15 @@ public abstract class MaterialRefillAction extends AbstractAction {
 		return materials;
 	}
 
-	public boolean canDoOnFarm(Player player, DirPoint pos, int count) {
+	public boolean canDoOnFarm(Player player, DirPoint pos) {
 		return false;
 	}
 
-	public boolean canUndoOnFarm(Player player, DirPoint pos, int count) {
+	public boolean canUndoOnFarm(Player player, DirPoint pos) {
 		return false;
 	}
 
-	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos, int count) {
+	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos) {
 		return null;
 	}
 
@@ -89,12 +89,14 @@ public abstract class MaterialRefillAction extends AbstractAction {
 			super.undo();
 			player.removeMaterial(takenMaterials);
 			materials.add(takenMaterials);
+			
 			setChanged();
 		}
 		
 		public void redo() throws CannotRedoException {
 			super.redo();
 			materials.substract(takenMaterials);
+			
 			setChanged();
 			player.addMaterial(takenMaterials);
 		}

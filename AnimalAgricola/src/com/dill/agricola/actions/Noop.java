@@ -21,7 +21,7 @@ public class Noop implements Action {
 		return false;
 	}
 	
-	public boolean canPerformMore(Player player, int doneSoFar) {
+	public boolean canPerformMore(Player player) {
 		return false;
 	}
 

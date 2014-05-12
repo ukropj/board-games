@@ -51,7 +51,7 @@ public class Millpond extends AnimalRefillAction {
 
 	public UndoableFarmEdit doo(Player player) {
 		if (canDo(player)) {
-			UndoableFarmEdit edit = joinEdits(
+			UndoableFarmEdit edit = joinEdits(true,
 					new TakeAnimals(player, new Animals(animals)),
 					new TakeMaterials(player, new Materials(materials)));
 			player.purchaseAnimals(animals);

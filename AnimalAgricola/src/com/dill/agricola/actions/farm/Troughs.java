@@ -32,9 +32,8 @@ public class Troughs extends PurchaseAction {
 		setChanged();  // to update available trough count
 	}
 
-	protected Materials getCost(Player player, int doneSoFar) {
-		Materials cost = doneSoFar < 1 ? FIRST_COST : COST;
-		
+	protected Materials getCost(Player player) {
+		Materials cost = getUseCount() < 1 ? FIRST_COST : COST;
 		if (cost.get(Material.WOOD) > 0 && player.getFarm().hasBuilding(BuildingType.SAWMILL)) {
 			cost = new Materials(COST);
 			cost.substract(Material.WOOD, 1);

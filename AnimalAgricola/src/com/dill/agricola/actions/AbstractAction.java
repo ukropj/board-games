@@ -20,6 +20,8 @@ public abstract class AbstractAction implements Action {
 
 	private final ActionType type;
 	protected PlayerColor user = null;
+	private boolean usedAsSubaction = false;
+	private int useCount = 0;
 	protected final List<ActionStateChangeListener> changeListeners = new ArrayList<ActionStateChangeListener>();
 
 	protected AbstractAction(ActionType type) {
@@ -32,11 +34,13 @@ public abstract class AbstractAction implements Action {
 
 	public void reset() {
 		user = null;
+		useCount = 0;
 	}
 
 	public UndoableFarmEdit init() {
 		UndoableFarmEdit edit = isUsed() ? new ActionInit(user) : null;
 		user = null;
+		useCount = 0;
 		setChanged();
 		return edit;
 	}
@@ -54,16 +58,36 @@ public abstract class AbstractAction implements Action {
 		return user;
 	}
 
-	public int getMinimalCount() {
-		return 1;
+	public void useAsSubaction() {
+		usedAsSubaction = true;
+	}
+
+	protected boolean isAsSubAction() {
+		return usedAsSubaction;
+	}
+
+//	protected void increaseUseCount() {
+//		
+//	}
+//
+//	protected void decreaseUseCount() {
+//		
+//	}
+
+	protected int getUseCount() {
+		return useCount;
+	}
+	
+	public boolean isUsedEnough() {
+		return useCount > 0;
 	}
 	
 	public boolean isCancelled() {
 		return false;
 	}
-	
-	public boolean canDoOnFarm(Player player, int doneSoFar) {
-		return canDoOnFarm(player, null, doneSoFar);
+
+	public boolean canDoOnFarm(Player player) {
+		return canDoOnFarm(player, null);
 	}
 
 	public Materials getAccumulatedMaterials() {
@@ -73,36 +97,41 @@ public abstract class AbstractAction implements Action {
 	public Animals getAccumulatedAnimals() {
 		return null;
 	}
-	
-	public boolean isSubAction() {
-		return false;
-	}
-	
-	public Action getSubAction() {
+
+	public Action getSubAction(boolean afterFarmAction) {
 		return null;
 	}
-	
+
 	protected MultiEdit joinEdits(List<UndoableFarmEdit> edits) {
-		return joinEdits(edits.toArray(new UndoableFarmEdit[0]));
+		return joinEdits(false, edits.toArray(new UndoableFarmEdit[0]));
 	}
 
 	protected MultiEdit joinEdits(UndoableFarmEdit... edits) {
+		return joinEdits(false, edits);
+	}
+		protected MultiEdit joinEdits(boolean useAction, UndoableFarmEdit... edits) {
 		MultiEdit edit = new MultiEdit();
 		for (UndoableFarmEdit e : edits) {
 			if (e != null) {
 				edit.addEdit(e);
 			}
 		}
-		edit.end();
-		return edit;
+		if (edit.isEmpty()) {
+			return null;
+		} else {
+			if (useAction) {
+				useCount++;
+				edit.addEdit(new ActionUse());
+			}
+			edit.end();			
+			return edit;
+		}
 	}
 
-	
-	
 	public void addChangeListener(ActionStateChangeListener changeListener) {
 		changeListeners.add(changeListener);
 	}
-	
+
 	public void removeChangeListeners() {
 		changeListeners.clear();
 	}
@@ -112,7 +141,7 @@ public abstract class AbstractAction implements Action {
 			listener.stateChanges(this);
 		}
 	}
-	
+
 	public String toString() {
 		return Namer.getName(this) + " user:" + user;
 	}
@@ -136,6 +165,27 @@ public abstract class AbstractAction implements Action {
 			setUsed(null);
 		}
 
+		public String getPresentationName() {
+			return Namer.getName(this);
+		}
+	}
+	
+	protected class ActionUse extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
+		
+		public ActionUse() {
+		}
+		
+		public void undo() throws CannotUndoException {
+			super.undo();
+			useCount--;
+		}
+		
+		public void redo() throws CannotRedoException {
+			super.redo();
+			useCount++;
+		}
+		
 		public String getPresentationName() {
 			return Namer.getName(this);
 		}

@@ -21,34 +21,36 @@ public interface Action {
 	boolean isUsed();
 	
 	PlayerColor getUser();
+	
+	void useAsSubaction();
+	
+//	boolean isAsSubAction();
 
 	boolean isPurchaseAction();
 	
 	boolean isResourceAction();
-
-	int getMinimalCount();
 	
 	boolean isCancelled();
+	
+	boolean isUsedEnough();
 	
 	boolean canDo(Player player);
 
 	UndoableFarmEdit doo(Player player);
 
-	boolean canDoOnFarm(Player player, int doneSoFar);
+	boolean canDoOnFarm(Player player);
 
-	boolean canDoOnFarm(Player player, DirPoint pos, int doneSoFar);
+	boolean canDoOnFarm(Player player, DirPoint pos);
 
-	UndoableFarmEdit doOnFarm(Player player, DirPoint pos, int doneSoFar);
+	UndoableFarmEdit doOnFarm(Player player, DirPoint pos);
 
-	boolean canUndoOnFarm(Player player, DirPoint pos, int doneSoFar);
+	boolean canUndoOnFarm(Player player, DirPoint pos);
 
 	Materials getAccumulatedMaterials();
 
 	Animals getAccumulatedAnimals();
-
-	boolean isSubAction();
 	
-	Action getSubAction();
+	Action getSubAction(boolean afterFarmAction);
 	
 	void setChanged();
 	

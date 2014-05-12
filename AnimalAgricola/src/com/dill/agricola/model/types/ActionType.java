@@ -8,7 +8,7 @@ public enum ActionType {
 	TWO_STONE("stone"),
 	ONE_STONE("stone"),
 	BUILDING_MATERIAL("material"),
-	EXPAND("expand"),
+	BORDERS_EXPAND("bordersExpand"),
 	FENCES("fences"),
 	WALLS("walls"),
 	TROUGHS("troughs"),

@@ -16,7 +16,7 @@ import com.dill.agricola.actions.extra.Breeding;
 import com.dill.agricola.actions.farm.BuildSpecial;
 import com.dill.agricola.actions.farm.BuildStables;
 import com.dill.agricola.actions.farm.BuildStalls;
-import com.dill.agricola.actions.farm.Expand;
+import com.dill.agricola.actions.farm.BordersExpand;
 import com.dill.agricola.actions.farm.Fences;
 import com.dill.agricola.actions.farm.Troughs;
 import com.dill.agricola.actions.farm.Walls;
@@ -337,7 +337,7 @@ public class Game {
 				new OneStone(), new TwoStone(),
 				new BuildingMaterial(),
 
-				new Fences(), new Expand(), //
+				new Fences(), new BordersExpand(), //
 				new Walls(), new Troughs(), //
 
 				new Millpond(), new PigSheep(), //

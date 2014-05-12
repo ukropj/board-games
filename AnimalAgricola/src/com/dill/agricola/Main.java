@@ -1,5 +1,6 @@
 package com.dill.agricola;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,7 @@ public class Main {
 		};
 	};
 
-	public static boolean DEBUG = false;
+	public static boolean DEBUG = true;
 	public static boolean SKIP_LANG = false;
 	public static boolean MORE_BUILDINGS = true; // TODO remove these flag when ready to release expansion
 	public static boolean EVEN_MORE_BUILDINGS = false;
@@ -61,6 +62,8 @@ public class Main {
 				List<JComponent> opts = new ArrayList<JComponent>();
 				for (Lang lang : Lang.values()) {
 					JComponent opt = UiFactory.createLabel(getLangIcon(lang));
+					opt.setOpaque(true);
+					opt.setBackground(Color.LIGHT_GRAY);
 					opts.add(opt);
 				}
 				int chosenLang = SKIP_LANG ? DEFAULT_LANG.ordinal() : UiFactory.showOptionDialog(null, "Select language", "Agricola: All Creatures Big and Small", null, opts, 0);
@@ -72,7 +75,7 @@ public class Main {
 			}
 
 			private ImageIcon getLangIcon(Lang lang) {
-				BufferedImage img = Images.createImage("lang_" + lang.toString());
+				BufferedImage img = Images.createImage("flags/lang_" + lang.toString());
 				img = Images.getBestScaledInstance(img, 50);
 				return new ImageIcon(img);
 			}

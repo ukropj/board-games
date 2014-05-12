@@ -15,8 +15,8 @@ public class Walls extends PurchaseAction {
 		super(ActionType.WALLS, Purchasable.FENCE);
 	}
 	
-	protected Materials getCost(Player player, int doneSoFar) {
-		return doneSoFar < 2 ? FIRST_COST : COST;
+	protected Materials getCost(Player player) {
+		return getUseCount() < 2 ? FIRST_COST : COST;
 	}
 
 }

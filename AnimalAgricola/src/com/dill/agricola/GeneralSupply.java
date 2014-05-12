@@ -17,11 +17,13 @@ import com.dill.agricola.model.buildings.Stall;
 import com.dill.agricola.model.buildings.StorageBuilding;
 import com.dill.agricola.model.buildings.more.BarnManufacturer;
 import com.dill.agricola.model.buildings.more.BreedingStation;
+import com.dill.agricola.model.buildings.more.CountryHouse;
 import com.dill.agricola.model.buildings.more.CowStall;
 import com.dill.agricola.model.buildings.more.DogHouse;
 import com.dill.agricola.model.buildings.more.DuckPond;
 import com.dill.agricola.model.buildings.more.FarmShop;
 import com.dill.agricola.model.buildings.more.FeedStorehouse;
+import com.dill.agricola.model.buildings.more.FenceManufacturer;
 import com.dill.agricola.model.buildings.more.FodderBeetFarm;
 import com.dill.agricola.model.buildings.more.HayRack;
 import com.dill.agricola.model.buildings.more.InseminationCenter;
@@ -66,10 +68,12 @@ public class GeneralSupply {
 		// more
 		SPECIAL_BUILDINGS.put(BuildingType.BARN_MANUFACTURER, new BarnManufacturer());
 		SPECIAL_BUILDINGS.put(BuildingType.BREEDING_STATION, new BreedingStation());
+		SPECIAL_BUILDINGS.put(BuildingType.COUNTRY_HOUSE, new CountryHouse());
 		SPECIAL_BUILDINGS.put(BuildingType.COW_STALL, new CowStall());
 		SPECIAL_BUILDINGS.put(BuildingType.DOG_HOUSE, new DogHouse());
 		SPECIAL_BUILDINGS.put(BuildingType.DUCK_POND, new DuckPond());
 		SPECIAL_BUILDINGS.put(BuildingType.FARM_SHOP, new FarmShop());
+		SPECIAL_BUILDINGS.put(BuildingType.FENCE_MANUFACTURER, new FenceManufacturer());
 		SPECIAL_BUILDINGS.put(BuildingType.FEED_STOREHOUSE, new FeedStorehouse());
 		SPECIAL_BUILDINGS.put(BuildingType.FODDER_BEET_FARM, new FodderBeetFarm());
 		SPECIAL_BUILDINGS.put(BuildingType.HAY_RACK, new HayRack());

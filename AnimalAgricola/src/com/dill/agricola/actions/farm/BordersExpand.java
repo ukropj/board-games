@@ -15,7 +15,7 @@ import com.dill.agricola.support.Namer;
 import com.dill.agricola.undo.SimpleEdit;
 import com.dill.agricola.undo.UndoableFarmEdit;
 
-public class Expand extends PurchaseAction {
+public class BordersExpand extends PurchaseAction {
 
 	public final static Materials REFILL = new Materials(Material.BORDER, 1);
 	public final static Materials COST = new Materials();
@@ -24,8 +24,8 @@ public class Expand extends PurchaseAction {
 
 	private boolean hadExp = false;
 
-	public Expand() {
-		super(ActionType.EXPAND, Purchasable.EXTENSION);
+	public BordersExpand() {
+		super(ActionType.BORDERS_EXPAND, Purchasable.EXTENSION);
 	}
 
 	public void reset() {
@@ -47,12 +47,12 @@ public class Expand extends PurchaseAction {
 		return true;
 	}
 	
-	public int getMinimalCount() {
+	public boolean isUsedEnough() {
 		// first is fences, second is extension (that may not happen if not any left)
-		return (hadExp || isAnyLeft()) ? 2 : 1; 
+		return getUseCount() >= ((hadExp || isAnyLeft()) ? 2 : 1); 
 	}
 
-	protected Materials getCost(Player player, int doneSoFar) {
+	protected Materials getCost(Player player) {
 		return COST;
 	}
 
@@ -64,11 +64,11 @@ public class Expand extends PurchaseAction {
 		return !materials.isEmpty();
 	}
 
-	public boolean canDoOnFarm(Player player, DirPoint pos, int doneSoFar) {
-		return doneSoFar == 1 && isAnyLeft() && player.canPurchase(thing, getCost(player, doneSoFar), pos);
+	public boolean canDoOnFarm(Player player, DirPoint pos) {
+		return getUseCount() == 1 && isAnyLeft() && player.canPurchase(thing, getCost(player), pos);
 	}
 
-	public boolean canUndoOnFarm(Player player, DirPoint pos, int doneSoFar) {
+	public boolean canUndoOnFarm(Player player, DirPoint pos) {
 		return hadExp && player.canUnpurchase(thing, pos, true);
 	}
 
@@ -79,7 +79,7 @@ public class Expand extends PurchaseAction {
 			materials.clear();
 			setPlayerActive(player);
 			setChanged();
-			return edit;
+			return joinEdits(true, edit);
 		}
 		return null;
 	}
@@ -110,11 +110,13 @@ public class Expand extends PurchaseAction {
 			super.undo();
 			player.removeMaterial(takenMaterials);
 			materials.add(takenMaterials);
+			
 			setChanged();
 		}
 		
 		public void redo() throws CannotRedoException {
 			super.redo();
+			
 			materials.substract(takenMaterials);
 			setChanged();
 			player.addMaterial(takenMaterials);

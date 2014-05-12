@@ -14,7 +14,7 @@ public class Fences extends PurchaseAction {
 		super(ActionType.FENCES, Purchasable.FENCE);
 	}
 
-	protected Materials getCost(Player player, int doneSoFar) {
+	protected Materials getCost(Player player) {
 		return COST;
 	}
 

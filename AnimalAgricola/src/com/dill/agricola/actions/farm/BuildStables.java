@@ -37,7 +37,7 @@ public class BuildStables extends BuildAction {
 		return cost;
 	}
 
-	protected Materials getCost(Player player, int doneSoFar) {
+	protected Materials getCost(Player player) {
 		return getBuildingCost(player, costNo);
 	}
 
@@ -49,7 +49,7 @@ public class BuildStables extends BuildAction {
 		return player.canPurchase(toBuild, getBuildingCost(player, 0), null) || player.canPurchase(toBuild, getBuildingCost(player, 1), null);
 	}
 
-	public boolean canDoOnFarm(Player player, DirPoint pos, int doneSoFar) {
+	public boolean canDoOnFarm(Player player, DirPoint pos) {
 		return player.canPurchase(toBuild, getBuildingCost(player, 0), pos) || player.canPurchase(toBuild, getBuildingCost(player, 1), pos);
 	}
 
@@ -65,7 +65,7 @@ public class BuildStables extends BuildAction {
 		return UiFactory.showOptionDialog(null, "Choose cost", "Stables", icon, opts, 0);
 	}
 
-	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos, int doneSoFar) {
+	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos) {
 		costNo = UiFactory.NO_OPTION;
 		if (!player.canPay(getBuildingCost(player, 0))) {
 			costNo = 1;
@@ -79,7 +79,7 @@ public class BuildStables extends BuildAction {
 		if (costNo == UiFactory.NO_OPTION) {
 			return null;
 		}
-		return super.doOnFarm(player, pos, doneSoFar);
+		return super.doOnFarm(player, pos);
 	}
 
 }

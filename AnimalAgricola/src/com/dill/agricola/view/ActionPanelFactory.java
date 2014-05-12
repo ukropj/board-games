@@ -20,7 +20,7 @@ import com.dill.agricola.GeneralSupply;
 import com.dill.agricola.GeneralSupply.Supplyable;
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.ActionStateChangeListener;
-import com.dill.agricola.actions.farm.Expand;
+import com.dill.agricola.actions.farm.BordersExpand;
 import com.dill.agricola.actions.farm.Fences;
 import com.dill.agricola.actions.farm.Troughs;
 import com.dill.agricola.actions.farm.Walls;
@@ -121,11 +121,11 @@ public class ActionPanelFactory {
 			c.gridy = 4;
 			c.gridwidth = 2;
 			break;
-		case EXPAND:
+		case BORDERS_EXPAND:
 			JPanel extP = UiFactory.createVerticalPanel();
 			extP.add(UiFactory.createLabel("+", AgriImages.getPurchasableIcon(Purchasable.EXTENSION)));
 			extP.add(createSupplyLabel(action, Supplyable.EXTENSION));
-			createRefillPanel(parent, 1, 3, action, actionButton, extP, Expand.REFILL);
+			createRefillPanel(parent, 1, 3, action, actionButton, extP, BordersExpand.REFILL);
 			return;
 		case TROUGHS:
 			JPanel troP = UiFactory.createVerticalPanel();

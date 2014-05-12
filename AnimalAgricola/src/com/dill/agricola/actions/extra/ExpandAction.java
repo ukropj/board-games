@@ -1,66 +1,64 @@
-package com.dill.agricola.actions.farm;
+package com.dill.agricola.actions.extra;
 
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
 import com.dill.agricola.GeneralSupply;
 import com.dill.agricola.GeneralSupply.Supplyable;
+import com.dill.agricola.actions.farm.PurchaseAction;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
-import com.dill.agricola.model.Building;
 import com.dill.agricola.model.Player;
-import com.dill.agricola.model.buildings.Stall;
 import com.dill.agricola.model.types.ActionType;
-import com.dill.agricola.model.types.BuildingType;
+import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.undo.SimpleEdit;
 import com.dill.agricola.undo.UndoableFarmEdit;
 
-public class BuildStalls extends BuildAction {
+public class ExpandAction extends PurchaseAction {
 
-	public BuildStalls() {
-		super(ActionType.STALLS, BuildingType.STALL);
+	public final static Materials COST = new Materials();
+
+	public ExpandAction() {
+		super(ActionType.BORDERS_EXPAND, Purchasable.EXTENSION);
 	}
 
-	protected boolean isAnyLeft() {
-		return GeneralSupply.getLeft(Supplyable.STALL) > 0;
+	public void reset() {
+		super.reset();
+		setChanged();  // to update available extension count
 	}
 	
 	protected Materials getCost(Player player) {
-		return Stall.COST;
+		return COST;
 	}
-	
-	protected Building getBuildingInstance(BuildingType type) {
-		return GeneralSupply.useStall();
+
+	protected boolean isAnyLeft() {
+		return GeneralSupply.getLeft(Supplyable.EXTENSION) > 0;
 	}
 	
 	public boolean canDoOnFarm(Player player, DirPoint pos) {
 		return getUseCount() < 1 && super.canDoOnFarm(player, pos);
 	}
 	
-	protected UndoableFarmEdit postActivate(Player player, Building b) {
-		return new UseStall((Stall) b);
+	protected UndoableFarmEdit postActivate() {
+		GeneralSupply.useExtension(true);
+		return new UseExtension();
 	}
-
-	protected class UseStall extends SimpleEdit {
+	
+	protected class UseExtension extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
-
-		private Stall stall;
-
-		public UseStall(Stall stall) {
-			this.stall = stall;
-		}
 
 		public void undo() throws CannotUndoException {
 			super.undo();
-			GeneralSupply.unuseStall(stall);
+			GeneralSupply.useExtension(false);
 			setChanged();
 		}
 
 		public void redo() throws CannotRedoException {
 			super.redo();
-			stall = GeneralSupply.useStall();
+			GeneralSupply.useExtension(true);
 			setChanged();
 		}
 
 	}
+
 }

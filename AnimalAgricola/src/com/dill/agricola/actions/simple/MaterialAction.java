@@ -27,7 +27,7 @@ public class MaterialAction extends AbstractAction {
 	public MaterialAction(ActionType type, Materials materials) {
 		this(type, new Materials[] { materials });
 	}
-	
+
 	public MaterialAction(ActionType type, Materials[] materials) {
 		super(type);
 		this.materials = materials;
@@ -45,21 +45,22 @@ public class MaterialAction extends AbstractAction {
 		return true;
 	}
 
-	public boolean canDoOnFarm(Player player, DirPoint pos, int count) {
+	public boolean canDoOnFarm(Player player, DirPoint pos) {
 		return false;
 	}
 
-	public boolean canUndoOnFarm(Player player, DirPoint pos, int count) {
+	public boolean canUndoOnFarm(Player player, DirPoint pos) {
 		return false;
 	}
 
 	public UndoableFarmEdit doo(Player player) {
 		Materials toTake = getMaterials();
+		UndoableFarmEdit edit = new TakeMaterials(player, new Materials(toTake));
 		player.addMaterial(toTake);
-		return new TakeMaterials(player, new Materials(toTake));
+		return joinEdits(true, edit);
 	}
 
-	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos, int count) {
+	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos) {
 		return null;
 	}
 
@@ -93,11 +94,13 @@ public class MaterialAction extends AbstractAction {
 		public void undo() throws CannotUndoException {
 			super.undo();
 			player.removeMaterial(takenMaterials);
+			
 		}
 
 		public void redo() throws CannotRedoException {
 			super.redo();
 			player.addMaterial(takenMaterials);
+			
 		}
 
 	}

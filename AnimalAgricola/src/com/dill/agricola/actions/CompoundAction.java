@@ -19,6 +19,13 @@ public class CompoundAction extends AbstractAction {
 			a.addChangeListener(new CompoundActionStateChangeListener());
 		}
 	}
+	
+	public void useAsSubaction() {
+		super.useAsSubaction();
+		for (Action a : actions) {
+			a.useAsSubaction();
+		}
+	}
 
 	public void reset() {
 		for (Action a : actions) {
@@ -36,9 +43,14 @@ public class CompoundAction extends AbstractAction {
 		}
 		return !edits.isEmpty() ? joinEdits(edits) : null;
 	}
-
-	public int getMinimalCount() {
-		return 1;
+	
+	public boolean isUsedEnough() {
+		for (Action a : actions) {
+			if (!a.isUsedEnough()) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public boolean canDo(Player player) {
@@ -63,15 +75,34 @@ public class CompoundAction extends AbstractAction {
 		return !edits.isEmpty() ? joinEdits(edits) : null;
 	}
 
-	public boolean canDoOnFarm(Player player, DirPoint pos, int doneSoFar) {
-		return false; // TODO maybe enable
+	public boolean canDoOnFarm(Player player, DirPoint pos) {
+		for (Action a : actions) {
+			if (a.canDoOnFarm(player, pos)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
-	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos, int doneSoFar) {
-		return null;
+	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos) {
+		List<UndoableFarmEdit> edits = new ArrayList<UndoableFarmEdit>();
+		for (Action a : actions) {
+			if (a.canDoOnFarm(player, pos)) {
+				UndoableFarmEdit e = a.doOnFarm(player, pos);
+				if (e != null) {
+					edits.add(e);
+				}
+			}
+		}
+		return !edits.isEmpty() ? joinEdits(edits) : null;
 	}
 
-	public boolean canUndoOnFarm(Player player, DirPoint pos, int doneSoFar) {
+	public boolean canUndoOnFarm(Player player, DirPoint pos) {
+		for (Action a : actions) {
+			if (a.canUndoOnFarm(player, pos)) {
+				return true;
+			}
+		}
 		return false;
 	}
 

@@ -62,7 +62,7 @@ public abstract class AnimalRefillAction extends AbstractAction {
 			player.purchaseAnimals(animals);
 			animals.clear();
 			setChanged();
-			return edit;
+			return joinEdits(true, edit);
 		}
 		return null;
 	}
@@ -71,15 +71,15 @@ public abstract class AnimalRefillAction extends AbstractAction {
 		return animals;
 	}
 
-	public boolean canDoOnFarm(Player player, DirPoint pos, int count) {
+	public boolean canDoOnFarm(Player player, DirPoint pos) {
 		return false;
 	}
 
-	public boolean canUndoOnFarm(Player player, DirPoint pos, int count) {
+	public boolean canUndoOnFarm(Player player, DirPoint pos) {
 		return false;
 	}
 
-	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos, int count) {
+	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos) {
 		return null;
 	}
 

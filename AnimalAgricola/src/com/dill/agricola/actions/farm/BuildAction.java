@@ -30,26 +30,26 @@ public abstract class BuildAction extends PurchaseAction {
 	abstract protected Building getBuildingInstance(BuildingType type);
 
 	public boolean canDo(Player player) {
-		return isAnyLeft() && (toBuild == null || player.canPurchase(toBuild, getCost(player, 0), null));
+		return isAnyLeft() && (toBuild == null || player.canPurchase(toBuild, getCost(player), null));
 	}
 
-	public boolean canDoOnFarm(Player player, DirPoint pos, int doneSoFar) {
-		return isAnyLeft() && toBuild != null && player.canPurchase(toBuild, getCost(player, doneSoFar), pos);
+	public boolean canDoOnFarm(Player player, DirPoint pos) {
+		return isAnyLeft() && toBuild != null && player.canPurchase(toBuild, getCost(player), pos);
 	}
 
-	public boolean canUndoOnFarm(Player player, DirPoint pos, int doneSoFar) {
+	public boolean canUndoOnFarm(Player player, DirPoint pos) {
 		return player.canUnpurchase(toBuild, pos, true);
 	}
 
-	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos, int doneSoFar) {
-		if (canDoOnFarm(player, pos, doneSoFar)) {
+	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos) {
+		if (canDoOnFarm(player, pos)) {
 			Building b = getBuildingInstance(toBuild);
-			Materials cost = getCost(player, doneSoFar);
+			Materials cost = getCost(player);
 			UndoableFarmEdit edit = new PurchaseBuilding(player, b, cost, pos);
 			player.purchase(b, cost, pos);
 			UndoableFarmEdit postEdit = postActivate(player, b);
 			setChanged();
-			return joinEdits(edit, postEdit);
+			return joinEdits(true, edit, postEdit);
 		}
 		return null;
 	}

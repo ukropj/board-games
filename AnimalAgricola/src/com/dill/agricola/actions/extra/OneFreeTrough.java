@@ -14,21 +14,16 @@ public class OneFreeTrough extends Troughs {
 		super(ActionType.ONE_FREE_TROUGH);
 	}
 
-	protected Materials getCost(Player player, int doneSoFar) {
+	protected Materials getCost(Player player) {
 		return COST;
 	}
 
 	public boolean canDo(Player player) {
-		return isAnyLeft() && player.canPurchase(thing, getCost(player, 0), null);
+		return isAnyLeft() && player.canPurchase(thing, getCost(player), null);
 	}
 
-	public boolean canDoOnFarm(Player player, DirPoint pos, int doneSoFar) {
-		return doneSoFar == 0 && super.canDoOnFarm(player, pos, doneSoFar);
+	public boolean canDoOnFarm(Player player, DirPoint pos) {
+		return getUseCount() < 1 && super.canDoOnFarm(player, pos);
 	}
-	
-	public boolean isSubAction() {
-		return true;
-	}
-	
 
 }

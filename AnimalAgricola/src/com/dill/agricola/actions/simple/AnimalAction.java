@@ -46,21 +46,22 @@ public class AnimalAction extends AbstractAction {
 		return true;
 	}
 
-	public boolean canDoOnFarm(Player player, DirPoint pos, int count) {
+	public boolean canDoOnFarm(Player player, DirPoint pos) {
 		return false;
 	}
 
-	public boolean canUndoOnFarm(Player player, DirPoint pos, int count) {
+	public boolean canUndoOnFarm(Player player, DirPoint pos) {
 		return false;
 	}
 
 	public UndoableFarmEdit doo(Player player) {
 		Animals toTake = getAnimals();
+		UndoableFarmEdit edit = new TakeAnimals(player, new Animals(toTake));
 		player.purchaseAnimals(toTake);
-		return new TakeAnimals(player, new Animals(toTake));
+		return joinEdits(true, edit);
 	}
 
-	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos, int count) {
+	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos) {
 		return null;
 	}
 
