@@ -177,8 +177,9 @@ public class BuildSpecial extends BuildAction {
 		List<JComponent> opts = new ArrayList<JComponent>();
 		for (BuildingType type : types) {
 			if (left.contains(type)) {
-				JComponent opt = UiFactory.createLabel(AgriImages.getBuildingIcon(type, ImgSize.BIG));
-				opt.setEnabled(canPurchase(player, type, null));
+				boolean canPurchase = canPurchase(player, type, null);
+				JComponent opt = UiFactory.createLabel(AgriImages.getBuildingIcon(type, ImgSize.BIG, canPurchase));
+				opt.setEnabled(canPurchase);
 				opts.add(opt);
 			} else {
 				opts.add(null);

@@ -19,6 +19,8 @@ import com.dill.agricola.support.Fonts;
 import com.dill.agricola.support.Msg;
 
 public class AgriImages {
+	
+	public final static Color OVERLAY_COLOR = new Color(255, 255, 255, 120);
 
 	private final static BufferedImage[] buildings = new BufferedImage[BuildingType.values().length];
 	private final static BufferedImage[] animals = new BufferedImage[ImgSize.values().length * (Animal.values().length + 1)];
@@ -279,7 +281,12 @@ public class AgriImages {
 		return img;
 	}
 
+	
 	public static ImageIcon getBuildingIcon(BuildingType type, ImgSize size) {
+		return getBuildingIcon(type, size, true);
+	}
+	
+	public static ImageIcon getBuildingIcon(BuildingType type, ImgSize size, boolean enabled) {
 		BufferedImage img = getBuildingImage(type);
 		img = addBuildingText(type, img);
 		switch (size) {
@@ -292,6 +299,13 @@ public class AgriImages {
 		case BIG:
 			img = Images.getBestScaledInstance(img, 0.7f);
 			break;
+		}
+		if (!enabled) {
+			Graphics2D g2 = img.createGraphics();
+			// overlay
+			g2.setColor(OVERLAY_COLOR);
+			g2.fillRect(0, 0, img.getWidth(), img.getHeight());
+			g2.dispose();
 		}
 		return new ImageIcon(img);
 	}

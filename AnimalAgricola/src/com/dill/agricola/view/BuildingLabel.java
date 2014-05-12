@@ -1,6 +1,5 @@
 package com.dill.agricola.view;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -16,8 +15,6 @@ import com.dill.agricola.view.utils.Images;
 
 public class BuildingLabel extends JLabel {
 	private static final long serialVersionUID = 1L;
-
-	private final Color OVERLAY_COLOR = new Color(255, 255, 255, 120);
 
 	private final BuildingType type;
 	private boolean used = false;
@@ -55,7 +52,7 @@ public class BuildingLabel extends JLabel {
 		if (used) {
 			Dimension size = getSize();
 			// overlay
-			g.setColor(OVERLAY_COLOR);
+			g.setColor(AgriImages.OVERLAY_COLOR);
 			g.fillRect(0, 0, size.width, size.height);
 		}
 	}
