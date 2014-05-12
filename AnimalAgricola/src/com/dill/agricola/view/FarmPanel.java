@@ -838,7 +838,7 @@ public class FarmPanel extends JPanel {
 			Purchasable[] activeTypes = { farm.getActiveType(), farm.getActiveSubType() };
 
 			// TODO refactor to more functions
-			if (active && !breeding && activeTypes[0] != null) {
+			if (active && !breeding) {
 				for (int i = 0; i < activeTypes.length; i++) {
 					Purchasable activeType = activeTypes[i];
 					if (activeType == null) {

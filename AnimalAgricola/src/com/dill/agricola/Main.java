@@ -28,12 +28,12 @@ public class Main {
 		};
 	};
 
-	public static boolean DEBUG = true;
+	public static boolean DEBUG = false;
 	public static boolean SKIP_LANG = false;
 	public static boolean MORE_BUILDINGS = true; // TODO remove these flag when ready to release expansion
 	public static boolean EVEN_MORE_BUILDINGS = false;
 
-	private static final Lang DEFAULT_LANG = Lang.EN; // 'en' is default
+	private static final Lang DEFAULT_LANG = DEBUG ? Lang.SK : Lang.EN; // 'en' is default
 
 	public static void main(String[] args) {
 

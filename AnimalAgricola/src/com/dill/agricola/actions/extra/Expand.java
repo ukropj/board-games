@@ -14,11 +14,11 @@ import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.undo.SimpleEdit;
 import com.dill.agricola.undo.UndoableFarmEdit;
 
-public class ExpandAction extends PurchaseAction {
+public class Expand extends PurchaseAction {
 
 	public final static Materials COST = new Materials();
 
-	public ExpandAction() {
+	public Expand() {
 		super(ActionType.BORDERS_EXPAND, Purchasable.EXTENSION);
 	}
 

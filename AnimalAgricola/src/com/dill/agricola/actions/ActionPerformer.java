@@ -67,9 +67,18 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 			player.spendWorker();
 			action.setUsed(player.getColor());
 
+			if (this.subAction == null) {
+				Action subAction = action.getSubAction(false);
+				if (subAction != null) {
+					startSubAction(subAction);
+				}
+			}
+
 			if (edit != null) {
 				postEdit(edit);
-				if (!action.canDoOnFarm(player) && !edit.isAnimalEdit() && !player.hasLooseAnimals()) {
+				if (!edit.isAnimalEdit() && !player.hasLooseAnimals()
+						&& !action.canDoOnFarm(player)
+						&& (subAction == null || !subAction.canDoOnFarm(player))) {
 					return finishAction();
 				}
 			}
@@ -141,7 +150,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 					Action subAction = action.getSubAction(true);
 					if (subAction != null) {
 						startSubAction(subAction);
-					}					
+					}
 				}
 				return true;
 			}
@@ -200,6 +209,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		if (canSubFinish()) {
 			player.getFarm().setActiveSubType(null);
 			subAction.removeChangeListeners();
+			subAction.reset();
 			subAction = null;
 			player.notifyObservers(ChangeType.ACTION_DONE);
 			return true;
@@ -273,11 +283,11 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		}
 
 	}
-	
+
 	private class SubActionStateChangeListener implements ActionStateChangeListener {
 		public void stateChanges(Action subAction) {
 			if (action != null) {
-				action.setChanged();				
+				action.setChanged();
 			}
 		}
 	}

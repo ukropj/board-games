@@ -46,11 +46,11 @@ public class CompoundAction extends AbstractAction {
 	
 	public boolean isUsedEnough() {
 		for (Action a : actions) {
-			if (!a.isUsedEnough()) {
-				return false;
+			if (a.isUsedEnough()) {
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 
 	public boolean canDo(Player player) {

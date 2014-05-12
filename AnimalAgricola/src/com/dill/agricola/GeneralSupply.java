@@ -45,7 +45,7 @@ public class GeneralSupply {
 	public final static int MAX_TROUGHS = 10;
 	public final static int MORE_BUILDINGS = Main.DEBUG ? 27 : 4;
 	public final static int EVEN_MORE_BUILDINGS = Main.DEBUG ? 4 : 4;
-	public final static Integer[] EXTS = { 0, 1, 2, 3, 4 };
+	public final static Integer[] EXTS = { 0, /*1, 2, 3, 4*/ };
 	public final static Stall[] STALLS = { new Stall(0), new Stall(1), new Stall(2), new Stall(3), new Stall(4) };
 
 	private final static Map<BuildingType, Building> SPECIAL_BUILDINGS = new EnumMap<BuildingType, Building>(BuildingType.class);

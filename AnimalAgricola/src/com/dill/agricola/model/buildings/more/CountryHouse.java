@@ -1,7 +1,7 @@
 package com.dill.agricola.model.buildings.more;
 
 import com.dill.agricola.actions.CompoundAction;
-import com.dill.agricola.actions.extra.ExpandAction;
+import com.dill.agricola.actions.extra.Expand;
 import com.dill.agricola.actions.simple.AnimalAction;
 import com.dill.agricola.common.Animals;
 import com.dill.agricola.common.Materials;
@@ -20,7 +20,7 @@ public class CountryHouse extends Building {
 	public CountryHouse() {
 		super(BuildingType.COUNTRY_HOUSE, 1, 3, new CompoundAction(
 				new AnimalAction(ActionType.BUILDING_REWARD, REWARD),
-				new ExpandAction()
+				new Expand()
 				));
 	}
 }
