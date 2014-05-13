@@ -1,6 +1,5 @@
 package com.dill.agricola.view;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
@@ -15,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import com.dill.agricola.GeneralSupply;
 import com.dill.agricola.GeneralSupply.Supplyable;
@@ -202,9 +202,9 @@ public class ActionPanelFactory {
 			JLabel spec1 = UiFactory.createLabel(Msg.get("specBuildLabel"));
 			spec1.setFont(Fonts.ACTION_TEXT_BIG);
 			actionButton.add(spec1);
-			c.fill = GridBagConstraints.BOTH;
-			c.weighty = 0.5;
+			c.fill = GridBagConstraints.HORIZONTAL;
 			c.gridy = 7;
+			c.weighty = 0;
 			break;
 		case SPECIAL2:
 			if (stallSupplyChangeListener != null) {
@@ -216,10 +216,11 @@ public class ActionPanelFactory {
 			JLabel spec2 = UiFactory.createLabel(Msg.get("specBuildLabel"));
 			spec2.setFont(Fonts.ACTION_TEXT_BIG);
 			actionButton.add(spec2);
+			c.fill = GridBagConstraints.HORIZONTAL;
 			c.gridx = 3;
 			c.gridy = 9;
 			c.gridwidth = 3;
-			c.weighty = 0.5;
+			c.weighty = 0;
 			break;
 		default:
 			actionButton.setText(action.toString());
@@ -231,21 +232,20 @@ public class ActionPanelFactory {
 
 	public static JPanel createBuildingPanel(JPanel parent) {
 		JPanel display = new JPanel(new GridLayout(0, 4, 2, 2));
+		JScrollPane sp = new JScrollPane(display);
+		sp.setBorder(BorderFactory.createEmptyBorder());
 		display.setOpaque(false);
 		repopulateBuildingPanel(display);
-		JPanel bP = UiFactory.createBorderPanel(2, 0);
-		bP.add(display, BorderLayout.CENTER);
 
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
-		c.ipadx = c.ipady = 3;
+		c.ipadx = c.ipady = 1;
 		c.insets = new Insets(INSET,INSET,INSET,INSET);
 		c.weighty = 0.5;
 		c.gridx = 3;
 		c.gridy = 8;
 		c.gridwidth = 3;
-		c.weighty = 0;
-		parent.add(display, c);
+		parent.add(sp, c);
 		return display;
 	}
 	
