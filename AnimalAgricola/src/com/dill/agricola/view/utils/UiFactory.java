@@ -50,9 +50,6 @@ public class UiFactory {
 	private UiFactory() {
 	}
 
-//	public static String pad(String str, int length) {
-//		return String.format("%1$-" + length + "s", str);
-//	}
 	public static Color makeTranslucent(Color c, int alpha) {
 		return new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha);
 	}

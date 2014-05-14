@@ -24,8 +24,6 @@ public interface Action {
 	
 	void useAsSubaction();
 	
-//	boolean isAsSubAction();
-
 	boolean isPurchaseAction();
 	
 	boolean isResourceAction();

@@ -40,10 +40,6 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		return action != null && action.getType() == type;
 	}
 
-//	private boolean hasSubAction() {
-//		return subAction != null;
-//	}
-
 	public Action getAction() {
 		return action;
 	}

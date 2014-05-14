@@ -89,8 +89,6 @@ public class ActionBoard extends JPanel {
 		add(tabPane, BorderLayout.CENTER);
 
 		JPanel actionPanel = new JPanel(new GridBagLayout());
-//		actionPanel.setBackground(new Color(172, 198, 103));
-//		actionPanel.setBackground(new Color(154, 179, 98));
 
 		buildingDisplay = ActionPanelFactory.createBuildingPanel(actionPanel);
 

@@ -73,8 +73,7 @@ public class Bag<T extends Enum<T>> {
 
 	public boolean isSuperset(Bag<T> other) {
 		// true if this Ts have at least as much of all materials the the
-		// other
-		// Ts
+		// other Ts
 		for (T t : values) {
 			if (map.get(t) < other.get(t)) {
 				return false;

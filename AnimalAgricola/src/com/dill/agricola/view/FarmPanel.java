@@ -781,26 +781,6 @@ public class FarmPanel extends JPanel {
 				}
 			}
 		}
-//		if (total > 0) {
-//			total += 3;
-//			float maxWidth = 1.0f * farm.getWidth() * S - S / 2;
-//			float l = Math.min(S / 8.0f, maxWidth / total);
-//			float x = 2*M + l * total;
-//			int y = Y1 + farm.getHeight() * S + S / 2 - 2 * M;
-//			int j = 0;
-//			BufferedImage img = null;
-//			for (Animal type : Animal.values()) {
-//				int count = loose.get(type);
-//				if (count > 0) {
-//					img = AgriImages.getAnimalImage(type, ImgSize.BIG, 1);
-//					for (int i = 0; i < count; i++) {
-//						g.drawImage(img, (int) (x - j * l), y - img.getHeight(), img.getWidth(), img.getHeight(), null);
-//						j++;
-//					}
-//					j++;
-//				}
-//			}
-//		}
 	}
 
 	private class SpaceListener extends MouseAdapter {

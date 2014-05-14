@@ -376,23 +376,4 @@ public class ActionPanelFactory {
 		}
 	}
 
-//	private static class BuildingDetailListener implements ActionListener {
-//
-//		public void actionPerformed(ActionEvent e) {
-//			Set<BuildingType> left = GeneralSupply.getBuildingsLeft();
-//
-//			List<JComponent> opts = new ArrayList<JComponent>();
-//			for (BuildingType type : GeneralSupply.getBuildingsAll()) {
-//				JComponent opt = UiFactory.createLabel(AgriImages.getBuildingIcon(type, ImgSize.BIG));
-//				if (!left.contains(type)) {
-//					opt.setEnabled(false);
-//				}
-//				opts.add(opt);
-//			}
-//			JOptionPane.showOptionDialog(null, "", Msg.get("specialBuildings"), JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null,
-//					opts.toArray(), null);
-//		}
-//
-//	}
-
 }
