@@ -64,9 +64,8 @@ public abstract class PurchaseAction extends AbstractAction {
 
 	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos) {
 		if (canDoOnFarm(player, pos)) {
-			Materials cost = getCost(player);
-			UndoableFarmEdit edit = new PurchaseThing(player, new Materials(cost), new DirPoint(pos));
-			player.purchase(thing, cost, pos);
+			UndoableFarmEdit edit = new PurchaseThing(player, new DirPoint(pos));
+			player.purchase(thing, getCost(player), pos);
 			UndoableFarmEdit postEdit = postActivate();
 			setChanged();
 			return joinEdits(true, edit, postEdit);
@@ -82,21 +81,19 @@ public abstract class PurchaseAction extends AbstractAction {
 		private static final long serialVersionUID = 1L;
 
 		private final Player player;
-		private final Materials cost;
 		private final DirPoint pos;
 		private final DirPoint undoPos;
 		
-		public PurchaseThing(Player player,  Materials cost, DirPoint pos) {
+		public PurchaseThing(Player player, DirPoint pos) {
 			super(thing == Purchasable.EXTENSION && pos.x < 0 ? new DirPoint(0, 0) : pos, thing);
 			this.player = player;
-			this.cost = cost;
 			this.pos = pos;
 			this.undoPos = thing == Purchasable.EXTENSION && pos.x < 0 ? new DirPoint(0, 0) : pos;
 		}
 		
 		public void undo() throws CannotUndoException {
 			super.undo();
-			boolean done = player.unpurchase(thing, cost, undoPos, false);
+			boolean done = player.unpurchase(thing, getCost(player), undoPos, false);
 			if (!done) {
 				throw new CannotUndoException();
 			}
@@ -104,7 +101,7 @@ public abstract class PurchaseAction extends AbstractAction {
 		
 		public void redo() throws CannotRedoException {
 			super.redo();
-			boolean done = player.purchase(thing, cost, pos);
+			boolean done = player.purchase(thing, getCost(player), pos);
 			if (!done) {
 				throw new CannotRedoException();
 			}

@@ -66,14 +66,6 @@ public abstract class AbstractAction implements Action {
 		return usedAsSubaction;
 	}
 
-//	protected void increaseUseCount() {
-//		
-//	}
-//
-//	protected void decreaseUseCount() {
-//		
-//	}
-
 	protected int getUseCount() {
 		return useCount;
 	}
