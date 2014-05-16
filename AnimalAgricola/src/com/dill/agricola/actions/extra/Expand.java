@@ -5,6 +5,7 @@ import javax.swing.undo.CannotUndoException;
 
 import com.dill.agricola.GeneralSupply;
 import com.dill.agricola.GeneralSupply.Supplyable;
+import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.farm.PurchaseAction;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
@@ -17,6 +18,7 @@ import com.dill.agricola.undo.UndoableFarmEdit;
 public class Expand extends PurchaseAction {
 
 	public final static Materials COST = new Materials();
+	private final Action tradeForCow = new TradeForCow();
 
 	public Expand() {
 		super(ActionType.BORDERS_EXPAND, Purchasable.EXTENSION);
@@ -39,9 +41,13 @@ public class Expand extends PurchaseAction {
 		return getUseCount() < 1 && super.canDoOnFarm(player, pos);
 	}
 	
-	protected UndoableFarmEdit postActivate() {
+	protected UndoableFarmEdit postActivate(Player player) {
 		GeneralSupply.useExtension(true);
-		return new UseExtension();
+		UndoableFarmEdit edit = null;
+		if (tradeForCow.canDo(player)) {
+			edit = tradeForCow.doo(player);
+		}
+		return joinEdits(new UseExtension(), edit);
 	}
 	
 	protected class UseExtension extends SimpleEdit {

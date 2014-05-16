@@ -45,7 +45,7 @@ public class Troughs extends PurchaseAction {
 		return GeneralSupply.getLeft(Supplyable.TROUGH) > 0;
 	}
 
-	protected UndoableFarmEdit postActivate() {
+	protected UndoableFarmEdit postActivate(Player player) {
 		GeneralSupply.useTrough(true);
 		return new UseTrough();
 	}

@@ -201,6 +201,10 @@ public class Player extends SimpleObservable {
 		return animals.get(type);
 	}
 
+	public int getAnimals() {
+		return animals.size();
+	}
+
 	public boolean purchaseAnimal(Animal type, int count) {
 		Main.asrtPositive(count, "Cannot purchase negative amount");
 		animals.add(type, count);

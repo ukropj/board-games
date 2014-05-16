@@ -23,6 +23,7 @@ public enum BuildingType {
 	// more special buildings
 	BARN_MANUFACTURER(1, Msg.get("barnManufacturer"), new BuildingText(Msg.get("immediately"), 0.13f, 0.56f, 0.38f)),
 	BREEDING_STATION(1, Msg.get("breedingStation"), new BuildingText(Msg.get("breedingStationText"), 0.13f, 0.52f, 0.72f)),
+	CATTLE_FARM(1, Msg.get("cattleFarm"), new BuildingText(Msg.get("cattleFarmText"), 0.12f, 0.50f, 0.76f)),
 	COUNTRY_HOUSE(1, Msg.get("countryHouse"), new BuildingText(Msg.get("immediately"), 0.33f, 0.49f, 0.4f)),
 	COW_STALL(1, Msg.get("cowStall"), new BuildingText(Msg.get("immediately"), 0.4f, 0.5f, 0.4f),
 			new BuildingText(Msg.get("cowStallText"), 0.33f, 0.78f, 0.11f)),
@@ -57,9 +58,9 @@ public enum BuildingType {
 			Collections.unmodifiableList(
 					Arrays.asList(new BuildingType[] {
 							BuildingType.BARN_MANUFACTURER, BuildingType.BREEDING_STATION,
-							BuildingType.DOG_HOUSE,
+							BuildingType.CATTLE_FARM,
 							BuildingType.COW_STALL, BuildingType.COUNTRY_HOUSE,
-							BuildingType.DUCK_POND,
+							BuildingType.DOG_HOUSE, BuildingType.DUCK_POND,
 							BuildingType.FARM_SHOP, BuildingType.FEED_STOREHOUSE,
 							BuildingType.FENCE_MANUFACTURER, BuildingType.FODDER_BEET_FARM,
 							BuildingType.HAY_RACK, BuildingType.INSEMINATION_CENTER,

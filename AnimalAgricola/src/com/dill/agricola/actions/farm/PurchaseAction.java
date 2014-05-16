@@ -66,14 +66,14 @@ public abstract class PurchaseAction extends AbstractAction {
 		if (canDoOnFarm(player, pos)) {
 			UndoableFarmEdit edit = new PurchaseThing(player, new DirPoint(pos));
 			player.purchase(thing, getCost(player), pos);
-			UndoableFarmEdit postEdit = postActivate();
+			UndoableFarmEdit postEdit = postActivate(player);
 			setChanged();
 			return joinEdits(true, edit, postEdit);
 		}
 		return null;
 	}
 
-	protected UndoableFarmEdit postActivate() {
+	protected UndoableFarmEdit postActivate(Player player) {
 		return null;
 	}
 

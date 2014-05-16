@@ -23,6 +23,7 @@ import com.dill.agricola.model.buildings.Shelter;
 import com.dill.agricola.model.buildings.StorageBuilding;
 import com.dill.agricola.model.buildings.more.BarnManufacturer;
 import com.dill.agricola.model.buildings.more.BreedingStation;
+import com.dill.agricola.model.buildings.more.CattleFarm;
 import com.dill.agricola.model.buildings.more.CountryHouse;
 import com.dill.agricola.model.buildings.more.CowStall;
 import com.dill.agricola.model.buildings.more.DogHouse;
@@ -65,6 +66,7 @@ public class BuildSpecial extends BuildAction {
 		// more
 		COSTS.put(BuildingType.BARN_MANUFACTURER, BarnManufacturer.COST);
 		COSTS.put(BuildingType.BREEDING_STATION, BreedingStation.COST);
+		COSTS.put(BuildingType.CATTLE_FARM, CattleFarm.COST);
 		COSTS.put(BuildingType.COUNTRY_HOUSE, CountryHouse.COST);
 		COSTS.put(BuildingType.COW_STALL, CowStall.COST);
 		COSTS.put(BuildingType.DOG_HOUSE, DogHouse.COST);
