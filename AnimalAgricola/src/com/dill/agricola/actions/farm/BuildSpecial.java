@@ -37,6 +37,7 @@ import com.dill.agricola.model.buildings.more.InseminationCenter;
 import com.dill.agricola.model.buildings.more.LargeExtension;
 import com.dill.agricola.model.buildings.more.LogHouse;
 import com.dill.agricola.model.buildings.more.PigStall;
+import com.dill.agricola.model.buildings.more.RearingStation;
 import com.dill.agricola.model.buildings.more.Sawmill;
 import com.dill.agricola.model.buildings.more.SmallExtension;
 import com.dill.agricola.model.buildings.more.Stud;
@@ -80,6 +81,7 @@ public class BuildSpecial extends BuildAction {
 		COSTS.put(BuildingType.LARGE_EXTENSION, LargeExtension.COST);
 		COSTS.put(BuildingType.LOG_HOUSE, LogHouse.COST);
 		COSTS.put(BuildingType.PIG_STALL, PigStall.COST);
+		COSTS.put(BuildingType.REARING_STATION, RearingStation.COST);
 		COSTS.put(BuildingType.SAWMILL, Sawmill.COST);
 		COSTS.put(BuildingType.SMALL_EXTENSION, SmallExtension.COST);
 		COSTS.put(BuildingType.STUD, Stud.COST);

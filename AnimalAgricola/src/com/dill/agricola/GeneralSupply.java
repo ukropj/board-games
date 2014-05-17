@@ -31,6 +31,7 @@ import com.dill.agricola.model.buildings.more.InseminationCenter;
 import com.dill.agricola.model.buildings.more.LargeExtension;
 import com.dill.agricola.model.buildings.more.LogHouse;
 import com.dill.agricola.model.buildings.more.PigStall;
+import com.dill.agricola.model.buildings.more.RearingStation;
 import com.dill.agricola.model.buildings.more.Sawmill;
 import com.dill.agricola.model.buildings.more.SmallExtension;
 import com.dill.agricola.model.buildings.more.Stud;
@@ -83,6 +84,7 @@ public class GeneralSupply {
 		SPECIAL_BUILDINGS.put(BuildingType.LOG_HOUSE, new LogHouse());
 		SPECIAL_BUILDINGS.put(BuildingType.LARGE_EXTENSION, new LargeExtension());
 		SPECIAL_BUILDINGS.put(BuildingType.PIG_STALL, new PigStall());
+		SPECIAL_BUILDINGS.put(BuildingType.REARING_STATION, new RearingStation());
 		SPECIAL_BUILDINGS.put(BuildingType.SAWMILL, new Sawmill());
 		SPECIAL_BUILDINGS.put(BuildingType.SMALL_EXTENSION, new SmallExtension());
 		SPECIAL_BUILDINGS.put(BuildingType.STUD, new Stud());
