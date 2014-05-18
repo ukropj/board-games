@@ -43,6 +43,7 @@ public class Breeding extends AbstractAction {
 		}
 		if (newAnimals.size() > 0) {
 			UndoableFarmEdit edit = new BreedAnimals(player, new Animals(newAnimals));
+			player.purchaseAnimals(newAnimals);
 			player.setLastBornAnimals(newAnimals);
 			return joinEdits(true, edit, new ActionUse());
 		}
