@@ -1,6 +1,5 @@
 #TODO#
 
-	show special buildings on startup
 	allow non-random buildings (some kind of picker)
 	highlight current action
 	more buildings big and small

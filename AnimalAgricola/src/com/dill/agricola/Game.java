@@ -41,6 +41,7 @@ import com.dill.agricola.undo.TurnUndoManager;
 import com.dill.agricola.undo.TurnUndoManager.UndoRedoListener;
 import com.dill.agricola.undo.UndoableFarmEdit;
 import com.dill.agricola.view.Board;
+import com.dill.agricola.view.BuildingOverviewDialog;
 import com.dill.agricola.view.NewGameDialog;
 
 public class Game {
@@ -160,6 +161,10 @@ public class Game {
 		if (!newDialog.isDone()) {
 			return;
 		}
+		GeneralSupply.reset(newDialog.getUseMoreBuildings(), newDialog.getUseEvenMoreBuildings());
+		if (newDialog.getUseMoreBuildings() || newDialog.getUseEvenMoreBuildings()) {
+			/*BuildingOverviewDialog buildingOverview =*/new BuildingOverviewDialog(board);
+		}
 
 		for (Player p : players) {
 			p.init();
@@ -170,7 +175,6 @@ public class Game {
 		undoManager.discardAllEdits();
 		ap.beginUpdate(null, ""); // start "initial edit"
 		ap.invalidateUpdated(); // which cannot be undone
-		GeneralSupply.reset(newDialog.getUseMoreBuildings(), newDialog.getUseEvenMoreBuildings());
 
 		setStartingPlayer(newDialog.getStartingPlayer());
 		initialStartPlayer = startPlayer;

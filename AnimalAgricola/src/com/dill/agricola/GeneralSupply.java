@@ -61,10 +61,7 @@ public class GeneralSupply {
 		Collections.shuffle(extsLeft);
 		extsUsed.clear();
 		SPECIAL_BUILDINGS.clear(); // clear building instances
-		buildingsAll.clear();
-		buildingsAll.addAll(generateRandomBuildings());
-		buildingsLeft.clear();
-		buildingsLeft.addAll(buildingsAll);
+		randomizeBuildings();
 	}
 
 	public static int getLeft(Supplyable type) {
@@ -88,6 +85,13 @@ public class GeneralSupply {
 
 	public static List<BuildingType> getBuildingsAll() {
 		return buildingsAll;
+	}
+	
+	public static void randomizeBuildings() {
+		buildingsAll.clear();
+		buildingsAll.addAll(generateRandomBuildings());
+		buildingsLeft.clear();
+		buildingsLeft.addAll(buildingsAll);
 	}
 
 	private static List<BuildingType> generateRandomBuildings() {
