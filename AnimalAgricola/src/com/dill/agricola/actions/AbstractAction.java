@@ -21,7 +21,7 @@ public abstract class AbstractAction implements Action {
 	private final ActionType type;
 	protected PlayerColor user = null;
 	private boolean usedAsSubaction = false;
-	private int useCount = 0;
+	protected int useCount = 0; // TODO make private
 	protected final List<ActionStateChangeListener> changeListeners = new ArrayList<ActionStateChangeListener>();
 
 	protected AbstractAction(ActionType type) {
@@ -38,7 +38,7 @@ public abstract class AbstractAction implements Action {
 	}
 
 	public UndoableFarmEdit init() {
-		UndoableFarmEdit edit = isUsed() ? new ActionInit(user) : null;
+		UndoableFarmEdit edit = isUsed() ? new ActionInit(user, useCount) : null;
 		user = null;
 		useCount = 0;
 		setChanged();
@@ -142,19 +142,23 @@ public abstract class AbstractAction implements Action {
 		private static final long serialVersionUID = 1L;
 
 		private final PlayerColor lastUser;
+		private final int lastUseCount;
 
-		public ActionInit(PlayerColor lastUser) {
+		public ActionInit(PlayerColor lastUser, int lastUseCount) {
 			this.lastUser = lastUser;
+			this.lastUseCount = lastUseCount;
 		}
 
 		public void undo() throws CannotUndoException {
 			super.undo();
 			setUsed(lastUser);
+			useCount = lastUseCount;
 		}
 
 		public void redo() throws CannotRedoException {
 			super.redo();
 			setUsed(null);
+			useCount = 0;
 		}
 
 		public String getPresentationName() {

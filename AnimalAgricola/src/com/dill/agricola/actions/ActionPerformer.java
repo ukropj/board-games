@@ -94,25 +94,27 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		}
 	}
 
-	private boolean startSubaction(Action subAction) {
-		this.subaction = subAction;
-		subAction.addChangeListener(new SubActionStateChangeListener());
-		subAction.useAsSubaction();
+	private boolean startSubaction(Action subaction) {
+		this.subaction = subaction;
+		subaction.addChangeListener(new SubActionStateChangeListener());
+		subaction.init();
+		subaction.useAsSubaction();
 
-		boolean canDo = subAction.canDo(player);
+		boolean canDo = subaction.canDo(player);
 		UndoableFarmEdit edit = null;
 		if (canDo) {
-			edit = subAction.doo(player);
+			edit = subaction.doo(player);
 
-			if (subAction.isCancelled()) {
+			if (subaction.isCancelled()) {
 				return false;
 			}
 
-			postEdit(new StartSubAction(player));
+			postEdit(new StartSubAction(player, subaction));
+			subaction.setUsed(player.getColor());
 
 			if (edit != null) {
 				postEdit(edit);
-				if (!subAction.canDoOnFarm(player) && !edit.isAnimalEdit() && !player.hasLooseAnimals()) {
+				if (!subaction.canDoOnFarm(player) && !edit.isAnimalEdit() && !player.hasLooseAnimals()) {
 					return finishSubaction();
 				}
 			}
@@ -212,7 +214,6 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		if (canSubFinish()) {
 			player.getFarm().setActiveSubType(null);
 			subaction.removeChangeListeners();
-			subaction.reset();
 			subaction = null;
 			player.notifyObservers(ChangeType.ACTION_DONE);
 			return true;
@@ -262,20 +263,24 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		private static final long serialVersionUID = 1L;
 
 		private final Player p;
+		private final Action a;
 
-		public StartSubAction(Player player) {
+		public StartSubAction(Player player, Action action) {
 			super(true);
 			this.p = player;
+			this.a = action;
 		}
 
 		public void undo() throws CannotUndoException {
 			super.undo();
 			p.getFarm().setActiveSubType(null);
 			subaction = null;
+			a.setUsed(null);
 		}
 
 		public void redo() throws CannotRedoException {
 			super.redo();
+			a.setUsed(p.getColor());
 		}
 
 	}

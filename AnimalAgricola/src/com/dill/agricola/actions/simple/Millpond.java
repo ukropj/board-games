@@ -31,8 +31,9 @@ public class Millpond extends AnimalRefillAction {
 	}
 
 	public UndoableFarmEdit init() {
-		UndoableFarmEdit initEdit = isUsed() ? new ActionInit(user) : null;
+		UndoableFarmEdit initEdit = isUsed() ? new ActionInit(user, useCount) : null;
 		user = null;
+		useCount = 0;
 		UndoableFarmEdit edit;
 		if (materials.isEmpty()) {
 			materials.add(REFILL);

@@ -257,7 +257,7 @@ public class Game {
 							// TODO make extra actions undoable
 							// also causes BUG - cannot undo on farm (since actual multiedit belongs to last player)
 //							ap.endUpdate(); // end last "(extra)action edit"
-							a.reset();
+							a.init();
 							if (ap.startAction(a, true)) {
 								board.startTurn(p.getColor());
 								if (ap.isFinished()) {

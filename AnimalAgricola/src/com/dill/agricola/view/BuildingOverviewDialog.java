@@ -83,7 +83,6 @@ public class BuildingOverviewDialog extends JDialog implements ActionListener, I
 	private void updateBuildingPanel() {
 		buildingPanel.removeAll();
 		for (BuildingType type : GeneralSupply.getBuildingsAll()) {
-			System.out.println(type);
 			buildingPanel.add(new BuildingLabel(type, ImgSize.BIG));
 		}
 		buildingPanel.revalidate();
