@@ -75,6 +75,14 @@ public abstract class Building extends Space {
 		return subAction;
 	}
 
+	public Action getBeforeWorkAction(int round) {
+		return null;
+	}
+
+	public Action getBeforeBreedingAction() {
+		return null;
+	}
+
 	public boolean isAlwaysEnclosed() {
 		return true;
 	}

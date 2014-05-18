@@ -10,33 +10,9 @@ import java.util.Map;
 import java.util.Stack;
 
 import com.dill.agricola.model.Building;
-import com.dill.agricola.model.buildings.HalfTimberedHouse;
-import com.dill.agricola.model.buildings.OpenStables;
-import com.dill.agricola.model.buildings.Shelter;
 import com.dill.agricola.model.buildings.Stall;
-import com.dill.agricola.model.buildings.StorageBuilding;
-import com.dill.agricola.model.buildings.more.BarnManufacturer;
-import com.dill.agricola.model.buildings.more.BreedingStation;
-import com.dill.agricola.model.buildings.more.CattleFarm;
-import com.dill.agricola.model.buildings.more.CountryHouse;
-import com.dill.agricola.model.buildings.more.CowStall;
-import com.dill.agricola.model.buildings.more.DogHouse;
-import com.dill.agricola.model.buildings.more.DuckPond;
-import com.dill.agricola.model.buildings.more.FarmShop;
-import com.dill.agricola.model.buildings.more.FeedStorehouse;
-import com.dill.agricola.model.buildings.more.FenceManufacturer;
-import com.dill.agricola.model.buildings.more.FodderBeetFarm;
-import com.dill.agricola.model.buildings.more.HayRack;
-import com.dill.agricola.model.buildings.more.InseminationCenter;
-import com.dill.agricola.model.buildings.more.LargeExtension;
-import com.dill.agricola.model.buildings.more.LogHouse;
-import com.dill.agricola.model.buildings.more.PigStall;
-import com.dill.agricola.model.buildings.more.RearingStation;
-import com.dill.agricola.model.buildings.more.Sawmill;
-import com.dill.agricola.model.buildings.more.SmallExtension;
-import com.dill.agricola.model.buildings.more.Stud;
-import com.dill.agricola.model.buildings.more.WildBoarPen;
 import com.dill.agricola.model.types.BuildingType;
+import com.dill.agricola.support.Namer;
 
 public class GeneralSupply {
 
@@ -62,35 +38,6 @@ public class GeneralSupply {
 	private static boolean useMoreBuildings;
 	private static boolean useEvenMoreBuildings;
 
-	static {
-		SPECIAL_BUILDINGS.put(BuildingType.HALF_TIMBERED_HOUSE, new HalfTimberedHouse());
-		SPECIAL_BUILDINGS.put(BuildingType.STORAGE_BUILDING, new StorageBuilding());
-		SPECIAL_BUILDINGS.put(BuildingType.SHELTER, new Shelter());
-		SPECIAL_BUILDINGS.put(BuildingType.OPEN_STABLES, new OpenStables());
-		// more
-		SPECIAL_BUILDINGS.put(BuildingType.BARN_MANUFACTURER, new BarnManufacturer());
-		SPECIAL_BUILDINGS.put(BuildingType.BREEDING_STATION, new BreedingStation());
-		SPECIAL_BUILDINGS.put(BuildingType.CATTLE_FARM, new CattleFarm());
-		SPECIAL_BUILDINGS.put(BuildingType.COUNTRY_HOUSE, new CountryHouse());
-		SPECIAL_BUILDINGS.put(BuildingType.COW_STALL, new CowStall());
-		SPECIAL_BUILDINGS.put(BuildingType.DOG_HOUSE, new DogHouse());
-		SPECIAL_BUILDINGS.put(BuildingType.DUCK_POND, new DuckPond());
-		SPECIAL_BUILDINGS.put(BuildingType.FARM_SHOP, new FarmShop());
-		SPECIAL_BUILDINGS.put(BuildingType.FENCE_MANUFACTURER, new FenceManufacturer());
-		SPECIAL_BUILDINGS.put(BuildingType.FEED_STOREHOUSE, new FeedStorehouse());
-		SPECIAL_BUILDINGS.put(BuildingType.FODDER_BEET_FARM, new FodderBeetFarm());
-		SPECIAL_BUILDINGS.put(BuildingType.HAY_RACK, new HayRack());
-		SPECIAL_BUILDINGS.put(BuildingType.INSEMINATION_CENTER, new InseminationCenter());
-		SPECIAL_BUILDINGS.put(BuildingType.LOG_HOUSE, new LogHouse());
-		SPECIAL_BUILDINGS.put(BuildingType.LARGE_EXTENSION, new LargeExtension());
-		SPECIAL_BUILDINGS.put(BuildingType.PIG_STALL, new PigStall());
-		SPECIAL_BUILDINGS.put(BuildingType.REARING_STATION, new RearingStation());
-		SPECIAL_BUILDINGS.put(BuildingType.SAWMILL, new Sawmill());
-		SPECIAL_BUILDINGS.put(BuildingType.SMALL_EXTENSION, new SmallExtension());
-		SPECIAL_BUILDINGS.put(BuildingType.STUD, new Stud());
-		SPECIAL_BUILDINGS.put(BuildingType.WILD_BOAR_PEN, new WildBoarPen());
-	}
-
 	public static void reset(boolean useMoreBuildings, boolean useEvenMoreBuildings) {
 		GeneralSupply.useMoreBuildings = useMoreBuildings;
 		GeneralSupply.useEvenMoreBuildings = useEvenMoreBuildings;
@@ -98,6 +45,11 @@ public class GeneralSupply {
 		stallsLeft.addAll(Arrays.asList(STALLS));
 		if (!useMoreBuildings) {
 			stallsLeft.remove(stallsLeft.size() - 1);
+		}
+		if (Main.DEBUG) {
+			stallsLeft.clear();
+			stallsLeft.add(STALLS[0]);
+			stallsLeft.add(STALLS[1]);
 		}
 		Collections.shuffle(stallsLeft);
 		troughsLeft = MAX_TROUGHS;
@@ -108,6 +60,7 @@ public class GeneralSupply {
 		}
 		Collections.shuffle(extsLeft);
 		extsUsed.clear();
+		SPECIAL_BUILDINGS.clear(); // clear building instances
 		buildingsAll.clear();
 		buildingsAll.addAll(generateRandomBuildings());
 		buildingsLeft.clear();
@@ -190,7 +143,19 @@ public class GeneralSupply {
 	}
 
 	public static Building getSpecialBuilding(BuildingType type) {
-		return SPECIAL_BUILDINGS.get(type);
+		if (SPECIAL_BUILDINGS.containsKey(type)) {
+			return SPECIAL_BUILDINGS.get(type);				
+		} else {
+			try {
+				String pkg = "com.dill.agricola.model.buildings." + (type.set == 1 ? "more." : "");
+				Class<?> bldgClass = Class.forName(pkg + Namer.toCamelCase(type.toString()));
+				Building b = (Building) bldgClass.getConstructor().newInstance();
+				SPECIAL_BUILDINGS.put(type, b);
+				return b;
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
 	}
 
 	public static int getNextExtensionId() {

@@ -61,7 +61,7 @@ public abstract class AbstractAction implements Action {
 	public void useAsSubaction() {
 		usedAsSubaction = true;
 	}
-
+	
 	protected boolean isAsSubAction() {
 		return usedAsSubaction;
 	}

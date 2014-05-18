@@ -13,10 +13,10 @@ import javax.swing.undo.CannotUndoException;
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.ActionPerformer;
 import com.dill.agricola.actions.extra.Breeding;
+import com.dill.agricola.actions.farm.BordersExpand;
 import com.dill.agricola.actions.farm.BuildSpecial;
 import com.dill.agricola.actions.farm.BuildStables;
-import com.dill.agricola.actions.farm.BuildStalls;
-import com.dill.agricola.actions.farm.BordersExpand;
+import com.dill.agricola.actions.farm.BuildStall;
 import com.dill.agricola.actions.farm.Fences;
 import com.dill.agricola.actions.farm.Troughs;
 import com.dill.agricola.actions.farm.Walls;
@@ -30,6 +30,7 @@ import com.dill.agricola.actions.simple.StartOneWood;
 import com.dill.agricola.actions.simple.ThreeWood;
 import com.dill.agricola.actions.simple.TwoStone;
 import com.dill.agricola.common.Animals;
+import com.dill.agricola.model.Building;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.ChangeType;
@@ -45,7 +46,7 @@ import com.dill.agricola.view.NewGameDialog;
 public class Game {
 
 	private static enum Phase {
-		CLEANUP, WORK, BEFORE_BREEDING, BREEDING/*, AFTER_BREEDING*/, EXTRA_BREEDING;
+		CLEANUP, BEFORE_WORK, WORK, BEFORE_BREEDING, BREEDING/*, AFTER_BREEDING*/, EXTRA_BREEDING;
 	}
 
 	public final static int ROUNDS = Main.DEBUG ? 8 : 8;
@@ -61,6 +62,7 @@ public class Game {
 	private Phase phase;
 	private PlayerColor startPlayer;
 	private Player currentPlayer;
+	private int extraTurnNo;
 
 	private PlayerColor initialStartPlayer;
 
@@ -186,6 +188,11 @@ public class Game {
 		currentPlayer = getPlayer(startPlayer);
 		// refill
 		board.startRound(round);
+
+		extraTurnNo = 0;
+		if (startExtraTurn(Phase.BEFORE_WORK)) {
+			return;
+		}
 		// start work
 		startTurn();
 	}
@@ -196,7 +203,7 @@ public class Game {
 
 		ap.postEdit(new StartTurn(ap.getPlayer(), currentPlayer));
 		ap.setPlayer(currentPlayer);
-		board.startTurn(currentPlayer);
+		board.startTurn(currentPlayer.getColor());
 
 		ap.endUpdate(); // end last "action/breeding edit"
 	}
@@ -213,17 +220,73 @@ public class Game {
 			// if has workers continue with next turn
 			startTurn();
 		} else {
+			extraTurnNo = 0;
+			if (startExtraTurn(Phase.BEFORE_BREEDING)) {
+				return;
+			}
 			// else end work phase II
-			preBreedingPhase();
+			breedingPhase();
 		}
 	}
 
-	private void preBreedingPhase() {
-		ap.postEdit(new ChangePhase(phase, Phase.BEFORE_BREEDING));
-		phase = Phase.BEFORE_BREEDING;
-		breedingPhase();
+	private boolean startExtraTurn(Phase extraPhase) {
+		// check if any extra turns are provided by buildings
+		// TODO optimize - don't cycle through all the buildings every time
+		int no = 0;
+		for (Player p : players) {
+			for (Building b : p.farm.getFarmBuildings()) {
+				Action a = extraPhase == Phase.BEFORE_WORK ? b.getBeforeWorkAction(round) : b.getBeforeBreedingAction();
+				if (a != null) {
+					if (no < extraTurnNo) {
+						// this extra action was already performed, skip it
+						no++;
+					} else {
+						extraTurnNo++;
+						no++;
+						if (a.canDo(p)) {
+							ap.postEdit(new ChangePhase(phase, extraPhase));
+							phase = extraPhase;
+
+							ap.postEdit(new StartTurn(ap.getPlayer(), p));
+							ap.setPlayer(p);
+
+							// TODO make extra actions undoable
+							// also causes BUG - cannot undo on farm (since actual multiedit belongs to last player)
+//							ap.endUpdate(); // end last "(extra)action edit"
+							a.reset();
+							if (ap.startAction(a, true)) {
+								board.startTurn(p.getColor());
+								if (ap.isFinished()) {
+									submitListener.actionPerformed(
+											new ActionEvent(p.getColor(), 0, ActionCommand.SUBMIT.toString()));
+								}
+								return true;
+							} else {
+								// TODO undo?
+							}
+						}
+					}
+				}
+			}
+		}
+		return false;
 	}
-	
+
+	private void endExtraTurn(Phase phase) {
+		if (startExtraTurn(phase)) {
+			return;
+		}
+		if (phase == Phase.BEFORE_WORK) {
+			// else start work phase
+			startTurn();
+		} else if (phase == Phase.BEFORE_BREEDING) {
+			// else end work phase
+			breedingPhase();
+		} else {
+			throw new IllegalArgumentException(phase.toString());
+		}
+	}
+
 	private void breedingPhase() {
 		// end work
 		ap.postEdit(new ChangePhase(phase, Phase.BREEDING));
@@ -254,7 +317,7 @@ public class Game {
 
 			ap.postEdit(new BreedingStart(player));
 			submitListener.adjustBreedingCount(1);
-			board.startBreeding(player);
+			board.startBreeding(player.getColor());
 		}
 	}
 
@@ -269,7 +332,7 @@ public class Game {
 		// animals run away after breeding
 		releaseAnimals(player);
 	}
-	
+
 	private void postBreedingPhase() {
 //		ap.postEdit(new ChangePhase(phase, Phase.AFTER_BREEDING));
 //		phase = Phase.AFTER_BREEDING;
@@ -343,7 +406,7 @@ public class Game {
 				new Millpond(), new PigSheep(), //
 				new CowPigs(), new HorseSheep(), //
 
-				new BuildStalls(), new BuildStables(),
+				new BuildStall(), new BuildStables(),
 				new BuildSpecial(), new BuildSpecial()//
 				));
 	}
@@ -358,12 +421,17 @@ public class Game {
 			switch (cmd) {
 			case SUBMIT:
 				switch (phase) {
+				case BEFORE_WORK:
+					// extra turn end
+					endExtraTurn(phase);
+					break;
 				case WORK:
 					// turn end
 					endTurn();
 					break;
 				case BEFORE_BREEDING:
-					breedingPhase();
+					// extra turn end
+					endExtraTurn(phase);
 					break;
 				case BREEDING:
 					// one or both players must submit
@@ -449,14 +517,14 @@ public class Game {
 			super.undo();
 			ap.setPlayer(prevPlayer);
 			if (prevPlayer != null) {
-				board.startTurn(prevPlayer);
+				board.startTurn(prevPlayer.getColor());
 			}
 		}
 
 		public void redo() throws CannotRedoException {
 			super.redo();
 			ap.setPlayer(curPlayer);
-			board.startTurn(curPlayer);
+			board.startTurn(curPlayer.getColor());
 		}
 
 	}
@@ -488,7 +556,7 @@ public class Game {
 		public void undo() throws CannotUndoException {
 			super.undo();
 			ap.setPlayer(curPlayer);
-			board.startTurn(curPlayer);
+			board.startTurn(curPlayer.getColor());
 		}
 
 		public void redo() throws CannotRedoException {
@@ -532,13 +600,13 @@ public class Game {
 		public void undo() throws CannotUndoException {
 			super.undo();
 			submitListener.adjustBreedingCount(-1);
-			board.deactivate(breedingPlayer);
+			board.deactivate(breedingPlayer.getColor());
 		}
 
 		public void redo() throws CannotRedoException {
 			super.redo();
 			submitListener.adjustBreedingCount(1);
-			board.startBreeding(breedingPlayer);
+			board.startBreeding(breedingPlayer.getColor());
 		}
 
 	}
@@ -562,13 +630,13 @@ public class Game {
 			breedingPlayer.unpurchaseAnimals(lastBorn);
 			breedingPlayer.purchaseAnimals(lastBorn);
 
-			board.startBreeding(breedingPlayer);
+			board.startBreeding(breedingPlayer.getColor());
 		}
 
 		public void redo() throws CannotRedoException {
 			super.redo();
 			submitListener.adjustBreedingCount(-1);
-			board.deactivate(breedingPlayer);
+			board.deactivate(breedingPlayer.getColor());
 		}
 
 	}

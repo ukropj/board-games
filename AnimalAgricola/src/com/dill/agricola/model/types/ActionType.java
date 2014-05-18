@@ -22,7 +22,7 @@ public enum ActionType {
 	HORSE_AND_SHEEP("horseSheep"),
 	//
 	BUILDING_REWARD("buildReward"),
-	ONE_FREE_TROUGH(),
+	ONE_TROUGH("oneTrough"),
 	SWITCH_FOR_COW("switchForCow");
 	
 	public final String desc;

@@ -231,24 +231,24 @@ public class Board extends JFrame {
 		updateState(roundNo, null);
 	}
 
-	public void startTurn(Player currentPlayer) {
-		playerBoards[currentPlayer.getColor().ordinal()].setActive(true, false);
-		playerBoards[currentPlayer.getColor().other().ordinal()].setActive(false, false);
+	public void startTurn(PlayerColor currentPlayer) {
+		playerBoards[currentPlayer.ordinal()].setActive(true, false);
+		playerBoards[currentPlayer.other().ordinal()].setActive(false, false);
 		actionBoard.showActions();
-		updateState(-1, game.getCurrentPlayer());
+		updateState(-1, currentPlayer);
 		if (Main.DEBUG) {
-			debugPanel.setCurrentPlayer(currentPlayer.getColor());
+			debugPanel.setCurrentPlayer(currentPlayer);
 		}
 	}
 
-	public void startBreeding(Player breedingPlayer) {
-		playerBoards[breedingPlayer.getColor().ordinal()].setActive(true, true);
+	public void startBreeding(PlayerColor breedingPlayer) {
+		playerBoards[breedingPlayer.ordinal()].setActive(true, true);
 		updateState(-1, null);
 		actionBoard.disableActions();
 	}
 
-	public void deactivate(Player breedingPlayer) {
-		playerBoards[breedingPlayer.getColor().ordinal()].setActive(false, false);
+	public void deactivate(PlayerColor breedingPlayer) {
+		playerBoards[breedingPlayer.ordinal()].setActive(false, false);
 	}
 
 	public void startingPlayerChanged() {

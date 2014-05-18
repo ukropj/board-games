@@ -15,9 +15,9 @@ import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.undo.SimpleEdit;
 import com.dill.agricola.undo.UndoableFarmEdit;
 
-public class BuildStalls extends BuildAction {
+public class BuildStall extends BuildAction {
 
-	public BuildStalls() {
+	public BuildStall() {
 		super(ActionType.STALLS, BuildingType.STALL);
 	}
 

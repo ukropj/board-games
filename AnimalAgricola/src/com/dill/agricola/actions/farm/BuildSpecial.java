@@ -13,40 +13,18 @@ import javax.swing.undo.CannotUndoException;
 import com.dill.agricola.GeneralSupply;
 import com.dill.agricola.GeneralSupply.Supplyable;
 import com.dill.agricola.actions.Action;
+import com.dill.agricola.actions.ActionStateChangeListener;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Building;
 import com.dill.agricola.model.Player;
-import com.dill.agricola.model.buildings.HalfTimberedHouse;
 import com.dill.agricola.model.buildings.OpenStables;
-import com.dill.agricola.model.buildings.Shelter;
-import com.dill.agricola.model.buildings.StorageBuilding;
-import com.dill.agricola.model.buildings.more.BarnManufacturer;
-import com.dill.agricola.model.buildings.more.BreedingStation;
-import com.dill.agricola.model.buildings.more.CattleFarm;
-import com.dill.agricola.model.buildings.more.CountryHouse;
-import com.dill.agricola.model.buildings.more.CowStall;
-import com.dill.agricola.model.buildings.more.DogHouse;
-import com.dill.agricola.model.buildings.more.DuckPond;
-import com.dill.agricola.model.buildings.more.FarmShop;
-import com.dill.agricola.model.buildings.more.FeedStorehouse;
-import com.dill.agricola.model.buildings.more.FenceManufacturer;
-import com.dill.agricola.model.buildings.more.FodderBeetFarm;
-import com.dill.agricola.model.buildings.more.HayRack;
-import com.dill.agricola.model.buildings.more.InseminationCenter;
-import com.dill.agricola.model.buildings.more.LargeExtension;
-import com.dill.agricola.model.buildings.more.LogHouse;
-import com.dill.agricola.model.buildings.more.PigStall;
-import com.dill.agricola.model.buildings.more.RearingStation;
-import com.dill.agricola.model.buildings.more.Sawmill;
-import com.dill.agricola.model.buildings.more.SmallExtension;
-import com.dill.agricola.model.buildings.more.Stud;
-import com.dill.agricola.model.buildings.more.WildBoarPen;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Material;
 import com.dill.agricola.support.Msg;
+import com.dill.agricola.support.Namer;
 import com.dill.agricola.undo.SimpleEdit;
 import com.dill.agricola.undo.UndoableFarmEdit;
 import com.dill.agricola.view.utils.AgriImages;
@@ -58,35 +36,6 @@ public class BuildSpecial extends BuildAction {
 	private static int counter = 0;
 
 	private final static Map<BuildingType, Materials> COSTS = new EnumMap<BuildingType, Materials>(BuildingType.class);
-	static {
-		// TODO is this necessary?
-		COSTS.put(BuildingType.HALF_TIMBERED_HOUSE, HalfTimberedHouse.COST);
-		COSTS.put(BuildingType.STORAGE_BUILDING, StorageBuilding.COST);
-		COSTS.put(BuildingType.SHELTER, Shelter.COST);
-		COSTS.put(BuildingType.OPEN_STABLES, null);
-		// more
-		COSTS.put(BuildingType.BARN_MANUFACTURER, BarnManufacturer.COST);
-		COSTS.put(BuildingType.BREEDING_STATION, BreedingStation.COST);
-		COSTS.put(BuildingType.CATTLE_FARM, CattleFarm.COST);
-		COSTS.put(BuildingType.COUNTRY_HOUSE, CountryHouse.COST);
-		COSTS.put(BuildingType.COW_STALL, CowStall.COST);
-		COSTS.put(BuildingType.DOG_HOUSE, DogHouse.COST);
-		COSTS.put(BuildingType.DUCK_POND, DuckPond.COST);
-		COSTS.put(BuildingType.FARM_SHOP, FarmShop.COST);
-		COSTS.put(BuildingType.FENCE_MANUFACTURER, FenceManufacturer.COST);
-		COSTS.put(BuildingType.FEED_STOREHOUSE, FeedStorehouse.COST);
-		COSTS.put(BuildingType.FODDER_BEET_FARM, FodderBeetFarm.COST);
-		COSTS.put(BuildingType.HAY_RACK, HayRack.COST);
-		COSTS.put(BuildingType.INSEMINATION_CENTER, InseminationCenter.COST);
-		COSTS.put(BuildingType.LARGE_EXTENSION, LargeExtension.COST);
-		COSTS.put(BuildingType.LOG_HOUSE, LogHouse.COST);
-		COSTS.put(BuildingType.PIG_STALL, PigStall.COST);
-		COSTS.put(BuildingType.REARING_STATION, RearingStation.COST);
-		COSTS.put(BuildingType.SAWMILL, Sawmill.COST);
-		COSTS.put(BuildingType.SMALL_EXTENSION, SmallExtension.COST);
-		COSTS.put(BuildingType.STUD, Stud.COST);
-		COSTS.put(BuildingType.WILD_BOAR_PEN, WildBoarPen.COST);
-	}
 	private final static Materials[] OS_COSTS = new Materials[] { OpenStables.COST_WOOD, OpenStables.COST_STONE };
 	private int osCostNo;
 
@@ -94,16 +43,27 @@ public class BuildSpecial extends BuildAction {
 		super(counter++ % 2 == 0 ? ActionType.SPECIAL : ActionType.SPECIAL2);
 	}
 
-	public static Materials getBuildingCost(Player player, BuildingType type) {
+	private static Materials getBuildingCost(Player player, BuildingType type) {
 		return getBuildingCost(player, type, 0);
 	}
 
-	public static Materials getBuildingCost(Player player, BuildingType type, int variant) {
+	private static Materials getBuildingCost(Player player, BuildingType type, int variant) {
 		Materials cost = null;
 		if (type == BuildingType.OPEN_STABLES) {
 			cost = OS_COSTS[variant];
 		} else {
-			cost = COSTS.get(type);
+			if (COSTS.containsKey(type)) {
+				cost = COSTS.get(type);
+			} else {
+				try {
+					String pkg = "com.dill.agricola.model.buildings." + (type.set == 1 ? "more." : "");
+					Class<?> bldgClass = Class.forName(pkg + Namer.toCamelCase(type.toString()));
+					cost = (Materials) bldgClass.getField("COST").get(null);
+					COSTS.put(type, cost);
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
 		}
 		if (cost.get(Material.WOOD) > 0 && player.getFarm().hasBuilding(BuildingType.SAWMILL)) {
 			cost = new Materials(cost);
@@ -242,7 +202,15 @@ public class BuildSpecial extends BuildAction {
 
 	protected UndoableFarmEdit postActivate(Player player, Building b) {
 		GeneralSupply.useBuilding(toBuild, true);
-		return new UseBuilding(toBuild);
+		Action preAction = getBuildingInstance(toBuild).getBeforeWorkAction(8/*TODO ugly hack*/);
+		if (preAction != null) {
+			preAction.addChangeListener(new ExtraActionStateChangeListener());
+		}
+		Action postAction = getBuildingInstance(toBuild).getBeforeBreedingAction();
+		if (postAction != null) {
+			postAction.addChangeListener(new ExtraActionStateChangeListener());
+		}
+		return new UseBuilding(toBuild, preAction, postAction);
 	}
 
 	public Action getSubAction(boolean afterFarmAction) {
@@ -253,22 +221,44 @@ public class BuildSpecial extends BuildAction {
 		private static final long serialVersionUID = 1L;
 
 		private final BuildingType built;
+		private final Action preAction;
+		private final Action postAction;
 
-		public UseBuilding(BuildingType built) {
+		public UseBuilding(BuildingType built, Action preAction, Action postAction) {
 			this.built = built;
+			this.preAction = preAction;
+			this.postAction = postAction;
 		}
 
 		public void undo() throws CannotUndoException {
 			super.undo();
 			GeneralSupply.useBuilding(built, false);
+			if (preAction != null) {
+				preAction.removeChangeListeners();
+			}
+			if (postAction != null) {
+				postAction.removeChangeListeners();
+			}
 			setChanged();
 		}
 
 		public void redo() throws CannotRedoException {
 			super.redo();
 			GeneralSupply.useBuilding(built, true);
+			if (preAction != null) {
+				preAction.addChangeListener(new ExtraActionStateChangeListener());
+			}
+			if (postAction != null) {
+				postAction.addChangeListener(new ExtraActionStateChangeListener());
+			}
 			setChanged();
 		}
 
+	}
+
+	private class ExtraActionStateChangeListener implements ActionStateChangeListener {
+		public void stateChanges(Action subAction) {
+			BuildSpecial.this.setChanged();
+		}
 	}
 }
