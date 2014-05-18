@@ -236,9 +236,9 @@ public class FarmPanel extends JPanel {
 						submitListener.actionPerformed(e);
 					}
 				} else if (breeding) {
-					submitListener.actionPerformed(e);
 					finishBtn.setEnabled(false);
 					finishBtn.setVisible(false);
+					submitListener.actionPerformed(e);
 				}
 			}
 		});
