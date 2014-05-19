@@ -67,7 +67,7 @@ public abstract class BuildAction extends PurchaseAction {
 		private final DirPoint pos;
 
 		public PurchaseBuilding(Player player, Building building, Materials cost, DirPoint pos) {
-			super(pos, Purchasable.BUILDING);
+			super(player.getColor(), pos, Purchasable.BUILDING);
 			this.player = player;
 			this.building = building;
 			this.cost = cost;

@@ -338,7 +338,7 @@ public class FarmPanel extends JPanel {
 			finishBtn.setVisible(true);
 			finishBtn.setEnabled(breeding || ap.canFinish());
 
-			if (ap.hasAction() && !ap.isFinished()) {
+			if (ap.hasAction() && !ap.isFinished() && ap.canCancel()) {
 				cancelBtn.setVisible(true);
 				cancelBtn.setEnabled(true);
 			}

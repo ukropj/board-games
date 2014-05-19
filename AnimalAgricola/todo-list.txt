@@ -5,11 +5,11 @@
 	more buildings big and small
 	refactor actions to atomic actions
 	action names (e.g. "Stall", "Fences",...)
+	extra actions should be atomically undoable
 	
 #Bugs#
 
 	extra capacity providers should stack
-	extra actions should be atomically undoable
 
 #Nice to have#
 

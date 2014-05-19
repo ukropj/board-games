@@ -15,24 +15,27 @@ public abstract class SimpleEdit extends AbstractUndoableEdit implements Undoabl
 	private static final long serialVersionUID = 1L;
 
 	private boolean significant;
+	private final PlayerColor player;
 	private final DirPoint pos;
 	private final Purchasable thing;
+
 
 	public SimpleEdit() {
 		this(false);
 	}
 
 	public SimpleEdit(boolean significant) {
-		this(significant, null, null);
+		this(significant, null, null, null);
 	}
 
-	public SimpleEdit(DirPoint pos, Purchasable thing) {
-		this(true, pos, thing);
+	public SimpleEdit(PlayerColor player, DirPoint pos, Purchasable thing) {
+		this(true, player, pos, thing);
 	}
 
-	public SimpleEdit(boolean significant, DirPoint pos, Purchasable thing) {
+	public SimpleEdit(boolean significant, PlayerColor player, DirPoint pos, Purchasable thing) {
 		this.significant = significant;
 		this.pos = pos;
+		this.player = player;
 		this.thing = thing;
 	}
 
@@ -49,7 +52,7 @@ public abstract class SimpleEdit extends AbstractUndoableEdit implements Undoabl
 	}
 
 	public boolean matchesFarmAction(PlayerColor player, DirPoint pos, Purchasable thing) {
-		return pos.equals(this.pos) && thing.equals(this.thing);
+		return player.equals(this.player) && pos.equals(this.pos) && thing.equals(this.thing);
 	}
 
 	public void undo() throws CannotUndoException {

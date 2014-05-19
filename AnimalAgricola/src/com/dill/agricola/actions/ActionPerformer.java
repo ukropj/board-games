@@ -18,6 +18,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 	private Player player = null;
 	private Action action = null;
 	private Action subaction = null;
+	private boolean isExtraAction = false;
 
 	private void checkState() throws IllegalStateException {
 		Main.asrtNotNull(player, "Cannot perform action without player");
@@ -44,6 +45,14 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		return action;
 	}
 
+	public boolean canCancel() {
+		return !isExtraAction;
+	}
+
+	public boolean isFinished() {
+		return action == null;
+	}
+
 	public boolean startAction(Action action) {
 		return startAction(action, false);
 	}
@@ -51,6 +60,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 	public boolean startAction(Action action, boolean extraAction) {
 		this.action = action;
 		this.subaction = null;
+		this.isExtraAction = extraAction;
 		checkState();
 
 		boolean canDo = action.canDo(player);
@@ -201,6 +211,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 			postEdit(new EndAction());
 			player.getFarm().setActiveType(null);
 			action = null;
+			isExtraAction = false;
 			if (subaction != null) {
 				finishSubaction();
 			}
@@ -221,10 +232,6 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		return false;
 	}
 
-	public boolean isFinished() {
-		return action == null;
-	}
-
 	private class StartAction extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
 
@@ -233,7 +240,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		private final boolean extraAction;
 
 		public StartAction(Player player, Action action, boolean extraAction) {
-			super(true);
+			super(!extraAction);
 			this.p = player;
 			this.a = action;
 			this.extraAction = extraAction;
@@ -266,7 +273,6 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		private final Action a;
 
 		public StartSubAction(Player player, Action action) {
-			super(true);
 			this.p = player;
 			this.a = action;
 		}

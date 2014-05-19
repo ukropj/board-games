@@ -17,7 +17,6 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 	private boolean hasBeenDone;
 	private boolean alive;
 
-	private final PlayerColor currentPlayer;
 	private final String currentPlayerName;
 	private final String name;
 
@@ -27,16 +26,12 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 
 	public MultiEdit(PlayerColor currentPlayer, String name) {
 		super();
-		this.currentPlayer = currentPlayer;
 		this.name = name;
-
 		hasBeenDone = true;
 		alive = true;
-		
 		currentPlayerName = currentPlayer != null 
 				? " (" + Msg.get(currentPlayer.toString().toLowerCase()) + ")"
 						: "";
-
 	}
 
 	public boolean isEmpty() {
@@ -132,9 +127,6 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 	}
 
 	public boolean matchesFarmAction(PlayerColor player, DirPoint pos, Purchasable thing) {
-		if (currentPlayer != null && !player.equals(currentPlayer)) {
-			return false;
-		}
 		int i = edits.size();
 		while (i-- > 0) {
 			UndoableFarmEdit e = (UndoableFarmEdit) edits.elementAt(i);

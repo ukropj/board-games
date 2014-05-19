@@ -85,7 +85,7 @@ public abstract class PurchaseAction extends AbstractAction {
 		private final DirPoint undoPos;
 		
 		public PurchaseThing(Player player, DirPoint pos) {
-			super(thing == Purchasable.EXTENSION && pos.x < 0 ? new DirPoint(0, 0) : pos, thing);
+			super(player.getColor(), thing == Purchasable.EXTENSION && pos.x < 0 ? new DirPoint(0, 0) : pos, thing);
 			this.player = player;
 			this.pos = pos;
 			this.undoPos = thing == Purchasable.EXTENSION && pos.x < 0 ? new DirPoint(0, 0) : pos;
