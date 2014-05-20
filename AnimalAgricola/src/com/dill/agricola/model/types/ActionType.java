@@ -23,6 +23,7 @@ public enum ActionType {
 	//
 	BUILDING_REWARD("buildReward"),
 	ONE_TROUGH("oneTrough"),
+	ONE_BORDER("oneBorder"),
 	SWITCH_FOR_COW("switchForCow");
 	
 	public final String desc;

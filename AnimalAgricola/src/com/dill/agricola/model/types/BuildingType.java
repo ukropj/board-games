@@ -46,6 +46,7 @@ public enum BuildingType {
 	LOG_HOUSE(1, Msg.get("logHouse"), new BuildingText(Msg.get("logHouseText"), 0.35f, 0.5f, 0.46f)),
 	PIG_STALL(1, Msg.get("pigStall"), new BuildingText(Msg.get("immediately"), 0.4f, 0.5f, 0.4f),
 			new BuildingText(Msg.get("pigStallText"), 0.33f, 0.78f, 0.11f)),
+	RANCH(1, Msg.get("ranch"), new BuildingText(Msg.get("ranchText"), 0.14f, 0.49f, 0.73f)),
 	REARING_STATION(1, Msg.get("rearingStation"), new BuildingText(Msg.get("rearingStationText"), 0.12f, 0.50f, 0.76f)),
 	SAWMILL(1, Msg.get("sawmill"), new BuildingText(Msg.get("sawmillText"), 0.12f, 0.52f, 0.76f)),
 	SMALL_EXTENSION(1, Msg.get("smallExtension"), new BuildingText(Msg.get("perAdjacentBuilding"), 0.34f, 0.5f, 0.55f)),
@@ -72,7 +73,8 @@ public enum BuildingType {
 							BuildingType.INSEMINATION_CENTER, BuildingType.JOINERY,
 							BuildingType.LARGE_EXTENSION,
 							BuildingType.LOG_HOUSE, BuildingType.PIG_STALL,
-							/*BuildingType.REARING_STATION,*/BuildingType.SAWMILL,
+							/*BuildingType.REARING_STATION,*/
+							BuildingType.RANCH, BuildingType.SAWMILL,
 							BuildingType.SMALL_EXTENSION, BuildingType.STUD,
 							BuildingType.WILD_BOAR_PEN }));
 

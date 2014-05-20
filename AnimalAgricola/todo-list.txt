@@ -3,7 +3,7 @@
 	allow non-random buildings (some kind of picker)
 	highlight current action
 	more buildings big and small
-	refactor actions to atomic actions
+	refactor actions to atomic actions - Millpond
 	action names (e.g. "Stall", "Fences",...)
 	extra actions should be atomically undoable
 	
