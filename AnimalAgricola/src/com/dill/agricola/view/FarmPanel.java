@@ -31,6 +31,7 @@ import java.util.Set;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -56,6 +57,7 @@ import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.support.Fonts;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.AgriImages;
+import com.dill.agricola.view.utils.Images;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
 import com.dill.agricola.view.utils.UiFactory;
 
@@ -265,7 +267,8 @@ public class FarmPanel extends JPanel {
 	}
 
 	private void initWorkerPanel() {
-		firstLabel = UiFactory.createLabel(AgriImages.getFirstTokenIcon(player.getColor().ordinal(), ImgSize.MEDIUM));
+		ImageIcon icon = new ImageIcon(Images.getBestScaledInstance(AgriImages.getFirstTokenImage(player.getColor().ordinal(), ImgSize.BIG), 0.7f));
+		firstLabel = UiFactory.createLabel(icon);
 		firstLabel.setBounds(M / 2, Y1 + M, 40, 40);
 		add(firstLabel);
 

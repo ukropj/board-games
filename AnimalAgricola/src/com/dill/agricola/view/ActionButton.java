@@ -24,7 +24,7 @@ public class ActionButton extends JButton {
 	private PlayerColor usedBy = null;
 
 	public ActionButton(ActionType actionType) {
-		setMargin(new Insets(1, 1, 1, 1));
+		setMargin(new Insets(0, 0, 0, 0));
 		setAlignmentX(JButton.CENTER_ALIGNMENT);
 		setCursor(new Cursor(Cursor.HAND_CURSOR));
 		setToolTipText(actionType.desc);
