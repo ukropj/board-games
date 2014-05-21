@@ -4,9 +4,7 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -251,11 +249,9 @@ public class ActionPanelFactory {
 	
 	public static void repopulateBuildingPanel(JPanel p) {
 		p.removeAll();
-		List<BuildingLabel> labels = new ArrayList<BuildingLabel>();
 		for (BuildingType type : GeneralSupply.getBuildingsAll()) {
 			BuildingLabel bl = new BuildingLabel(type, ImgSize.SMALL);
-			bl.setToolTipText(type.name);
-			labels.add(bl);
+			bl.setShowImageTooltip(true);
 			p.add(bl);
 		}
 	}
