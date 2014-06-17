@@ -7,6 +7,7 @@ import com.dill.agricola.actions.AbstractAction;
 import com.dill.agricola.common.Animals;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.model.Player;
+import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.support.Namer;
@@ -16,9 +17,16 @@ import com.dill.agricola.undo.UndoableFarmEdit;
 public class Breeding extends AbstractAction {
 
 	public Breeding() {
-		super(null);
+		super(ActionType.BREEDING);
 	}
 
+//	boolean cancelled = false;
+	
+//	public UndoableFarmEdit init() {
+//		cancelled = false;
+//		return super.init();
+//	}
+	
 	public boolean isPurchaseAction() {
 		return false;
 	}
@@ -28,8 +36,19 @@ public class Breeding extends AbstractAction {
 	}
 
 	public boolean canDo(Player player) {
-		return true;
+		boolean hasInseminationCenter = player.farm.hasBuilding(BuildingType.INSEMINATION_CENTER);
+		for (Animal type : Animal.values()) {
+			int count = player.getAnimal(type);
+			if (count >= 2 || (hasInseminationCenter && count == 1)) {
+				return true;
+			}
+		}
+		return false;
 	}
+	
+//	public boolean isCancelled() {
+//		return cancelled;
+//	}
 
 	public UndoableFarmEdit doo(Player player) {
 		Animals newAnimals = new Animals();
@@ -45,7 +64,9 @@ public class Breeding extends AbstractAction {
 			UndoableFarmEdit edit = new BreedAnimals(player, new Animals(newAnimals));
 			player.purchaseAnimals(newAnimals);
 			player.setLastBornAnimals(newAnimals);
-			return joinEdits(true, edit, new ActionUse());
+			return joinEdits(true, edit);
+//		} else {
+//			cancelled = true;
 		}
 		return null;
 	}
@@ -61,6 +82,10 @@ public class Breeding extends AbstractAction {
 	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos) {
 		return null;
 	}
+	
+//	protected class Noop extends SimpleEdit {
+//		private static final long serialVersionUID = 1L;		
+//	}
 
 	protected class BreedAnimals extends SimpleEdit {
 		private static final long serialVersionUID = 1L;

@@ -61,7 +61,7 @@ public abstract class AbstractAction implements Action {
 	public void useAsSubaction() {
 		usedAsSubaction = true;
 	}
-	
+
 	protected boolean isAsSubAction() {
 		return usedAsSubaction;
 	}
@@ -69,11 +69,11 @@ public abstract class AbstractAction implements Action {
 	protected int getUseCount() {
 		return useCount;
 	}
-	
+
 	public boolean isUsedEnough() {
 		return useCount > 0;
 	}
-	
+
 	public boolean isCancelled() {
 		return false;
 	}
@@ -101,7 +101,8 @@ public abstract class AbstractAction implements Action {
 	protected MultiEdit joinEdits(UndoableFarmEdit... edits) {
 		return joinEdits(false, edits);
 	}
-		protected MultiEdit joinEdits(boolean useAction, UndoableFarmEdit... edits) {
+
+	protected MultiEdit joinEdits(boolean useAction, UndoableFarmEdit... edits) {
 		MultiEdit edit = new MultiEdit();
 		for (UndoableFarmEdit e : edits) {
 			if (e != null) {
@@ -115,7 +116,7 @@ public abstract class AbstractAction implements Action {
 				useCount++;
 				edit.addEdit(new ActionUse());
 			}
-			edit.end();			
+			edit.end();
 			return edit;
 		}
 	}
@@ -165,23 +166,23 @@ public abstract class AbstractAction implements Action {
 			return Namer.getName(this);
 		}
 	}
-	
+
 	protected class ActionUse extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
-		
+
 		public ActionUse() {
 		}
-		
+
 		public void undo() throws CannotUndoException {
 			super.undo();
 			useCount--;
 		}
-		
+
 		public void redo() throws CannotRedoException {
 			super.redo();
 			useCount++;
 		}
-		
+
 		public String getPresentationName() {
 			return Namer.getName(this);
 		}

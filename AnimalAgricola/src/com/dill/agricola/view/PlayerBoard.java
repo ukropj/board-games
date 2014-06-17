@@ -12,6 +12,7 @@ import java.util.Observer;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.dill.agricola.Game.Phase;
 import com.dill.agricola.actions.ActionPerformer;
 import com.dill.agricola.model.Farm;
 import com.dill.agricola.model.Fencer;
@@ -82,8 +83,12 @@ public class PlayerBoard extends JPanel implements Observer {
 		mainPanel.add(farmPanel, c);
 	}
 
-	public void setActive(boolean active, boolean breeding) {
-		farmPanel.setActive(active, breeding);
+	public void activate(Phase phase) {
+		farmPanel.setActive(true, phase);
+	}
+	
+	public void deactivate() {
+		farmPanel.setActive(false, null);
 	}
 
 	public void updateFarm() {

@@ -37,6 +37,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.dill.agricola.Game.ActionCommand;
+import com.dill.agricola.Game.Phase;
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.ActionPerformer;
 import com.dill.agricola.common.Animals;
@@ -57,8 +58,8 @@ import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.support.Fonts;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.utils.AgriImages;
-import com.dill.agricola.view.utils.Images;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
+import com.dill.agricola.view.utils.Images;
 import com.dill.agricola.view.utils.UiFactory;
 
 public class FarmPanel extends JPanel {
@@ -175,7 +176,7 @@ public class FarmPanel extends JPanel {
 	private final Player player;
 	private final Farm farm;
 	private boolean active;
-	private boolean breeding;
+	private Phase phase;
 	private final ActionPerformer ap;
 	private final ActionListener submitListener;
 
@@ -237,10 +238,10 @@ public class FarmPanel extends JPanel {
 					if (ap.finishAction()) {
 						submitListener.actionPerformed(e);
 					}
-				} else if (breeding) {
-					finishBtn.setEnabled(false);
-					finishBtn.setVisible(false);
-					submitListener.actionPerformed(e);
+//				} else if (breeding) {
+//					finishBtn.setEnabled(false);
+//					finishBtn.setVisible(false);
+//					submitListener.actionPerformed(e);
 				}
 			}
 		});
@@ -337,9 +338,9 @@ public class FarmPanel extends JPanel {
 			animalSupply.get(a).setText(String.valueOf(player.getAnimal(a)));
 		}
 
-		if (active && (breeding || player.equals(ap.getPlayer()) && ap.hasAction())) {
+		if (active && (player.equals(ap.getPlayer()) && ap.hasAction())) {
 			finishBtn.setVisible(true);
-			finishBtn.setEnabled(breeding || ap.canFinish());
+			finishBtn.setEnabled(ap.canFinish());
 
 			if (ap.hasAction() && !ap.isFinished() && ap.canCancel()) {
 				cancelBtn.setVisible(true);
@@ -358,9 +359,9 @@ public class FarmPanel extends JPanel {
 			cancelBtn.setVisible(false);
 		}
 
-		this.msgLabel.setVisible(active && (breeding || player.equals(ap.getPlayer())));
+		this.msgLabel.setVisible(active && (/*breeding ||*/ player.equals(ap.getPlayer())));
 		if (active) {
-			if (breeding) {
+			if (phase == Phase.BREEDING) {
 				this.msgLabel.setText(Msg.get("animalsBreedMsg"));
 			} else if (player.equals(ap.getPlayer())) {
 				if (ap.hasAction()) {
@@ -377,9 +378,9 @@ public class FarmPanel extends JPanel {
 		}
 	}
 
-	public void setActive(boolean active, boolean breeding) {
-		this.breeding = breeding;
-		this.active = breeding ? player.hasLooseAnimals() : active;
+	public void setActive(boolean active, Phase phase) {
+		this.active = active;
+		this.phase = phase;
 
 		updateControls();
 	}
@@ -821,7 +822,7 @@ public class FarmPanel extends JPanel {
 			Purchasable[] activeTypes = { farm.getActiveType(), farm.getActiveSubType() };
 
 			// TODO refactor to more functions
-			if (active && !breeding) {
+			if (active && phase != Phase.BREEDING) {
 				for (int i = 0; i < activeTypes.length; i++) {
 					Purchasable activeType = activeTypes[i];
 					if (activeType == null) {

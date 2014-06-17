@@ -2,8 +2,10 @@ package com.dill.agricola;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -30,24 +32,21 @@ import com.dill.agricola.actions.simple.StartOneWood;
 import com.dill.agricola.actions.simple.ThreeWood;
 import com.dill.agricola.actions.simple.TwoStone;
 import com.dill.agricola.common.Animals;
-import com.dill.agricola.model.Building;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.model.types.PlayerColor;
-import com.dill.agricola.support.Msg;
 import com.dill.agricola.undo.SimpleEdit;
 import com.dill.agricola.undo.TurnUndoManager;
 import com.dill.agricola.undo.TurnUndoManager.UndoRedoListener;
-import com.dill.agricola.undo.UndoableFarmEdit;
 import com.dill.agricola.view.Board;
 import com.dill.agricola.view.BuildingOverviewDialog;
 import com.dill.agricola.view.NewGameDialog;
 
 public class Game {
 
-	private static enum Phase {
-		CLEANUP, BEFORE_WORK, WORK, BEFORE_BREEDING, BREEDING/*, AFTER_BREEDING*/, EXTRA_BREEDING;
+	public static enum Phase {
+		CLEANUP, BEFORE_WORK, WORK, BEFORE_BREEDING, BREEDING;
 	}
 
 	public final static int ROUNDS = Main.DEBUG ? 8 : 8;
@@ -62,13 +61,13 @@ public class Game {
 	private int round = 0;
 	private Phase phase;
 	private PlayerColor startPlayer;
-	private Player currentPlayer;
-	private int extraTurnNo;
 
 	private PlayerColor initialStartPlayer;
 
 	private Action breedingAction = new Breeding();
 	private boolean ended;
+
+	Deque<Player> playerQueue = new ArrayDeque<Player>();
 
 	public Game() {
 		ap = new ActionPerformer();
@@ -86,7 +85,7 @@ public class Game {
 				for (Player player : players) {
 					player.notifyObservers(isUndo ? ChangeType.UNDO : ChangeType.REDO);
 				}
-				board.updateState(round, phase == Phase.BREEDING ? null : getCurrentPlayer());
+				board.refresh();
 			}
 
 		});
@@ -119,8 +118,16 @@ public class Game {
 		return initialStartPlayer;
 	}
 
-	public PlayerColor getCurrentPlayer() {
-		return currentPlayer.getColor();
+//	public PlayerColor getCurrentPlayer() {
+//		return currentPlayer.getColor();
+//	}
+
+	public int getRound() {
+		return round;
+	}
+
+	public Phase getPhase() {
+		return phase;
 	}
 
 	public PlayerColor getWinner() {
@@ -144,8 +151,12 @@ public class Game {
 		return submitListener;
 	}
 
-	private void switchCurrentPlayer() {
-		currentPlayer = getPlayer(currentPlayer.getColor().other());
+//	private void switchCurrentPlayer() {
+//		currentPlayer = getPlayer(currentPlayer.getColor().other());
+//	}
+
+	private Player getOtherPlayer(Player p) {
+		return getPlayer(p.getColor().other());
 	}
 
 	public boolean isStarted() {
@@ -179,7 +190,7 @@ public class Game {
 		setStartingPlayer(newDialog.getStartingPlayer());
 		initialStartPlayer = startPlayer;
 
-		board.start();
+		board.startGame();
 		startRound();
 //		if (!board.isMaximized()) {
 //			board.pack();		
@@ -187,167 +198,199 @@ public class Game {
 	}
 
 	private void startRound() {
-		ap.postEdit(new StartRound(round, currentPlayer != null ? currentPlayer.getColor() : null, startPlayer));
+		ap.postEdit(new StartRound(round));
 		round++;
-		currentPlayer = getPlayer(startPlayer);
 		// refill
 		board.startRound(round);
 
-		extraTurnNo = 0;
-		if (startExtraTurn(Phase.BEFORE_WORK)) {
-			return;
-		}
-		// start work
-		startTurn();
+		// start pre-work phase
+		interPhase(Phase.BEFORE_WORK);
 	}
 
-	private void startTurn() {
-		ap.postEdit(new ChangePhase(phase, Phase.WORK));
-		phase = Phase.WORK;
+	private void interPhase(Phase interPhase) {
+		ap.postEdit(new ChangePhase(phase, interPhase, true));
+		phase = interPhase;
+		playerQueue.clear();
 
+		for (Player p : players) {
+			boolean hasExtraActions = p.initExtraActions(interPhase == Phase.BEFORE_WORK, round);
+			if (hasExtraActions) {
+				addToQueue(p);
+			}
+		}
+
+		Player currentPlayer = takeFromQueue();
+		if (currentPlayer != null) {
+			startExtraTurn(currentPlayer);
+		} else {
+			if (phase == Phase.BEFORE_WORK) {
+				// start work phase
+				workPhase();
+			} else if (phase == Phase.BEFORE_BREEDING) {
+				// start breeding phase
+				breedingPhase();
+			}
+		}
+
+	}
+
+	private void startExtraTurn(Player currentPlayer) {
+		// check if any extra turns are provided by buildings
+
+		Action extraAction = currentPlayer.getNextExtraAction();
+		if (extraAction != null) {
+			ap.postEdit(extraAction.init());
+			if (extraAction.canDo(currentPlayer)) {
+				ap.postEdit(new StartTurn(ap.getPlayer(), currentPlayer));
+				ap.setPlayer(currentPlayer);
+				board.startTurn();
+
+				// TODO make extra actions undoable
+				// also causes BUG - cannot undo on farm (since actual multiedit belongs to last player)
+
+				if (ap.startAction(extraAction, true)) {
+					// end last "action/breeding edit"
+//					ap.endUpdate();
+					// start "breeding edit"
+//					ap.beginUpdate(currentPlayer.getColor(), extraAction.getType());
+
+					if (ap.isFinished()) {
+						endExtraTurn();
+					}
+				} else {
+					throw new IllegalStateException(extraAction.getType().shortDesc + " error");
+				}
+			} else {
+				// invalid action, try next for same player
+				startExtraTurn(currentPlayer);
+			}
+		} else {
+			// no more actions, try other player
+			currentPlayer = takeFromQueue();
+			if (currentPlayer != null) {
+				startExtraTurn(currentPlayer);
+			} else {
+				if (phase == Phase.BEFORE_WORK) {
+					// start work phase
+					workPhase();
+				} else if (phase == Phase.BEFORE_BREEDING) {
+					// start breeding phase
+					breedingPhase();
+				}
+			}
+		}
+	}
+
+	private void endExtraTurn() {
+		Player currentPlayer = ap.getPlayer();
+		// try another extra turn
+		startExtraTurn(currentPlayer);
+	}
+
+	private void workPhase() {
+		ap.postEdit(new ChangePhase(phase, Phase.WORK, false));
+		phase = Phase.WORK;
+		// this phase does not use player queue
+
+		startTurn(getPlayer(startPlayer));
+	}
+
+	private void startTurn(Player currentPlayer) {
 		ap.postEdit(new StartTurn(ap.getPlayer(), currentPlayer));
 		ap.setPlayer(currentPlayer);
-		board.startTurn(currentPlayer.getColor());
+		board.startTurn();
 
 		ap.endUpdate(); // end last "action/breeding edit"
 	}
 
 	private void endTurn() {
+		Player currentPlayer = ap.getPlayer();
+
 		// animals run away
 		releaseAnimals(currentPlayer);
 
-		Player otherPlayer = getPlayer(currentPlayer.getColor().other());
-		if (otherPlayer.hasWorkers()) {
-			switchCurrentPlayer();
-			// switch player
-			ap.postEdit(new EndTurn());
+		// switch player
+		currentPlayer = getOtherPlayer(currentPlayer);
+
+		if (currentPlayer.hasWorkers()) {
 			// if has workers continue with next turn
-			startTurn();
+			startTurn(currentPlayer);
 		} else {
-			extraTurnNo = 0;
-			if (startExtraTurn(Phase.BEFORE_BREEDING)) {
-				return;
-			}
-			// else end work phase II
-			breedingPhase();
-		}
-	}
-
-	private boolean startExtraTurn(Phase extraPhase) {
-		// check if any extra turns are provided by buildings
-		// TODO optimize - don't cycle through all the buildings every time
-		int no = 0;
-		for (Player p : players) {
-			for (Building b : p.farm.getFarmBuildings()) {
-				Action a = extraPhase == Phase.BEFORE_WORK ? b.getBeforeWorkAction(round) : b.getBeforeBreedingAction();
-				if (a != null) {
-					if (no < extraTurnNo) {
-						// this extra action was already performed, skip it
-						no++;
-					} else {
-						extraTurnNo++;
-						no++;
-						if (a.canDo(p)) {
-							ap.postEdit(new ChangePhase(phase, extraPhase));
-							phase = extraPhase;
-
-							ap.postEdit(new StartTurn(ap.getPlayer(), p));
-							ap.setPlayer(p);
-
-							// TODO make extra actions undoable
-							// also causes BUG - cannot undo on farm (since actual multiedit belongs to last player)
-//							ap.endUpdate(); // end last "(extra)action edit"
-							a.init();
-							if (ap.startAction(a, true)) {
-								board.startTurn(p.getColor());
-								if (ap.isFinished()) {
-									submitListener.actionPerformed(
-											new ActionEvent(p.getColor(), 0, ActionCommand.SUBMIT.toString()));
-								}
-								return true;
-							} else {
-								// TODO undo?
-							}
-						}
-					}
-				}
-			}
-		}
-		return false;
-	}
-
-	private void endExtraTurn(Phase phase) {
-		if (startExtraTurn(phase)) {
-			return;
-		}
-		if (phase == Phase.BEFORE_WORK) {
-			// else start work phase
-			startTurn();
-		} else if (phase == Phase.BEFORE_BREEDING) {
-			// else end work phase
-			breedingPhase();
-		} else {
-			throw new IllegalArgumentException(phase.toString());
+			// start pre-breeding phase
+			interPhase(Phase.BEFORE_BREEDING);
 		}
 	}
 
 	private void breedingPhase() {
 		// end work
-		ap.postEdit(new ChangePhase(phase, Phase.BREEDING));
+		ap.postEdit(new ChangePhase(phase, Phase.BREEDING, true));
 		phase = Phase.BREEDING;
-
-		ap.postEdit(new EndWorkPhase(currentPlayer));
-		ap.setPlayer(null);
+		playerQueue.clear();
 
 		for (Player p : players) {
 			// return workers
 			ap.postEdit(new ReturnWorkers(p));
 			p.returnAllWorkers();
 
-			startBreeding(p);
-			p.notifyObservers(ChangeType.ROUND_END);
+//			p.notifyObservers(ChangeType.ROUND_END);
+			if (breedingAction.canDo(p)) {
+				addToQueue(p);
+				if (hasExtraBreeding(p)) {
+					addToQueue(p);
+				}
+			}
 		}
 
-		boolean isBreeding = submitListener.getBreedingCount() > 0;
-		if (!isBreeding) {
-			postBreedingPhase();
-		}
-	}
-
-	private void startBreeding(Player player) {
-		UndoableFarmEdit edit = breedingAction.doo(player);
-		if (edit != null) {
-			ap.postEdit(edit);
-
-			ap.postEdit(new BreedingStart(player));
-			submitListener.adjustBreedingCount(1);
-			board.startBreeding(player.getColor());
+		Player currentPlayer = takeFromQueue();
+		if (currentPlayer != null) {
+			startBreedingTurn(currentPlayer);
+		} else {
+			endRound();
 		}
 	}
 
-	private void endBreeding(Player player) {
-		ap.endUpdate(); // end last "action edit" or "breeding edit"
-		// start "breeding edit" (will contain animal releasing)
-		ap.beginUpdate(player.getColor(), Msg.get("actBreedingDone"));
+	private boolean hasExtraBreeding(Player player) {
+		if (round == ROUNDS && player.farm.hasBuilding(BuildingType.BREEDING_STATION)) {
+			// only for last round
+			return true;
+		}
+		return false;
+	}
 
-		ap.postEdit(new BreedingEnd(player));
-		submitListener.adjustBreedingCount(-1);
+	private void startBreedingTurn(Player currentPlayer) {
+		ap.postEdit(new StartTurn(ap.getPlayer(), currentPlayer));
+		ap.setPlayer(currentPlayer);
+		board.startTurn();
+
+		ap.postEdit(breedingAction.init());
+		if (ap.startAction(breedingAction, true)) {
+			// end last "action/breeding edit"
+			ap.endUpdate();
+			// start "breeding edit"
+			ap.beginUpdate(currentPlayer.getColor(), breedingAction.getType());
+		} else {
+			throw new IllegalStateException("Breeding error");
+		}
+	}
+
+	private void endBreedingTurn() {
+		Player currentPlayer = ap.getPlayer();
+		ap.postEdit(new BreedingEnd(currentPlayer));
 
 		// animals run away after breeding
-		releaseAnimals(player);
-	}
+		releaseAnimals(currentPlayer);
 
-	private void postBreedingPhase() {
-//		ap.postEdit(new ChangePhase(phase, Phase.AFTER_BREEDING));
-//		phase = Phase.AFTER_BREEDING;
-		if (handleExtraBreedingPhase()) {
-			return;
+		currentPlayer = takeFromQueue();
+		if (currentPlayer != null) {
+			// switch player
+			startBreedingTurn(currentPlayer);
+		} else {
+			endRound();
 		}
-		endRound();
 	}
 
 	private void endRound() {
-		ap.postEdit(new ChangePhase(phase, Phase.CLEANUP));
+		ap.postEdit(new ChangePhase(phase, Phase.CLEANUP, false));
 		phase = Phase.CLEANUP;
 
 		if (round < ROUNDS) {
@@ -357,29 +400,6 @@ public class Game {
 			// or end game
 			endGame();
 		}
-	}
-
-	private boolean handleExtraBreedingPhase() {
-		if (round < ROUNDS) {
-			// only for last round
-			return false;
-		}
-		List<Player> extraBreeders = new ArrayList<Player>();
-		for (Player p : players) {
-			if (p.farm.hasBuilding(BuildingType.BREEDING_STATION)) {
-				extraBreeders.add(p);
-			}
-		}
-		if (extraBreeders.size() > 0) {
-			ap.postEdit(new ChangePhase(phase, Phase.EXTRA_BREEDING));
-			phase = Phase.EXTRA_BREEDING;
-			for (Player p : extraBreeders) {
-				startBreeding(p);
-				p.notifyObservers(ChangeType.ROUND_END);
-			}
-			return true;
-		}
-		return false;
 	}
 
 	private void endGame() {
@@ -396,6 +416,19 @@ public class Game {
 		if (lostAnimals.size() > 0) {
 			ap.postEdit(new ReleaseAnimals(p, lostAnimals));
 		}
+	}
+
+	private void addToQueue(Player p) {
+		ap.postEdit(new ChangeQueue(p));
+		playerQueue.addLast(p);
+	}
+
+	private Player takeFromQueue() {
+		if (playerQueue.isEmpty()) {
+			return null;
+		}
+		ap.postEdit(new ChangeQueue());
+		return playerQueue.removeFirst();
 	}
 
 	public List<Action> getActions() {
@@ -417,41 +450,26 @@ public class Game {
 
 	private class SubmitListener implements ActionListener {
 
-		private int breedingCount = 0;
-
 		public void actionPerformed(ActionEvent e) {
 			ActionCommand cmd = ActionCommand.valueOf(e.getActionCommand());
-			PlayerColor color = (PlayerColor) e.getSource();
 			switch (cmd) {
 			case SUBMIT:
 				switch (phase) {
 				case BEFORE_WORK:
 					// extra turn end
-					endExtraTurn(phase);
+					endExtraTurn();
 					break;
 				case WORK:
-					// turn end
+					// work end
 					endTurn();
 					break;
 				case BEFORE_BREEDING:
 					// extra turn end
-					endExtraTurn(phase);
+					endExtraTurn();
 					break;
 				case BREEDING:
-					// one or both players must submit
-					endBreeding(players[color.ordinal()]);
-					if (breedingCount == 0) {
-						postBreedingPhase();
-					}
-					break;
-				/*case AFTER_BREEDING:
-					endRound();
-					break;*/
-				case EXTRA_BREEDING:
-					endBreeding(players[color.ordinal()]);
-					if (breedingCount == 0) {
-						endRound();
-					}
+					// breeding end
+					endBreedingTurn();
 					break;
 				default:
 					break;
@@ -465,15 +483,6 @@ public class Game {
 				break;
 			}
 		}
-
-		public void adjustBreedingCount(int d) {
-			breedingCount += d;
-		}
-
-		public int getBreedingCount() {
-			return breedingCount;
-		}
-
 	};
 
 	public static enum ActionCommand {
@@ -483,24 +492,20 @@ public class Game {
 	private class StartRound extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
 
-		private final PlayerColor curPlayer;
-		private final PlayerColor firstPlayer;
+		private final int startedRound;
 
-		public StartRound(int round, PlayerColor currentPlayer, PlayerColor startingPlayer) {
-			this.curPlayer = currentPlayer;
-			this.firstPlayer = startingPlayer;
+		public StartRound(int round) {
+			this.startedRound = round;
 		}
 
 		public void undo() throws CannotUndoException {
 			super.undo();
-			round--;
-			currentPlayer = getPlayer(curPlayer);
+			round = startedRound - 1;
 		}
 
 		public void redo() throws CannotRedoException {
 			super.redo();
-			round++;
-			currentPlayer = getPlayer(firstPlayer);
+			round = startedRound;
 		}
 
 	}
@@ -521,33 +526,19 @@ public class Game {
 			super.undo();
 			ap.setPlayer(prevPlayer);
 			if (prevPlayer != null) {
-				board.startTurn(prevPlayer.getColor());
+				board.startTurn();
 			}
 		}
 
 		public void redo() throws CannotRedoException {
 			super.redo();
 			ap.setPlayer(curPlayer);
-			board.startTurn(curPlayer.getColor());
+			board.startTurn();
 		}
 
 	}
 
-	private class EndTurn extends SimpleEdit {
-		private static final long serialVersionUID = 1L;
-
-		public void undo() throws CannotUndoException {
-			super.undo();
-			switchCurrentPlayer();
-		}
-
-		public void redo() throws CannotRedoException {
-			super.redo();
-			switchCurrentPlayer();
-		}
-	}
-
-	private class EndWorkPhase extends SimpleEdit {
+	/*private class EndWorkPhase extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
 
 		private final Player curPlayer;
@@ -568,7 +559,7 @@ public class Game {
 			ap.setPlayer(null);
 		}
 
-	}
+	}*/
 
 	private class ReturnWorkers extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
@@ -592,29 +583,6 @@ public class Game {
 
 	}
 
-	private class BreedingStart extends SimpleEdit {
-		private static final long serialVersionUID = 1L;
-
-		private final Player breedingPlayer;
-
-		public BreedingStart(Player breedingPlayer) {
-			this.breedingPlayer = breedingPlayer;
-		}
-
-		public void undo() throws CannotUndoException {
-			super.undo();
-			submitListener.adjustBreedingCount(-1);
-			board.deactivate(breedingPlayer.getColor());
-		}
-
-		public void redo() throws CannotRedoException {
-			super.redo();
-			submitListener.adjustBreedingCount(1);
-			board.startBreeding(breedingPlayer.getColor());
-		}
-
-	}
-
 	private class BreedingEnd extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
 
@@ -629,18 +597,12 @@ public class Game {
 
 		public void undo() throws CannotUndoException {
 			super.undo();
-			submitListener.adjustBreedingCount(1);
-			// make last born animals loose
 			breedingPlayer.unpurchaseAnimals(lastBorn);
 			breedingPlayer.purchaseAnimals(lastBorn);
-
-			board.startBreeding(breedingPlayer.getColor());
 		}
 
 		public void redo() throws CannotRedoException {
 			super.redo();
-			submitListener.adjustBreedingCount(-1);
-			board.deactivate(breedingPlayer.getColor());
 		}
 
 	}
@@ -650,23 +612,68 @@ public class Game {
 
 		private final Phase old;
 		private final Phase current;
+		private final List<Player> q;
 
-		public ChangePhase(Phase old, Phase current) {
-			super(false);
+		public ChangePhase(Phase old, Phase current, boolean affectsQueue) {
 			this.old = old;
 			this.current = current;
+			if (affectsQueue) {
+				q = new ArrayList<Player>(playerQueue);
+			} else {
+				q = null;
+			}
 		}
 
 		public void undo() throws CannotUndoException {
 			super.undo();
 			phase = old;
-//			updateBoard();
+			if (q != null) {
+				playerQueue.clear();
+				playerQueue.addAll(q);
+			}
 		}
 
 		public void redo() throws CannotRedoException {
 			super.redo();
 			phase = current;
-//			updateBoard();
+			if (q != null) {
+				playerQueue.clear();
+			}
+		}
+
+	}
+
+	private class ChangeQueue extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
+
+		private final Player addedPlayer;
+		private final Player removedPlayer;
+
+		public ChangeQueue() {
+			this(null);
+		}
+
+		public ChangeQueue(Player player) {
+			this.addedPlayer = player;
+			removedPlayer = addedPlayer == null ? playerQueue.getFirst() : null;
+		}
+
+		public void undo() throws CannotUndoException {
+			super.undo();
+			if (addedPlayer != null) {
+				playerQueue.removeLast();
+			} else {
+				playerQueue.addFirst(removedPlayer);
+			}
+		}
+
+		public void redo() throws CannotRedoException {
+			super.redo();
+			if (addedPlayer != null) {
+				playerQueue.addLast(addedPlayer);
+			} else {
+				playerQueue.removeFirst();
+			}
 		}
 
 	}

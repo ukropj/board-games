@@ -1,8 +1,10 @@
 package com.dill.agricola.model;
 
 import java.util.Observer;
+import java.util.Stack;
 
 import com.dill.agricola.Main;
+import com.dill.agricola.actions.Action;
 import com.dill.agricola.common.Animals;
 import com.dill.agricola.common.Dir;
 import com.dill.agricola.common.DirPoint;
@@ -261,10 +263,27 @@ public class Player extends SimpleObservable {
 		return farm.hasValidAnimals();
 	}
 
+	private Stack<Action> extraActions = new Stack<Action>();
+
+	public boolean initExtraActions(boolean beforeWork, int forRound) {
+		extraActions.clear();
+		for (Building b : farm.getFarmBuildings()) {
+			Action action = beforeWork ? b.getBeforeWorkAction(forRound) : b.getBeforeBreedingAction();
+			if (action != null) {
+				extraActions.push(action);				
+			}
+		}
+		return !extraActions.isEmpty();
+	}
+	
+	public Action getNextExtraAction() {
+		return extraActions.isEmpty() ? null : extraActions.pop();
+	}
+
 	public void setLastBornAnimals(Animals lastBorn) {
 		this.lastBorn.set(lastBorn);
 	}
-	
+
 	public Animals getLastBornAnimals() {
 		return lastBorn;
 	}

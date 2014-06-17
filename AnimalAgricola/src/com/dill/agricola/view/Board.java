@@ -30,6 +30,7 @@ import javax.swing.event.UndoableEditListener;
 
 import com.dill.agricola.Game;
 import com.dill.agricola.Game.ActionCommand;
+import com.dill.agricola.Game.Phase;
 import com.dill.agricola.Main;
 import com.dill.agricola.actions.ActionPerformer;
 import com.dill.agricola.model.Player;
@@ -189,28 +190,12 @@ public class Board extends JFrame {
 	public boolean isMaximized() {
 		return (getExtendedState() & JFrame.MAXIMIZED_BOTH) != 0;
 	}
-
-	public void start() {
+	
+	public void startGame() {
 		actionBoard.resetBuildings();
 		actionBoard.resetActions();
 		playerBoards[0].reset();
 		playerBoards[1].reset();
-	}
-
-	public void updateState(int roundNo, PlayerColor playerColor) {
-		if (roundNo > 0) {
-			roundL.setText(Msg.get("roundLab", roundNo, Game.ROUNDS));
-		}
-		if (playerColor != null) {
-			playerL.setText(Msg.get(playerColor.toString().toLowerCase()));
-			playerL.setForeground(playerColor.getRealColor());
-			turnL.setText(Msg.get("turnLab"));
-		} else {
-			playerL.setText("");
-			turnL.setText(Msg.get("breedingLab"));
-		}
-		actionBoard.updateActions();
-		refreshUndoRedo();
 	}
 
 	public void refreshUndoRedo() {
@@ -222,34 +207,72 @@ public class Board extends JFrame {
 		redoBtn.setToolTipText(undoManager.getRedoPresentationName());
 		redoBtn.setEnabled(undoManager.canRedo());
 	}
+	
+	public void refresh() {
+		roundL.setText(Msg.get("roundLab", game.getRound(), Game.ROUNDS));
+		
+		Player currentPlayer = ap.getPlayer();
+		if (currentPlayer != null) {
+			PlayerColor c = currentPlayer.getColor();
+			playerL.setText(Msg.get(c.toString().toLowerCase()));
+			playerL.setForeground(c.getRealColor());
+		} else {
+			playerL.setText("");
+		}
+		
+		switch (game.getPhase()) {
+		case WORK:
+			turnL.setText(Msg.get("turnLab"));
+			break;
+		case BREEDING:
+			turnL.setText(Msg.get("breedingLab"));
+			break;
+		case CLEANUP:
+			turnL.setText("");			
+		default:
+			break;
+		}
+		
+		actionBoard.updateActions();
+		refreshUndoRedo();
+	}
 
 	public void startRound(int roundNo) {
 		actionBoard.initActions();
 		if (Main.DEBUG && roundNo == 1) {
 			actionBoard.initActions();
 		}
-		updateState(roundNo, null);
+		refresh();
 	}
 
-	public void startTurn(PlayerColor currentPlayer) {
-		playerBoards[currentPlayer.ordinal()].setActive(true, false);
-		playerBoards[currentPlayer.other().ordinal()].setActive(false, false);
-		actionBoard.showActions();
-		updateState(-1, currentPlayer);
-		if (Main.DEBUG) {
-			debugPanel.setCurrentPlayer(currentPlayer);
+	public void startTurn() {
+		Player currentPlayer = ap.getPlayer();
+		Main.asrtNotNull(currentPlayer, "Cannot start turn without player!");
+		
+		PlayerColor currentColor = currentPlayer.getColor();
+		
+		playerBoards[currentColor.ordinal()].activate(game.getPhase());
+		playerBoards[currentColor.other().ordinal()].deactivate();
+		if (game.getPhase() == Phase.WORK) {
+			actionBoard.showActions();
+		} else {
+			actionBoard.disableActions();
 		}
+		if (Main.DEBUG) {
+			debugPanel.setCurrentPlayer(currentColor);
+		}
+		refresh();
 	}
 
-	public void startBreeding(PlayerColor breedingPlayer) {
+	/*public void startBreeding(PlayerColor breedingPlayer) {
 		playerBoards[breedingPlayer.ordinal()].setActive(true, true);
 		updateState(-1, null);
 		actionBoard.disableActions();
-	}
+	}*/
 
-	public void deactivate(PlayerColor breedingPlayer) {
-		playerBoards[breedingPlayer.ordinal()].setActive(false, false);
-	}
+//	public void deactivate(PlayerColor breedingPlayer) {
+//		playerBoards[breedingPlayer.ordinal()].setActive(false, false);
+//	}
 
 	public void startingPlayerChanged() {
 		playerBoards[0].updateFarm();
@@ -257,8 +280,8 @@ public class Board extends JFrame {
 	}
 
 	public void endGame() {
-		playerBoards[0].setActive(false, false);
-		playerBoards[1].setActive(false, false);
+		playerBoards[0].deactivate();
+		playerBoards[1].deactivate();
 
 		PlayerColor winner = game.getWinner();
 		playerL.setText(Msg.get(winner.toString().toLowerCase()));

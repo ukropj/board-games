@@ -208,7 +208,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 
 	public boolean finishAction() {
 		if (canFinish()) {
-			postEdit(new EndAction());
+			postEdit(new EndAction(player, action, isExtraAction));
 			player.getFarm().setActiveType(null);
 			action = null;
 			isExtraAction = false;
@@ -223,6 +223,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 
 	private boolean finishSubaction() {
 		if (canSubFinish()) {
+			postEdit(new EndSubAction(player, subaction));
 			player.getFarm().setActiveSubType(null);
 			subaction.removeChangeListeners();
 			subaction = null;
@@ -249,10 +250,11 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		public void undo() throws CannotUndoException {
 			super.undo();
 			p.getFarm().setActiveType(null);
-			action = null;
 			if (!extraAction) {
 				p.returnWorker();
 			}
+			action = null;
+			isExtraAction = false;
 			a.setUsed(null);
 		}
 
@@ -262,6 +264,8 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 			if (!extraAction) {
 				p.spendWorker();
 			}
+			action = a;
+			isExtraAction = extraAction;
 		}
 
 	}
@@ -294,14 +298,55 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 	private class EndAction extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
 
+		private final Player p;
+		private final Action a;
+		private final boolean extraAction;
+
+		public EndAction(Player player, Action action, boolean extraAction) {
+			super(!extraAction);
+			this.p = player;
+			this.a = action;
+			this.extraAction = extraAction;
+		}
+
 		public void undo() throws CannotUndoException {
 			super.undo();
+			action = a;
+			isExtraAction = extraAction;
 		}
 
 		public void redo() throws CannotRedoException {
 			super.redo();
+			p.getFarm().setActiveType(null);
+			action = null;
+			isExtraAction = false;
 		}
 
+	}
+	
+	private class EndSubAction extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
+		
+		private final Player p;
+		private final Action sa;
+		
+		public EndSubAction(Player player, Action subaction) {
+			this.p = player;
+			this.sa = subaction;
+		}
+		
+		public void undo() throws CannotUndoException {
+			super.undo();
+			subaction = sa;
+		}
+		
+		public void redo() throws CannotRedoException {
+			super.redo();
+			p.getFarm().setActiveSubType(null);
+			subaction.removeChangeListeners();
+			subaction = null;
+		}
+		
 	}
 
 	private class SubActionStateChangeListener implements ActionStateChangeListener {
