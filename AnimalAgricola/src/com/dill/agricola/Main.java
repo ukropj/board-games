@@ -28,7 +28,7 @@ public class Main {
 		};
 	};
 
-	public static boolean DEBUG = true;
+	public static boolean DEBUG = false;
 	public static boolean SKIP_LANG = true;
 	public static boolean MORE_BUILDINGS = true; // TODO remove these flag when ready to release expansion
 	public static boolean EVEN_MORE_BUILDINGS = false;
@@ -99,6 +99,12 @@ public class Main {
 	public static void asrtInRange(int i, int min, int max, String msg) throws IllegalArgumentException {
 		if (i < min || i >= max) {
 			throw new IllegalArgumentException(msg + " " + i);
+		}
+	}
+	
+	public static void asrtNotEqual(Object o1, Object o2, String msg) throws IllegalArgumentException {
+		if (o1 == o2 || o1 != null && o1.equals(o2)) {
+			throw new IllegalArgumentException(msg + " " + o1);
 		}
 	}
 

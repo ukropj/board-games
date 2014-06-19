@@ -5,7 +5,7 @@
 	more buildings big and small
 	refactor actions to atomic actions - Millpond
 	action names (e.g. "Stall", "Fences",...)
-	extra actions should be atomically undoable
+	better hints for current action
 	
 #Bugs#
 

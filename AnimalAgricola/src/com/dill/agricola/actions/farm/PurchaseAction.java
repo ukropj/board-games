@@ -49,17 +49,18 @@ public abstract class PurchaseAction extends AbstractAction {
 
 	public UndoableFarmEdit doo(Player player) {
 		if (canDo(player)) {
-			setPlayerActive(player);
+			return setPlayerActive(player);
 		}
 		return null;
 	}
 	
-	protected void setPlayerActive(Player player) {
+	protected UndoableFarmEdit setPlayerActive(Player player) {
 		if (!isAsSubAction()) {
-			player.getFarm().setActiveType(thing);				
+			player.getFarm().setActiveType(thing);	
 		} else {
 			player.getFarm().setActiveSubType(thing);								
 		}
+		return new SetActive(player, isAsSubAction());
 	}
 
 	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos) {
@@ -104,6 +105,37 @@ public abstract class PurchaseAction extends AbstractAction {
 			boolean done = player.purchase(thing, getCost(player), pos);
 			if (!done) {
 				throw new CannotRedoException();
+			}
+		}
+		
+	}
+	
+	protected class SetActive extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
+		
+		private final Player player;
+		private final boolean asSubaction;
+		
+		public SetActive(Player player, boolean asSubaction) {
+			this.player = player;
+			this.asSubaction = asSubaction;
+		}
+		
+		public void undo() throws CannotUndoException {
+			super.undo();
+			if (!asSubaction) {
+				player.getFarm().setActiveType(null);	
+			} else {
+				player.getFarm().setActiveSubType(null);								
+			}
+		}
+		
+		public void redo() throws CannotRedoException {
+			super.redo();
+			if (!asSubaction) {
+				player.getFarm().setActiveType(thing);	
+			} else {
+				player.getFarm().setActiveSubType(thing);								
 			}
 		}
 		

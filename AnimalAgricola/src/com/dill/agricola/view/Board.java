@@ -216,13 +216,31 @@ public class Board extends JFrame {
 			PlayerColor c = currentPlayer.getColor();
 			playerL.setText(Msg.get(c.toString().toLowerCase()));
 			playerL.setForeground(c.getRealColor());
+			
+			PlayerColor currentColor = currentPlayer.getColor();
+			playerBoards[currentColor.ordinal()].activate(game.getPhase());
+			playerBoards[currentColor.other().ordinal()].deactivate();
+			
+			if (Main.DEBUG) {
+				debugPanel.setCurrentPlayer(currentColor);
+			}
 		} else {
 			playerL.setText("");
+			
+			playerBoards[0].deactivate();
+			playerBoards[1].deactivate();
 		}
 		
-		switch (game.getPhase()) {
+		Phase phase = game.getPhase();
+		switch (phase) {
+		case BEFORE_WORK:
+			turnL.setText(Msg.get("extraturnLab"));
+			break;
 		case WORK:
 			turnL.setText(Msg.get("turnLab"));
+			break;
+		case BEFORE_BREEDING:
+			turnL.setText(Msg.get("extraturnLab"));
 			break;
 		case BREEDING:
 			turnL.setText(Msg.get("breedingLab"));
@@ -233,46 +251,24 @@ public class Board extends JFrame {
 			break;
 		}
 		
-		actionBoard.updateActions();
-		refreshUndoRedo();
-	}
+		actionBoard.updateActions();	
 
-	public void startRound(int roundNo) {
-		actionBoard.initActions();
-		if (Main.DEBUG && roundNo == 1) {
-			actionBoard.initActions();
-		}
-		refresh();
-	}
-
-	public void startTurn() {
-		Player currentPlayer = ap.getPlayer();
-		Main.asrtNotNull(currentPlayer, "Cannot start turn without player!");
-		
-		PlayerColor currentColor = currentPlayer.getColor();
-		
-		playerBoards[currentColor.ordinal()].activate(game.getPhase());
-		playerBoards[currentColor.other().ordinal()].deactivate();
-		if (game.getPhase() == Phase.WORK) {
+		if (phase == Phase.WORK) {
 			actionBoard.showActions();
 		} else {
 			actionBoard.disableActions();
 		}
-		if (Main.DEBUG) {
-			debugPanel.setCurrentPlayer(currentColor);
+
+		refreshUndoRedo();
+	}
+
+	public void startRound() {
+		actionBoard.initActions();
+		if (Main.DEBUG && game.getRound() == 1) {
+			actionBoard.initActions();
 		}
 		refresh();
 	}
-
-	/*public void startBreeding(PlayerColor breedingPlayer) {
-		playerBoards[breedingPlayer.ordinal()].setActive(true, true);
-		updateState(-1, null);
-		actionBoard.disableActions();
-	}*/
-
-//	public void deactivate(PlayerColor breedingPlayer) {
-//		playerBoards[breedingPlayer.ordinal()].setActive(false, false);
-//	}
 
 	public void startingPlayerChanged() {
 		playerBoards[0].updateFarm();

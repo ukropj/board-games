@@ -276,8 +276,16 @@ public class Player extends SimpleObservable {
 		return !extraActions.isEmpty();
 	}
 	
+	public void clearExtraActions() {
+		extraActions.clear();
+	}
+	
 	public Action getNextExtraAction() {
 		return extraActions.isEmpty() ? null : extraActions.pop();
+	}
+	
+	public void returnExtraAction(Action action) {
+		extraActions.push(action);
 	}
 
 	public void setLastBornAnimals(Animals lastBorn) {

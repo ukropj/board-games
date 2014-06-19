@@ -14,13 +14,22 @@ import com.dill.agricola.support.Logger;
 public class TurnUndoableEditSupport extends UndoableEditSupport {
 
 	protected MultiEdit compoundEdit;
+	protected boolean compoundEditPosted;
 
+	public void reset() {
+		updateLevel = 0;
+		compoundEdit = null;
+		compoundEditPosted = false;
+	}
+	
 	public synchronized void postEdit(UndoableEdit e) {
 		if (updateLevel == 0) {
+			System.err.println("Level zero edit!");
 			_postEdit(e);
 		} else {
-			if (compoundEdit.isEmpty() && compoundEdit.addEdit(e)) {
+			if (!compoundEditPosted && compoundEdit.addEdit(e)) {
 				Logger.logUndo("Start: " + compoundEdit.getPresentationName());
+				compoundEditPosted = true;
 				_postEdit(compoundEdit);
 			} else {
 				compoundEdit.addEdit(e);
@@ -29,15 +38,13 @@ public class TurnUndoableEditSupport extends UndoableEditSupport {
 	}
 
 	public synchronized void beginUpdate(PlayerColor currentPlayer, ActionType actionType) {
-		beginUpdate(currentPlayer, actionType.shortDesc);
-	}
-
-	public synchronized void beginUpdate(PlayerColor currentPlayer, String name) {
 		if (updateLevel > 0) {
 			endUpdate();
 		}
 		if (updateLevel == 0) {
-			compoundEdit = createCompoundEdit(currentPlayer, name);
+			compoundEdit = createCompoundEdit(currentPlayer, actionType != null ? actionType.shortDesc : "");
+			Logger.logUndo("Start unposted: " + compoundEdit.getPresentationName());
+			compoundEditPosted = false;
 		}
 		updateLevel++;
 	}
@@ -50,10 +57,11 @@ public class TurnUndoableEditSupport extends UndoableEditSupport {
 		if (updateLevel > 0) {
 			updateLevel = 0;
 			compoundEdit.end();
-			if (!compoundEdit.isEmpty()) {
-				Logger.logUndo("End: " + compoundEdit.getPresentationName());
-			}
+			Logger.logUndo("End" + (compoundEditPosted ? " unposted" : "") + ": " + compoundEdit.getPresentationName());
 			compoundEdit = null;
+			compoundEditPosted = false;
+		} else {
+			System.err.println("Cannot end update, already ended!");
 		}
 	}
 
@@ -64,7 +72,7 @@ public class TurnUndoableEditSupport extends UndoableEditSupport {
 	}
 
 	protected boolean undoSpecificAction(Player player, DirPoint pos, Purchasable thing, boolean undoAllAfter) throws CannotUndoException {
-		return compoundEdit != null && compoundEdit.undoFarmAction(player.getColor(), pos, thing, undoAllAfter);
+		return compoundEdit != null && compoundEditPosted && compoundEdit.undoFarmAction(player.getColor(), pos, thing, undoAllAfter);
 	}
 
 }

@@ -173,8 +173,8 @@ public class BuildSpecial extends BuildAction {
 		if (canDo(player)) {
 			toBuild = chooseBuilding(player);
 			if (toBuild != null) {
-				setPlayerActive(player);
 				setChanged();
+				return setPlayerActive(player);
 			}
 		}
 		return null;

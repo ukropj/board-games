@@ -24,6 +24,13 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		Main.asrtNotNull(player, "Cannot perform action without player");
 		Main.asrtNotNull(action, "Cannot perform action without action");
 	}
+	
+	public void reset() {
+		super.reset();
+		player = null;
+		action = subaction = null;
+		isExtraAction = false;
+	}
 
 	public void setPlayer(Player player) {
 		this.player = player;
@@ -39,6 +46,10 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 
 	public boolean hasAction(ActionType type) {
 		return action != null && action.getType() == type;
+	}
+
+	public boolean hasExtraAction() {
+		return action != null && isExtraAction;
 	}
 
 	public Action getAction() {
@@ -64,9 +75,8 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		checkState();
 
 		boolean canDo = action.canDo(player);
-		UndoableFarmEdit edit = null;
 		if (canDo) {
-			edit = action.doo(player);
+			UndoableFarmEdit edit = action.doo(player);
 
 			if (action.isCancelled()) {
 				this.action = null;
@@ -111,9 +121,8 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		subaction.useAsSubaction();
 
 		boolean canDo = subaction.canDo(player);
-		UndoableFarmEdit edit = null;
 		if (canDo) {
-			edit = subaction.doo(player);
+			UndoableFarmEdit edit = subaction.doo(player);
 
 			if (subaction.isCancelled()) {
 				return false;
@@ -124,7 +133,8 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 
 			if (edit != null) {
 				postEdit(edit);
-				if (!subaction.canDoOnFarm(player) && !edit.isAnimalEdit() && !player.hasLooseAnimals()) {
+				if (!edit.isAnimalEdit() && !player.hasLooseAnimals()
+						&& !subaction.canDoOnFarm(player)) {
 					return finishSubaction();
 				}
 			}
@@ -249,7 +259,6 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 
 		public void undo() throws CannotUndoException {
 			super.undo();
-			p.getFarm().setActiveType(null);
 			if (!extraAction) {
 				p.returnWorker();
 			}
@@ -274,23 +283,24 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		private static final long serialVersionUID = 1L;
 
 		private final Player p;
-		private final Action a;
+		private final Action sa;
 
-		public StartSubAction(Player player, Action action) {
+		public StartSubAction(Player player, Action subaction) {
 			this.p = player;
-			this.a = action;
+			this.sa = subaction;
 		}
 
 		public void undo() throws CannotUndoException {
 			super.undo();
 			p.getFarm().setActiveSubType(null);
 			subaction = null;
-			a.setUsed(null);
+			sa.setUsed(null);
 		}
 
 		public void redo() throws CannotRedoException {
 			super.redo();
-			a.setUsed(p.getColor());
+			sa.setUsed(p.getColor());
+			subaction = sa;
 		}
 
 	}
@@ -301,18 +311,21 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		private final Player p;
 		private final Action a;
 		private final boolean extraAction;
+		private final Purchasable activeType;
 
 		public EndAction(Player player, Action action, boolean extraAction) {
 			super(!extraAction);
 			this.p = player;
 			this.a = action;
 			this.extraAction = extraAction;
+			this.activeType = player.farm.getActiveType();
 		}
 
 		public void undo() throws CannotUndoException {
 			super.undo();
 			action = a;
 			isExtraAction = extraAction;
+			p.getFarm().setActiveType(activeType);
 		}
 
 		public void redo() throws CannotRedoException {
@@ -323,30 +336,33 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		}
 
 	}
-	
+
 	private class EndSubAction extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
-		
+
 		private final Player p;
 		private final Action sa;
-		
+		private final Purchasable activeSubType;
+
 		public EndSubAction(Player player, Action subaction) {
 			this.p = player;
 			this.sa = subaction;
+			this.activeSubType = player.farm.getActiveSubType();
 		}
-		
+
 		public void undo() throws CannotUndoException {
 			super.undo();
 			subaction = sa;
+			p.getFarm().setActiveSubType(activeSubType);
 		}
-		
+
 		public void redo() throws CannotRedoException {
 			super.redo();
 			p.getFarm().setActiveSubType(null);
 			subaction.removeChangeListeners();
 			subaction = null;
 		}
-		
+
 	}
 
 	private class SubActionStateChangeListener implements ActionStateChangeListener {

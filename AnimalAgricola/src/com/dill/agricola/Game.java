@@ -49,7 +49,7 @@ public class Game {
 		CLEANUP, BEFORE_WORK, WORK, BEFORE_BREEDING, BREEDING;
 	}
 
-	public final static int ROUNDS = Main.DEBUG ? 8 : 8;
+	public final static int ROUNDS = Main.DEBUG ? 4 : 8;
 
 	private final Player[] players;
 	private final Board board;
@@ -82,6 +82,10 @@ public class Game {
 		undoManager.addUndoRedoListener(new UndoRedoListener() {
 
 			public void undoOrRedoPerformed(boolean isUndo) {
+				if (ap.hasExtraAction()) {
+					ap.beginUpdate(ap.getPlayer().getColor(), ap.getAction().getType());
+				}
+
 				for (Player player : players) {
 					player.notifyObservers(isUndo ? ChangeType.UNDO : ChangeType.REDO);
 				}
@@ -117,10 +121,6 @@ public class Game {
 	public PlayerColor getInitialStartPlayer() {
 		return initialStartPlayer;
 	}
-
-//	public PlayerColor getCurrentPlayer() {
-//		return currentPlayer.getColor();
-//	}
 
 	public int getRound() {
 		return round;
@@ -183,8 +183,10 @@ public class Game {
 		phase = Phase.CLEANUP;
 		ended = false;
 		round = 0;
+		playerQueue.clear();
 		undoManager.discardAllEdits();
-		ap.beginUpdate(null, ""); // start "initial edit"
+		ap.reset();
+		ap.beginUpdate(null, null); // start "initial edit"
 		ap.invalidateUpdated(); // which cannot be undone
 
 		setStartingPlayer(newDialog.getStartingPlayer());
@@ -198,10 +200,10 @@ public class Game {
 	}
 
 	private void startRound() {
-		ap.postEdit(new StartRound(round));
+		ap.postEdit(new StartRound());
 		round++;
 		// refill
-		board.startRound(round);
+		board.startRound();
 
 		// start pre-work phase
 		interPhase(Phase.BEFORE_WORK);
@@ -216,6 +218,7 @@ public class Game {
 			boolean hasExtraActions = p.initExtraActions(interPhase == Phase.BEFORE_WORK, round);
 			if (hasExtraActions) {
 				addToQueue(p);
+				ap.postEdit(new StartInterPhase(p, interPhase == Phase.BEFORE_WORK, round));
 			}
 		}
 
@@ -239,20 +242,18 @@ public class Game {
 
 		Action extraAction = currentPlayer.getNextExtraAction();
 		if (extraAction != null) {
+			ap.postEdit(new CheckExtraAction(currentPlayer, extraAction));
 			ap.postEdit(extraAction.init());
 			if (extraAction.canDo(currentPlayer)) {
 				ap.postEdit(new StartTurn(ap.getPlayer(), currentPlayer));
 				ap.setPlayer(currentPlayer);
-				board.startTurn();
-
-				// TODO make extra actions undoable
-				// also causes BUG - cannot undo on farm (since actual multiedit belongs to last player)
+				board.refresh();
 
 				if (ap.startAction(extraAction, true)) {
 					// end last "action/breeding edit"
-//					ap.endUpdate();
+					ap.endUpdate();
 					// start "breeding edit"
-//					ap.beginUpdate(currentPlayer.getColor(), extraAction.getType());
+					ap.beginUpdate(currentPlayer.getColor(), extraAction.getType());
 
 					if (ap.isFinished()) {
 						endExtraTurn();
@@ -282,6 +283,7 @@ public class Game {
 	}
 
 	private void endExtraTurn() {
+		ap.postEdit(new Noop());
 		Player currentPlayer = ap.getPlayer();
 		// try another extra turn
 		startExtraTurn(currentPlayer);
@@ -298,7 +300,7 @@ public class Game {
 	private void startTurn(Player currentPlayer) {
 		ap.postEdit(new StartTurn(ap.getPlayer(), currentPlayer));
 		ap.setPlayer(currentPlayer);
-		board.startTurn();
+		board.refresh();
 
 		ap.endUpdate(); // end last "action/breeding edit"
 	}
@@ -332,7 +334,7 @@ public class Game {
 			ap.postEdit(new ReturnWorkers(p));
 			p.returnAllWorkers();
 
-//			p.notifyObservers(ChangeType.ROUND_END);
+			p.notifyObservers(ChangeType.ROUND_END);
 			if (breedingAction.canDo(p)) {
 				addToQueue(p);
 				if (hasExtraBreeding(p)) {
@@ -360,7 +362,7 @@ public class Game {
 	private void startBreedingTurn(Player currentPlayer) {
 		ap.postEdit(new StartTurn(ap.getPlayer(), currentPlayer));
 		ap.setPlayer(currentPlayer);
-		board.startTurn();
+		board.refresh();
 
 		ap.postEdit(breedingAction.init());
 		if (ap.startAction(breedingAction, true)) {
@@ -492,20 +494,17 @@ public class Game {
 	private class StartRound extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
 
-		private final int startedRound;
-
-		public StartRound(int round) {
-			this.startedRound = round;
+		public StartRound() {
 		}
 
 		public void undo() throws CannotUndoException {
 			super.undo();
-			round = startedRound - 1;
+			round--;
 		}
 
 		public void redo() throws CannotRedoException {
 			super.redo();
-			round = startedRound;
+			round++;
 		}
 
 	}
@@ -513,8 +512,8 @@ public class Game {
 	private class StartTurn extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
 
-		final Player prevPlayer;
-		final Player curPlayer;
+		private final Player prevPlayer;
+		private final Player curPlayer;
 
 		public StartTurn(Player prevPlayer, Player curPlayer) {
 			Main.asrtNotNull(curPlayer, "Cannot start turn with no player");
@@ -525,15 +524,62 @@ public class Game {
 		public void undo() throws CannotUndoException {
 			super.undo();
 			ap.setPlayer(prevPlayer);
-			if (prevPlayer != null) {
-				board.startTurn();
-			}
 		}
 
 		public void redo() throws CannotRedoException {
 			super.redo();
 			ap.setPlayer(curPlayer);
-			board.startTurn();
+		}
+
+	}
+
+	private class StartInterPhase extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
+
+		private final Player currentPlayer;
+		private final boolean beforeWork;
+		private final int round;
+
+		public StartInterPhase(Player currentPlayer, boolean beforeWork, int round) {
+			Main.asrtNotNull(currentPlayer, "Cannot start interphase with no player");
+			this.currentPlayer = currentPlayer;
+			this.beforeWork = beforeWork;
+			this.round = round;
+		}
+
+		public void undo() throws CannotUndoException {
+			super.undo();
+			currentPlayer.clearExtraActions();
+		}
+
+		public void redo() throws CannotRedoException {
+			super.redo();
+			currentPlayer.initExtraActions(beforeWork, round);
+		}
+
+	}
+
+	private class CheckExtraAction extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
+
+		private final Player currentPlayer;
+		private final Action action;
+
+		public CheckExtraAction(Player currentPlayer, Action action) {
+			Main.asrtNotNull(currentPlayer, "Cannot check extra action with no player");
+			Main.asrtNotNull(action, "Cannot check extra action with no action");
+			this.currentPlayer = currentPlayer;
+			this.action = action;
+		}
+
+		public void undo() throws CannotUndoException {
+			super.undo();
+			currentPlayer.returnExtraAction(action);
+		}
+
+		public void redo() throws CannotRedoException {
+			super.redo();
+			currentPlayer.getNextExtraAction();
 		}
 
 	}
@@ -714,6 +760,10 @@ public class Game {
 			board.endGame();
 		}
 
+	}
+
+	private class Noop extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
 	}
 
 }

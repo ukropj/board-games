@@ -23,7 +23,10 @@ public class ActionButton extends JButton {
 
 	private PlayerColor usedBy = null;
 
+	private final ActionType actionType;
+
 	public ActionButton(ActionType actionType) {
+		this.actionType = actionType;
 		setMargin(new Insets(0, 0, 0, 0));
 		setAlignmentX(JButton.CENTER_ALIGNMENT);
 		setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -33,6 +36,10 @@ public class ActionButton extends JButton {
 
 	public void setEnabled(boolean b) {
 		super.setEnabled(b);
+	}
+	
+	public ActionType getActionType() {
+		return actionType;
 	}
 
 	public void setUsed(PlayerColor usedBy) {

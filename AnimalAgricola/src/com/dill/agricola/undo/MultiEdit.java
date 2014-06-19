@@ -5,6 +5,7 @@ import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 
+import com.dill.agricola.Main;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.model.types.Purchasable;
@@ -62,9 +63,10 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 		if (anEdit == null) {
 			return false;
 		}
+		Main.asrtNotEqual(this, anEdit, "Cannot add edit to itself");
 		boolean retVal = super.addEdit(anEdit);
 		if (retVal/* && anEdit.isSignificant() && isSignificant()*/) {
-			Logger.logUndo("Atomic Edit: " + anEdit.getPresentationName() + " into " + getPresentationName());
+			Logger.logUndo("Atomic Edit: " + anEdit.getPresentationName() + " is now in " + getPresentationName());
 		}
 		return retVal;
 	}
@@ -115,7 +117,7 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 	}
 
 	public String getPresentationName() {
-		return !isSignificant() ? "Cleanup" : getName() + currentPlayerName;
+		return getName() + currentPlayerName;
 	}
 
 	public String getUndoPresentationName() {

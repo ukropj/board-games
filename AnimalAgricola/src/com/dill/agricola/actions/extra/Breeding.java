@@ -19,13 +19,6 @@ public class Breeding extends AbstractAction {
 	public Breeding() {
 		super(ActionType.BREEDING);
 	}
-
-//	boolean cancelled = false;
-	
-//	public UndoableFarmEdit init() {
-//		cancelled = false;
-//		return super.init();
-//	}
 	
 	public boolean isPurchaseAction() {
 		return false;
@@ -45,10 +38,6 @@ public class Breeding extends AbstractAction {
 		}
 		return false;
 	}
-	
-//	public boolean isCancelled() {
-//		return cancelled;
-//	}
 
 	public UndoableFarmEdit doo(Player player) {
 		Animals newAnimals = new Animals();
@@ -65,8 +54,6 @@ public class Breeding extends AbstractAction {
 			player.purchaseAnimals(newAnimals);
 			player.setLastBornAnimals(newAnimals);
 			return joinEdits(true, edit);
-//		} else {
-//			cancelled = true;
 		}
 		return null;
 	}
@@ -82,10 +69,6 @@ public class Breeding extends AbstractAction {
 	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos) {
 		return null;
 	}
-	
-//	protected class Noop extends SimpleEdit {
-//		private static final long serialVersionUID = 1L;		
-//	}
 
 	protected class BreedAnimals extends SimpleEdit {
 		private static final long serialVersionUID = 1L;

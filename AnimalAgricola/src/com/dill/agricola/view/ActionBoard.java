@@ -17,7 +17,6 @@ import java.util.Map.Entry;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.border.Border;
@@ -49,6 +48,8 @@ public class ActionBoard extends JPanel {
 
 	private BuildingsPanel buildingPanel;
 	private JPanel buildingDisplay;
+
+	private boolean actionsDisabled;
 
 	private static final Border defaultPanelBorder = BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(
 			Board.BORDER_WIDTH, 0, Board.BORDER_WIDTH, 0, new Icon() {
@@ -159,6 +160,7 @@ public class ActionBoard extends JPanel {
 	}
 
 	public void updateActions() {
+		actionsDisabled = false;
 		for (Entry<ActionType, ActionButton> btnEntry : actionButtons.entrySet()) {
 			ActionType type = btnEntry.getKey();
 			Action a = actions.get(type);
@@ -187,12 +189,14 @@ public class ActionBoard extends JPanel {
 	}
 
 	public void resetActions() {
+		actionsDisabled = false;
 		for (Action action : actions.values()) {
 			action.reset();
 		}
 	}
 
 	public void initActions() {
+		actionsDisabled = false;
 		for (Action action : actions.values()) {
 			ap.postEdit(action.init());
 		}
@@ -200,7 +204,8 @@ public class ActionBoard extends JPanel {
 	}
 
 	public void disableActions() {
-		for (JButton b : actionButtons.values()) {
+		actionsDisabled = true;
+		for (ActionButton b : actionButtons.values()) {
 			b.setEnabled(false);
 		}
 	}
@@ -228,11 +233,10 @@ public class ActionBoard extends JPanel {
 		}
 
 		public void stateChanges(Action action) {
-			if (!action.isUsed()) {
-				actionButtton.setEnabled(ap.getPlayer() != null && action.canDo(ap.getPlayer()));
-			} else {
-				actionButtton.setEnabled(false);
-			}
+			actionButtton.setEnabled(!actionsDisabled 
+					&& !action.isUsed() 
+					&& ap.getPlayer() != null 
+					&& action.canDo(ap.getPlayer()));
 			actionButtton.setUsed(action.getUser());
 		}
 	}

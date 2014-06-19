@@ -238,10 +238,6 @@ public class FarmPanel extends JPanel {
 					if (ap.finishAction()) {
 						submitListener.actionPerformed(e);
 					}
-//				} else if (breeding) {
-//					finishBtn.setEnabled(false);
-//					finishBtn.setVisible(false);
-//					submitListener.actionPerformed(e);
 				}
 			}
 		});
@@ -367,6 +363,7 @@ public class FarmPanel extends JPanel {
 				if (ap.hasAction()) {
 					Action a = ap.getAction();
 					if (a.isPurchaseAction()) {
+//						this.msgLabel.setText(a.getType().desc);
 						this.msgLabel.setText(Msg.get("purchaseExpectedMsg"));
 					} else if (a.isResourceAction()) {
 						this.msgLabel.setText(Msg.get("resourcesRecievedMsg"));
