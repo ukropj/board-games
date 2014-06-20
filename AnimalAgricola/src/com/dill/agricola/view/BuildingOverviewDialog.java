@@ -27,7 +27,7 @@ public class BuildingOverviewDialog extends JDialog implements ActionListener, I
 
 	private JPanel buildingPanel;
 
-	public BuildingOverviewDialog(JFrame parent) {
+	public BuildingOverviewDialog(JFrame parent, boolean canRandomize) {
 		super(parent);
 		setTitle(Msg.get("buildingOverviewTitle"));
 		setIconImage(Images.createIcon("document-new", ImgSize.SMALL).getImage());
@@ -35,7 +35,7 @@ public class BuildingOverviewDialog extends JDialog implements ActionListener, I
 		setModalityType(ModalityType.APPLICATION_MODAL);
 		setResizable(false);
 
-		buildOptions();
+		buildOptions(canRandomize);
 		pack();
 		setLocationRelativeTo(parent);
 
@@ -46,25 +46,28 @@ public class BuildingOverviewDialog extends JDialog implements ActionListener, I
 		}
 	}
 
-	private void buildOptions() {
+	private void buildOptions(boolean canRandomize) {
 		JPanel main = UiFactory.createVerticalPanel();
 		main.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		getContentPane().add(main);
 
 		main.add(buildBuildingPanel());
+		JPanel buttonP = UiFactory.createFlowPanel(5, 0);
 
 		JButton submitButton = UiFactory.createTextButton(Msg.get("startGameBtn"), this);
 		submitButton.setActionCommand(OptionCommand.SUBMIT.toString());
-		JButton randomizeButton = UiFactory.createTextButton(Msg.get("randomizeBtn"), this);
-		randomizeButton.setActionCommand(OptionCommand.RANDOMIZE.toString());
+		buttonP.add(submitButton);
+
+		if (canRandomize) {
+			JButton randomizeButton = UiFactory.createTextButton(Msg.get("randomizeBtn"), this);
+			randomizeButton.setActionCommand(OptionCommand.RANDOMIZE.toString());
+			buttonP.add(randomizeButton);			
+		}
 		
-		JPanel submitP = UiFactory.createFlowPanel(5, 0);
-		submitP.add(submitButton);
-		submitP.add(randomizeButton);
 		// TODO add some kind of picker
 
 		main.add(Box.createVerticalStrut(5));
-		main.add(submitP);
+		main.add(buttonP);
 	}
 
 	private JPanel buildBuildingPanel() {

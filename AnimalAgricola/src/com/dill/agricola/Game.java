@@ -172,10 +172,9 @@ public class Game {
 		if (!newDialog.isDone()) {
 			return;
 		}
+		
 		GeneralSupply.reset(newDialog.getUseMoreBuildings(), newDialog.getUseEvenMoreBuildings());
-		if (newDialog.getUseMoreBuildings() || newDialog.getUseEvenMoreBuildings()) {
-			/*BuildingOverviewDialog buildingOverview =*/new BuildingOverviewDialog(board);
-		}
+		new BuildingOverviewDialog(board, newDialog.getUseMoreBuildings() || newDialog.getUseEvenMoreBuildings());
 
 		for (Player p : players) {
 			p.init();
