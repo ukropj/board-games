@@ -26,6 +26,7 @@ public class FarmShop extends Building {
 
 	public FarmShop() {
 		super(BuildingType.FARM_SHOP, 0, 1, Animal.SHEEP, new CompoundAction(
+				ActionType.BUILDING_REWARD,
 				new MaterialAction(ActionType.BUILDING_REWARD, REWARD1), 
 				new AnimalAction(ActionType.BUILDING_REWARD, REWARD2)));
 	}

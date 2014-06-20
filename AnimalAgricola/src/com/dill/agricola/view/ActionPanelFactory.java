@@ -203,6 +203,7 @@ public class ActionPanelFactory {
 			c.fill = GridBagConstraints.HORIZONTAL;
 			c.gridy = 7;
 			c.weighty = 0;
+			c.ipady = 15;
 			break;
 		case SPECIAL2:
 			if (stallSupplyChangeListener != null) {
@@ -219,6 +220,7 @@ public class ActionPanelFactory {
 			c.gridy = 9;
 			c.gridwidth = 3;
 			c.weighty = 0;
+			c.ipady = 15;
 			break;
 		default:
 			actionButton.setText(action.toString());

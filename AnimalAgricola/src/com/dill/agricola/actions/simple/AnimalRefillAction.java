@@ -44,14 +44,6 @@ public abstract class AnimalRefillAction extends AbstractAction {
 		return joinEdits(super.init(), new RefillAnimals(new Animals(added)));
 	}
 
-	public boolean isPurchaseAction() {
-		return false;
-	}
-
-	public boolean isResourceAction() {
-		return true;
-	}
-
 	public boolean canDo(Player player) {
 		return !animals.isEmpty();
 	}

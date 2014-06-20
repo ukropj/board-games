@@ -33,15 +33,7 @@ public class AnimalAction extends AbstractAction {
 		super(type);
 		this.animals = animals;
 	}
-
-	public boolean isPurchaseAction() {
-		return false;
-	}
-
-	public boolean isResourceAction() {
-		return true;
-	}
-
+	
 	public boolean canDo(Player player) {
 		return true;
 	}

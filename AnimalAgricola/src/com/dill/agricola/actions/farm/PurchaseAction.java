@@ -26,14 +26,6 @@ public abstract class PurchaseAction extends AbstractAction {
 	protected boolean isAnyLeft() {
 		return true;
 	}
-	
-	public boolean isPurchaseAction() {
-		return true;
-	}
-	
-	public boolean isResourceAction() {
-		return false;
-	}
 
 	public boolean canDo(Player player) {
 		return isAnyLeft() && player.canPurchase(thing, getCost(player), null);

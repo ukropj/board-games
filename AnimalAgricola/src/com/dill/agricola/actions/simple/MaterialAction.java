@@ -33,14 +33,6 @@ public class MaterialAction extends AbstractAction {
 		this.materials = materials;
 	}
 
-	public boolean isPurchaseAction() {
-		return false;
-	}
-
-	public boolean isResourceAction() {
-		return true;
-	}
-
 	public boolean canDo(Player player) {
 		return true;
 	}

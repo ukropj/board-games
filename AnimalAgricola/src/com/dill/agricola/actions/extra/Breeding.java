@@ -19,14 +19,6 @@ public class Breeding extends AbstractAction {
 	public Breeding() {
 		super(ActionType.BREEDING);
 	}
-	
-	public boolean isPurchaseAction() {
-		return false;
-	}
-
-	public boolean isResourceAction() {
-		return false;
-	}
 
 	public boolean canDo(Player player) {
 		boolean hasInseminationCenter = player.farm.hasBuilding(BuildingType.INSEMINATION_CENTER);

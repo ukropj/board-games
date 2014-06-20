@@ -333,8 +333,10 @@ public class FarmPanel extends JPanel {
 		for (Animal a : Animal.values()) {
 			animalSupply.get(a).setText(String.valueOf(player.getAnimal(a)));
 		}
+		
+		boolean isActivePlayer = active && player.equals(ap.getPlayer());
 
-		if (active && (player.equals(ap.getPlayer()) && ap.hasAction())) {
+		if (isActivePlayer && ap.hasAction()) {
 			finishBtn.setVisible(true);
 			finishBtn.setEnabled(ap.canFinish());
 
@@ -355,22 +357,13 @@ public class FarmPanel extends JPanel {
 			cancelBtn.setVisible(false);
 		}
 
-		this.msgLabel.setVisible(active && (/*breeding ||*/ player.equals(ap.getPlayer())));
-		if (active) {
-			if (phase == Phase.BREEDING) {
-				this.msgLabel.setText(Msg.get("animalsBreedMsg"));
-			} else if (player.equals(ap.getPlayer())) {
-				if (ap.hasAction()) {
-					Action a = ap.getAction();
-					if (a.isPurchaseAction()) {
-//						this.msgLabel.setText(a.getType().desc);
-						this.msgLabel.setText(Msg.get("purchaseExpectedMsg"));
-					} else if (a.isResourceAction()) {
-						this.msgLabel.setText(Msg.get("resourcesRecievedMsg"));
-					}
-				} else {
-					this.msgLabel.setText(Msg.get("chooseActionMsg"));
-				}
+		this.msgLabel.setVisible(isActivePlayer);
+		if (isActivePlayer) {
+			if (ap.hasAction()) {
+				Action a = ap.hasSubAction() ? ap.getSubaAtion() : ap.getAction();
+				this.msgLabel.setText(a.getType().farmText);
+			} else {
+				this.msgLabel.setText(Msg.get("chooseActionMsg"));
 			}
 		}
 	}
@@ -386,11 +379,6 @@ public class FarmPanel extends JPanel {
 		area.intersect(intersector);
 		return area;
 	}
-
-	/*private static Area subtract(Area area, Area subtractor) {
-		area.subtract(subtractor);
-		return area;
-	}*/
 
 	private DirPoint rectCenter(Rectangle r) {
 		return new DirPoint(r.x + r.width / 2, r.y + r.height / 2);

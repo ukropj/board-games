@@ -51,9 +51,17 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 	public boolean hasExtraAction() {
 		return action != null && isExtraAction;
 	}
+	
+	public boolean hasSubAction() {
+		return subaction != null;
+	}
 
 	public Action getAction() {
 		return action;
+	}
+	
+	public Action getSubaAtion() {
+		return subaction;
 	}
 
 	public boolean canCancel() {
@@ -225,7 +233,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 			if (subaction != null) {
 				finishSubaction();
 			}
-			player.notifyObservers(ChangeType.ACTION_DONE);
+//			player.notifyObservers(ChangeType.ACTION_DONE);
 			return true;
 		}
 		return false;
@@ -237,7 +245,6 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 			player.getFarm().setActiveSubType(null);
 			subaction.removeChangeListeners();
 			subaction = null;
-			player.notifyObservers(ChangeType.ACTION_DONE);
 			return true;
 		}
 		return false;

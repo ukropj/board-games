@@ -29,14 +29,6 @@ public class TradeForCow extends AbstractAction {
 		super(ActionType.SWITCH_FOR_COW);
 	}
 
-	public boolean isPurchaseAction() {
-		return false;
-	}
-
-	public boolean isResourceAction() {
-		return true;
-	}
-
 	public boolean canDo(Player player) {
 		return player.farm.hasBuilding(BuildingType.CATTLE_FARM) && player.getAnimals() - player.getAnimal(Animal.COW) > 0;
 	}

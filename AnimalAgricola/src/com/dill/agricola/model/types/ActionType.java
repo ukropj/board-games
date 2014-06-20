@@ -29,14 +29,17 @@ public enum ActionType {
 	
 	public final String desc;
 	public final String shortDesc;
+	public final String farmText;
 	
 	private ActionType() {
-		this.desc = "";
-		this.shortDesc = "";
+		desc = "";
+		shortDesc = "";
+		farmText = "";
 	}
 	
 	private ActionType(String code) {
-		this.desc = Msg.get(code + "Act");
-		this.shortDesc = Msg.get(code + "ShortAct");
+		desc = Msg.get(code + "Act");
+		shortDesc = Msg.get(code + "ShortAct");
+		farmText = Msg.get(code + "Farm");
 	}
 }

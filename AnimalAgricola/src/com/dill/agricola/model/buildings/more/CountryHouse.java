@@ -19,6 +19,7 @@ public class CountryHouse extends Building {
 
 	public CountryHouse() {
 		super(BuildingType.COUNTRY_HOUSE, 1, 3, new CompoundAction(
+				ActionType.BUILDING_REWARD,
 				new AnimalAction(ActionType.BUILDING_REWARD, REWARD),
 				new Expand()
 				));

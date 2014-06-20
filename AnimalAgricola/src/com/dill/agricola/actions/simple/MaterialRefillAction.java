@@ -37,14 +37,6 @@ public abstract class MaterialRefillAction extends AbstractAction {
 	public boolean canDo(Player player) {
 		return !materials.isEmpty();
 	}
-	
-	public boolean isPurchaseAction() {
-		return false;
-	}
-
-	public boolean isResourceAction() {
-		return true;
-	}
 
 	public UndoableFarmEdit doo(Player player) {
 		if (canDo(player)) {

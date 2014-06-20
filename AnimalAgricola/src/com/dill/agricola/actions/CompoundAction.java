@@ -6,14 +6,15 @@ import java.util.List;
 
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.model.Player;
+import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.undo.UndoableFarmEdit;
 
 public class CompoundAction extends AbstractAction {
 
 	private final List<Action> actions;
 
-	public CompoundAction(Action... actions) {
-		super(null);
+	public CompoundAction(ActionType type, Action... actions) {
+		super(type);
 		this.actions = Arrays.asList(actions);
 		for (Action a : actions) {
 			a.addChangeListener(new CompoundActionStateChangeListener());
@@ -100,24 +101,6 @@ public class CompoundAction extends AbstractAction {
 	public boolean canUndoOnFarm(Player player, DirPoint pos) {
 		for (Action a : actions) {
 			if (a.canUndoOnFarm(player, pos)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public boolean isPurchaseAction() {
-		for (Action a : actions) {
-			if (a.isPurchaseAction()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public boolean isResourceAction() {
-		for (Action a : actions) {
-			if (a.isResourceAction()) {
 				return true;
 			}
 		}
