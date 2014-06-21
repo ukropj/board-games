@@ -29,7 +29,7 @@ public class AgriImages {
 	private final static BufferedImage[] troughs = new BufferedImage[ImgSize.values().length];
 	private final static BufferedImage[] firstTokens = new BufferedImage[ImgSize.values().length * PlayerColor.values().length];
 	private final static BufferedImage[] farmsAndMargins = new BufferedImage[4];
-	private final static BufferedImage[] workers = new BufferedImage[PlayerColor.values().length + 1];
+	private final static BufferedImage[] workers = new BufferedImage[ImgSize.values().length * (PlayerColor.values().length + 1)];
 	private static BufferedImage[] cottages = new BufferedImage[PlayerColor.values().length];
 	private static BufferedImage[] stallsAndStables = new BufferedImage[10];
 	private static BufferedImage[] exts = new BufferedImage[5];
@@ -61,19 +61,21 @@ public class AgriImages {
 		return new ImageIcon(getFirstTokenImage(id, size));
 	}
 
-	public static BufferedImage getWorkerImage(PlayerColor color) {
-		int i = color != null ? color.ordinal() : 2;
-		if (workers[i] == null) {
-			BufferedImage img = Images.createImage("worker" + (i + 1));
-			img = Images.getBestScaledInstance(img, 0.3f);
-			workers[i] = img;
+	public static BufferedImage getWorkerImage(PlayerColor color, ImgSize size) {
+		int id = color != null ? color.ordinal() : 2;
+		int arrId = id + size.ordinal() * PlayerColor.values().length;
+		if (workers[arrId] != null) {
+			return workers[arrId];
+		} else {
+			BufferedImage img = Images.createImage("worker" + (id + 1));
+			img = Images.getBestScaledInstance(img, size != ImgSize.SMALL ? 0.3f : 0.2f);
+			workers[arrId] = img;
 			return img;
 		}
-		return workers[i];
 	}
 
-	public static ImageIcon getWorkerIcon(PlayerColor color) {
-		return new ImageIcon(getWorkerImage(color));
+	public static ImageIcon getWorkerIcon(PlayerColor color, ImgSize size) {
+		return new ImageIcon(getWorkerImage(color, size));
 	}
 
 	public static BufferedImage getFarmImage(PlayerColor color) {

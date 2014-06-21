@@ -1,50 +1,61 @@
 package com.dill.agricola.view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.LinearGradientPaint;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
+import javax.swing.border.Border;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 
 import com.dill.agricola.Game;
-import com.dill.agricola.Game.ActionCommand;
 import com.dill.agricola.Game.Phase;
 import com.dill.agricola.Main;
 import com.dill.agricola.actions.ActionPerformer;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.PlayerColor;
+import com.dill.agricola.support.Config;
 import com.dill.agricola.support.Fonts;
 import com.dill.agricola.support.Msg;
+import com.dill.agricola.support.Config.ConfigKey;
 import com.dill.agricola.undo.TurnUndoManager;
+import com.dill.agricola.view.utils.AgriImages;
+import com.dill.agricola.view.utils.AgriImages.ImgSize;
 import com.dill.agricola.view.utils.Images;
 import com.dill.agricola.view.utils.UiFactory;
 
 public class Board extends JFrame {
 	private static final long serialVersionUID = 1L;
-
-	public static final int BORDER_WIDTH = 5;
 
 	private Game game;
 
@@ -57,18 +68,24 @@ public class Board extends JFrame {
 	private JLabel playerL;
 	private JLabel turnL;
 	private final PlayerBoard[] playerBoards;
+	private final JComponent[] playerPanes;
+	private JTabbedPane playerTabPane;
 	private ActionBoard actionBoard;
 	private DebugPanel debugPanel;
 	private JButton undoBtn;
 	private JButton redoBtn;
 
+	private boolean condensedLayout;
+
 	public Board(Game game, ActionPerformer ap, TurnUndoManager undoManager) {
 		this.game = game;
 		this.ap = ap;
 		this.undoManager = undoManager;
+		this.condensedLayout = Config.getBoolean(ConfigKey.CONDENSED_LAYOUT, false);
 		ap.addUndoableEditListener(new UndoButtonUpdater());
 
 		playerBoards = new PlayerBoard[2];
+		playerPanes = new JScrollPane[2];
 
 		setTitle(Msg.get("gameTitle"));
 //		BufferedImage img = Images.createImage("a_all");
@@ -95,8 +112,7 @@ public class Board extends JFrame {
 		});
 
 		initActionsBoard();
-		initPlayerBoard(PlayerColor.BLUE, 0);
-		initPlayerBoard(PlayerColor.RED, 2);
+		initPlayerBoards();
 	}
 
 	private void initToolbar() {
@@ -135,6 +151,10 @@ public class Board extends JFrame {
 		toolbar.add(Box.createHorizontalGlue());
 //		toolbar.add(Box.createHorizontalStrut(100));
 
+		JButton layoutB = UiFactory.createToolbarButton(null, "video-display", Msg.get("layoutBtn"), bl);
+		layoutB.setActionCommand(ActionCommand.LAYOUT.toString());
+		toolbar.add(layoutB);
+
 //		JButton settingB = UiFactory.createToolbarButton(null, "preferences-system", Msg.get("settingsBtn"), bl);
 //		settingB.setActionCommand(ActionCommand.SETTINGS.toString());
 //		toolbar.add(settingB);
@@ -146,34 +166,64 @@ public class Board extends JFrame {
 		getContentPane().add(toolbar, BorderLayout.PAGE_START);
 	}
 
-	private void initPlayerBoard(PlayerColor color, int x) {
-		Player player = game.getPlayer(color);
-		PlayerBoard playerBoard = new PlayerBoard(player, ap, game.getSubmitListener());
-		playerBoards[color.ordinal()] = playerBoard;
+	private void initPlayerBoards() {
+		initPlayerBoard(PlayerColor.BLUE, 0);
+		initPlayerBoard(PlayerColor.RED, 2);
 
-		JScrollPane scrollPane = new JScrollPane(playerBoard);
-		scrollPane.setBorder(BorderFactory.createMatteBorder(
-				BORDER_WIDTH,
-				color == PlayerColor.BLUE ? BORDER_WIDTH : 0,
-				BORDER_WIDTH,
-				color == PlayerColor.RED ? BORDER_WIDTH : 0,
-				color.getRealColor()));
+		playerTabPane = new JTabbedPane();
 
+		replacePlayerBoards();
+	}
+
+	private void replacePlayerBoards() {
 		GridBagConstraints c = new GridBagConstraints();
-		c.gridx = x;
+		c.gridy = 0;
 		c.weightx = 1.0;
 		c.weighty = 1.0;
 		c.fill = GridBagConstraints.BOTH;
 
-		mainPane.add(scrollPane, c);
+		for (PlayerColor color : PlayerColor.values()) {
+			int ord = color.ordinal();
+			if (condensedLayout) {
+				mainPane.remove(playerPanes[ord]);
+				playerPanes[ord].setBorder(BorderFactory.createEmptyBorder());
+				playerTabPane.addTab(Msg.get(color.toString().toLowerCase()),
+						AgriImages.getWorkerIcon(color, ImgSize.SMALL),
+						playerPanes[ord]);
+			} else {
+				playerTabPane.remove(playerPanes[ord]);
+				playerPanes[ord].setBorder(PlayerBorderFactory.getBorder(color, color == PlayerColor.RED));
+
+				c.gridx = ord * 2; // BLUE = 0, RED = 2
+				mainPane.add(playerPanes[ord], c);
+			}
+		}
+		if (condensedLayout) {
+			c.gridx = 0;
+			playerTabPane.setBorder(PlayerBorderFactory.getBorder(PlayerColor.BLUE, false));
+			mainPane.add(playerTabPane, c);
+		} else {
+			mainPane.remove(playerTabPane);
+		}
+	}
+
+	private void initPlayerBoard(PlayerColor color, int x) {
+		Player player = game.getPlayer(color);
+		PlayerBoard playerBoard = new PlayerBoard(player, ap, game.getSubmitListener());
+
+		JScrollPane scrollPane = new JScrollPane(playerBoard);
+
+		playerBoards[color.ordinal()] = playerBoard;
+		playerPanes[color.ordinal()] = scrollPane;
 	}
 
 	private void initActionsBoard() {
 
-		actionBoard = new ActionBoard(game.getActions(), ap, game.getSubmitListener());
+		actionBoard = new ActionBoard(game.getActions(), ap, game.getSubmitListener(), this.condensedLayout);
 		actionBoard.addTabs(new ScorePanel(game));
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 1;
+		c.gridy = 0;
 		c.ipadx = 5;
 		c.ipady = 5;
 		c.weighty = 1.0;
@@ -187,10 +237,21 @@ public class Board extends JFrame {
 		getContentPane().add(debugPanel, BorderLayout.PAGE_END);
 	}
 
+	public void setLayoutType(boolean isCondensed) {
+		if (this.condensedLayout != isCondensed) {
+			this.condensedLayout = isCondensed;
+			replacePlayerBoards();
+			actionBoard.setLayout(condensedLayout);
+			mainPane.revalidate();
+			updateActivePlayer();
+			Config.putBoolean(ConfigKey.CONDENSED_LAYOUT, condensedLayout);
+		}
+	}
+
 	public boolean isMaximized() {
 		return (getExtendedState() & JFrame.MAXIMIZED_BOTH) != 0;
 	}
-	
+
 	public void startGame() {
 		actionBoard.resetBuildings();
 		actionBoard.resetActions();
@@ -207,30 +268,12 @@ public class Board extends JFrame {
 		redoBtn.setToolTipText(undoManager.getRedoPresentationName());
 		redoBtn.setEnabled(undoManager.canRedo());
 	}
-	
+
 	public void refresh() {
 		roundL.setText(Msg.get("roundLab", game.getRound(), Game.ROUNDS));
-		
-		Player currentPlayer = ap.getPlayer();
-		if (currentPlayer != null) {
-			PlayerColor c = currentPlayer.getColor();
-			playerL.setText(Msg.get(c.toString().toLowerCase()));
-			playerL.setForeground(c.getRealColor());
-			
-			PlayerColor currentColor = currentPlayer.getColor();
-			playerBoards[currentColor.ordinal()].activate(game.getPhase());
-			playerBoards[currentColor.other().ordinal()].deactivate();
-			
-			if (Main.DEBUG) {
-				debugPanel.setCurrentPlayer(currentColor);
-			}
-		} else {
-			playerL.setText("");
-			
-			playerBoards[0].deactivate();
-			playerBoards[1].deactivate();
-		}
-		
+
+		updateActivePlayer();
+
 		Phase phase = game.getPhase();
 		switch (phase) {
 		case BEFORE_WORK:
@@ -246,12 +289,16 @@ public class Board extends JFrame {
 			turnL.setText(Msg.get("breedingLab"));
 			break;
 		case CLEANUP:
-			turnL.setText("");			
+			if (game.isEnded()) {
+				turnL.setText(Msg.get("winnerLab"));
+			} else {
+				turnL.setText("");				
+			}
 		default:
 			break;
 		}
-		
-		actionBoard.updateActions();	
+
+		actionBoard.updateActions();
 
 		if (phase == Phase.WORK) {
 			actionBoard.showActions();
@@ -260,6 +307,43 @@ public class Board extends JFrame {
 		}
 
 		refreshUndoRedo();
+	}
+
+	private void updateActivePlayer() {
+		Player currentPlayer = ap.getPlayer();
+		if (currentPlayer != null && !game.isEnded()) {
+			PlayerColor c = currentPlayer.getColor();
+			playerL.setText(Msg.get(c.toString().toLowerCase()));
+			playerL.setForeground(c.getRealColor());
+
+			PlayerColor currentColor = currentPlayer.getColor();
+			playerBoards[currentColor.ordinal()].activate(game.getPhase());
+			playerBoards[currentColor.other().ordinal()].deactivate();
+
+			if (Main.DEBUG) {
+				debugPanel.setCurrentPlayer(currentColor);
+			}
+
+			if (condensedLayout) {
+				playerTabPane.setSelectedIndex(currentColor.ordinal());
+				playerTabPane.setBorder(PlayerBorderFactory.getBorder(currentColor, false));
+			}
+		} else {
+			if (game.isEnded()) {
+				PlayerColor winner = game.getWinner();
+				playerL.setText(Msg.get(winner.toString().toLowerCase()));
+				playerL.setForeground(winner.getRealColor());
+			} else {
+				playerL.setText("");				
+			}
+			playerBoards[0].deactivate();
+			playerBoards[1].deactivate();
+
+			if (condensedLayout) {
+				// not grafically ideal, but not worth some special gradient or whatnot
+				playerTabPane.setBorder(PlayerBorderFactory.getBorder(PlayerColor.BLUE, false));
+			}
+		}
 	}
 
 	public void startRound() {
@@ -276,14 +360,7 @@ public class Board extends JFrame {
 	}
 
 	public void endGame() {
-		playerBoards[0].deactivate();
-		playerBoards[1].deactivate();
-
-		PlayerColor winner = game.getWinner();
-		playerL.setText(Msg.get(winner.toString().toLowerCase()));
-		playerL.setForeground(winner.getRealColor());
-		turnL.setText(Msg.get("winnerLab"));
-
+		refresh();
 		actionBoard.showScoring();
 	}
 
@@ -293,6 +370,10 @@ public class Board extends JFrame {
 				|| UiFactory.showQuestionDialog(this, Msg.get("endGameMsg"), Msg.get("gameInProgressTitle"))) {
 			System.exit(0);
 		}
+	}
+
+	public static enum ActionCommand {
+		NEW, EXIT, UNDO, REDO, ABOUT, SETTINGS, LAYOUT;
 	}
 
 	private class ToolListener implements ActionListener, ItemListener {
@@ -312,12 +393,15 @@ public class Board extends JFrame {
 			case REDO:
 				undoManager.redo();
 				break;
+			case LAYOUT:
+				setLayoutType(!condensedLayout);
+				break;
 //			case SETTINGS:
 //				showSettings();
 //				break;
 			case ABOUT:
 				BufferedImage img = Images.getBestScaledInstance(Images.createImage("a"), 50);
-				JOptionPane.showMessageDialog(Board.this, Msg.get("aboutMsg", Main.VERSION), 
+				JOptionPane.showMessageDialog(Board.this, Msg.get("aboutMsg", Main.VERSION),
 						Msg.get("aboutTitle"), JOptionPane.INFORMATION_MESSAGE, new ImageIcon(img));
 				break;
 			case EXIT:
@@ -343,6 +427,68 @@ public class Board extends JFrame {
 		public void undoableEditHappened(UndoableEditEvent evt) {
 			refreshUndoRedo();
 		}
+	}
+
+	public static class PlayerBorderFactory {
+
+		public static final int BORDER_WIDTH = 5;
+
+		private static final Border defaultBorder = BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(
+				BORDER_WIDTH, 0, BORDER_WIDTH, 0, new Icon() {
+
+					private final int W = 300;
+
+					public void paintIcon(Component c, Graphics g, int x, int y) {
+						Graphics2D g2 = (Graphics2D) g.create();
+						Point2D start = new Point2D.Float(0f, 0f);
+						Point2D end = new Point2D.Float(W, 0f);
+						float[] dist = { 0.5f, 1.0f };
+						Color[] colors = { PlayerColor.BLUE.getRealColor(), PlayerColor.RED.getRealColor() };
+						g2.setPaint(new LinearGradientPaint(start, end, dist, colors));
+						g2.fillRect(x, y, W, BORDER_WIDTH);
+						g2.dispose();
+					}
+
+					public int getIconWidth() {
+						return W;
+					}
+
+					public int getIconHeight() {
+						return BORDER_WIDTH;
+					}
+				}), BorderFactory.createEmptyBorder(0, BORDER_WIDTH, 0, BORDER_WIDTH));
+
+		private static final Border[] playerBorders = {
+				// right
+				createPlayerBorder(PlayerColor.BLUE, true),
+				createPlayerBorder(PlayerColor.RED, true),
+				// left
+				createPlayerBorder(PlayerColor.BLUE, false),
+				createPlayerBorder(PlayerColor.RED, false)
+		};
+
+		private static Border createPlayerBorder(PlayerColor c, boolean right) {
+			return BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(
+					BORDER_WIDTH,
+					!right ? BORDER_WIDTH : 0,
+					BORDER_WIDTH,
+					right ? BORDER_WIDTH : 0,
+					c.getRealColor()),
+					BorderFactory.createEmptyBorder(
+							0,
+							!right ? 0 : BORDER_WIDTH,
+							0,
+							right ? 0 : BORDER_WIDTH));
+		}
+
+		public static Border getBorder(PlayerColor c, boolean right) {
+			return playerBorders[(right ? 0 : 2) + c.ordinal()];
+		}
+
+		public static Border getBorder() {
+			return defaultBorder;
+		}
+
 	}
 
 }

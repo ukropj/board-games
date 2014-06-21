@@ -1,25 +1,16 @@
 package com.dill.agricola.view;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
-import java.awt.LinearGradientPaint;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.Point2D;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -30,6 +21,7 @@ import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.support.Msg;
+import com.dill.agricola.view.Board.PlayerBorderFactory;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
 import com.dill.agricola.view.utils.Images;
@@ -50,41 +42,13 @@ public class ActionBoard extends JPanel {
 	private JPanel buildingDisplay;
 
 	private boolean actionsDisabled;
+	private boolean condensedLayout;
 
-	private static final Border defaultPanelBorder = BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(
-			Board.BORDER_WIDTH, 0, Board.BORDER_WIDTH, 0, new Icon() {
-
-				private final int W = 300;
-
-				public void paintIcon(Component c, Graphics g, int x, int y) {
-					Graphics2D g2 = (Graphics2D) g.create();
-					Point2D start = new Point2D.Float(0f, 0f);
-					Point2D end = new Point2D.Float(W, 0f);
-					float[] dist = { 0.5f, 1.0f };
-					Color[] colors = { PlayerColor.BLUE.getRealColor(), PlayerColor.RED.getRealColor() };
-					g2.setPaint(new LinearGradientPaint(start, end, dist, colors));
-					g2.fillRect(x, y, W, Board.BORDER_WIDTH);
-					g2.dispose();
-				}
-
-				public int getIconWidth() {
-					return W;
-				}
-
-				public int getIconHeight() {
-					return Board.BORDER_WIDTH;
-				}
-			}), BorderFactory.createEmptyBorder(0, Board.BORDER_WIDTH, 0, Board.BORDER_WIDTH));
-
-	private static final Border[] playerBorders = {
-			createPlayerBorder(PlayerColor.BLUE),
-			createPlayerBorder(PlayerColor.RED)
-	};
-
-	public ActionBoard(List<Action> actions, final ActionPerformer ap, final ActionListener submitListener) {
+	public ActionBoard(List<Action> actions, final ActionPerformer ap, final ActionListener submitListener, boolean condensedLayout) {
 		this.ap = ap;
+		this.condensedLayout = condensedLayout;
 		setLayout(new BorderLayout());
-		setBorder(defaultPanelBorder);
+		setBorder(PlayerBorderFactory.getBorder());
 
 		tabPane = new JTabbedPane();
 		add(tabPane, BorderLayout.CENTER);
@@ -179,13 +143,17 @@ public class ActionBoard extends JPanel {
 					button.setEnabled(false);
 				}
 			}
+			updateBorder();
 		}
+	}
+	
+	private void updateBorder() {
 		if (ap.getPlayer() != null) {
 			PlayerColor pc = ap.getPlayer().getColor();
-			setBorder(playerBorders[pc.ordinal()]);
+			setBorder(PlayerBorderFactory.getBorder(pc, condensedLayout ? true : pc == PlayerColor.BLUE));
 		} else {
-			setBorder(defaultPanelBorder);
-		}
+			setBorder(PlayerBorderFactory.getBorder());
+		}		
 	}
 
 	public void resetActions() {
@@ -209,19 +177,10 @@ public class ActionBoard extends JPanel {
 			b.setEnabled(false);
 		}
 	}
-
-	private static Border createPlayerBorder(PlayerColor c) {
-		return BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(
-				Board.BORDER_WIDTH,
-				c == PlayerColor.RED ? Board.BORDER_WIDTH : 0,
-				Board.BORDER_WIDTH,
-				c == PlayerColor.BLUE ? Board.BORDER_WIDTH : 0,
-				c.getRealColor()),
-				BorderFactory.createEmptyBorder(
-						0,
-						c == PlayerColor.RED ? 0 : Board.BORDER_WIDTH,
-						0,
-						c == PlayerColor.BLUE ? 0 : Board.BORDER_WIDTH));
+	
+	public void setLayout(boolean isCondensed) {
+		this.condensedLayout = isCondensed;
+		updateBorder();
 	}
 
 	private class ActionUsageListener implements ActionStateChangeListener {

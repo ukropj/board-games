@@ -49,7 +49,7 @@ public class Game {
 		CLEANUP, BEFORE_WORK, WORK, BEFORE_BREEDING, BREEDING;
 	}
 
-	public final static int ROUNDS = Main.DEBUG ? 4 : 8;
+	public final static int ROUNDS = Main.DEBUG ? 1 : 8;
 
 	private final Player[] players;
 	private final Board board;
@@ -404,7 +404,8 @@ public class Game {
 	}
 
 	private void endGame() {
-		ap.postEdit(new EndGame());
+		ap.postEdit(new EndGame(ap.getPlayer()));
+		ap.setPlayer(null);
 		ended = true;
 		ap.endUpdate(); // end last "action/breeding edit"
 		board.endGame();
@@ -452,7 +453,7 @@ public class Game {
 	private class SubmitListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
-			ActionCommand cmd = ActionCommand.valueOf(e.getActionCommand());
+			FarmActionCommand cmd = FarmActionCommand.valueOf(e.getActionCommand());
 			switch (cmd) {
 			case SUBMIT:
 				switch (phase) {
@@ -486,8 +487,8 @@ public class Game {
 		}
 	};
 
-	public static enum ActionCommand {
-		NEW, EXIT, UNDO, REDO, SUBMIT, CANCEL, ABOUT, SETTINGS;
+	public static enum FarmActionCommand {
+		SUBMIT, CANCEL;
 	}
 
 	private class StartRound extends SimpleEdit {
@@ -748,13 +749,21 @@ public class Game {
 	private class EndGame extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
 
+		private final Player last;
+		
+		public EndGame(Player player) {
+			last = player;
+		}
+
 		public void undo() throws CannotUndoException {
 			super.undo();
+			ap.setPlayer(last);
 			ended = false;
 		}
 
 		public void redo() throws CannotRedoException {
 			super.redo();
+			ap.setPlayer(null);
 			ended = true;
 			board.endGame();
 		}

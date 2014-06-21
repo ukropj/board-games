@@ -9,16 +9,17 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JButton;
 
-import com.dill.agricola.Game.ActionCommand;
+import com.dill.agricola.Game.FarmActionCommand;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.view.utils.AgriImages;
+import com.dill.agricola.view.utils.AgriImages.ImgSize;
 
 public class ActionButton extends JButton {
 	private static final long serialVersionUID = 1L;
 
-	private static final BufferedImage[] workerIcons = { AgriImages.getWorkerImage(PlayerColor.BLUE),
-			AgriImages.getWorkerImage(PlayerColor.RED) };
+	private static final BufferedImage[] workerIcons = { AgriImages.getWorkerImage(PlayerColor.BLUE, ImgSize.MEDIUM),
+			AgriImages.getWorkerImage(PlayerColor.RED, ImgSize.MEDIUM) };
 	private static final Color OVERLAY_COLOR = new Color(255, 255, 255, 150);
 
 	private PlayerColor usedBy = null;
@@ -31,7 +32,7 @@ public class ActionButton extends JButton {
 		setAlignmentX(JButton.CENTER_ALIGNMENT);
 		setCursor(new Cursor(Cursor.HAND_CURSOR));
 		setToolTipText(actionType.desc);
-		setActionCommand(ActionCommand.SUBMIT.toString());
+		setActionCommand(FarmActionCommand.SUBMIT.toString());
 	}
 
 	public void setEnabled(boolean b) {

@@ -36,7 +36,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.dill.agricola.Game.ActionCommand;
+import com.dill.agricola.Game.FarmActionCommand;
 import com.dill.agricola.Game.Phase;
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.ActionPerformer;
@@ -230,7 +230,7 @@ public class FarmPanel extends JPanel {
 		finishBtn.setToolTipText(Msg.get("finishActionTip"));
 		finishBtn.setMargin(new Insets(0, 0, 0, 0));
 		finishBtn.setBounds(X1 + farm.getWidth() * S - S / 3 - 2 * M, Y1 + 3 * S + 3 * M / 2, S / 3 + 3 * M / 2, S / 3);
-		finishBtn.setActionCommand(ActionCommand.SUBMIT.toString());
+		finishBtn.setActionCommand(FarmActionCommand.SUBMIT.toString());
 		finishBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				e.setSource(player.getColor());
@@ -251,7 +251,7 @@ public class FarmPanel extends JPanel {
 		cancelBtn.setToolTipText(Msg.get("cancelBtnTip"));
 		cancelBtn.setMargin(new Insets(0, 0, 0, 0));
 		cancelBtn.setBounds(X1 + farm.getWidth() * S, Y1 + 3 * S + 3 * M / 2, S / 3, S / 3);
-		cancelBtn.setActionCommand(ActionCommand.CANCEL.toString());
+		cancelBtn.setActionCommand(FarmActionCommand.CANCEL.toString());
 		cancelBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				e.setSource(player.getColor());
@@ -271,7 +271,7 @@ public class FarmPanel extends JPanel {
 
 		JPanel workersP = UiFactory.createVerticalPanel();
 		for (int i = 0; i < workerLabels.length; i++) {
-			workerLabels[i] = UiFactory.createLabel(AgriImages.getWorkerIcon(player.getColor()));
+			workerLabels[i] = UiFactory.createLabel(AgriImages.getWorkerIcon(player.getColor(), ImgSize.MEDIUM));
 //			workerLabels[i].setDisabledIcon(AgriImages.getWorkerIcon(null));
 			workersP.add(workerLabels[i]);
 			workersP.add(Box.createVerticalStrut(5));
@@ -894,7 +894,7 @@ public class FarmPanel extends JPanel {
 				if (hadAction && ap.isFinished()) {
 					ActionEvent evt = new ActionEvent(player.getColor(),
 							ActionEvent.ACTION_PERFORMED,
-							ActionCommand.SUBMIT.toString(),
+							FarmActionCommand.SUBMIT.toString(),
 							e.getWhen(),
 							e.getModifiers());
 					submitListener.actionPerformed(evt);
