@@ -132,9 +132,7 @@ public class ActionBoard extends JPanel {
 			if (ap.hasAction()) {
 				// when action is being performed, disable everything
 				button.setEnabled(false);
-				if (ap.hasAction(type)) {
-					// NTH mark current action
-				}
+				button.setActive(ap.hasAction(type));
 			} else {
 				// when no action being performed, disable those that cannot be currently performed
 				if (!a.isUsed()) {
@@ -142,18 +140,19 @@ public class ActionBoard extends JPanel {
 				} else {
 					button.setEnabled(false);
 				}
+				button.setActive(false);
 			}
 			updateBorder();
 		}
 	}
-	
+
 	private void updateBorder() {
 		if (ap.getPlayer() != null) {
 			PlayerColor pc = ap.getPlayer().getColor();
 			setBorder(PlayerBorderFactory.getBorder(pc, condensedLayout ? true : pc == PlayerColor.BLUE));
 		} else {
 			setBorder(PlayerBorderFactory.getBorder());
-		}		
+		}
 	}
 
 	public void resetActions() {
@@ -177,7 +176,7 @@ public class ActionBoard extends JPanel {
 			b.setEnabled(false);
 		}
 	}
-	
+
 	public void setLayout(boolean isCondensed) {
 		this.condensedLayout = isCondensed;
 		updateBorder();
@@ -192,9 +191,9 @@ public class ActionBoard extends JPanel {
 		}
 
 		public void stateChanges(Action action) {
-			actionButtton.setEnabled(!actionsDisabled 
-					&& !action.isUsed() 
-					&& ap.getPlayer() != null 
+			actionButtton.setEnabled(!actionsDisabled
+					&& !action.isUsed()
+					&& ap.getPlayer() != null
 					&& action.canDo(ap.getPlayer()));
 			actionButtton.setUsed(action.getUser());
 		}

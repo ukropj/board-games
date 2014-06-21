@@ -1,7 +1,6 @@
 #TODO#
 
 	allow non-random buildings (some kind of picker)
-	highlight current action
 	more buildings big and small
 	action names (e.g. "Stall", "Fences",...)
 	
