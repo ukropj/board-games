@@ -61,7 +61,7 @@ public class BuildStables extends BuildAction {
 			opt.setEnabled(player.canPay(cost));
 			opts.add(opt);
 		}
-		Icon icon = AgriImages.getBuildingIcon(BuildingType.OPEN_STABLES, ImgSize.MEDIUM);
+		Icon icon = AgriImages.getBuildingIcon(BuildingType.STABLES, ImgSize.MEDIUM);
 		return UiFactory.showOptionDialog(null, "Choose cost", "Stables", icon, opts, 0);
 	}
 

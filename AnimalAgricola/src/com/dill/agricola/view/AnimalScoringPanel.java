@@ -24,6 +24,7 @@ public class AnimalScoringPanel extends JPanel {
 	private static final Color MORE_COLOR = new Color(218, 165, 32);
 	private static final Color BORDER_COLOR = Color.LIGHT_GRAY;
 	private static final Font COUNT_FONT = Fonts.TEXT_FONT.deriveFont(14f);
+	private static final Font FOOTNOTE_FONT = Fonts.TEXT_FONT.deriveFont(12f);
 
 	public AnimalScoringPanel() {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -37,6 +38,8 @@ public class AnimalScoringPanel extends JPanel {
 		add(Box.createVerticalStrut(5));
 		add(buildAnimalScoring2());
 		add(Box.createVerticalGlue());
+		add(setFont(UiFactory.createLabel(Msg.get("animalBonusPointsFootnote")), FOOTNOTE_FONT));
+		add(Box.createVerticalStrut(5));
 	}
 
 	private JComponent buildAnimalScoring() {
@@ -57,7 +60,7 @@ public class AnimalScoringPanel extends JPanel {
 		lab.setFont(COUNT_FONT);
 		p0.add(lab);
 		for (int i = 4; i < l; i++) {
-			lab = addBorder(UiFactory.createLabel("[" + String.valueOf(i) + "]"));
+			lab = addBorder(UiFactory.createLabel("[" + String.valueOf(i) + "]" + (i + 1 == l ? "*" : "")));
 			lab.setFont(COUNT_FONT);
 			p1.add(lab);
 		}
@@ -79,9 +82,9 @@ public class AnimalScoringPanel extends JPanel {
 					lab.setForeground(MOST_COLOR);
 				}
 				if (i == 3) {
-					p0.add(lab);										
+					p0.add(lab);
 				} else {
-					p1.add(lab);					
+					p1.add(lab);
 				}
 			}
 		}
@@ -132,7 +135,7 @@ public class AnimalScoringPanel extends JPanel {
 						break;
 					}
 				}
-				String str = "[" + (from == to ? from : from + "-" + to) + "]";
+				String str = "[" + (from == to ? from : from + "-" + to) + "]" + (i + 1 == points.length ? "*" : "");
 				JLabel lab = addBorder(UiFactory.createLabel(str));
 				lab.setFont(COUNT_FONT);
 				p.add(lab);
