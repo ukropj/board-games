@@ -1,6 +1,7 @@
 package com.dill.agricola.model.buildings.more;
 
 import com.dill.agricola.Game;
+import com.dill.agricola.Game.Phase;
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.extra.OneTrough;
 import com.dill.agricola.common.Materials;
@@ -18,7 +19,7 @@ public class FarmWell extends Building {
 	}
 
 	// grants free feeding trough before last 3 rounds
-	public Action getBeforeWorkAction(int round) {
-		return round > Game.ROUNDS - 3 ? EXTRA_ACTION : null;
+	public Action getExtraAction(Phase phase, int round) {
+		return phase == Phase.BEFORE_WORK && round > Game.ROUNDS - 3 ? EXTRA_ACTION : null;
 	}
 }

@@ -3,6 +3,7 @@ package com.dill.agricola.model;
 import java.util.Collections;
 import java.util.Set;
 
+import com.dill.agricola.Game.Phase;
 import com.dill.agricola.Main;
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.common.DirPoint;
@@ -75,11 +76,7 @@ public abstract class Building extends Space {
 		return subAction;
 	}
 
-	public Action getBeforeWorkAction(int round) {
-		return null;
-	}
-
-	public Action getBeforeBreedingAction() {
+	public Action getExtraAction(Phase phase, int round) {
 		return null;
 	}
 

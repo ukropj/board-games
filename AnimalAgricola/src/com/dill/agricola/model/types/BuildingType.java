@@ -21,8 +21,10 @@ public enum BuildingType {
 	SHELTER(0, Msg.get("shelter"), new BuildingText(Msg.get("immediately"), 0.12f, 0.57f, 0.37f)),
 	OPEN_STABLES(0, Msg.get("openStables"), new BuildingText(Msg.get("immediately"), 0.14f, 0.535f, 0.37f)),
 	// more special buildings
+	ANIMAL_TRADER(1, Msg.get("animalTrader"), new BuildingText(Msg.get("animalTraderText"), 0.13f, 0.52f, 0.74f)),
 	BARN_MANUFACTURER(1, Msg.get("barnManufacturer"), new BuildingText(Msg.get("immediately"), 0.13f, 0.56f, 0.38f)),
 	BREEDING_STATION(1, Msg.get("breedingStation"), new BuildingText(Msg.get("breedingStationText"), 0.13f, 0.52f, 0.72f)),
+	CARPENTER(1, Msg.get("carpenter"), new BuildingText(Msg.get("carpenterText"), 0.13f, 0.52f, 0.74f)),
 	CATTLE_FARM(1, Msg.get("cattleFarm"), new BuildingText(Msg.get("cattleFarmText"), 0.12f, 0.50f, 0.76f)),
 	COUNTRY_HOUSE(1, Msg.get("countryHouse"), new BuildingText(Msg.get("immediately"), 0.33f, 0.49f, 0.4f)),
 	COW_STALL(1, Msg.get("cowStall"), new BuildingText(Msg.get("immediately"), 0.4f, 0.5f, 0.4f),
@@ -62,21 +64,24 @@ public enum BuildingType {
 	public final static List<BuildingType> MORE_SPECIAL_BUILDINGS_TYPES =
 			Collections.unmodifiableList(
 					Arrays.asList(new BuildingType[] {
+//							BuildingType.ANIMAL_TRADER,
 							BuildingType.BARN_MANUFACTURER, BuildingType.BREEDING_STATION,
+//							BuildingType.CARPENTER, 
 							BuildingType.CATTLE_FARM,
 							BuildingType.COW_STALL, BuildingType.COUNTRY_HOUSE,
 							BuildingType.DOG_HOUSE, BuildingType.DUCK_POND,
 							BuildingType.FARM_SHOP, BuildingType.FARM_WELL,
 							BuildingType.FEED_STOREHOUSE,
 							BuildingType.FENCE_MANUFACTURER, BuildingType.FODDER_BEET_FARM,
-							BuildingType.HAY_RACK, BuildingType.HOME_WORKSHOP, 
+							BuildingType.HAY_RACK, BuildingType.HOME_WORKSHOP,
 							BuildingType.INSEMINATION_CENTER, BuildingType.JOINERY,
 							BuildingType.LARGE_EXTENSION,
 							BuildingType.LOG_HOUSE, BuildingType.PIG_STALL,
-							/*BuildingType.REARING_STATION,*/
+							// BuildingType.REARING_STATION,
 							BuildingType.RANCH, BuildingType.SAWMILL,
 							BuildingType.SMALL_EXTENSION, BuildingType.STUD,
-							BuildingType.WILD_BOAR_PEN }));
+							BuildingType.WILD_BOAR_PEN
+					}));
 
 	public final static List<BuildingType> EVEN_MORE_SPECIAL_BUILDINGS_TYPES =
 			Collections.unmodifiableList(

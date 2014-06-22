@@ -168,10 +168,10 @@ public class FarmPanel extends JPanel {
 			new int[] { (5 * M) / 2, -M / 2, -(5 * M) / 2, -M / 2, (5 * M) / 2 },
 			5);
 
-	public final static Stroke NORMAL_STROKE = new BasicStroke();
-	public final static Stroke THICK_STROKE = new BasicStroke(2.0f);
-	public final static Stroke DASHED_STROKE = new BasicStroke(1.0f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL, 10.0f, new float[] { 10, 5 }, 0.0f);
-	public final static Color PASTURE_COLOR = new Color(153, 178, 97);
+	private final static Stroke NORMAL_STROKE = new BasicStroke();
+	private final static Stroke THICK_STROKE = new BasicStroke(2.0f);
+	private final static Stroke DASHED_STROKE = new BasicStroke(1.0f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL, 10.0f, new float[] { 10, 5 }, 0.0f);
+	private final static Color PASTURE_COLOR = new Color(153, 178, 97);
 
 	private final Player player;
 	private final Farm farm;
@@ -182,6 +182,7 @@ public class FarmPanel extends JPanel {
 
 	private JButton finishBtn;
 	private JButton cancelBtn;
+//	private Map<BuildingType, JButton> extraBtns = new HashMap<BuildingType, JButton>();
 	private JLabel msgLabel;
 	private JPanel supplyPanel;
 	private final JLabel[] workerLabels = new JLabel[Player.MAX_WORKERS];
@@ -333,7 +334,7 @@ public class FarmPanel extends JPanel {
 		for (Animal a : Animal.values()) {
 			animalSupply.get(a).setText(String.valueOf(player.getAnimal(a)));
 		}
-		
+
 		boolean isActivePlayer = active && player.equals(ap.getPlayer());
 
 		if (isActivePlayer && ap.hasAction()) {
@@ -366,6 +367,49 @@ public class FarmPanel extends JPanel {
 				this.msgLabel.setText(Msg.get("chooseActionMsg"));
 			}
 		}
+		updateExtraBtns();
+	}
+
+	private void updateExtraBtns() {
+		/*if (active && player.equals(ap.getPlayer())) {
+			// TODO refactor
+			if (player.farm.hasBuilding(BuildingType.ANIMAL_TRADER)) {
+				JButton tradeBtn;
+				final Action action = AnimalTrader.EXTRA_ACTION;
+				if (extraBtns.containsKey(BuildingType.ANIMAL_TRADER)) {
+					tradeBtn = extraBtns.get(BuildingType.ANIMAL_TRADER);
+				} else {
+					tradeBtn = new JButton("T");
+					tradeBtn.setToolTipText(action.getType().desc);
+					tradeBtn.setMargin(new Insets(0, 0, 0, 0));
+					tradeBtn.setBounds(X1 + farm.getWidth() * S + 2*M, Y1 + M, S / 3, S / 3);
+					tradeBtn.setActionCommand(FarmActionCommand.SUBMIT.toString());
+					tradeBtn.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							if (ap.startAction(action, true)) {
+								if (ap.isFinished()) {
+									e.setSource(ap.getPlayer().getColor());
+									submitListener.actionPerformed(e);
+								}
+							}
+						}
+					});
+					add(tradeBtn);
+					extraBtns.put(BuildingType.ANIMAL_TRADER, tradeBtn);
+				}
+				tradeBtn.setEnabled(!ap.hasAction() && action.canDo(player));
+				tradeBtn.setVisible(true);
+			} else if (extraBtns.containsKey(BuildingType.ANIMAL_TRADER)) {
+				extraBtns.get(BuildingType.ANIMAL_TRADER).setVisible(false);
+			}
+			if (player.farm.hasBuilding(BuildingType.CARPENTER)) {
+
+			}
+		} else {
+			for (JButton btn : extraBtns.values()) {
+				btn.setVisible(false);
+			}
+		}*/
 	}
 
 	public void setActive(boolean active, Phase phase) {

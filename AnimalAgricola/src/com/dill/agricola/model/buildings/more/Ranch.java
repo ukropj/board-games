@@ -1,5 +1,6 @@
 package com.dill.agricola.model.buildings.more;
 
+import com.dill.agricola.Game.Phase;
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.extra.OneBorder;
 import com.dill.agricola.common.Materials;
@@ -19,7 +20,7 @@ public class Ranch extends Building {
 	}
 
 	// grants one free fence action during each breeding phase when horse is born
-	public Action getBeforeBreedingAction() {
-		return EXTRA_ACTION;
+	public Action getExtraAction(Phase phase, int round) {
+		return phase == Phase.BEFORE_BREEDING ? EXTRA_ACTION : null;
 	}
 }

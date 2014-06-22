@@ -1,8 +1,10 @@
 package com.dill.agricola.model;
 
 import java.util.Observer;
+import java.util.Set;
 import java.util.Stack;
 
+import com.dill.agricola.Game.Phase;
 import com.dill.agricola.Main;
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.common.Animals;
@@ -206,6 +208,10 @@ public class Player extends SimpleObservable {
 	public int getAnimals() {
 		return animals.size();
 	}
+	
+	public Set<Animal> getAnimalTypes() {
+		return animals.types();
+	}
 
 	public boolean purchaseAnimal(Animal type, int count) {
 		Main.asrtPositive(count, "Cannot purchase negative amount");
@@ -265,10 +271,10 @@ public class Player extends SimpleObservable {
 
 	private Stack<Action> extraActions = new Stack<Action>();
 
-	public boolean initExtraActions(boolean beforeWork, int forRound) {
+	public boolean initExtraActions(Phase phase, int forRound) {
 		extraActions.clear();
 		for (Building b : farm.getFarmBuildings()) {
-			Action action = beforeWork ? b.getBeforeWorkAction(forRound) : b.getBeforeBreedingAction();
+			Action action = b.getExtraAction(phase, forRound);
 			if (action != null) {
 				extraActions.push(action);				
 			}

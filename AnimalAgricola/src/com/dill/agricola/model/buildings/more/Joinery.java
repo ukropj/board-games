@@ -1,5 +1,6 @@
 package com.dill.agricola.model.buildings.more;
 
+import com.dill.agricola.Game.Phase;
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.extra.OneTrough;
 import com.dill.agricola.common.Materials;
@@ -17,7 +18,7 @@ public class Joinery extends Building {
 	}
 
 	// grants 1 feeding trough for 2 wood before each breeding phase
-	public Action getBeforeBreedingAction() {
-		return EXTRA_ACTION;
+	public Action getExtraAction(Phase phase, int round) {
+		return phase == Phase.BEFORE_BREEDING ? EXTRA_ACTION : null;
 	}
 }

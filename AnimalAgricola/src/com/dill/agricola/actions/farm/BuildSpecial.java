@@ -11,6 +11,7 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
 import com.dill.agricola.GeneralSupply;
+import com.dill.agricola.Game.Phase;
 import com.dill.agricola.GeneralSupply.Supplyable;
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.ActionStateChangeListener;
@@ -202,11 +203,11 @@ public class BuildSpecial extends BuildAction {
 
 	protected UndoableFarmEdit postActivate(Player player, Building b) {
 		GeneralSupply.useBuilding(toBuild, true);
-		Action preAction = getBuildingInstance(toBuild).getBeforeWorkAction(8/*TODO ugly hack*/);
+		Action preAction = getBuildingInstance(toBuild).getExtraAction(Phase.BEFORE_WORK, 8/*TODO ugly hack*/);
 		if (preAction != null) {
 			preAction.addChangeListener(new ExtraActionStateChangeListener());
 		}
-		Action postAction = getBuildingInstance(toBuild).getBeforeBreedingAction();
+		Action postAction = getBuildingInstance(toBuild).getExtraAction(Phase.BEFORE_BREEDING, 8);
 		if (postAction != null) {
 			postAction.addChangeListener(new ExtraActionStateChangeListener());
 		}

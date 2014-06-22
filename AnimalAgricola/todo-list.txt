@@ -3,6 +3,7 @@
 	allow non-random buildings (some kind of picker)
 	more buildings big and small
 	action names (e.g. "Stall", "Fences",...)
+	mark more bonus points
 	
 #Bugs#
 

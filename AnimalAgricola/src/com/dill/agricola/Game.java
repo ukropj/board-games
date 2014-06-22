@@ -214,10 +214,10 @@ public class Game {
 		playerQueue.clear();
 
 		for (Player p : players) {
-			boolean hasExtraActions = p.initExtraActions(interPhase == Phase.BEFORE_WORK, round);
+			boolean hasExtraActions = p.initExtraActions(phase, round);
 			if (hasExtraActions) {
 				addToQueue(p);
-				ap.postEdit(new StartInterPhase(p, interPhase == Phase.BEFORE_WORK, round));
+				ap.postEdit(new StartInterPhase(p, phase, round));
 			}
 		}
 
@@ -481,6 +481,9 @@ public class Game {
 				if (phase == Phase.WORK) {
 					undoManager.undo();
 				}
+			case SPECIAL:
+				// special action done TODO
+				break;
 			default:
 				break;
 			}
@@ -488,7 +491,7 @@ public class Game {
 	};
 
 	public static enum FarmActionCommand {
-		SUBMIT, CANCEL;
+		SUBMIT, CANCEL, SPECIAL;
 	}
 
 	private class StartRound extends SimpleEdit {
@@ -537,13 +540,13 @@ public class Game {
 		private static final long serialVersionUID = 1L;
 
 		private final Player currentPlayer;
-		private final boolean beforeWork;
+		private final Phase currentPhase;
 		private final int round;
 
-		public StartInterPhase(Player currentPlayer, boolean beforeWork, int round) {
+		public StartInterPhase(Player currentPlayer, Phase phase, int round) {
 			Main.asrtNotNull(currentPlayer, "Cannot start interphase with no player");
 			this.currentPlayer = currentPlayer;
-			this.beforeWork = beforeWork;
+			this.currentPhase = phase;
 			this.round = round;
 		}
 
@@ -554,7 +557,7 @@ public class Game {
 
 		public void redo() throws CannotRedoException {
 			super.redo();
-			currentPlayer.initExtraActions(beforeWork, round);
+			currentPlayer.initExtraActions(currentPhase, round);
 		}
 
 	}

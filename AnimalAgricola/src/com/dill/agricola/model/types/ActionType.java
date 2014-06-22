@@ -20,12 +20,14 @@ public enum ActionType {
 	PIG_AND_SHEEP("pigSheep"),
 	COW_AND_PIGS("cowPigs"),
 	HORSE_AND_SHEEP("horseSheep"),
-	//
+	// extra
 	BREEDING("breeding"),
 	BUILDING_REWARD("buildReward"),
 	ONE_TROUGH("oneTrough"),
 	ONE_BORDER("oneBorder"),
-	SWITCH_FOR_COW("switchForCow");
+	SWITCH_FOR_COW("switchForCow"),
+	TRADE_ANIMALS("tradeAnimals"),
+	MOVE_TROUGHS("moveTroughs");
 	
 	public final String desc;
 	public final String shortDesc;
