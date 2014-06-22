@@ -74,6 +74,11 @@ public class TradeForCow extends AbstractAction {
 	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos) {
 		return null;
 	}
+	
+	public boolean isUsedEnough() {
+		// optional
+		return true;
+	}
 
 	private class SwitchForCow extends SimpleEdit {
 		private static final long serialVersionUID = 1L;

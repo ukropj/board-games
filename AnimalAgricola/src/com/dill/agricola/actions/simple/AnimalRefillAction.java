@@ -105,10 +105,6 @@ public abstract class AnimalRefillAction extends AbstractAction {
 				throw new CannotRedoException();
 			}
 		}
-		
-		public boolean isAnimalEdit() {
-			return takenAnimals.size() > 0;
-		}
 
 		public String getPresentationName() {
 			return Namer.getName(this);

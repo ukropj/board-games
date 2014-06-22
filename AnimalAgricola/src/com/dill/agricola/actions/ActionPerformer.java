@@ -36,6 +36,10 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		this.player = player;
 	}
 
+	public boolean hasPlayer() {
+		return player != null;
+	}
+
 	public Player getPlayer() {
 		return player;
 	}
@@ -91,12 +95,11 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 				return false;
 			}
 
-			if (!extraAction) {
-				beginUpdate(player.getColor(), action.getType()); // start "action edit"
-				player.spendWorker();
-			}
 			postEdit(new StartAction(player, action, extraAction));
 			action.setUsed(player.getColor());
+			if (!extraAction) {
+				player.spendWorker();
+			}
 
 			if (this.subaction == null) {
 				Action subAction = action.getSubAction(false);
@@ -107,7 +110,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 
 			if (edit != null) {
 				postEdit(edit);
-				if (!edit.isAnimalEdit() && !player.hasLooseAnimals()
+				if (((extraAction && action.getType() != ActionType.BREEDING) || !player.hasLooseAnimals())
 						&& !action.canDoOnFarm(player)
 						&& (subaction == null || !subaction.canDoOnFarm(player))) {
 					return finishAction();
@@ -141,7 +144,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 
 			if (edit != null) {
 				postEdit(edit);
-				if (!edit.isAnimalEdit() && !player.hasLooseAnimals()
+				if (!player.hasLooseAnimals()
 						&& !subaction.canDoOnFarm(player)) {
 					return finishSubaction();
 				}
@@ -233,7 +236,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 			if (subaction != null) {
 				finishSubaction();
 			}
-//			player.notifyObservers(ChangeType.ACTION_DONE);
+			player.notifyObservers(ChangeType.ACTION_DONE);
 			return true;
 		}
 		return false;
@@ -283,6 +286,10 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 			action = a;
 			isExtraAction = extraAction;
 		}
+		
+		public String getPresentationName() {
+			return a.getType().shortDesc;
+		}
 
 	}
 
@@ -308,6 +315,10 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 			super.redo();
 			sa.setUsed(p.getColor());
 			subaction = sa;
+		}
+		
+		public String getPresentationName() {
+			return sa.getType().shortDesc;
 		}
 
 	}

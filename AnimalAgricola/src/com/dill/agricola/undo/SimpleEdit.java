@@ -47,10 +47,6 @@ public abstract class SimpleEdit extends AbstractUndoableEdit implements Undoabl
 		return pos != null;
 	}
 
-	public boolean isAnimalEdit() {
-		return false;
-	}
-
 	public boolean matchesFarmAction(PlayerColor player, DirPoint pos, Purchasable thing) {
 		return player.equals(this.player) && pos.equals(this.pos) && thing.equals(this.thing);
 	}

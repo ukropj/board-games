@@ -48,17 +48,6 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 		return false;
 	}
 
-	public boolean isAnimalEdit() {
-		int i = edits.size();
-		while (i-- > 0) {
-			UndoableFarmEdit e = (UndoableFarmEdit) edits.elementAt(i);
-			if (e.isAnimalEdit()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public boolean addEdit(UndoableEdit anEdit) {
 		if (anEdit == null) {
 			return false;
@@ -107,6 +96,11 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 	private String getName() {
 		if (name != null) {
 			return name;			
+		}
+		for (UndoableEdit e : edits) {
+			if (e.isSignificant()) {
+				return e.getPresentationName();
+			}
 		}
 		StringBuilder sb = new StringBuilder("[");
 		for (UndoableEdit e : edits) {

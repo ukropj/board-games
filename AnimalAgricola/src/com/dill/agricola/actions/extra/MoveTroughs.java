@@ -43,5 +43,10 @@ public class MoveTroughs extends AbstractAction {
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
+	public boolean isUsedEnough() {
+		// optional
+		return true;
+	}
 
 }

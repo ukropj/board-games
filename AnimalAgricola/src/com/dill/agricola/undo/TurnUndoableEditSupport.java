@@ -37,12 +37,16 @@ public class TurnUndoableEditSupport extends UndoableEditSupport {
 		}
 	}
 
+	public synchronized void beginUpdate(PlayerColor currentPlayer) {
+		beginUpdate(currentPlayer, null);
+	}
+	
 	public synchronized void beginUpdate(PlayerColor currentPlayer, ActionType actionType) {
 		if (updateLevel > 0) {
 			endUpdate();
 		}
 		if (updateLevel == 0) {
-			compoundEdit = createCompoundEdit(currentPlayer, actionType != null ? actionType.shortDesc : "");
+			compoundEdit = createCompoundEdit(currentPlayer, actionType != null ? actionType.shortDesc : null);
 			Logger.logUndo("Start unposted: " + compoundEdit.getPresentationName());
 			compoundEditPosted = false;
 		}

@@ -92,10 +92,6 @@ public class Breeding extends AbstractAction {
 			}
 		}
 
-		public boolean isAnimalEdit() {
-			return newAnimals.size() > 0;
-		}
-
 		public String getPresentationName() {
 			return Namer.getName(this);
 		}

@@ -64,7 +64,7 @@ public enum BuildingType {
 	public final static List<BuildingType> MORE_SPECIAL_BUILDINGS_TYPES =
 			Collections.unmodifiableList(
 					Arrays.asList(new BuildingType[] {
-//							BuildingType.ANIMAL_TRADER,
+							BuildingType.ANIMAL_TRADER,
 							BuildingType.BARN_MANUFACTURER, BuildingType.BREEDING_STATION,
 //							BuildingType.CARPENTER, 
 							BuildingType.CATTLE_FARM,

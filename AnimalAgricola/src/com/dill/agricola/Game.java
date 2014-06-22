@@ -49,7 +49,7 @@ public class Game {
 		CLEANUP, BEFORE_WORK, WORK, BEFORE_BREEDING, BREEDING;
 	}
 
-	public final static int ROUNDS = Main.DEBUG ? 1 : 8;
+	public final static int ROUNDS = Main.DEBUG ? 5 : 8;
 
 	private final Player[] players;
 	private final Board board;
@@ -82,8 +82,8 @@ public class Game {
 		undoManager.addUndoRedoListener(new UndoRedoListener() {
 
 			public void undoOrRedoPerformed(boolean isUndo) {
-				if (ap.hasExtraAction()) {
-					ap.beginUpdate(ap.getPlayer().getColor(), ap.getAction().getType());
+				if (ap.hasPlayer()) {
+					ap.beginUpdate(ap.getPlayer().getColor(), ap.hasExtraAction() ? ap.getAction().getType() : null);
 				}
 
 				for (Player player : players) {
@@ -185,7 +185,7 @@ public class Game {
 		playerQueue.clear();
 		undoManager.discardAllEdits();
 		ap.reset();
-		ap.beginUpdate(null, null); // start "initial edit"
+		ap.beginUpdate(null); // start "initial edit"
 		ap.invalidateUpdated(); // which cannot be undone
 
 		setStartingPlayer(newDialog.getStartingPlayer());
@@ -301,7 +301,10 @@ public class Game {
 		ap.setPlayer(currentPlayer);
 		board.refresh();
 
-		ap.endUpdate(); // end last "action/breeding edit"
+		// end last "action edit"
+		ap.endUpdate();
+		// start "action edit"
+		ap.beginUpdate(currentPlayer.getColor());
 	}
 
 	private void endTurn() {
@@ -482,7 +485,8 @@ public class Game {
 					undoManager.undo();
 				}
 			case SPECIAL:
-				// special action done TODO
+				// special action done - just continue
+//				board.refresh();
 				break;
 			default:
 				break;

@@ -98,30 +98,35 @@ public class TradeAnimals extends AbstractAction {
 	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos) {
 		return null;
 	}
+	
+	public boolean isUsedEnough() {
+		// optional
+		return true;
+	}
 
 	private class Trade extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
 
 		private final Player player;
-		private final Animals given;
-		private final Animals taken;
+		private final Animals toSell;
+		private final Animals toBuy;
 
-		public Trade(Player player, Animals given, Animals taken) {
+		public Trade(Player player, Animals toSell, Animals toBuy) {
 			this.player = player;
-			this.given = given;
-			this.taken = taken;
+			this.toSell = toSell;
+			this.toBuy = toBuy;
 		}
 
 		public void undo() throws CannotUndoException {
 			super.undo();
-			player.unpurchaseAnimals(given);
-			player.purchaseAnimals(taken);
+			player.unpurchaseAnimals(toBuy);
+			player.purchaseAnimals(toSell);
 		}
 
 		public void redo() throws CannotRedoException {
 			super.redo();
-			player.unpurchaseAnimals(taken);
-			player.purchaseAnimals(given);
+			player.unpurchaseAnimals(toSell);
+			player.purchaseAnimals(toBuy);
 		}
 
 	}
