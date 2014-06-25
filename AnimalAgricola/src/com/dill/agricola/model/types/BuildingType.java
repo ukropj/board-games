@@ -66,7 +66,7 @@ public enum BuildingType {
 					Arrays.asList(new BuildingType[] {
 							BuildingType.ANIMAL_TRADER,
 							BuildingType.BARN_MANUFACTURER, BuildingType.BREEDING_STATION,
-//							BuildingType.CARPENTER, 
+							BuildingType.CARPENTER,
 							BuildingType.CATTLE_FARM,
 							BuildingType.COW_STALL, BuildingType.COUNTRY_HOUSE,
 							BuildingType.DOG_HOUSE, BuildingType.DUCK_POND,

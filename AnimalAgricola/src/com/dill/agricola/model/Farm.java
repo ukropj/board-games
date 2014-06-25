@@ -258,6 +258,27 @@ public class Farm extends SimpleObservable {
 		setChanged();
 		return true;
 	}
+	
+	public int count(Purchasable type) {
+		int count = 0;
+		List<DirPoint> range = PointUtils.createGridRange(width, height);
+		for (DirPoint pos : range) {
+			if (has(type, pos, false)) {
+				count++;
+			}
+		}
+		return count;
+	}
+
+	public int count(BuildingType type) {
+		int count = 0;
+		for (Building b : buildingList) {
+			if (b.getType() == type) {
+				count++;
+			}
+		}
+		return count;
+	}
 
 	public List<Integer> getExtensions(Dir d) {
 		return extensions.get(d);
@@ -350,18 +371,6 @@ public class Farm extends SimpleObservable {
 			}
 		}
 		return unused;
-	}
-
-	public int getTroughs() {
-		int count = 0;
-		List<DirPoint> range = PointUtils.createGridRange(width, height);
-		for (DirPoint pos : range) {
-			Space s = getSpace(pos);
-			if (s != null && s.hasTrough()) {
-				count++;
-			}
-		}
-		return count;
 	}
 
 	public void setBuildingList(List<Building> buildingList) {

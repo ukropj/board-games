@@ -30,10 +30,10 @@ public class AgriImages {
 	private final static BufferedImage[] firstTokens = new BufferedImage[ImgSize.values().length * PlayerColor.values().length];
 	private final static BufferedImage[] farmsAndMargins = new BufferedImage[4];
 	private final static BufferedImage[] workers = new BufferedImage[ImgSize.values().length * (PlayerColor.values().length + 1)];
-	private static BufferedImage[] cottages = new BufferedImage[PlayerColor.values().length];
-	private static BufferedImage[] stallsAndStables = new BufferedImage[10];
-	private static BufferedImage[] exts = new BufferedImage[5];
-	private static BufferedImage[] pads = new BufferedImage[3];
+	private final static BufferedImage[] cottages = new BufferedImage[PlayerColor.values().length];
+	private final static BufferedImage[] stallsAndStables = new BufferedImage[10];
+	private final static BufferedImage[] exts = new BufferedImage[5];
+	private final static BufferedImage[] pads = new BufferedImage[3];
 
 	private final static BufferedImage[] arrowsMedium = new BufferedImage[Dir.values().length];
 	private final static BufferedImage[] arrowsBig = new BufferedImage[Dir.values().length];
@@ -350,6 +350,11 @@ public class AgriImages {
 		g.drawString(stables, x2, y);
 		g.dispose();
 		return new ImageIcon(img);
+	}
+	
+	public static ImageIcon getButtonImage(String name) {
+		BufferedImage img = Images.createImage("btn_" + name);
+		return new ImageIcon(Images.getBestScaledInstance(img, 0.26f));
 	}
 
 	public static ImageIcon getPurchasableIcon(Purchasable type) {

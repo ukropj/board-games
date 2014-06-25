@@ -18,7 +18,4 @@ public class AnimalTrader extends Building {
 	}
 
 	// allows trading 2 different animal for 1 other animal
-//	public Action getExtraAction(Phase phase, int round) {
-//		return EXTRA_ACTION;
-//	}
 }

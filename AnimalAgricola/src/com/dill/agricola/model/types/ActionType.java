@@ -27,7 +27,8 @@ public enum ActionType {
 	ONE_BORDER("oneBorder"),
 	SWITCH_FOR_COW("switchForCow"),
 	TRADE_ANIMALS("tradeAnimals"),
-	MOVE_TROUGHS("moveTroughs");
+	MOVE_TROUGHS("moveTroughs"), 
+	MOVE_STALLS("moveStalls");
 	
 	public final String desc;
 	public final String shortDesc;

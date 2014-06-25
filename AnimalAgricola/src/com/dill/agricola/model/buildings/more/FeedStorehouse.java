@@ -6,6 +6,7 @@ import com.dill.agricola.model.Building;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Material;
+import com.dill.agricola.model.types.Purchasable;
 
 public class FeedStorehouse extends Building {
 
@@ -16,7 +17,7 @@ public class FeedStorehouse extends Building {
 	}
 	
 	public float getVictoryPoints(Player player) {
-		return player.farm.getTroughs() >= 5 ? 3 : 0;
+		return player.farm.count(Purchasable.TROUGH) >= 5 ? 3 : 0;
 	}
 
 }

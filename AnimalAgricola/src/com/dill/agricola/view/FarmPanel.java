@@ -28,6 +28,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.swing.Box;
@@ -51,10 +52,11 @@ import com.dill.agricola.model.Player;
 import com.dill.agricola.model.Space;
 import com.dill.agricola.model.buildings.MultiImaged;
 import com.dill.agricola.model.buildings.more.AnimalTrader;
+import com.dill.agricola.model.buildings.more.Carpenter;
+import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.BuildingType.BuildingText;
-import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.model.types.Material;
 import com.dill.agricola.model.types.Purchasable;
@@ -186,7 +188,7 @@ public class FarmPanel extends JPanel {
 
 	private JButton finishBtn;
 	private JButton cancelBtn;
-	private Map<BuildingType, JButton> extraBtns = new HashMap<BuildingType, JButton>();
+	private Map<ActionType, JButton> extraBtns = new HashMap<ActionType, JButton>();
 	private JLabel msgLabel;
 	private JPanel supplyPanel;
 	private final JLabel[] workerLabels = new JLabel[Player.MAX_WORKERS];
@@ -238,7 +240,6 @@ public class FarmPanel extends JPanel {
 		finishBtn.setActionCommand(FarmActionCommand.SUBMIT.toString());
 		finishBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				e.setSource(player.getColor());
 				if (ap.hasAction()) {
 					if (ap.finishAction()) {
 						submitListener.actionPerformed(e);
@@ -259,7 +260,6 @@ public class FarmPanel extends JPanel {
 		cancelBtn.setActionCommand(FarmActionCommand.CANCEL.toString());
 		cancelBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				e.setSource(player.getColor());
 				if (ap.hasAction()) {
 					submitListener.actionPerformed(e);
 				}
@@ -374,50 +374,91 @@ public class FarmPanel extends JPanel {
 		updateExtraBtns();
 	}
 
-	private void updateExtraBtns() {
-		if (active && player.equals(ap.getPlayer())) {
-			// TODO refactor
-			if (player.farm.hasBuilding(BuildingType.ANIMAL_TRADER)) {
-				final Action action = AnimalTrader.EXTRA_ACTION;
-				JButton tradeBtn;
-				if (extraBtns.containsKey(BuildingType.ANIMAL_TRADER)) {
-					tradeBtn = extraBtns.get(BuildingType.ANIMAL_TRADER);
-				} else {
-					tradeBtn = new JButton(AgriImages.getAnimalIcon(null, ImgSize.MEDIUM));
-					tradeBtn.setToolTipText(action.getType().desc);
-					tradeBtn.setMargin(new Insets(0, 0, 0, 0));
-					tradeBtn.setBounds(X1 + farm.getWidth() * S + 2 * M, Y1 + M, S / 3, S / 3);
-					tradeBtn.setActionCommand(FarmActionCommand.SPECIAL.toString());
-					tradeBtn.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							// this action is not managed by ActionPerformer!
-							if (action.canDo(player)) {
-								UndoableFarmEdit edit = action.doo(player);
-								if (edit != null) {
-									ap.postEdit(edit);
-									e.setSource(ap.getPlayer().getColor());
-									player.notifyObservers(ChangeType.ACTION_DONE);
-//									submitListener.actionPerformed(e);
-								}
-							}
+	private void initExtraButton(final Action action, ImageIcon icon, boolean quickAction) {
+		JButton btn = new JButton(icon);
+		btn.setToolTipText(action.getType().desc);
+		btn.setMargin(new Insets(1, 1, 1, 1));
+		btn.setBounds(X1 + farm.getWidth() * S + (3 * M) / 2, Y1 + M, S / 3 + M / 2, S / 3 + M / 2);
+		if (quickAction) {
+			btn.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					// this action is not managed by ActionPerformer!
+					if (action.canDo(player)) {
+						UndoableFarmEdit edit = action.doo(player);
+						if (edit != null) {
+							ap.postEdit(edit);
+							player.notifyObservers(ChangeType.ACTION_DONE);
 						}
-					});
-					add(tradeBtn);
-					extraBtns.put(BuildingType.ANIMAL_TRADER, tradeBtn);
+					}
 				}
-				tradeBtn.setEnabled(action.canDo(player) && !ap.hasAction(ActionType.BREEDING));
-				tradeBtn.setVisible(true);
-			} else if (extraBtns.containsKey(BuildingType.ANIMAL_TRADER)) {
-				extraBtns.get(BuildingType.ANIMAL_TRADER).setVisible(false);
-			}
-			if (player.farm.hasBuilding(BuildingType.CARPENTER)) {
-
-			}
+			});
 		} else {
-			for (JButton btn : extraBtns.values()) {
+			btn.setActionCommand(FarmActionCommand.START_EXTRA_WORK.toString());
+			btn.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					submitListener.actionPerformed(e);
+					if (ap.startAction(action, true)) {
+						if (ap.isFinished()) {
+							submitListener.actionPerformed(e);
+						}
+					}
+				}
+			});
+		}
+		add(btn);
+		extraBtns.put(action.getType(), btn);
+	}
+
+	private void updateExtraBtns() {
+		List<ActionType> visibleTypes = new ArrayList<ActionType>();
+		if (active && player.equals(ap.getPlayer())) {
+			// not dynamic, currently not worth it
+			JButton btn;
+			if (farm.hasBuilding(BuildingType.ANIMAL_TRADER)){
+				Action action = AnimalTrader.EXTRA_ACTION;
+				ActionType type = action.getType();
+				if (!extraBtns.containsKey(type)) {
+					initExtraButton(action, AgriImages.getButtonImage("trade_animals"), true);
+				}
+				btn = extraBtns.get(type);
+				btn.setEnabled(action.canDo(player) && !ap.hasAction(ActionType.BREEDING));
+				visibleTypes.add(type);
+			}
+
+			if (farm.hasBuilding(BuildingType.CARPENTER)){
+				Action action = Carpenter.MOVE_TROUGHS;
+				ActionType type = action.getType();
+				if (!extraBtns.containsKey(type)) {
+					initExtraButton(action, AgriImages.getButtonImage("move_troughs"), false);
+				}
+				btn = extraBtns.get(type);
+				btn.setEnabled(action.canDo(player) && !ap.hasAction());
+				visibleTypes.add(type);
+			}
+
+			if (farm.hasBuilding(BuildingType.CARPENTER)){
+				Action action = Carpenter.MOVE_STALLS;
+				ActionType type = action.getType();
+				if (!extraBtns.containsKey(type)) {
+					initExtraButton(action, AgriImages.getButtonImage("move_stalls"), false);
+				}
+				btn = extraBtns.get(type);
+				btn.setEnabled(action.canDo(player) && !ap.hasAction());
+				visibleTypes.add(type);
+			}
+		}
+
+		for (Entry<ActionType, JButton> btnEntry : extraBtns.entrySet()) {
+			JButton btn = btnEntry.getValue();
+			int index = visibleTypes.indexOf(btnEntry.getKey());
+			if (index != -1) {
+				btn.setLocation(btn.getX(), Y1 + M + index * (S / 3 + M));
+				btn.setVisible(true);
+			} else {
 				btn.setVisible(false);
 			}
 		}
+
 	}
 
 	public void setActive(boolean active, Phase phase) {

@@ -47,12 +47,13 @@ public abstract class PurchaseAction extends AbstractAction {
 	}
 	
 	protected UndoableFarmEdit setPlayerActive(Player player) {
-		if (!isAsSubAction()) {
+		boolean isSubaction  = isAsSubAction();
+		if (!isSubaction) {
 			player.getFarm().setActiveType(thing);	
 		} else {
 			player.getFarm().setActiveSubType(thing);								
 		}
-		return new SetActive(player, isAsSubAction());
+		return new SetActive(player, isSubaction);
 	}
 
 	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos) {
@@ -73,8 +74,8 @@ public abstract class PurchaseAction extends AbstractAction {
 	protected class PurchaseThing extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
 
-		private final Player player;
-		private final DirPoint pos;
+		protected final Player player;
+		protected final DirPoint pos;
 		private final DirPoint undoPos;
 		
 		public PurchaseThing(Player player, DirPoint pos) {

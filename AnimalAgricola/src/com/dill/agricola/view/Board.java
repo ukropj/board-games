@@ -277,13 +277,12 @@ public class Board extends JFrame {
 		Phase phase = game.getPhase();
 		switch (phase) {
 		case BEFORE_WORK:
+		case BEFORE_BREEDING:
+		case EXTRA_WORK:
 			turnL.setText(Msg.get("extraturnLab"));
 			break;
 		case WORK:
 			turnL.setText(Msg.get("turnLab"));
-			break;
-		case BEFORE_BREEDING:
-			turnL.setText(Msg.get("extraturnLab"));
 			break;
 		case BREEDING:
 			turnL.setText(Msg.get("breedingLab"));
@@ -294,6 +293,7 @@ public class Board extends JFrame {
 			} else {
 				turnL.setText("");				
 			}
+			break;
 		default:
 			break;
 		}

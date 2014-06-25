@@ -46,7 +46,7 @@ import com.dill.agricola.view.NewGameDialog;
 public class Game {
 
 	public static enum Phase {
-		CLEANUP, BEFORE_WORK, WORK, BEFORE_BREEDING, BREEDING;
+		CLEANUP, BEFORE_WORK, WORK, EXTRA_WORK, BEFORE_BREEDING, BREEDING;
 	}
 
 	public final static int ROUNDS = Main.DEBUG ? 5 : 8;
@@ -172,7 +172,7 @@ public class Game {
 		if (!newDialog.isDone()) {
 			return;
 		}
-		
+
 		GeneralSupply.reset(newDialog.getUseMoreBuildings(), newDialog.getUseEvenMoreBuildings());
 		new BuildingOverviewDialog(board, newDialog.getUseMoreBuildings() || newDialog.getUseEvenMoreBuildings());
 
@@ -468,6 +468,12 @@ public class Game {
 					// work end
 					endTurn();
 					break;
+				case EXTRA_WORK:
+					// special action done - continue with work
+					ap.postEdit(new ChangePhase(phase, Phase.WORK, false));
+					phase = Phase.WORK;
+					startTurn(ap.getPlayer());
+					break;
 				case BEFORE_BREEDING:
 					// extra turn end
 					endExtraTurn();
@@ -484,9 +490,24 @@ public class Game {
 				if (phase == Phase.WORK) {
 					undoManager.undo();
 				}
-			case SPECIAL:
-				// special action done - just continue
-//				board.refresh();
+				break;
+			case START_EXTRA_WORK:
+				switch (phase) {
+				case WORK:
+					// special action start
+					ap.postEdit(new ChangePhase(phase, Phase.EXTRA_WORK, false));
+					phase = Phase.EXTRA_WORK;
+					board.refresh();
+					break;
+				case EXTRA_WORK:
+					// special action done - continue with work
+					ap.postEdit(new ChangePhase(phase, Phase.WORK, false));
+					phase = Phase.WORK;
+					startTurn(ap.getPlayer());
+					break;
+				default:
+					break;
+				}
 				break;
 			default:
 				break;
@@ -495,7 +516,7 @@ public class Game {
 	};
 
 	public static enum FarmActionCommand {
-		SUBMIT, CANCEL, SPECIAL;
+		SUBMIT, CANCEL, START_EXTRA_WORK;
 	}
 
 	private class StartRound extends SimpleEdit {
@@ -757,7 +778,7 @@ public class Game {
 		private static final long serialVersionUID = 1L;
 
 		private final Player last;
-		
+
 		public EndGame(Player player) {
 			last = player;
 		}
