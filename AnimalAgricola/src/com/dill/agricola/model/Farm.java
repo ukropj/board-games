@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TreeSet;
 
 import com.dill.agricola.GeneralSupply;
 import com.dill.agricola.Main;
@@ -81,7 +82,7 @@ public class Farm extends SimpleObservable {
 		}
 		return col;
 	}
-	
+
 	private final void clearActive() {
 		activeType = null;
 		activeSubType = null;
@@ -94,30 +95,30 @@ public class Farm extends SimpleObservable {
 		if (this.activeType != activeType) {
 			clearActive();
 			this.activeType = activeType;
-			setChanged();			
+			setChanged();
 		}
 	}
-	
+
 	public void setActiveSubType(Purchasable activeSubType) {
 		if (this.activeSubType != activeSubType) {
 			if (this.activeSubType != null) {
 				activeSpots.get(this.activeSubType).clear();
 			}
 			this.activeSubType = activeSubType;
-			setChanged();			
+			setChanged();
 		}
 	}
 
 	public Purchasable getActiveType() {
 		return activeType;
 	}
-	
+
 	public Purchasable getActiveSubType() {
 		return activeSubType;
 	}
 
 	public boolean isActiveSpot(DirPoint pos, Purchasable forType) {
-		return (activeType == forType || activeSubType == forType) 
+		return (activeType == forType || activeSubType == forType)
 				&& activeSpots.get(forType).contains(pos);
 	}
 
@@ -258,7 +259,7 @@ public class Farm extends SimpleObservable {
 		setChanged();
 		return true;
 	}
-	
+
 	public int count(Purchasable type) {
 		int count = 0;
 		List<DirPoint> range = PointUtils.createGridRange(width, height);
@@ -473,11 +474,6 @@ public class Farm extends SimpleObservable {
 		}
 	}
 
-	public int getAnimals(DirPoint pos) {
-		Space space = getSpace(pos);
-		return space != null ? space.getAnimals() : 0;
-	}
-
 	public void addAnimals(Animal type, int count) {
 		Main.asrtPositive(count, "Cannot add negative amount of animals");
 		addLooseAnimals(type, count);
@@ -532,8 +528,7 @@ public class Farm extends SimpleObservable {
 		int moving = Math.min(count, target.getActualCapacity(type));
 		if (moving > 0) {
 			addLooseAnimals(type, -moving);
-			target.setAnimalType(type);
-			target.addAnimals(moving);
+			target.addAnimals(type, moving);
 			setChanged();
 		}
 		if (!ignoreRestOfPasture && count > moving) {
@@ -561,41 +556,48 @@ public class Farm extends SimpleObservable {
 
 	public int takeAnimals(DirPoint from) {
 		// take all animals of one type
-		return takeAnimals(from, Integer.MAX_VALUE);
-	}
-
-	public int takeAnimals(DirPoint from, int count) {
 		Space source = getSpace(from);
 		if (source != null) {
-			return takeAnimals(source, count, false);
+			int taken = 0;
+			for (Animal a : source.getAnimalTypes()) {
+				taken += takeAnimals(source, a, Integer.MAX_VALUE, false);
+			}
+			return taken;
 		}
 		return 0;
 	}
 
-	private int takeAnimals(Space source, int count, boolean ignoreRestOfPasture) {
+	public int takeAnimals(DirPoint from, Animal type, int count) {
+		Space source = getSpace(from);
+		if (source != null) {
+			return takeAnimals(source, type, count, false);
+		}
+		return 0;
+	}
+
+	private int takeAnimals(Space source, Animal type, int count, boolean ignoreRestOfPasture) {
 		Main.asrtPositive(count, "Cannot move negative amount of animals");
 		int moving = Math.min(source.getAnimals(), count);
 		if (moving > 0) {
-			Animal type = source.getAnimalType();
-			source.addAnimals(-moving);
+			source.addAnimals(type, -moving);
 			addLooseAnimals(type, moving);
 			setChanged();
 		}
 		if (!ignoreRestOfPasture && source.getAnimalTypesPerPasture().size() <= 1 && count > moving) {
 			// take form pasture only when it not mixed
-			moving += takeFromPasture(source, count - moving);
+			moving += takeFromPasture(source, type, count - moving);
 		}
 		return moving;
 	}
 
-	private int takeFromPasture(Space origSpace, int count) {
+	private int takeFromPasture(Space origSpace, Animal type, int count) {
 		int moved = 0;
 		int left = count;
 		for (Space space : origSpace.getPastureSpaces()) {
 			if (space == origSpace) {
 				continue;
 			}
-			moved = takeAnimals(space, left, true);
+			moved = takeAnimals(space, type, left, true);
 			left -= moved;
 			if (left == 0) {
 				setChanged();
@@ -610,8 +612,8 @@ public class Farm extends SimpleObservable {
 		List<DirPoint> range = PointUtils.createGridRange(width, height);
 		for (DirPoint pos : range) {
 			Space space = getSpace(pos);
-			if (space.getAnimalType() == type) {
-				moved += takeAnimals(space, count - moved, false);
+			if (space.getAnimalTypes().contains(type)) {
+				moved += takeAnimals(space, type, count - moved, false);
 				if (moved == count) {
 					return true;
 				}
@@ -620,8 +622,8 @@ public class Farm extends SimpleObservable {
 		return false;
 	}
 
-	public List<Animal> guessAnimalTypesToPut(DirPoint pos, boolean onlyWhenUnused) {
-		List<Animal> types = new ArrayList<Animal>();
+	public Set<Animal> guessAnimalTypesToPut(DirPoint pos, boolean onlyWhenUnused) {
+		Set<Animal> types = new TreeSet<Animal>();
 		Space space = getSpace(pos);
 		if (space != null) {
 			Set<Animal> requiredTypes = space.getRequiredAnimals();
@@ -664,7 +666,7 @@ public class Farm extends SimpleObservable {
 	public boolean hasValidAnimals() {
 		return animalsValid;
 	}
-	
+
 	/*private boolean takeLastActive() {
 		if (activeType == null) {
 			return false;

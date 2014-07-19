@@ -61,6 +61,9 @@ public abstract class Building extends Space {
 	}
 
 	public int getMaxCapacity() {
+		if (!extraAnimalCaps.isEmpty()) {
+			return extraAnimalCaps.size();
+		}
 		return hasTrough() ? cap * FEEDER_MULTI : cap;
 	}
 
@@ -104,7 +107,7 @@ public abstract class Building extends Space {
 		}
 		trough = space.trough;
 		animalType = space.animalType;
-		animals = space.animals;
+		animalCount.set(space.animalCount);
 		buildSpace = space;
 	}
 
@@ -118,7 +121,7 @@ public abstract class Building extends Space {
 		}
 		space.trough = trough;
 		space.animalType = animalType;
-		space.animals = animals;
+		space.animalCount.set(animalCount);
 		reset();
 		return space;
 	}
@@ -130,7 +133,7 @@ public abstract class Building extends Space {
 		buildSpace = null;
 		trough = false;
 		animalType = null;
-		animals = 0;
+		animalCount.clear();
 	}
 
 	protected void insertIntermediary(Building intermediary) {

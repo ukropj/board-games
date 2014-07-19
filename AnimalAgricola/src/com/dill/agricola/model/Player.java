@@ -8,10 +8,12 @@ import com.dill.agricola.Game.Phase;
 import com.dill.agricola.Main;
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.common.Animals;
-import com.dill.agricola.common.Dir;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.buildings.Cottage;
+import com.dill.agricola.model.buildings.more.DogHouse;
+import com.dill.agricola.model.buildings.more.RearingStation;
+import com.dill.agricola.model.buildings.more.Stud;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Material;
@@ -59,14 +61,20 @@ public class Player extends SimpleObservable {
 			addMaterial(new Materials(Material.STONE, 20));
 			addMaterial(new Materials(Material.REED, 20));
 
-			DirPoint pos = new DirPoint(1, 1);
+			/*DirPoint pos = new DirPoint(1, 1);
 			farm.put(Purchasable.FENCE, new DirPoint(pos, Dir.N));
 			farm.put(Purchasable.FENCE, new DirPoint(pos, Dir.W));
 			farm.put(Purchasable.FENCE, new DirPoint(pos, Dir.S));
 			farm.put(Purchasable.FENCE, new DirPoint(pos, Dir.E));
 			Fencer.calculateFences(farm);
 			purchaseAnimal(Animal.COW, 1);
-			farm.putAnimals(pos, Animal.COW, 1);
+			farm.putAnimals(pos, Animal.COW, 1);*/
+			
+			farm.build(new RearingStation(), new DirPoint(0, 1));
+			farm.build(new Stud(), new DirPoint(1, 1));
+			farm.build(new DogHouse(), new DirPoint(0, 0));
+			purchaseAnimal(Animal.HORSE, 2);
+			purchaseAnimal(Animal.SHEEP, 2);
 
 //			DirPoint pos2 = new DirPoint(0, 1);
 //			farm.build(new Stall(0), pos2);
@@ -132,11 +140,6 @@ public class Player extends SimpleObservable {
 	public int getMaterial(Material m) {
 		return material.get(m);
 	}
-
-//	public void setActiveType(Purchasable type) {
-//		farm.setActiveType(type);
-//		setChanged();
-//	}
 
 	public boolean canPay(Materials cost) {
 		return material.isSuperset(cost);

@@ -26,6 +26,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -414,7 +415,7 @@ public class FarmPanel extends JPanel {
 		if (active && player.equals(ap.getPlayer())) {
 			// not dynamic, currently not worth it
 			JButton btn;
-			if (farm.hasBuilding(BuildingType.ANIMAL_TRADER)){
+			if (farm.hasBuilding(BuildingType.ANIMAL_TRADER)) {
 				Action action = AnimalTrader.EXTRA_ACTION;
 				ActionType type = action.getType();
 				if (!extraBtns.containsKey(type)) {
@@ -425,7 +426,7 @@ public class FarmPanel extends JPanel {
 				visibleTypes.add(type);
 			}
 
-			if (farm.hasBuilding(BuildingType.CARPENTER)){
+			if (farm.hasBuilding(BuildingType.CARPENTER)) {
 				Action action = Carpenter.MOVE_TROUGHS;
 				ActionType type = action.getType();
 				if (!extraBtns.containsKey(type)) {
@@ -436,7 +437,7 @@ public class FarmPanel extends JPanel {
 				visibleTypes.add(type);
 			}
 
-			if (farm.hasBuilding(BuildingType.CARPENTER)){
+			if (farm.hasBuilding(BuildingType.CARPENTER)) {
 				Action action = Carpenter.MOVE_STALLS;
 				ActionType type = action.getType();
 				if (!extraBtns.containsKey(type)) {
@@ -623,7 +624,8 @@ public class FarmPanel extends JPanel {
 	}
 
 	private void drawSpace(Graphics2D g, DirPoint pos, Space space) {
-		List<Animal> availableAnimals = farm.guessAnimalTypesToPut(pos, true);
+
+		Set<Animal> availableAnimals = farm.guessAnimalTypesToPut(pos, true);
 
 		// building
 		drawBuilding(g, pos, space, farm.getBuilding(pos), availableAnimals);
@@ -635,45 +637,29 @@ public class FarmPanel extends JPanel {
 		drawAnimal(g, pos, space, availableAnimals);
 	}
 
-	private void drawAnimal(Graphics2D g, DirPoint pos, Space space, List<Animal> availableAnimals) {
-		DirPoint realPos = toRealPos(pos);
+	private void drawAnimal(Graphics2D g, DirPoint pos, Space space, Set<Animal> availableAnimals) {
+		Animal type = null;
+		Set<Animal> types = space.getAnimalTypes();
+		types.addAll(space.getRequiredAnimals());
 
-		Animal type = space.getAnimalType();
-		if (type == null) {
-			Set<Animal> reqTypes = space.getRequiredAnimals();
-			if (!reqTypes.isEmpty()) {
-				if (reqTypes.size() == 1) {
-					type = reqTypes.iterator().next();
-				}
+		if (!types.isEmpty()) {
+			if (types.size() == 1) {
+				type = types.iterator().next();
 			} else {
-				List<Animal> pastureTypes = new ArrayList<Animal>(space.getAnimalTypesPerPasture());
-				if (pastureTypes.size() == 1) {
-					type = pastureTypes.get(0);
-				}
+				drawMultiAnimal(g, pos, space, types, availableAnimals);
+				return;
+			}
+		} else {
+			Set<Animal> pastureTypes = space.getAnimalTypesPerPasture();
+			if (pastureTypes.size() == 1) {
+				type = pastureTypes.iterator().next();
 			}
 		}
+
+		DirPoint realPos = toRealPos(pos);
 		int count = space.getAnimals();
-		if (space.getMaxCapacity() > 0 || count > 0) {
-			g.setColor(UiFactory.makeTranslucent(type != null ? (space.isValid() ? type.getColor() : PASTURE_COLOR) : PASTURE_COLOR, 200));
-			g.setClip(getVisibleRect().createIntersection(new Rectangle(realPos.x + M, realPos.y + M, L + 1, L + 1)));
-			g.fillOval(realPos.x + S - 6 * M, realPos.y + S - 6 * M, 8 * M, 8 * M);
-			g.setClip(getVisibleRect());
-			// draw actual/max
-			g.setColor(type != null ? (space.isValid() ? type.getContrastingColor() : RED) : Color.BLACK);
-			g.setFont(Fonts.FARM_FONT);
-			FontMetrics fm = g.getFontMetrics();
-			int w0 = fm.stringWidth("99");
-			String t1 = String.valueOf(count);
-			int w1 = fm.stringWidth(t1);
-			String t2 = String.valueOf(space.getMaxCapacity());
-			int w2 = fm.stringWidth(t2);
-			int c = -1;
-			g.drawString(t1, realPos.x + S - 5 * M + (w0 - w1) / 2 + c, realPos.y + S - 3 * M);
-			g.drawString(t2, realPos.x + S - 3 * M + (w0 - w2) / 2 + c, realPos.y + S - 3 * M / 2);
-			// slash
-			g.setStroke(THICK_STROKE);
-			g.drawLine(realPos.x + S - 4 * M + c, realPos.y + S - 2 * M, realPos.x + S - 2 * M + c, realPos.y + S - 4 * M);
-		}
+
+		drawAnimalCounter(g, realPos, type, count, space.getMaxCapacity(), space.isValid(), 0);
 
 		if (space.getMaxCapacity() > count && availableAnimals.size() > 0) {
 			// can add more - show "area"
@@ -684,12 +670,12 @@ public class FarmPanel extends JPanel {
 			if (count == 0) {
 				// no animals present - show options
 				int typeCount = availableAnimals.size();
+				Iterator<Animal> it = availableAnimals.iterator();
 				for (int i = 0; i < typeCount; i++) {
-					Animal t = availableAnimals.get(i);
+					Animal t = it.next();
 					DirPoint p = new DirPoint(animalPositions[typeCount - 1][i]);
 					p.translate(realPos.x, realPos.y);
 					BufferedImage img = AgriImages.getAnimalImage(t, ImgSize.MEDIUM);
-					//						BufferedImage img = AgriImages.getAnimalOutlineImage(t);
 					int w = img.getWidth(), h = img.getHeight();
 					g.drawImage(img, p.x - w / 2, p.y - h / 2, w, h, null);
 
@@ -706,6 +692,104 @@ public class FarmPanel extends JPanel {
 			BufferedImage img = AgriImages.getAnimalImage(type, ImgSize.BIG);
 			int w = img.getWidth(), h = img.getHeight();
 			g.drawImage(img, realPos.x + (S - w) / 2, realPos.y + (S - h) / 2, w, h, null);
+		}
+
+	}
+
+	private void drawMultiAnimal(Graphics2D g, DirPoint pos, Space space, Set<Animal> types, Set<Animal> availableAnimals) {
+		DirPoint realPos = toRealPos(pos);
+
+		Iterator<Animal> it = types.iterator();
+		for (int i = 0; i < types.size(); i++) {
+			Animal type = it.next();
+			int count = space.getAnimals(type);
+			drawAnimalCounter(g, realPos, type, count, space.getMaxCapacity(type), space.isValid(), types.size() - i - 1);
+		}
+
+		boolean drawArea = false;
+		List<Animal> relevantTypes = new ArrayList<Animal>();
+		for (Animal t : types) {
+			boolean canAddMore = space.getActualCapacity(t) > 0 && availableAnimals.contains(t);
+			if (space.getAnimals(t) > 0 || canAddMore) {
+				relevantTypes.add(t);
+				drawArea = drawArea || canAddMore;
+			}
+		}
+
+		AffineTransform tr = AffineTransform.getTranslateInstance(realPos.x, realPos.y);
+		// can add more - show "area"
+		if (drawArea) {
+			Area r = animalArea.createTransformedArea(tr);
+			g.setColor(UiFactory.makeTranslucent(player.getColor().getRealColor(), 120));
+			g.fill(r);
+		}
+
+		int relevantCount = relevantTypes.size();
+		int i = 0;
+		for (Animal type : relevantTypes) {
+			int count = space.getAnimals(type);
+			if (space.getMaxCapacity(type) > count && availableAnimals.contains(type)) {
+				if (count == 0) {
+					// no animals of this present - show option
+					DirPoint p = new DirPoint(animalPositions[relevantCount - 1][i]);
+					p.translate(realPos.x, realPos.y);
+					BufferedImage img = AgriImages.getAnimalImage(type, ImgSize.MEDIUM);
+					int w = img.getWidth(), h = img.getHeight();
+					g.drawImage(img, p.x - w / 2, p.y - h / 2, w, h, null);
+
+					g.setColor(Color.BLACK);
+					g.setStroke(NORMAL_STROKE);
+					for (Line2D line : animalDividers[relevantCount - 1]) {
+						g.draw(tr.createTransformedShape(line));
+					}
+				}
+			}
+			if (count > 0) {
+				// show present animals
+				DirPoint p = new DirPoint(animalPositions[relevantCount - 1][i]);
+				p.translate(realPos.x, realPos.y);
+				BufferedImage img = AgriImages.getAnimalImage(type, ImgSize.BIG);
+				int w = img.getWidth(), h = img.getHeight();
+//				g.drawImage(img, realPos.x + (S - w) / 2, realPos.y + (S - h) / 2, w, h, null);
+				g.drawImage(img, p.x - w / 2, p.y - h / 2, w, h, null);
+			}
+			i++;
+		}
+	}
+
+	private void drawAnimalCounter(Graphics2D g, DirPoint realPos, Animal type, int count, int max, boolean valid, int index) {
+		int k = S / 3 - M / 4;
+		int dx = index < 3 ? index * -k : 2 * -k;
+		int dy = index < 3 ? 0 : -k;
+		if (max > 0 || count > 0) {
+			// draw counter circle
+			g.setColor(UiFactory.makeTranslucent(type != null ? (valid ? type.getColor() : PASTURE_COLOR) : PASTURE_COLOR, 200));
+			Area clip = new Area(getVisibleRect().createIntersection(new Rectangle(realPos.x + M, realPos.y + M, L + 1, L + 1)));
+//			if (index > 0) {
+//				clip.subtract(new Area(new Ellipse2D.Float(realPos.x + S - 6 * M + dx + k, realPos.y + S - 6 * M, 8 * M, 8 * M)));
+//			}
+			g.setClip(clip);
+			if (index < 3) {
+				g.fillOval(realPos.x + S - 6 * M + dx, realPos.y + S - 6 * M + dy, 6 * M, 8 * M);
+			} else {
+				g.fillOval(realPos.x + S - 6 * M + dx - 2 * M, realPos.y + S - 6 * M + dy + M/2, 8 * M, 5 * M);
+			}
+			g.setClip(getVisibleRect());
+			// draw actual/max
+			g.setColor(type != null ? (valid ? type.getContrastingColor() : RED) : Color.BLACK);
+			g.setFont(Fonts.FARM_FONT);
+			FontMetrics fm = g.getFontMetrics();
+			int w0 = fm.stringWidth("99");
+			String t1 = String.valueOf(count);
+			int w1 = fm.stringWidth(t1);
+			String t2 = String.valueOf(max);
+			int w2 = fm.stringWidth(t2);
+			int c = -1;
+			g.drawString(t1, realPos.x + S - 5 * M + (w0 - w1) / 2 + c + dx, realPos.y + S - 3 * M + dy);
+			g.drawString(t2, realPos.x + S - 3 * M + (w0 - w2) / 2 + c + dx, realPos.y + S - 3 * M / 2 + dy);
+			// slash
+			g.setStroke(THICK_STROKE);
+			g.drawLine(realPos.x + S - 4 * M + c + dx, realPos.y + S - 2 * M + dy, realPos.x + S - 2 * M + c + dx, realPos.y + S - 4 * M + dy);
 		}
 	}
 
@@ -733,7 +817,7 @@ public class FarmPanel extends JPanel {
 		}
 	}
 
-	private void drawBuilding(Graphics2D g, DirPoint pos, Space space, Building building, List<Animal> availableAnimals) {
+	private void drawBuilding(Graphics2D g, DirPoint pos, Space space, Building building, Set<Animal> availableAnimals) {
 		DirPoint realPos = toRealPos(pos);
 		Rectangle r = new Rectangle(buildingRect);
 		r.translate(realPos.x, realPos.y);
@@ -873,13 +957,15 @@ public class FarmPanel extends JPanel {
 			this.farm = farm;
 		}
 
-		private Animal getAnimalType(List<Animal> types, DirPoint relativeDirPoint) {
+		private Animal getAnimalType(Set<Animal> types, DirPoint relativeDirPoint) {
 			int typeCount = types.size();
 			if (typeCount != 0) {
+				Iterator<Animal> it = types.iterator();
 				for (int i = 0; i < animalAreas[typeCount - 1].length; i++) {
 					if (animalAreas[typeCount - 1][i].contains(relativeDirPoint)) {
-						return types.get(i);
+						return it.next();
 					}
+					it.next();
 				}
 			}
 			return null;
@@ -894,10 +980,12 @@ public class FarmPanel extends JPanel {
 			boolean leftClick = e.getButton() == MouseEvent.BUTTON1;
 			boolean multiClick = e.getClickCount() > 1;
 
-			List<Animal> availableAnimals = null;
+			Set<Animal> availableAnimals = null;
 
 			boolean done = false, hadAction = ap.hasAction();
 			Purchasable[] activeTypes = { farm.getActiveType(), farm.getActiveSubType() };
+
+			Space space = farm.getSpace(pos);
 
 			// TODO refactor to more functions
 			if (active && phase != Phase.BREEDING) {
@@ -952,7 +1040,7 @@ public class FarmPanel extends JPanel {
 							availableAnimals = farm.guessAnimalTypesToPut(pos, true);
 							if (!animalArea.contains(relativeDirPoint) // not clicked in animal area OR
 									// no animals available OR no animals present
-									|| ((availableAnimals.size() == 0 && leftClick) || (farm.getAnimals(pos) == 0 && !leftClick))) {
+									|| ((availableAnimals.size() == 0 && leftClick) || (space != null && space.getAnimals() == 0 && !leftClick))) {
 								done = ap.doFarmAction(pos, Purchasable.BUILDING);
 							}
 						}
@@ -975,9 +1063,12 @@ public class FarmPanel extends JPanel {
 						}
 					}
 				} else {
-					if (farm.takeAnimals(pos, multiClick ? Integer.MAX_VALUE : 1) > 0) {
-						done = true;
-						changeType = ChangeType.FARM_ANIMALS;
+					if (space != null) {
+						Animal type = getAnimalType(space.getAnimalTypes(), relativeDirPoint);
+						if (farm.takeAnimals(pos, type, multiClick ? Integer.MAX_VALUE : 1) > 0) {
+							done = true;
+							changeType = ChangeType.FARM_ANIMALS;
+						}
 					}
 				}
 			}
@@ -1009,8 +1100,12 @@ public class FarmPanel extends JPanel {
 					}
 				}
 			} else {
-				if (farm.takeAnimals(pos, -count) > 0) {
-					done = true;
+				Space space = farm.getSpace(pos);
+				if (space != null) {
+					Animal type = getAnimalType(space.getAnimalTypes(), relativeDirPoint);
+					if (farm.takeAnimals(pos, type, -count) > 0) {
+						done = true;
+					}
 				}
 			}
 			if (done) {

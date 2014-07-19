@@ -11,6 +11,7 @@
 
 #Nice to have#
 
+	building search
 	single player
 	farm cursors
 	stats

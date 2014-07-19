@@ -1,10 +1,10 @@
 package com.dill.agricola.common;
 
 import java.util.EnumMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class Bag<T extends Enum<T>> {
 
@@ -127,7 +127,7 @@ public class Bag<T extends Enum<T>> {
 	}
 	
 	public Set<T> types() {
-		Set<T> types = new HashSet<T>();
+		Set<T> types = new TreeSet<T>();
 		for (T t : values) {
 			if (map.get(t) > 0) {
 				types.add(t);
@@ -136,20 +136,27 @@ public class Bag<T extends Enum<T>> {
 		return types;
 	}
 	
-	/*
-	public static <K extends Enum<K>> Bag<K> add(Bag<K> that, Bag<K> other) {
-		return new Bag<K>(that.clazz, that.map).add(other);
+	public boolean hasSingleType() {
+		boolean has = false;
+		for (T t : values) {
+			if (map.get(t) > 0) {
+				if (has) {
+					return false;
+				} 
+				has = true;
+			}
+		}
+		return has;
 	}
 
-	public static <K extends Enum<K>> Bag<K> substract(Bag<K> that, Bag<K> other) {
-		return new Bag<K>(that.clazz, that.map).substract(other);
+	public T getFirstType() {
+		for (T t : values) {
+			if (map.get(t) > 0) {
+				return t;
+			}
+		}
+		return null;
 	}
-
-
-	public static <K extends Enum<K>> Bag<K> multiply(Bag<K> that, int multiplier) {
-		return new Bag<K>(that.clazz, that.map).multiply(multiplier);
-	}
-	*/
 
 	public String toString() {
 		StringBuilder sb = new StringBuilder("[");

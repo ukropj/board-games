@@ -1,10 +1,11 @@
 package com.dill.agricola.model;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
-import com.dill.agricola.Main;
 import com.dill.agricola.common.Animals;
 import com.dill.agricola.common.Dir;
 import com.dill.agricola.model.types.Animal;
@@ -20,12 +21,12 @@ public abstract class Space {
 	protected int enclosedFeeders = 0;
 
 	protected Animal animalType = null;
-	protected int animals = 0;
+	protected Animals animalCount = new Animals();
 
 	protected boolean enclosed = false;
 	private Set<Animal> animalTypesPerPasture = new HashSet<Animal>();
 	private Set<Space> pastureSpaces = new HashSet<Space>();
-	protected Set<Animals> extraAnimalCaps = new HashSet<Animals>();
+	protected Animals extraAnimalCaps = new Animals();
 
 	public Space() {
 		if (isAlwaysEnclosed()) {
@@ -52,25 +53,29 @@ public abstract class Space {
 
 	public abstract boolean isAlwaysEnclosed();
 
-	public void setAnimalType(Animal type) {
-		animalType = type;
-	}
-
 	public Animal getAnimalType() {
 		return animalType;
 	}
 
-	public void addAnimals(int count) {
-		animals += count;
-		if (animals <= 0) {
+	public Set<Animal> getAnimalTypes() {
+		return animalCount.types();
+	}
+
+	public void addAnimals(Animal type, int count) {
+		animalCount.add(type, count);
+		if (animalCount.size() <= 0) {
 			animalType = null;
 		} else {
-			Main.asrtNotNull(animalType, "Cannot have animals without type");
+			animalType = type;
 		}
 	}
 
 	public int getAnimals() {
-		return animals;
+		return animalCount.size();
+	}
+
+	public int getAnimals(Animal type) {
+		return animalCount.get(type);
 	}
 
 	public boolean isEnclosed() {
@@ -91,11 +96,29 @@ public abstract class Space {
 
 	public abstract int getMaxCapacity();
 	
-	public abstract Set<Animal> getRequiredAnimals();
+	public int getMaxCapacity(Animal type) {
+		if (extraAnimalCaps.isEmpty()) {
+			return getMaxCapacity();
+		} else {
+			return extraAnimalCaps.get(type);
+		}
+	}
+	
+	public Set<Animal> getRequiredAnimals() {
+		if (extraAnimalCaps.isEmpty()) {
+			return Collections.emptySet();
+		} else {
+			return new TreeSet<Animal>(extraAnimalCaps.types());
+		}
+	}
 
 	public int getActualCapacity(Animal type) {
 		Set<Animal> req = getRequiredAnimals();
-		return (animalType == null || animalType == type) && (req.isEmpty() || req.contains(type)) ? Math.max(0, getMaxCapacity() - getAnimals()) : 0;
+		if (req.isEmpty()) {
+			return (animalType == null || animalType == type) ? Math.max(0, getMaxCapacity() - getAnimals()) : 0;
+		} else {
+			return req.contains(type) ? Math.max(0, getMaxCapacity(type) - getAnimals(type)) : 0;			
+		}
 	}
 
 	public boolean isUsed() {
@@ -114,6 +137,10 @@ public abstract class Space {
 		int extraAnimals = Math.max(0, getAnimals() - getMaxCapacity());
 		int animalTypes = animalTypesPerPasture.size();
 		return extraAnimals == 0 && animalTypes <= 1;
+	}
+	
+	public boolean hasExtraCapacity() {
+		return !extraAnimalCaps.isEmpty();
 	}
 	
 	public void clearExtraCapacity() {

@@ -1,11 +1,5 @@
 package com.dill.agricola.model;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
-import com.dill.agricola.common.Animals;
-import com.dill.agricola.model.types.Animal;
 
 public class Pasture extends Space {
 
@@ -16,31 +10,14 @@ public class Pasture extends Space {
 	}
 
 	public int getMaxCapacity() {
-		if (extraAnimalCaps.isEmpty()) {
-			if (!isEnclosed()) {
-				return hasTrough() ? SOLO_FEEDER_CAP : 0;
+		if (!isEnclosed()) {
+			if (!extraAnimalCaps.isEmpty()) {
+				return extraAnimalCaps.size();
 			}
-			int feeders = getTroughCount();
-			return feeders == 0 ? CAP : CAP * feeders * FEEDER_MULTI;
-		} else {
-			int cap = 0;
-			for (Animals combo : extraAnimalCaps) {
-				cap = Math.max(cap, combo.size());
-			}
-			return cap;
+			return hasTrough() ? SOLO_FEEDER_CAP : 0;
 		}
-	}
-
-	public Set<Animal> getRequiredAnimals() {
-		if (extraAnimalCaps.isEmpty()) {
-			return Collections.emptySet();
-		} else {
-			Set<Animal> req = new HashSet<Animal>();
-			for (Animals combo : extraAnimalCaps) {
-				req.addAll(combo.types());
-			}
-			return req;
-		}
+		int troughs = getTroughCount();
+		return troughs == 0 ? CAP : CAP * troughs * FEEDER_MULTI;
 	}
 
 	public boolean isAlwaysEnclosed() {
