@@ -47,17 +47,17 @@ public class BuildingsPanel extends JScrollPane {
 		p.add(setFont(UiFactory.createLabel(Msg.get("specialBuildingsTitle")), COUNT_FONT));
 		p.add(Box.createVerticalStrut(5));
 		p.add(buildSpecial(0));
-		if (Main.MORE_BUILDINGS) {
-			JPanel section = UiFactory.createVerticalPanel();
-			section.add(Box.createVerticalStrut(5));
-			section.add(setFont(UiFactory.createLabel(Msg.get("moreSpecialBuildingsTitle")), COUNT_FONT));
-			section.add(Box.createVerticalStrut(5));
-			section.add(buildSpecial(1));
-			p.add(section);
-			specSections.put(1, section);
-		}
+
+		JPanel section = UiFactory.createVerticalPanel();
+		section.add(Box.createVerticalStrut(5));
+		section.add(setFont(UiFactory.createLabel(Msg.get("moreSpecialBuildingsTitle")), COUNT_FONT));
+		section.add(Box.createVerticalStrut(5));
+		section.add(buildSpecial(1));
+		p.add(section);
+		specSections.put(1, section);
+
 		if (Main.EVEN_MORE_BUILDINGS) {
-			JPanel section = UiFactory.createVerticalPanel();
+			section = UiFactory.createVerticalPanel();
 			section.add(Box.createVerticalStrut(5));
 			section.add(setFont(UiFactory.createLabel(Msg.get("evenMoreSpecialBuildingsTitle")), COUNT_FONT));
 			section.add(Box.createVerticalStrut(5));
@@ -107,9 +107,7 @@ public class BuildingsPanel extends JScrollPane {
 	}
 
 	public void resetBuildings() {
-		if (Main.MORE_BUILDINGS) {
-			specSections.get(1).setVisible(GeneralSupply.getUseMoreBuildings());
-		}
+		specSections.get(1).setVisible(GeneralSupply.getUseMoreBuildings());
 		if (Main.EVEN_MORE_BUILDINGS) {
 			specSections.get(2).setVisible(GeneralSupply.getUseEvenMoreBuildings());
 		}

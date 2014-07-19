@@ -46,7 +46,7 @@ public class NewGameDialog extends JDialog implements ActionListener, ItemListen
 		setResizable(false);
 		
 		startingPlayer = Config.getEnum(ConfigKey.LAST_STARTING_PLAYER, PlayerColor.class, PlayerColor.BLUE);
-		useMoreBuildings = Main.MORE_BUILDINGS && Config.getBoolean(ConfigKey.MORE_BUILDINGS, false);
+		useMoreBuildings = Config.getBoolean(ConfigKey.MORE_BUILDINGS, false);
 		useEvenMoreBuildings = Main.EVEN_MORE_BUILDINGS && Config.getBoolean(ConfigKey.EVEN_MORE_BUILDINGS, false);
 		
 		buildOptions();
@@ -67,9 +67,7 @@ public class NewGameDialog extends JDialog implements ActionListener, ItemListen
 		getContentPane().add(main);
 
 		main.add(buildStartPlayerPanel());
-		if (Main.MORE_BUILDINGS || Main.EVEN_MORE_BUILDINGS) {
-			main.add(buildExpansionPanel());
-		}
+		main.add(buildExpansionPanel());
 
 		JButton submitButton = UiFactory.createTextButton(Msg.get("startGameBtn"), this);
 		submitButton.setActionCommand(OptionCommand.SUBMIT.toString());
@@ -117,7 +115,6 @@ public class NewGameDialog extends JDialog implements ActionListener, ItemListen
 		JCheckBox moreBuildings = new JCheckBox(Msg.get("moreBuildings"), useMoreBuildings);
 		moreBuildings.setActionCommand(OptionCommand.MORE_BUILDINGS.toString());
 		moreBuildings.addItemListener(this);
-		moreBuildings.setEnabled(Main.MORE_BUILDINGS);
 		JCheckBox evenMoreBuildings = new JCheckBox(Msg.get("evenMoreBuildings"), useEvenMoreBuildings);
 		evenMoreBuildings.setActionCommand(OptionCommand.EVEN_MORE_BUILDINGS.toString());
 		evenMoreBuildings.addItemListener(this);
