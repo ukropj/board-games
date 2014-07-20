@@ -65,6 +65,7 @@ public class TradeForCow extends AbstractAction {
 			if (chosenAnimal != null) {
 				player.unpurchaseAnimal(chosenAnimal, 1);
 				player.purchaseAnimal(Animal.COW, 1);
+				setChanged();
 				return new SwitchForCow(player, chosenAnimal);
 			}
 		}

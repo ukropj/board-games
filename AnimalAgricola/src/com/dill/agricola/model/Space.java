@@ -115,7 +115,7 @@ public abstract class Space {
 	public int getActualCapacity(Animal type) {
 		Set<Animal> req = getRequiredAnimals();
 		if (req.isEmpty()) {
-			return (animalType == null || animalType == type) ? Math.max(0, getMaxCapacity() - getAnimals()) : 0;
+			return (animalType == null || animalType == type) ? Math.max(0, getMaxCapacity(type) - getAnimals(type)) : 0;
 		} else {
 			return req.contains(type) ? Math.max(0, getMaxCapacity(type) - getAnimals(type)) : 0;			
 		}
@@ -134,7 +134,10 @@ public abstract class Space {
 	}
 
 	public boolean isValid() {
-		int extraAnimals = Math.max(0, getAnimals() - getMaxCapacity());
+		int extraAnimals = 0;
+		for (Animal a : getAnimalTypes()) {
+			extraAnimals += Math.max(0, getAnimals(a) - getMaxCapacity(a));
+		}
 		int animalTypes = animalTypesPerPasture.size();
 		return extraAnimals == 0 && animalTypes <= 1;
 	}

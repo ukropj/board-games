@@ -58,28 +58,41 @@ public enum BuildingType {
 	public final static List<BuildingType> SPECIAL_BUILDINGS_TYPES =
 			Collections.unmodifiableList(
 					Arrays.asList(new BuildingType[] {
-							BuildingType.HALF_TIMBERED_HOUSE, BuildingType.STORAGE_BUILDING,
-							BuildingType.SHELTER, BuildingType.OPEN_STABLES }));
+							BuildingType.HALF_TIMBERED_HOUSE,
+							BuildingType.STORAGE_BUILDING,
+							BuildingType.SHELTER,
+							BuildingType.OPEN_STABLES
+					}));
 
 	public final static List<BuildingType> MORE_SPECIAL_BUILDINGS_TYPES =
 			Collections.unmodifiableList(
 					Arrays.asList(new BuildingType[] {
 							BuildingType.ANIMAL_TRADER,
-							BuildingType.BARN_MANUFACTURER, BuildingType.BREEDING_STATION,
+							BuildingType.BARN_MANUFACTURER,
+							BuildingType.BREEDING_STATION,
 							BuildingType.CARPENTER,
 							BuildingType.CATTLE_FARM,
-							BuildingType.COW_STALL, BuildingType.COUNTRY_HOUSE,
-							BuildingType.DOG_HOUSE, BuildingType.DUCK_POND,
-							BuildingType.FARM_SHOP, BuildingType.FARM_WELL,
+							BuildingType.COW_STALL,
+							BuildingType.COUNTRY_HOUSE,
+							BuildingType.DOG_HOUSE,
+							BuildingType.DUCK_POND,
+							BuildingType.FARM_SHOP,
+							BuildingType.FARM_WELL,
 							BuildingType.FEED_STOREHOUSE,
-							BuildingType.FENCE_MANUFACTURER, BuildingType.FODDER_BEET_FARM,
-							BuildingType.HAY_RACK, BuildingType.HOME_WORKSHOP,
-							BuildingType.INSEMINATION_CENTER, BuildingType.JOINERY,
+							BuildingType.FENCE_MANUFACTURER,
+							BuildingType.FODDER_BEET_FARM,
+							BuildingType.HAY_RACK,
+							BuildingType.HOME_WORKSHOP,
+							BuildingType.INSEMINATION_CENTER,
+							BuildingType.JOINERY,
 							BuildingType.LARGE_EXTENSION,
-							BuildingType.LOG_HOUSE, BuildingType.PIG_STALL,
-							// BuildingType.REARING_STATION,
-							BuildingType.RANCH, BuildingType.SAWMILL,
-							BuildingType.SMALL_EXTENSION, BuildingType.STUD,
+							BuildingType.LOG_HOUSE,
+							BuildingType.PIG_STALL,
+							BuildingType.REARING_STATION,
+							BuildingType.RANCH,
+							BuildingType.SAWMILL,
+							BuildingType.SMALL_EXTENSION,
+							BuildingType.STUD,
 							BuildingType.WILD_BOAR_PEN
 					}));
 

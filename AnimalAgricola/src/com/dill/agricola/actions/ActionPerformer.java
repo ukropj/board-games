@@ -64,7 +64,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		return action;
 	}
 	
-	public Action getSubaAtion() {
+	public Action getSubAction() {
 		return subaction;
 	}
 
@@ -111,6 +111,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 			if (edit != null) {
 				postEdit(edit);
 				if (((extraAction && action.getType() != ActionType.BREEDING) || !player.hasLooseAnimals())
+						&& player.validate()
 						&& !action.canDoOnFarm(player)
 						&& (subaction == null || !subaction.canDoOnFarm(player))) {
 					return finishAction();

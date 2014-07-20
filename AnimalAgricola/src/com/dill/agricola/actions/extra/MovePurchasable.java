@@ -46,11 +46,13 @@ public abstract class MovePurchasable extends PurchaseAction {
 				UndoableFarmEdit edit = new MoveThing(player, new DirPoint(pos), true);
 				player.unpurchase(thing, getCost(player), pos, false);
 				movedFrom = pos;
+				setChanged();
 				return edit;
 			} else {
 				UndoableFarmEdit edit = new MoveThing(player, new DirPoint(pos), false);
 				player.purchase(thing, getCost(player), pos);
 				movedFrom = null;
+				setChanged();
 				return edit;
 			}
 		}

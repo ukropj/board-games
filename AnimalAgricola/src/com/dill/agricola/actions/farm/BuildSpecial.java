@@ -1,6 +1,7 @@
 package com.dill.agricola.actions.farm;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -203,15 +204,19 @@ public class BuildSpecial extends BuildAction {
 
 	protected UndoableFarmEdit postActivate(Player player, Building b) {
 		GeneralSupply.useBuilding(toBuild, true);
-		Action preAction = getBuildingInstance(toBuild).getExtraAction(Phase.BEFORE_WORK, 8/*TODO ugly hack*/);
-		if (preAction != null) {
-			preAction.addChangeListener(new ExtraActionStateChangeListener());
+		List<Action> actions = new ArrayList<Action>();
+		Action[] preActions = getBuildingInstance(toBuild).getExtraActions(Phase.BEFORE_WORK, 8/*TODO ugly hack*/);
+		if (preActions != null) {
+			actions.addAll(Arrays.asList(preActions));
 		}
-		Action postAction = getBuildingInstance(toBuild).getExtraAction(Phase.BEFORE_BREEDING, 8);
-		if (postAction != null) {
-			postAction.addChangeListener(new ExtraActionStateChangeListener());
+		Action[] postActions = getBuildingInstance(toBuild).getExtraActions(Phase.BEFORE_BREEDING, 8);
+		if (postActions != null) {
+			actions.addAll(Arrays.asList(postActions));
 		}
-		return new UseBuilding(toBuild, preAction, postAction);
+		for (Action a : actions) {
+			a.addChangeListener(new ExtraActionStateChangeListener());
+		}
+		return new UseBuilding(toBuild, actions);
 	}
 
 	public Action getSubAction(boolean afterFarmAction) {
@@ -222,23 +227,18 @@ public class BuildSpecial extends BuildAction {
 		private static final long serialVersionUID = 1L;
 
 		private final BuildingType built;
-		private final Action preAction;
-		private final Action postAction;
+		private final List<Action> actions;
 
-		public UseBuilding(BuildingType built, Action preAction, Action postAction) {
+		public UseBuilding(BuildingType built, List<Action> actions) {
 			this.built = built;
-			this.preAction = preAction;
-			this.postAction = postAction;
+			this.actions = actions;
 		}
 
 		public void undo() throws CannotUndoException {
 			super.undo();
 			GeneralSupply.useBuilding(built, false);
-			if (preAction != null) {
-				preAction.removeChangeListeners();
-			}
-			if (postAction != null) {
-				postAction.removeChangeListeners();
+			for (Action a : actions) {
+				a.removeChangeListeners();
 			}
 			setChanged();
 		}
@@ -246,11 +246,8 @@ public class BuildSpecial extends BuildAction {
 		public void redo() throws CannotRedoException {
 			super.redo();
 			GeneralSupply.useBuilding(built, true);
-			if (preAction != null) {
-				preAction.addChangeListener(new ExtraActionStateChangeListener());
-			}
-			if (postAction != null) {
-				postAction.addChangeListener(new ExtraActionStateChangeListener());
+			for (Action a : actions) {
+				a.addChangeListener(new ExtraActionStateChangeListener());
 			}
 			setChanged();
 		}

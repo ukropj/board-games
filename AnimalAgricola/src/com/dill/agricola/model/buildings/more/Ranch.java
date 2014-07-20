@@ -11,16 +11,16 @@ import com.dill.agricola.model.types.Material;
 
 public class Ranch extends Building {
 
-	public final static Materials COST = new Materials(Material.WOOD, Material.WOOD, 
+	public final static Materials COST = new Materials(Material.WOOD, Material.WOOD,
 			Material.STONE, Material.STONE, Material.STONE);
-	private final static Action EXTRA_ACTION = new OneBorder();
-	
+	private final static Action[] EXTRA_ACTIONS = { new OneBorder() };
+
 	public Ranch() {
 		super(BuildingType.RANCH, 2, 2, Animal.HORSE);
 	}
 
 	// grants one free fence action during each breeding phase when horse is born
-	public Action getExtraAction(Phase phase, int round) {
-		return phase == Phase.BEFORE_BREEDING ? EXTRA_ACTION : null;
+	public Action[] getExtraActions(Phase phase, int round) {
+		return phase == Phase.BEFORE_BREEDING ? EXTRA_ACTIONS : null;
 	}
 }

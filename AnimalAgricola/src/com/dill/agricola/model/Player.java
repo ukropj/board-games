@@ -1,19 +1,19 @@
 package com.dill.agricola.model;
 
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.Observer;
 import java.util.Set;
-import java.util.Stack;
 
 import com.dill.agricola.Game.Phase;
 import com.dill.agricola.Main;
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.common.Animals;
+import com.dill.agricola.common.Dir;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.buildings.Cottage;
-import com.dill.agricola.model.buildings.more.DogHouse;
 import com.dill.agricola.model.buildings.more.RearingStation;
-import com.dill.agricola.model.buildings.more.Stud;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Material;
@@ -61,20 +61,30 @@ public class Player extends SimpleObservable {
 			addMaterial(new Materials(Material.STONE, 20));
 			addMaterial(new Materials(Material.REED, 20));
 
-			/*DirPoint pos = new DirPoint(1, 1);
+			DirPoint pos = new DirPoint(1, 1);
 			farm.put(Purchasable.FENCE, new DirPoint(pos, Dir.N));
 			farm.put(Purchasable.FENCE, new DirPoint(pos, Dir.W));
 			farm.put(Purchasable.FENCE, new DirPoint(pos, Dir.S));
 			farm.put(Purchasable.FENCE, new DirPoint(pos, Dir.E));
 			Fencer.calculateFences(farm);
-			purchaseAnimal(Animal.COW, 1);
-			farm.putAnimals(pos, Animal.COW, 1);*/
-			
-			farm.build(new RearingStation(), new DirPoint(0, 1));
-			farm.build(new Stud(), new DirPoint(1, 1));
-			farm.build(new DogHouse(), new DirPoint(0, 0));
-			purchaseAnimal(Animal.HORSE, 2);
-			purchaseAnimal(Animal.SHEEP, 2);
+			purchaseAnimal(Animal.HORSE, 1);
+			farm.putAnimals(pos, Animal.HORSE, 1);
+
+			if (color == PlayerColor.BLUE) {
+				DirPoint pos1 = new DirPoint(0, 0);
+				farm.build(new RearingStation(), pos1);
+//			farm.build(new Stud(), new DirPoint(1, 1));
+//			farm.build(new DogHouse(), new DirPoint(0, 0));
+				Fencer.calculateFences(farm);
+				purchaseAnimal(Animal.HORSE, 2);
+				purchaseAnimal(Animal.SHEEP, 1);
+				purchaseAnimal(Animal.COW, 1);
+				purchaseAnimal(Animal.PIG, 1);
+				
+				farm.putAnimals(pos1, Animal.HORSE, 1);
+				farm.putAnimals(pos1, Animal.SHEEP, 1);
+				farm.putAnimals(new DirPoint(0, 2), Animal.HORSE, 1);
+			}
 
 //			DirPoint pos2 = new DirPoint(0, 1);
 //			farm.build(new Stall(0), pos2);
@@ -211,7 +221,7 @@ public class Player extends SimpleObservable {
 	public int getAnimals() {
 		return animals.size();
 	}
-	
+
 	public Set<Animal> getAnimalTypes() {
 		return animals.types();
 	}
@@ -258,43 +268,35 @@ public class Player extends SimpleObservable {
 		return false;
 	}
 
-//	public int getBuildingCount(BuildingType type) {
-//		int count = 0;
-//		for (Building b : farm.getFarmBuildings()) {
-//			if (b.getType() == type) {
-//				count++;
-//			}
-//		}
-//		return count;
-//	}
-
 	public boolean validate() {
 		return farm.hasValidAnimals();
 	}
 
-	private Stack<Action> extraActions = new Stack<Action>();
+	private Deque<Action> extraActions = new LinkedList<Action>();
 
 	public boolean initExtraActions(Phase phase, int forRound) {
 		extraActions.clear();
 		for (Building b : farm.getFarmBuildings()) {
-			Action action = b.getExtraAction(phase, forRound);
-			if (action != null) {
-				extraActions.push(action);				
+			Action[] actions = b.getExtraActions(phase, forRound);
+			if (actions != null) {
+				for (Action a : actions) {
+					extraActions.add(a);
+				}
 			}
 		}
 		return !extraActions.isEmpty();
 	}
-	
+
 	public void clearExtraActions() {
 		extraActions.clear();
 	}
-	
+
 	public Action getNextExtraAction() {
-		return extraActions.isEmpty() ? null : extraActions.pop();
+		return extraActions.pollFirst();
 	}
-	
+
 	public void returnExtraAction(Action action) {
-		extraActions.push(action);
+		extraActions.offerFirst(action);
 	}
 
 	public void setLastBornAnimals(Animals lastBorn) {

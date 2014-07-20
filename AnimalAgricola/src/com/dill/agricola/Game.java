@@ -284,6 +284,10 @@ public class Game {
 	private void endExtraTurn() {
 		ap.postEdit(new Noop());
 		Player currentPlayer = ap.getPlayer();
+		
+		// animals run away
+		releaseAnimals(currentPlayer);
+		
 		// try another extra turn
 		startExtraTurn(currentPlayer);
 	}
@@ -344,7 +348,6 @@ public class Game {
 				}
 			}
 		}
-
 		Player currentPlayer = takeFromQueue();
 		if (currentPlayer != null) {
 			startBreedingTurn(currentPlayer);

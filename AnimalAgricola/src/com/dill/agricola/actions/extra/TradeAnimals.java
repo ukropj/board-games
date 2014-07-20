@@ -90,6 +90,7 @@ public class TradeAnimals extends AbstractAction {
 
 			player.unpurchaseAnimals(animalsToSell);
 			player.purchaseAnimals(animalsToBuy);
+			setChanged();
 			return new Trade(player, animalsToSell, animalsToBuy);
 		}
 		return null;

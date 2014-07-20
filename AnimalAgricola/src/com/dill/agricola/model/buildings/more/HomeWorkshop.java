@@ -11,19 +11,19 @@ import com.dill.agricola.model.types.Material;
 public class HomeWorkshop extends Building {
 
 	public final static Materials COST = new Materials(Material.WOOD, Material.WOOD, Material.REED);
-	private final static Action EXTRA_ACTION = new BuildStall(){
+	private final static Action[] EXTRA_ACTIONS = { new BuildStall() {
 		public boolean isUsedEnough() {
 			// optional
 			return true;
 		};
-	};
-	
+	} };
+
 	public HomeWorkshop() {
 		super(BuildingType.HOME_WORKSHOP, 1, 0);
 	}
 
 	// grants Stall action before each breeding phase
-	public Action getExtraAction(Phase phase, int round) {
-		return phase == Phase.BEFORE_BREEDING ? EXTRA_ACTION : null;
+	public Action[] getExtraActions(Phase phase, int round) {
+		return phase == Phase.BEFORE_BREEDING ? EXTRA_ACTIONS : null;
 	}
 }

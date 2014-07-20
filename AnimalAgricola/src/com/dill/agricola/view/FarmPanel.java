@@ -366,7 +366,7 @@ public class FarmPanel extends JPanel {
 		this.msgLabel.setVisible(isActivePlayer);
 		if (isActivePlayer) {
 			if (ap.hasAction()) {
-				Action a = ap.hasSubAction() ? ap.getSubaAtion() : ap.getAction();
+				Action a = ap.hasSubAction() ? ap.getSubAction() : ap.getAction();
 				this.msgLabel.setText(a.getType().farmText);
 			} else {
 				this.msgLabel.setText(Msg.get("chooseActionMsg"));
@@ -657,7 +657,7 @@ public class FarmPanel extends JPanel {
 		}
 
 		DirPoint realPos = toRealPos(pos);
-		int count = space.getAnimals();
+		int count = type != null ? space.getAnimals(type) : 0;
 
 		drawAnimalCounter(g, realPos, type, count, space.getMaxCapacity(), space.isValid(), 0);
 
@@ -772,7 +772,7 @@ public class FarmPanel extends JPanel {
 			if (index < 3) {
 				g.fillOval(realPos.x + S - 6 * M + dx, realPos.y + S - 6 * M + dy, 6 * M, 8 * M);
 			} else {
-				g.fillOval(realPos.x + S - 6 * M + dx - 2 * M, realPos.y + S - 6 * M + dy + M/2, 8 * M, 5 * M);
+				g.fillOval(realPos.x + S - 6 * M + dx - 2 * M, realPos.y + S - 6 * M + dy + M / 2, 8 * M, 5 * M);
 			}
 			g.setClip(getVisibleRect());
 			// draw actual/max
@@ -1052,9 +1052,10 @@ public class FarmPanel extends JPanel {
 				}
 			}
 
-			if (!done) {
+			if (!done && space != null) {
+				availableAnimals = availableAnimals != null ? availableAnimals : farm.guessAnimalTypesToPut(pos, true);
+				availableAnimals.addAll(space.getAnimalTypes());
 				if (leftClick) {
-					availableAnimals = availableAnimals != null ? availableAnimals : farm.guessAnimalTypesToPut(pos, true);
 					Animal type = getAnimalType(availableAnimals, relativeDirPoint);
 					if (type != null) {
 						if (farm.putAnimals(pos, type, multiClick ? Integer.MAX_VALUE : 1) > 0) {
@@ -1063,8 +1064,8 @@ public class FarmPanel extends JPanel {
 						}
 					}
 				} else {
-					if (space != null) {
-						Animal type = getAnimalType(space.getAnimalTypes(), relativeDirPoint);
+					Animal type = getAnimalType(availableAnimals, relativeDirPoint);
+					if (type != null) {
 						if (farm.takeAnimals(pos, type, multiClick ? Integer.MAX_VALUE : 1) > 0) {
 							done = true;
 							changeType = ChangeType.FARM_ANIMALS;
@@ -1092,19 +1093,24 @@ public class FarmPanel extends JPanel {
 			int count = -e.getWheelRotation();
 			boolean done = false;
 
-			if (count > 0) {
-				Animal type = getAnimalType(farm.guessAnimalTypesToPut(pos, true), relativeDirPoint);
-				if (type != null) {
-					if (farm.putAnimals(pos, type, count) > 0) {
-						done = true;
+			Space space = farm.getSpace(pos);
+
+			if (space != null) {
+				Set<Animal> availableAnimals = farm.guessAnimalTypesToPut(pos, true);
+				availableAnimals.addAll(space.getAnimalTypes());
+				if (count > 0) {
+					Animal type = getAnimalType(availableAnimals, relativeDirPoint);
+					if (type != null) {
+						if (farm.putAnimals(pos, type, count) > 0) {
+							done = true;
+						}
 					}
-				}
-			} else {
-				Space space = farm.getSpace(pos);
-				if (space != null) {
-					Animal type = getAnimalType(space.getAnimalTypes(), relativeDirPoint);
-					if (farm.takeAnimals(pos, type, -count) > 0) {
-						done = true;
+				} else {
+					Animal type = getAnimalType(availableAnimals, relativeDirPoint);
+					if (type != null) {
+						if (farm.takeAnimals(pos, type, -count) > 0) {
+							done = true;
+						}
 					}
 				}
 			}

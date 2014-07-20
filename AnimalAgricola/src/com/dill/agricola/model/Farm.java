@@ -391,6 +391,15 @@ public class Farm extends SimpleObservable {
 		return false;
 	}
 
+	public Building getBuilding(BuildingType type) {
+		for (Building b : getFarmBuildings()) {
+			if (b.getType() == type) {
+				return b;
+			}
+		}
+		return null;
+	}
+
 	public boolean hasBuilding(DirPoint pos, BuildingType type, boolean activeOnly) {
 		if (activeOnly && !isActiveSpot(pos, Purchasable.BUILDING)) {
 			return false;
@@ -577,7 +586,7 @@ public class Farm extends SimpleObservable {
 
 	private int takeAnimals(Space source, Animal type, int count, boolean ignoreRestOfPasture) {
 		Main.asrtPositive(count, "Cannot move negative amount of animals");
-		int moving = Math.min(source.getAnimals(), count);
+		int moving = Math.min(source.getAnimals(type), count);
 		if (moving > 0) {
 			source.addAnimals(type, -moving);
 			addLooseAnimals(type, moving);
@@ -635,7 +644,7 @@ public class Farm extends SimpleObservable {
 					types.addAll(requiredTypes);
 				} else if (space.getAnimals() > 0) {
 					// if animals are present on space use their type
-					types.add(space.getAnimalType());
+					types.addAll(space.getAnimalTypes());
 				} else {
 					// if animals are present on pasture use their types
 					Set<Animal> pastureTypes = space.getAnimalTypesPerPasture();

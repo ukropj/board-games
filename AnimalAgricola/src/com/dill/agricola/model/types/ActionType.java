@@ -28,7 +28,8 @@ public enum ActionType {
 	SWITCH_FOR_COW("switchForCow"),
 	TRADE_ANIMALS("tradeAnimals"),
 	MOVE_TROUGHS("moveTroughs"), 
-	MOVE_STALLS("moveStalls");
+	MOVE_STALLS("moveStalls"), 
+	EMPTY_REARING_STATION("emptyRearingStation");
 	
 	public final String desc;
 	public final String shortDesc;

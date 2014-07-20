@@ -79,7 +79,7 @@ public abstract class Building extends Space {
 		return subAction;
 	}
 
-	public Action getExtraAction(Phase phase, int round) {
+	public Action[] getExtraActions(Phase phase, int round) {
 		return null;
 	}
 
