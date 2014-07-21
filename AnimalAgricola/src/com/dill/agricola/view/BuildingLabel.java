@@ -57,6 +57,10 @@ public class BuildingLabel extends JLabel {
 			setToolTipText(type.name + (used ? " " + Msg.get("buildingTaken") : ""));
 		}
 	}
+	
+	public boolean isUsed() {
+		return used;
+	}
 
 	public JToolTip createToolTip() {
 		if (showImageTooltip) {

@@ -40,10 +40,6 @@ public class TradeAnimals extends AbstractAction {
 	public boolean canUndoOnFarm(Player player, DirPoint pos) {
 		return false;
 	}
-	
-//	public boolean isCancelled() {
-//		return toBuild == null;
-//	}
 
 	public UndoableFarmEdit doo(Player player) {
 		// TODO refacotor, together with TradeForCow

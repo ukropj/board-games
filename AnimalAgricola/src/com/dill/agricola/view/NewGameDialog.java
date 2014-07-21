@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
 import com.dill.agricola.Main;
+import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.support.Config;
 import com.dill.agricola.support.Config.ConfigKey;
@@ -112,10 +113,10 @@ public class NewGameDialog extends JDialog implements ActionListener, ItemListen
 				BorderFactory.createTitledBorder(Msg.get("expansions")),
 				BorderFactory.createEmptyBorder(0, 5, 5, 5)
 				));
-		JCheckBox moreBuildings = new JCheckBox(Msg.get("moreBuildings"), useMoreBuildings);
+		JCheckBox moreBuildings = new JCheckBox(Msg.get("moreBuildings", BuildingType.MORE_SPECIAL_BUILDINGS_TYPES.size()), useMoreBuildings);
 		moreBuildings.setActionCommand(OptionCommand.MORE_BUILDINGS.toString());
 		moreBuildings.addItemListener(this);
-		JCheckBox evenMoreBuildings = new JCheckBox(Msg.get("evenMoreBuildings"), useEvenMoreBuildings);
+		JCheckBox evenMoreBuildings = new JCheckBox(Msg.get("evenMoreBuildings", BuildingType.EVEN_MORE_SPECIAL_BUILDINGS_TYPES.size()), useEvenMoreBuildings);
 		evenMoreBuildings.setActionCommand(OptionCommand.EVEN_MORE_BUILDINGS.toString());
 		evenMoreBuildings.addItemListener(this);
 		evenMoreBuildings.setEnabled(Main.EVEN_MORE_BUILDINGS);

@@ -1,18 +1,24 @@
 package com.dill.agricola.view;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import com.dill.agricola.GeneralSupply;
 import com.dill.agricola.Main;
@@ -26,6 +32,10 @@ public class BuildingOverviewDialog extends JDialog implements ActionListener, I
 	private static final long serialVersionUID = 1L;
 
 	private JPanel buildingPanel;
+	private JPanel selectorPanel;
+	private JScrollPane selectorPanelPane;
+
+	boolean selectorBuilt = false;
 
 	public BuildingOverviewDialog(JFrame parent, boolean canRandomize) {
 		super(parent);
@@ -38,6 +48,7 @@ public class BuildingOverviewDialog extends JDialog implements ActionListener, I
 		buildOptions(canRandomize);
 		pack();
 		setLocationRelativeTo(parent);
+		setMinimumSize(new Dimension(600, 400));
 
 		if (!Main.DEBUG) {
 			setVisible(true);
@@ -52,32 +63,38 @@ public class BuildingOverviewDialog extends JDialog implements ActionListener, I
 		getContentPane().add(main);
 
 		main.add(buildBuildingPanel());
+		main.add(buildSelectorPanel());
+
 		JPanel buttonP = UiFactory.createFlowPanel(5, 0);
 
 		JButton submitButton = UiFactory.createTextButton(Msg.get("startGameBtn"), this);
 		submitButton.setActionCommand(OptionCommand.SUBMIT.toString());
 		buttonP.add(submitButton);
+		buttonP.add(Box.createHorizontalStrut(10));
 
 		if (canRandomize) {
 			JButton randomizeButton = UiFactory.createTextButton(Msg.get("randomizeBtn"), this);
 			randomizeButton.setActionCommand(OptionCommand.RANDOMIZE.toString());
-			buttonP.add(randomizeButton);			
+			buttonP.add(randomizeButton);
 		}
-		
-		// TODO add some kind of picker
+
+		JButton selectButton = UiFactory.createTextButton(Msg.get("openSelectorBtn"), this);
+		selectButton.setActionCommand(OptionCommand.OPEN_SELECTOR.toString());
+		buttonP.add(selectButton);
 
 		main.add(Box.createVerticalStrut(5));
 		main.add(buttonP);
 	}
 
-	private JPanel buildBuildingPanel() {
+	private JComponent buildBuildingPanel() {
 		JPanel buildingP = UiFactory.createBorderPanel(5, 0);
 		buildingP.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder(Msg.get("specialBuildingsForGameTitle")),
 				BorderFactory.createEmptyBorder(0, 5, 5, 5)
 				));
 
-		buildingPanel = new JPanel(new GridLayout(0, 4, 3, 3));
+		buildingPanel = new JPanel(new GridLayout(2, 0, 3, 3));
+		buildingPanel.setOpaque(true);
 		buildingP.add(buildingPanel, BorderLayout.CENTER);
 		updateBuildingPanel();
 		return buildingP;
@@ -86,13 +103,54 @@ public class BuildingOverviewDialog extends JDialog implements ActionListener, I
 	private void updateBuildingPanel() {
 		buildingPanel.removeAll();
 		for (BuildingType type : GeneralSupply.getBuildingsAll()) {
-			buildingPanel.add(new BuildingLabel(type, ImgSize.BIG));
+			BuildingLabel bl = new BuildingLabel(type, ImgSize.BIG);
+			buildingPanel.add(bl);
 		}
-		buildingPanel.revalidate();
+		buildingPanel.repaint();
+		pack();
+	}
+
+	private JComponent buildSelectorPanel() {
+		/*JPanel buildingP = UiFactory.createBorderPanel(5, 0);
+		buildingP.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createTitledBorder(Msg.get("specialBuildingsForGameTitle")),
+				BorderFactory.createEmptyBorder(0, 5, 5, 5)
+				));*/
+
+		selectorPanel = new JPanel(new GridLayout(1, 0, 3, 3));
+//		buildingP.add(selectorPanel, BorderLayout.CENTER);
+
+		selectorPanelPane = new JScrollPane(selectorPanel);
+		selectorPanelPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		selectorPanelPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+		selectorPanelPane.setVisible(false);
+
+		selectorPanelPane.setPreferredSize(new Dimension(100, 180));
+
+		return selectorPanelPane;
+	}
+
+	private void updateSelectorPanel() {
+		selectorPanel.removeAll();
+		List<BuildingType> enabledBuildings = GeneralSupply.getBuildingsAll();
+		for (final BuildingType type : GeneralSupply.getBuildingsAllPossible()) {
+			final BuildingLabel bl = new BuildingLabel(type, ImgSize.BIG);
+			bl.addMouseListener(new MouseAdapter() {
+				public void mouseClicked(MouseEvent e) {
+					boolean used = bl.isUsed();
+					bl.setUsed(!used);
+					GeneralSupply.enableBuilding(type, !used);
+					updateBuildingPanel();
+				}
+			});
+			bl.setUsed(enabledBuildings.contains(type));
+			selectorPanel.add(bl);
+		}
+		selectorPanel.revalidate();
 	}
 
 	private static enum OptionCommand {
-		SUBMIT, RANDOMIZE;
+		SUBMIT, RANDOMIZE, OPEN_SELECTOR;
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -101,6 +159,18 @@ public class BuildingOverviewDialog extends JDialog implements ActionListener, I
 		case RANDOMIZE:
 			GeneralSupply.randomizeBuildings();
 			updateBuildingPanel();
+			updateSelectorPanel();
+			pack();
+			break;
+		case OPEN_SELECTOR:
+			boolean visible = selectorPanelPane.isVisible();
+			if (!selectorBuilt && !visible) {
+				updateSelectorPanel();
+				selectorBuilt = true;
+			}
+			selectorPanelPane.setVisible(!visible);
+			updateBuildingPanel();
+			pack();
 			break;
 		case SUBMIT:
 			setVisible(false);

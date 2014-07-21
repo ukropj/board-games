@@ -21,7 +21,7 @@ public class GeneralSupply {
 	}
 
 	public final static int MAX_TROUGHS = 10;
-	public final static int MORE_BUILDINGS = Main.DEBUG ? 27 : 4;
+	public final static int MORE_BUILDINGS = Main.DEBUG ? 4 : 4;
 	public final static int EVEN_MORE_BUILDINGS = Main.DEBUG ? 4 : 4;
 	public final static Integer[] EXTS = { 0, 1, 2, 3, 4 };
 	public final static Stall[] STALLS = { new Stall(0), new Stall(1), new Stall(2), new Stall(3), new Stall(4) };
@@ -34,7 +34,7 @@ public class GeneralSupply {
 	private static final Stack<Integer> extsUsed = new Stack<Integer>();
 	private static final List<BuildingType> buildingsAll = new ArrayList<BuildingType>();
 	private static final List<BuildingType> buildingsLeft = new ArrayList<BuildingType>();
-	
+
 	private static boolean useMoreBuildings;
 	private static boolean useEvenMoreBuildings;
 
@@ -86,7 +86,18 @@ public class GeneralSupply {
 	public static List<BuildingType> getBuildingsAll() {
 		return buildingsAll;
 	}
-	
+
+	public static List<BuildingType> getBuildingsAllPossible() {
+		List<BuildingType> types = new ArrayList<BuildingType>(BuildingType.SPECIAL_BUILDINGS_TYPES);
+		if (useMoreBuildings) {
+			types.addAll(BuildingType.MORE_SPECIAL_BUILDINGS_TYPES);
+		}
+		if (useEvenMoreBuildings) {
+			types.addAll(BuildingType.EVEN_MORE_SPECIAL_BUILDINGS_TYPES);
+		}
+		return types;
+	}
+
 	public static void randomizeBuildings() {
 		buildingsAll.clear();
 		buildingsAll.addAll(generateRandomBuildings());
@@ -116,6 +127,16 @@ public class GeneralSupply {
 			}
 		});
 		return types;
+	}
+	
+	public static void enableBuilding(BuildingType type, boolean enable) {
+		if (enable) {			
+			buildingsLeft.add(type);
+			buildingsAll.add(type);
+		} else {
+			buildingsLeft.remove(type);
+			buildingsAll.remove(type);			
+		}
 	}
 
 	public static void useTrough(boolean use) {
@@ -148,7 +169,7 @@ public class GeneralSupply {
 
 	public static Building getSpecialBuilding(BuildingType type) {
 		if (SPECIAL_BUILDINGS.containsKey(type)) {
-			return SPECIAL_BUILDINGS.get(type);				
+			return SPECIAL_BUILDINGS.get(type);
 		} else {
 			try {
 				String pkg = "com.dill.agricola.model.buildings." + (type.set == 1 ? "more." : "");
@@ -165,11 +186,11 @@ public class GeneralSupply {
 	public static int getNextExtensionId() {
 		return extsLeft.peek();
 	}
-	
+
 	public static boolean getUseMoreBuildings() {
 		return useMoreBuildings;
 	}
-	
+
 	public static boolean getUseEvenMoreBuildings() {
 		return useEvenMoreBuildings;
 	}
