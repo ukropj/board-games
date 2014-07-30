@@ -20,6 +20,7 @@ public enum BuildingType {
 	STORAGE_BUILDING(0, Msg.get("storage"), new BuildingText(Msg.get("storageText"), 0.39f, 0.48f, 0.42f)),
 	SHELTER(0, Msg.get("shelter"), new BuildingText(Msg.get("immediately"), 0.12f, 0.57f, 0.37f)),
 	OPEN_STABLES(0, Msg.get("openStables"), new BuildingText(Msg.get("immediately"), 0.14f, 0.535f, 0.37f)),
+	
 	// more special buildings
 	ANIMAL_TRADER(1, Msg.get("animalTrader"), new BuildingText(Msg.get("animalTraderText"), 0.13f, 0.52f, 0.74f)),
 	BARN_MANUFACTURER(1, Msg.get("barnManufacturer"), new BuildingText(Msg.get("immediately"), 0.13f, 0.56f, 0.38f)),
@@ -53,52 +54,65 @@ public enum BuildingType {
 	SAWMILL(1, Msg.get("sawmill"), new BuildingText(Msg.get("sawmillText"), 0.12f, 0.52f, 0.76f)),
 	SMALL_EXTENSION(1, Msg.get("smallExtension"), new BuildingText(Msg.get("perAdjacentBuilding"), 0.34f, 0.5f, 0.55f)),
 	STUD(1, Msg.get("stud"), new BuildingText(Msg.get("studText"), 0.12f, 0.52f, 0.76f)),
-	WILD_BOAR_PEN(1, Msg.get("wildBoarPen"), new BuildingText(Msg.get("wildBoarPenText"), 0.13f, 0.52f, 0.74f)), ;
+	WILD_BOAR_PEN(1, Msg.get("wildBoarPen"), new BuildingText(Msg.get("wildBoarPenText"), 0.13f, 0.52f, 0.74f)),
+	
+	// even more special buildings
+	BYRE_DWELLING(2, Msg.get("byreDwelling")),
+	MANOR(2, Msg.get("manor"), new BuildingText(Msg.get("manorText"), 0.13f, 0.49f, 0.74f)),
+	MATERIALS_OUTLET(2, Msg.get("materialsOutlet"), new BuildingText(Msg.get("immediately"), 0.16f, 0.52f, 0.39f)),
+	OFFICE(2, Msg.get("office"), new BuildingText(Msg.get("officeText"), 0.13f, 0.48f, 0.74f)),
+	REED_HUT(2, Msg.get("reedHut"), new BuildingText(Msg.get("immediately"), 0.12f, 0.85f, 0.37f));
 
 	public final static List<BuildingType> SPECIAL_BUILDINGS_TYPES =
 			Collections.unmodifiableList(
 					Arrays.asList(new BuildingType[] {
-							BuildingType.HALF_TIMBERED_HOUSE,
-							BuildingType.STORAGE_BUILDING,
-							BuildingType.SHELTER,
-							BuildingType.OPEN_STABLES
+							HALF_TIMBERED_HOUSE,
+							STORAGE_BUILDING,
+							SHELTER,
+							OPEN_STABLES
 					}));
 
 	public final static List<BuildingType> MORE_SPECIAL_BUILDINGS_TYPES =
 			Collections.unmodifiableList(
 					Arrays.asList(new BuildingType[] {
-							BuildingType.ANIMAL_TRADER,
-							BuildingType.BARN_MANUFACTURER,
-							BuildingType.BREEDING_STATION,
-							BuildingType.CARPENTER,
-							BuildingType.CATTLE_FARM,
-							BuildingType.COW_STALL,
-							BuildingType.COUNTRY_HOUSE,
-							BuildingType.DOG_HOUSE,
-							BuildingType.DUCK_POND,
-							BuildingType.FARM_SHOP,
-							BuildingType.FARM_WELL,
-							BuildingType.FEED_STOREHOUSE,
-							BuildingType.FENCE_MANUFACTURER,
-							BuildingType.FODDER_BEET_FARM,
-							BuildingType.HAY_RACK,
-							BuildingType.HOME_WORKSHOP,
-							BuildingType.INSEMINATION_CENTER,
-							BuildingType.JOINERY,
-							BuildingType.LARGE_EXTENSION,
-							BuildingType.LOG_HOUSE,
-							BuildingType.PIG_STALL,
-							BuildingType.REARING_STATION,
-							BuildingType.RANCH,
-							BuildingType.SAWMILL,
-							BuildingType.SMALL_EXTENSION,
-							BuildingType.STUD,
-							BuildingType.WILD_BOAR_PEN
+							ANIMAL_TRADER,
+							BARN_MANUFACTURER,
+							BREEDING_STATION,
+							CARPENTER,
+							CATTLE_FARM,
+							COW_STALL,
+							COUNTRY_HOUSE,
+							DOG_HOUSE,
+							DUCK_POND,
+							FARM_SHOP,
+							FARM_WELL,
+							FEED_STOREHOUSE,
+							FENCE_MANUFACTURER,
+							FODDER_BEET_FARM,
+							HAY_RACK,
+							HOME_WORKSHOP,
+							INSEMINATION_CENTER,
+							JOINERY,
+							LARGE_EXTENSION,
+							LOG_HOUSE,
+							PIG_STALL,
+							REARING_STATION,
+							RANCH,
+							SAWMILL,
+							SMALL_EXTENSION,
+							STUD,
+							WILD_BOAR_PEN
 					}));
 
 	public final static List<BuildingType> EVEN_MORE_SPECIAL_BUILDINGS_TYPES =
 			Collections.unmodifiableList(
-					Arrays.asList(new BuildingType[] {}));
+					Arrays.asList(new BuildingType[] {
+							BYRE_DWELLING,
+							MANOR,
+							MATERIALS_OUTLET,
+							OFFICE,
+							REED_HUT
+					}));
 
 	public final String name;
 	public final int set;
@@ -114,10 +128,13 @@ public enum BuildingType {
 		switch (this) {
 		case HALF_TIMBERED_HOUSE:
 		case LOG_HOUSE:
-			return placeType == BuildingType.COTTAGE;
+		case BYRE_DWELLING:
+			return placeType == COTTAGE;
 		case STABLES:
 		case OPEN_STABLES:
-			return placeType == BuildingType.STALL;
+			return placeType == STALL;
+		case MATERIALS_OUTLET:
+			return placeType == STABLES;
 		case FARM_SHOP:
 			return placeType == EMPTY && pos.y == Farm.BY_ROAD;
 		default:

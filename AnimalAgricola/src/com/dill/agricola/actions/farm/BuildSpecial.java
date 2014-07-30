@@ -58,7 +58,7 @@ public class BuildSpecial extends BuildAction {
 				cost = COSTS.get(type);
 			} else {
 				try {
-					String pkg = "com.dill.agricola.model.buildings." + (type.set == 1 ? "more." : "");
+					String pkg = "com.dill.agricola.model.buildings." + (type.set == 1 ? "more." : type.set == 2 ? "evenmore." : "");
 					Class<?> bldgClass = Class.forName(pkg + Namer.toCamelCase(type.toString()));
 					cost = (Materials) bldgClass.getField("COST").get(null);
 					COSTS.put(type, cost);

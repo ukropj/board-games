@@ -13,7 +13,6 @@ import com.dill.agricola.common.Dir;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.buildings.Cottage;
-import com.dill.agricola.model.buildings.more.RearingStation;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Material;
@@ -67,31 +66,8 @@ public class Player extends SimpleObservable {
 			farm.put(Purchasable.FENCE, new DirPoint(pos, Dir.S));
 			farm.put(Purchasable.FENCE, new DirPoint(pos, Dir.E));
 			Fencer.calculateFences(farm);
-			purchaseAnimal(Animal.HORSE, 1);
-			farm.putAnimals(pos, Animal.HORSE, 1);
-
-			if (color == PlayerColor.BLUE) {
-				DirPoint pos1 = new DirPoint(0, 0);
-				farm.build(new RearingStation(), pos1);
-//			farm.build(new Stud(), new DirPoint(1, 1));
-//			farm.build(new DogHouse(), new DirPoint(0, 0));
-				Fencer.calculateFences(farm);
-				purchaseAnimal(Animal.HORSE, 2);
-				purchaseAnimal(Animal.SHEEP, 1);
-				purchaseAnimal(Animal.COW, 1);
-				purchaseAnimal(Animal.PIG, 1);
-				
-				farm.putAnimals(pos1, Animal.HORSE, 1);
-				farm.putAnimals(pos1, Animal.SHEEP, 1);
-				farm.putAnimals(new DirPoint(0, 2), Animal.HORSE, 1);
-			}
-
-//			DirPoint pos2 = new DirPoint(0, 1);
-//			farm.build(new Stall(0), pos2);
-//			farm.build(new Stables(), pos2);
-//			farm.put(Purchasable.TROUGH, pos2);
-//			purchaseAnimal(Animal.SHEEP, 10);
-//			farm.putAnimals(pos2, Animal.SHEEP, 10);
+			purchaseAnimal(Animal.COW, 1);
+			farm.putAnimals(pos, Animal.COW, 1);
 		}
 		Fencer.calculateFences(farm);
 	}

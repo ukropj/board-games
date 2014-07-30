@@ -17,7 +17,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import com.dill.agricola.GeneralSupply;
-import com.dill.agricola.Main;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.support.Fonts;
 import com.dill.agricola.support.Msg;
@@ -56,15 +55,14 @@ public class BuildingsPanel extends JScrollPane {
 		p.add(section);
 		specSections.put(1, section);
 
-		if (Main.EVEN_MORE_BUILDINGS) {
-			section = UiFactory.createVerticalPanel();
-			section.add(Box.createVerticalStrut(5));
-			section.add(setFont(UiFactory.createLabel(Msg.get("evenMoreSpecialBuildingsTitle")), COUNT_FONT));
-			section.add(Box.createVerticalStrut(5));
-			section.add(buildSpecial(2));
-			p.add(section);
-			specSections.put(2, section);
-		}
+		section = UiFactory.createVerticalPanel();
+		section.add(Box.createVerticalStrut(5));
+		section.add(setFont(UiFactory.createLabel(Msg.get("evenMoreSpecialBuildingsTitle")), COUNT_FONT));
+		section.add(Box.createVerticalStrut(5));
+		section.add(buildSpecial(2));
+		p.add(section);
+		specSections.put(2, section);
+
 		p.add(Box.createVerticalGlue());
 	}
 
@@ -108,9 +106,8 @@ public class BuildingsPanel extends JScrollPane {
 
 	public void resetBuildings() {
 		specSections.get(1).setVisible(GeneralSupply.getUseMoreBuildings());
-		if (Main.EVEN_MORE_BUILDINGS) {
-			specSections.get(2).setVisible(GeneralSupply.getUseEvenMoreBuildings());
-		}
+		specSections.get(2).setVisible(GeneralSupply.getUseEvenMoreBuildings());
+		
 		for (Entry<Integer, JPanel> setPanel : specPanels.entrySet()) {
 			repopulateSpecial(setPanel.getKey(), setPanel.getValue());
 		}

@@ -48,7 +48,7 @@ public class NewGameDialog extends JDialog implements ActionListener, ItemListen
 		
 		startingPlayer = Config.getEnum(ConfigKey.LAST_STARTING_PLAYER, PlayerColor.class, PlayerColor.BLUE);
 		useMoreBuildings = Config.getBoolean(ConfigKey.MORE_BUILDINGS, false);
-		useEvenMoreBuildings = Main.EVEN_MORE_BUILDINGS && Config.getBoolean(ConfigKey.EVEN_MORE_BUILDINGS, false);
+		useEvenMoreBuildings = Config.getBoolean(ConfigKey.EVEN_MORE_BUILDINGS, false);
 		
 		buildOptions();
 		pack();
@@ -119,7 +119,6 @@ public class NewGameDialog extends JDialog implements ActionListener, ItemListen
 		JCheckBox evenMoreBuildings = new JCheckBox(Msg.get("evenMoreBuildings", BuildingType.EVEN_MORE_SPECIAL_BUILDINGS_TYPES.size()), useEvenMoreBuildings);
 		evenMoreBuildings.setActionCommand(OptionCommand.EVEN_MORE_BUILDINGS.toString());
 		evenMoreBuildings.addItemListener(this);
-		evenMoreBuildings.setEnabled(Main.EVEN_MORE_BUILDINGS);
 		JPanel b = UiFactory.createVerticalPanel();
 		b.add(moreBuildings);
 		b.add(evenMoreBuildings);

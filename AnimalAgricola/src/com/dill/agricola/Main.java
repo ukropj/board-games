@@ -30,9 +30,8 @@ public class Main {
 
 	public static boolean DEBUG = false;
 	public static boolean SKIP_LANG = false;
-	public static boolean EVEN_MORE_BUILDINGS = false;
 
-	private static final Lang DEFAULT_LANG = DEBUG ? Lang.EN : Lang.EN; // 'en' is default
+	private static final Lang DEFAULT_LANG = DEBUG ? Lang.CZ : Lang.EN; // 'en' is default
 
 	public static void main(String[] args) {
 
