@@ -21,6 +21,7 @@ import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Building;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.buildings.OpenStables;
+import com.dill.agricola.model.buildings.evenmore.Inn;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
@@ -126,6 +127,14 @@ public class BuildSpecial extends BuildAction {
 		if (type == BuildingType.FODDER_BEET_FARM) {
 			for (Animal a : Animal.values()) {
 				if (player.getAnimal(a) < 2) {
+					return false;
+				}
+			}
+			return true;
+		}
+		if (type == BuildingType.INN) {
+			for (Animal a : Inn.ANIMAL_COST.types()) {
+				if (player.getAnimal(a) <= 0) {
 					return false;
 				}
 			}

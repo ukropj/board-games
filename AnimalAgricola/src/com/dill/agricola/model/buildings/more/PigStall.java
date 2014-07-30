@@ -13,12 +13,13 @@ import com.dill.agricola.model.types.Material;
 public class PigStall extends Building {
 
 	public final static Materials COST = new Materials(Material.WOOD, Material.WOOD, Material.WOOD, Material.WOOD, Material.REED);
-	public final static Animals REWARD = new Animals(Animal.PIG);
+	private final static Animals REWARD = new Animals(Animal.PIG);
 	
 	public PigStall() {
 		super(BuildingType.PIG_STALL, 0, 3, Animal.PIG, new AnimalAction(ActionType.BUILDING_REWARD, REWARD));
 	}
 
+	// 4 points if at least 13 pigs
 	public float getVictoryPoints(Player player) {
 		return player.getAnimal(Animal.PIG) >= 13 ? 4 : 0;
 	}

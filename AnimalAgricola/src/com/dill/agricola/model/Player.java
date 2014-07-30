@@ -175,6 +175,9 @@ public class Player extends SimpleObservable {
 		if (canPurchase(building.getType(), cost, pos) && farm.build(building, pos)) {
 			material.substract(cost);
 			building.setPaidCost(cost);
+			if (building.getType() == BuildingType.STEWARDS_OFFICE) {
+				workers++;
+			}
 			return true;
 		}
 		return false;
@@ -185,6 +188,9 @@ public class Player extends SimpleObservable {
 		if (canUnpurchase(type, pos, activeOnly) && (b = farm.unbuild(pos)) != null) {
 			material.add(b.getPaidCost());
 			b.setPaidCost(null);
+			if (type == BuildingType.STEWARDS_OFFICE) {
+				workers--;
+			}
 			return b;
 		}
 		return null;
@@ -229,16 +235,20 @@ public class Player extends SimpleObservable {
 		}
 		return false;
 	}
+	
+	public boolean canUnpurchaseAnimals(Animals animalsToTake) {
+		return animals.isSuperset(animalsToTake);
+	}
 
-	public boolean unpurchaseAnimals(Animals newAnimals) {
-		if (animals.isSuperset(newAnimals)) {
+	public boolean unpurchaseAnimals(Animals animalsToTake) {
+		if (canUnpurchaseAnimals(animalsToTake)) {
 			for (Animal a : Animal.values()) {
-				int count = newAnimals.get(a);
+				int count = animalsToTake.get(a);
 				if (count > 0) {
 					farm.removeAnimals(a, count);
 				}
 			}
-			animals.substract(newAnimals);
+			animals.substract(animalsToTake);
 			return true;
 		}
 		return false;
@@ -322,7 +332,7 @@ public class Player extends SimpleObservable {
 	}
 
 	public void returnAllWorkers() {
-		workers = MAX_WORKERS;
+		workers = MAX_WORKERS + (farm.hasBuilding(BuildingType.STEWARDS_OFFICE) ? 1 : 0);
 		setChanged();
 	}
 

@@ -192,7 +192,7 @@ public class FarmPanel extends JPanel {
 	private Map<ActionType, JButton> extraBtns = new HashMap<ActionType, JButton>();
 	private JLabel msgLabel;
 	private JPanel supplyPanel;
-	private final JLabel[] workerLabels = new JLabel[Player.MAX_WORKERS];
+	private final JLabel[] workerLabels = new JLabel[Player.MAX_WORKERS + 1];
 	private JLabel firstLabel;
 	private final Map<Material, JLabel> supply = new EnumMap<Material, JLabel>(Material.class);
 	private final Map<Animal, JLabel> animalSupply = new EnumMap<Animal, JLabel>(Animal.class);

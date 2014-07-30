@@ -318,14 +318,20 @@ public class Game {
 		releaseAnimals(currentPlayer);
 
 		// switch player
+		Player prevPlayer = currentPlayer;
 		currentPlayer = getOtherPlayer(currentPlayer);
 
 		if (currentPlayer.hasWorkers()) {
 			// if has workers continue with next turn
 			startTurn(currentPlayer);
 		} else {
-			// start pre-breeding phase
-			interPhase(Phase.BEFORE_BREEDING);
+			// chcek also previous player
+			if (prevPlayer.hasWorkers()) {
+				startTurn(prevPlayer);				
+			} else {
+				// start pre-breeding phase
+				interPhase(Phase.BEFORE_BREEDING);				
+			}
 		}
 	}
 

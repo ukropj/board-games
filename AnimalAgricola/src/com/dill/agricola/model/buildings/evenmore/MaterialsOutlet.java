@@ -11,7 +11,7 @@ import com.dill.agricola.model.types.Material;
 public class MaterialsOutlet extends Building {
 
 	public final static Materials COST = new Materials(Material.REED);
-	public final static Materials REWARD = new Materials(
+	private final static Materials REWARD = new Materials(
 			Material.WOOD, Material.WOOD, Material.WOOD, Material.WOOD,
 			Material.STONE, Material.STONE, Material.STONE);
 

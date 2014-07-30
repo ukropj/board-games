@@ -12,7 +12,7 @@ import com.dill.agricola.model.types.Material;
 public class HayRack extends Building {
 
 	public final static Materials COST = new Materials(Material.WOOD, Material.WOOD, Material.WOOD, Material.REED);
-	public final static Animals REWARD = new Animals(Animal.SHEEP, Animal.COW, Animal.HORSE);
+	private final static Animals REWARD = new Animals(Animal.SHEEP, Animal.COW, Animal.HORSE);
 	
 	public HayRack() {
 		super(BuildingType.HAY_RACK, 0, 0, new AnimalAction(ActionType.BUILDING_REWARD, REWARD));
