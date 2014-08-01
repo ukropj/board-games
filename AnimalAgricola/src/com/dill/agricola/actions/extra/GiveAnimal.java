@@ -11,11 +11,11 @@ import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.undo.SimpleEdit;
 import com.dill.agricola.undo.UndoableFarmEdit;
 
-public class AntiAnimalAction extends AbstractAction {
+public class GiveAnimal extends AbstractAction {
 
 	public final Animals animals;
 
-	public AntiAnimalAction(ActionType type, Animals animals) {
+	public GiveAnimal(ActionType type, Animals animals) {
 		super(type);
 		this.animals = animals;
 	}

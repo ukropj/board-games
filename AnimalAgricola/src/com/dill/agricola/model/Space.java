@@ -179,6 +179,14 @@ public abstract class Space {
 	public Set<Space> getPastureSpaces() {
 		return pastureSpaces;
 	}
+	
+	public int getAnimalsPerPasture() {
+		int count = 0;
+		for (Space space : pastureSpaces) {
+			count += space.getAnimals();
+		}
+		return count;
+	}
 
 
 }

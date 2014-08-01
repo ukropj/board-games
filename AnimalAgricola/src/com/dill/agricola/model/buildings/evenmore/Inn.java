@@ -1,7 +1,7 @@
 package com.dill.agricola.model.buildings.evenmore;
 
 import com.dill.agricola.actions.CompoundAction;
-import com.dill.agricola.actions.extra.AntiAnimalAction;
+import com.dill.agricola.actions.extra.GiveAnimal;
 import com.dill.agricola.actions.simple.AnimalAction;
 import com.dill.agricola.common.Animals;
 import com.dill.agricola.common.Materials;
@@ -20,7 +20,7 @@ public class Inn extends Building {
 	public Inn() {
 		super(BuildingType.INN, 4, 2, Animal.PIG, new CompoundAction(
 				ActionType.BUILDING_REWARD,
-				new AntiAnimalAction(ActionType.BUILDING_REWARD, ANIMAL_COST),
+				new GiveAnimal(ActionType.BUILDING_REWARD, ANIMAL_COST),
 				new AnimalAction(ActionType.BUILDING_REWARD, REWARD)));
 	}
 }

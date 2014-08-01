@@ -65,6 +65,8 @@ public enum BuildingType {
 	MANOR(2, Msg.get("manor"), new BuildingText(Msg.get("manorText"), 0.13f, 0.49f, 0.74f)),
 	MATERIALS_OUTLET(2, Msg.get("materialsOutlet"), new BuildingText(Msg.get("immediately"), 0.16f, 0.52f, 0.39f)),
 	OFFICE(2, Msg.get("office"), new BuildingText(Msg.get("officeText"), 0.13f, 0.48f, 0.74f)),
+	ORGANIC_FARM(2, Msg.get("organicFarm"), new BuildingText(Msg.get("organicFarmText"), 0.13f, 0.49f, 0.76f)),	
+	PEN(2, Msg.get("pen"), new BuildingText(Msg.get("penText"), 0.17f, 0.5f, 0.71f)),	
 	REED_HUT(2, Msg.get("reedHut"), new BuildingText(Msg.get("immediately"), 0.12f, 0.85f, 0.37f)),
 	STEWARDS_OFFICE(2, Msg.get("stewardsOffice"), new BuildingText(Msg.get("stewardsOfficeText"), 0.12f, 0.52f, 0.76f));
 
@@ -119,6 +121,8 @@ public enum BuildingType {
 							MANOR,
 							MATERIALS_OUTLET,
 							OFFICE,
+							ORGANIC_FARM,
+							PEN,
 							REED_HUT,
 							STEWARDS_OFFICE
 					}));

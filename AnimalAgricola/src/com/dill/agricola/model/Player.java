@@ -338,6 +338,10 @@ public class Player extends SimpleObservable {
 
 	public int getAnimalScore(Animal type) {
 		int count = getAnimal(type);
+		if (farm.hasBuilding(BuildingType.PEN)) {
+			// animals in Pen does not count for scoring
+			count -= farm.getBuilding(BuildingType.PEN).getAnimals(type);
+		}
 		return count + type.getBonusPoints(count);
 	}
 

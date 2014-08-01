@@ -23,8 +23,8 @@ public class GeneralSupply {
 	public final static int MAX_TROUGHS = 10;
 	public final static int MORE_BUILDINGS = Main.DEBUG ? 0 : 4;
 	public final static int EVEN_MORE_BUILDINGS = Main.DEBUG ? 27 : 4;
-	public final static Integer[] EXTS = { 0, 1, 2, 3, 4 };
-	public final static Stall[] STALLS = { new Stall(0), new Stall(1), new Stall(2), new Stall(3), new Stall(4) };
+	public final static Integer[] EXTS = { 0, 1, 2, 3, 4, 5 };
+	public final static Stall[] STALLS = { new Stall(0), new Stall(1), new Stall(2), new Stall(3), new Stall(4), new Stall(5) };
 
 	private final static Map<BuildingType, Building> SPECIAL_BUILDINGS = new EnumMap<BuildingType, Building>(BuildingType.class);
 
@@ -43,6 +43,9 @@ public class GeneralSupply {
 		GeneralSupply.useEvenMoreBuildings = useEvenMoreBuildings;
 		stallsLeft.clear();
 		stallsLeft.addAll(Arrays.asList(STALLS));
+		if (!useEvenMoreBuildings) {
+			stallsLeft.remove(stallsLeft.size() - 1);
+		}
 		if (!useMoreBuildings) {
 			stallsLeft.remove(stallsLeft.size() - 1);
 		}
@@ -55,6 +58,9 @@ public class GeneralSupply {
 		troughsLeft = MAX_TROUGHS;
 		extsLeft.clear();
 		extsLeft.addAll(Arrays.asList(EXTS));
+		if (!useEvenMoreBuildings) {
+			extsLeft.remove(extsLeft.size() - 1);
+		}
 		if (!useMoreBuildings) {
 			extsLeft.remove(extsLeft.size() - 1);
 		}
