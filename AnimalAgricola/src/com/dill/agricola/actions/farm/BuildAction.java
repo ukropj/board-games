@@ -47,14 +47,14 @@ public abstract class BuildAction extends PurchaseAction {
 			Materials cost = getCost(player);
 			UndoableFarmEdit edit = new PurchaseBuilding(player, b, cost, pos);
 			player.purchase(b, cost, pos);
-			UndoableFarmEdit postEdit = postActivate(player, b);
+			UndoableFarmEdit postEdit = postActivate(player, b, pos);
 			setChanged();
 			return joinEdits(true, edit, postEdit);
 		}
 		return null;
 	}
 
-	protected UndoableFarmEdit postActivate(Player player, Building b) {
+	protected UndoableFarmEdit postActivate(Player player, Building b, DirPoint pos) {
 		return null;
 	}
 

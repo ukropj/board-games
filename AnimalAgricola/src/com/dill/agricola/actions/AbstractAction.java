@@ -90,7 +90,7 @@ public abstract class AbstractAction implements Action {
 		return null;
 	}
 
-	public Action getSubAction(boolean afterFarmAction) {
+	public Action getSubAction(Player player, boolean afterFarmAction) {
 		return null;
 	}
 

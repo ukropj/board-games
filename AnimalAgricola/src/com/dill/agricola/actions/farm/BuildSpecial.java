@@ -211,7 +211,7 @@ public class BuildSpecial extends BuildAction {
 		return super.doOnFarm(player, pos);
 	}
 
-	protected UndoableFarmEdit postActivate(Player player, Building b) {
+	protected UndoableFarmEdit postActivate(Player player, Building b, DirPoint pos) {
 		GeneralSupply.useBuilding(toBuild, true);
 		List<Action> actions = new ArrayList<Action>();
 		Action[] preActions = getBuildingInstance(toBuild).getExtraActions(Phase.BEFORE_WORK, 8/*TODO ugly hack*/);
@@ -228,7 +228,7 @@ public class BuildSpecial extends BuildAction {
 		return new UseBuilding(toBuild, actions);
 	}
 
-	public Action getSubAction(boolean afterFarmAction) {
+	public Action getSubAction(Player player, boolean afterFarmAction) {
 		return afterFarmAction && toBuild != null ? getBuildingInstance(toBuild).getSubAction() : null;
 	}
 

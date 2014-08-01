@@ -28,10 +28,10 @@ public class Main {
 		};
 	};
 
-	public static boolean DEBUG = false;
-	public static boolean SKIP_LANG = false;
+	public static boolean DEBUG = true;
+	public static boolean SKIP_LANG = true;
 
-	private static final Lang DEFAULT_LANG = DEBUG ? Lang.CZ : Lang.EN; // 'en' is default
+	private static final Lang DEFAULT_LANG = DEBUG ? Lang.SK : Lang.EN; // 'en' is default
 
 	public static void main(String[] args) {
 

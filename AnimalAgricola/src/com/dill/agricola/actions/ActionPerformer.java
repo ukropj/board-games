@@ -102,7 +102,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 			}
 
 			if (this.subaction == null) {
-				Action subAction = action.getSubAction(false);
+				Action subAction = action.getSubAction(player, false);
 				if (subAction != null) {
 					startSubaction(subAction);
 				}
@@ -184,7 +184,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 			if (edit != null) {
 				postEdit(edit);
 				if (this.subaction == null) {
-					Action subAction = action.getSubAction(true);
+					Action subAction = action.getSubAction(player, true);
 					if (subAction != null) {
 						startSubaction(subAction);
 					}

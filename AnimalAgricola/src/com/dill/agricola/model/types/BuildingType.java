@@ -57,7 +57,9 @@ public enum BuildingType {
 	WILD_BOAR_PEN(1, Msg.get("wildBoarPen"), new BuildingText(Msg.get("wildBoarPenText"), 0.13f, 0.52f, 0.74f)),
 
 	// even more special buildings
+	BARN(2, Msg.get("barn"), new BuildingText(Msg.get("barnText"), 0.12f, 0.52f, 0.76f)),
 	BYRE_DWELLING(2, Msg.get("byreDwelling")),
+	CARPENTERS_WORKSHOP(2, Msg.get("carpentersWorkshop"), new BuildingText(Msg.get("carpentersWorkshopText"), 0.12f, 0.49f, 0.74f)),
 	DAIRY_FARM(2, Msg.get("dairyFarm"), new BuildingText(Msg.get("dairyFarmText"), 0.12f, 0.52f, 0.76f)),
 	ESTATE(2, Msg.get("estate"), new BuildingText(Msg.get("immediately"), 0.4f, 0.5f, 0.4f),
 			new BuildingText(Msg.get("estateText"), 0.34f, 0.72f, 0.53f)),
@@ -114,7 +116,9 @@ public enum BuildingType {
 	public final static List<BuildingType> EVEN_MORE_SPECIAL_BUILDINGS_TYPES =
 			Collections.unmodifiableList(
 					Arrays.asList(new BuildingType[] {
+//							BARN,
 							BYRE_DWELLING,
+							CARPENTERS_WORKSHOP,
 							DAIRY_FARM,
 							ESTATE,
 							INN,

@@ -44,7 +44,7 @@ public interface Action {
 
 	Animals getAccumulatedAnimals();
 	
-	Action getSubAction(boolean afterFarmAction);
+	Action getSubAction(Player player, boolean afterFarmAction);
 	
 	void setChanged();
 	

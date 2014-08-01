@@ -4,6 +4,7 @@ import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.extra.Expand;
 import com.dill.agricola.actions.simple.MaterialRefillAction;
 import com.dill.agricola.common.Materials;
+import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Material;
 
@@ -16,7 +17,7 @@ public class BordersExpand extends MaterialRefillAction {
 		super(ActionType.BORDERS_EXPAND, REFILL);
 	}
 	
-	public Action getSubAction(boolean afterFarmAction) {
+	public Action getSubAction(Player player, boolean afterFarmAction) {
 		if (!afterFarmAction) {
 			return expandSubaction;
 		}

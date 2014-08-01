@@ -25,11 +25,13 @@ public enum ActionType {
 	BUILDING_REWARD("buildReward"),
 	ONE_TROUGH("oneTrough"),
 	ONE_BORDER("oneBorder"),
+	FREE_BORDERS("freeBorders"),
 	SWITCH_FOR_COW("switchForCow"),
 	TRADE_ANIMALS("tradeAnimals"),
 	MOVE_TROUGHS("moveTroughs"), 
 	MOVE_STALLS("moveStalls"), 
-	EMPTY_REARING_STATION("emptyRearingStation");
+	EMPTY_REARING_STATION("emptyRearingStation"),
+	FREE_STABLES();
 	
 	public final String desc;
 	public final String shortDesc;
