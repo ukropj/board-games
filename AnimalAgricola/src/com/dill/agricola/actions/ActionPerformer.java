@@ -1,5 +1,7 @@
 package com.dill.agricola.actions;
 
+import java.util.Stack;
+
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
@@ -16,19 +18,19 @@ import com.dill.agricola.undo.UndoableFarmEdit;
 public class ActionPerformer extends TurnUndoableEditSupport {
 
 	private Player player = null;
-	private Action action = null;
-	private Action subaction = null;
+	private Stack<Action> actions = new Stack<Action>();
 	private boolean isExtraAction = false;
 
-	private void checkState() throws IllegalStateException {
-		Main.asrtNotNull(player, "Cannot perform action without player");
-		Main.asrtNotNull(action, "Cannot perform action without action");
+	private void checkState(int level) throws IllegalStateException {
+		Main.asrtPositive(level, "Action level cannot be negative");
+		Main.asrtTrue(player != null, "Cannot perform action without player");
+		Main.asrtTrue(actions.size() > level, "Cannot perform action without action " + level);
 	}
-	
+
 	public void reset() {
 		super.reset();
 		player = null;
-		action = subaction = null;
+		actions.clear();
 		isExtraAction = false;
 	}
 
@@ -45,27 +47,27 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 	}
 
 	public boolean hasAction() {
-		return action != null;
+		return hasAction(0);
+	}
+
+	public boolean hasAction(int level) {
+		return level >= 0 && actions.size() > level;
 	}
 
 	public boolean hasAction(ActionType type) {
-		return action != null && action.getType() == type;
+		return !actions.isEmpty() && actions.firstElement().getType() == type;
 	}
 
 	public boolean hasExtraAction() {
-		return action != null && isExtraAction;
-	}
-	
-	public boolean hasSubAction() {
-		return subaction != null;
+		return !actions.isEmpty() && isExtraAction;
 	}
 
-	public Action getAction() {
-		return action;
+	public Action getAction(int level) {
+		return actions.get(level);
 	}
-	
-	public Action getSubAction() {
-		return subaction;
+
+	public Action getTopAction() {
+		return actions.peek();
 	}
 
 	public boolean canCancel() {
@@ -73,7 +75,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 	}
 
 	public boolean isFinished() {
-		return action == null;
+		return actions.isEmpty();
 	}
 
 	public boolean startAction(Action action) {
@@ -81,174 +83,146 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 	}
 
 	public boolean startAction(Action action, boolean extraAction) {
-		this.action = action;
-		this.subaction = null;
-		this.isExtraAction = extraAction;
-		checkState();
+		actions.clear();
+		return startAction(action, 0, extraAction);
+	}
+
+	private boolean startAction(Action action, int level, boolean extraAction) {
+		actions.push(action);
+		boolean isSubaction = level != 0;
+		if (!isSubaction) {
+			// only base action can be extra (for now..)
+			isExtraAction = extraAction;
+		} else {
+			action.addChangeListener(new SubActionStateChangeListener(level));
+			action.init();
+			action.useAsSubaction(level);
+		}
+		checkState(level);
 
 		boolean canDo = action.canDo(player);
 		if (canDo) {
 			UndoableFarmEdit edit = action.doo(player);
 
 			if (action.isCancelled()) {
-				this.action = null;
+				actions.pop();
+				if (isSubaction) {
+					action.removeChangeListeners();
+				}
 				return false;
 			}
 
-			postEdit(new StartAction(player, action, extraAction));
+			postEdit(new StartAction(player, action, level, extraAction));
 			action.setUsed(player.getColor());
-			if (!extraAction) {
+			if (!isSubaction && !extraAction) {
+				// spend worker only for base, non-extra actions
 				player.spendWorker();
 			}
 
-			if (this.subaction == null) {
+			if (!hasAction(level + 1)) {
 				Action subAction = action.getSubAction(player, false);
 				if (subAction != null) {
-					startSubaction(subAction);
+					startAction(subAction, level + 1, false);
 				}
 			}
 
 			if (edit != null) {
 				postEdit(edit);
-				if (((extraAction && action.getType() != ActionType.BREEDING) || !player.hasLooseAnimals())
-						&& player.validate()
-						&& !action.canDoOnFarm(player)
-						&& (subaction == null || !subaction.canDoOnFarm(player))) {
-					return finishAction();
+				if (canQuickFinish(level, isExtraAction)) {
+					return finishActions();
 				}
 			}
 
 			player.notifyObservers(ChangeType.ACTION_DO);
 			return true;
 		} else {
-			this.action = null; // action cannot be started
+			actions.pop(); // action cannot be started
 			return false;
 		}
 	}
 
-	private boolean startSubaction(Action subaction) {
-		this.subaction = subaction;
-		subaction.addChangeListener(new SubActionStateChangeListener());
-		subaction.init();
-		subaction.useAsSubaction();
-
-		boolean canDo = subaction.canDo(player);
-		if (canDo) {
-			UndoableFarmEdit edit = subaction.doo(player);
-
-			if (subaction.isCancelled()) {
-				return false;
-			}
-
-			postEdit(new StartSubAction(player, subaction));
-			subaction.setUsed(player.getColor());
-
-			if (edit != null) {
-				postEdit(edit);
-				if (!player.hasLooseAnimals()
-						&& !subaction.canDoOnFarm(player)) {
-					return finishSubaction();
-				}
-			}
-
-			player.notifyObservers(ChangeType.ACTION_DO);
-			return true;
-		} else {
-			this.subaction = null; // sub-action cannot be started
-			return false;
-		}
+	private boolean canQuickFinish(int level, boolean extraAction) {
+		Action action = getAction(level);
+		return (((extraAction && action.getType() != ActionType.BREEDING) || !player.hasLooseAnimals())
+				&& player.validate()
+				&& !action.canDoOnFarm(player)
+				&& (!hasAction(level + 1) || canQuickFinish(level + 1, false)));
 	}
 
-	public boolean canDoFarmAction(DirPoint pos, Purchasable thing, boolean isSub) {
-		return !isSub ? player.getFarm().getActiveType() == thing && action.canDoOnFarm(player, pos)
-				: subaction != null && player.getFarm().getActiveSubType() == thing && subaction.canDoOnFarm(player, pos);
+	public boolean canDoFarmAction(DirPoint pos, Purchasable thing, int level) {
+		return hasAction(level) && player.getFarm().getActiveType(level) == thing && getAction(level).canDoOnFarm(player, pos);
 	}
 
-	public boolean canUndoFarmAction(DirPoint pos, Purchasable thing, boolean isSub) {
-		return !isSub ? player.getFarm().getActiveType() == thing && action.canUndoOnFarm(player, pos)
-				: subaction != null && player.getFarm().getActiveSubType() == thing && subaction.canUndoOnFarm(player, pos);
+	public boolean canUndoFarmAction(DirPoint pos, Purchasable thing, int level) {
+		return hasAction(level) && player.getFarm().getActiveType(level) == thing && getAction(level).canUndoOnFarm(player, pos);
 	}
 
-	public boolean doOrUndoFarmAction(DirPoint pos, Purchasable thing) {
-		boolean done = doFarmAction(pos, thing);
+	public boolean doOrUndoFarmAction(DirPoint pos, Purchasable thing, int level) {
+		boolean done = doFarmAction(pos, thing, level);
 		if (!done) {
-			done = undoFarmAction(pos, thing);
+			done = undoFarmAction(pos, thing, level);
 		}
 		return done;
 	}
 
-	public boolean doFarmAction(DirPoint pos, Purchasable thing) {
-		checkState();
-		if (canDoFarmAction(pos, thing, false)) {
+	public boolean doFarmAction(DirPoint pos, Purchasable thing, int level) {
+		checkState(level);
+		if (canDoFarmAction(pos, thing, level)) {
+			Action action = getAction(level);
 			UndoableFarmEdit edit = action.doOnFarm(player, pos);
 			if (edit != null) {
 				postEdit(edit);
-				if (this.subaction == null) {
+				if (!hasAction(level + 1)) {
 					Action subAction = action.getSubAction(player, true);
 					if (subAction != null) {
-						startSubaction(subAction);
+						startAction(subAction, level + 1, false);
 					}
 				}
 				return true;
 			}
 		}
-		if (canDoFarmAction(pos, thing, true)) {
-			UndoableFarmEdit edit = subaction.doOnFarm(player, pos);
-			if (edit != null) {
-				postEdit(edit);
-				return true;
-			}
+		if (hasAction(level + 1)) {
+			return doFarmAction(pos, thing, level + 1);
 		}
 		return false;
 	}
 
-	public boolean undoFarmAction(DirPoint pos, Purchasable thing) {
-		checkState();
-		if (canUndoFarmAction(pos, thing, false)) {
-			if (undoSpecificAction(player, pos, thing, subaction != null)) {
+	public boolean undoFarmAction(DirPoint pos, Purchasable thing, int level) {
+		checkState(level);
+		if (canUndoFarmAction(pos, thing, level)) {
+			Action action = getAction(level);
+			if (undoSpecificAction(player, pos, thing, action.mustUndoSubactions() && hasAction(level + 1))) {
 				return true;
 			}
 		}
-		if (canUndoFarmAction(pos, thing, true)) {
-			if (undoSpecificAction(player, pos, thing, false)) {
-				return true;
-			}
+		if (hasAction(level + 1)) {
+			return undoFarmAction(pos, thing, level + 1);
 		}
 		return false;
 	}
 
 	public boolean canFinish() {
-		return action != null && player != null
-				&& action.isUsedEnough()
-				&& canSubFinish()
-				&& player.validate();
+		return player != null && player.validate() && canFinish(0);
 	}
 
-	private boolean canSubFinish() {
-		return subaction == null || subaction.isUsedEnough();
+	private boolean canFinish(int level) {
+		return hasAction(level) && getAction(level).isUsedEnough()
+				&& (!hasAction(level + 1) || canFinish(level + 1));
 	}
 
-	public boolean finishAction() {
+	public boolean finishActions() {
 		if (canFinish()) {
-			postEdit(new EndAction(player, action, isExtraAction));
-			player.getFarm().setActiveType(null);
-			action = null;
-			isExtraAction = false;
-			if (subaction != null) {
-				finishSubaction();
+			while (!actions.isEmpty()) {
+				Action action = actions.pop();
+				int level = actions.size();
+				postEdit(new EndAction(player, action, level, isExtraAction));
+				player.getFarm().setActiveType(null, level);
+				if (level != 0) {
+					action.removeChangeListeners();					
+				}
 			}
+			isExtraAction = false;
 			player.notifyObservers(ChangeType.ACTION_DONE);
-			return true;
-		}
-		return false;
-	}
-
-	private boolean finishSubaction() {
-		if (canSubFinish()) {
-			postEdit(new EndSubAction(player, subaction));
-			player.getFarm().setActiveSubType(null);
-			subaction.removeChangeListeners();
-			subaction = null;
 			return true;
 		}
 		return false;
@@ -259,67 +233,50 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 
 		private final Player p;
 		private final Action a;
+		private final int l;
 		private final boolean extraAction;
 
-		public StartAction(Player player, Action action, boolean extraAction) {
+		public StartAction(Player player, Action action, int level, boolean extraAction) {
 			super(!extraAction);
 			this.p = player;
 			this.a = action;
+			this.l = level;
 			this.extraAction = extraAction;
 		}
 
 		public void undo() throws CannotUndoException {
 			super.undo();
-			if (!extraAction) {
-				p.returnWorker();
+			if (l == 0) {
+				if (!extraAction) {
+					p.returnWorker();
+				}
+				isExtraAction = false;
+			} else {
+				a.removeChangeListeners();
 			}
-			action = null;
-			isExtraAction = false;
+			p.getFarm().setActiveType(null, l);
+			actions.pop();
+			Main.asrtTrue(actions.size() == l, "Broken action stack");
 			a.setUsed(null);
 		}
 
 		public void redo() throws CannotRedoException {
 			super.redo();
-			a.setUsed(p.getColor());
-			if (!extraAction) {
-				p.spendWorker();
+			if (l == 0) {
+				if (!extraAction) {
+					p.spendWorker();
+				}
+				isExtraAction = extraAction;
+			} else {
+				a.addChangeListener(new SubActionStateChangeListener(l));
 			}
-			action = a;
-			isExtraAction = extraAction;
+			a.setUsed(p.getColor());
+			Main.asrtTrue(actions.size() == l, "Broken action stack");
+			actions.push(a);
 		}
-		
+
 		public String getPresentationName() {
 			return a.getType().shortDesc;
-		}
-
-	}
-
-	private class StartSubAction extends SimpleEdit {
-		private static final long serialVersionUID = 1L;
-
-		private final Player p;
-		private final Action sa;
-
-		public StartSubAction(Player player, Action subaction) {
-			this.p = player;
-			this.sa = subaction;
-		}
-
-		public void undo() throws CannotUndoException {
-			super.undo();
-			p.getFarm().setActiveSubType(null);
-			subaction = null;
-			sa.setUsed(null);
-		}
-
-		public void redo() throws CannotRedoException {
-			super.redo();
-			sa.setUsed(p.getColor());
-			subaction = sa;
-		}
-		
-		public String getPresentationName() {
-			return sa.getType().shortDesc;
 		}
 
 	}
@@ -329,65 +286,59 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 
 		private final Player p;
 		private final Action a;
+		private final int l;
 		private final boolean extraAction;
 		private final Purchasable activeType;
 
-		public EndAction(Player player, Action action, boolean extraAction) {
+		public EndAction(Player player, Action action, int level, boolean extraAction) {
 			super(!extraAction);
 			this.p = player;
 			this.a = action;
+			this.l = level;
 			this.extraAction = extraAction;
-			this.activeType = player.farm.getActiveType();
+			this.activeType = player.farm.getActiveType(level);
 		}
 
 		public void undo() throws CannotUndoException {
 			super.undo();
-			action = a;
-			isExtraAction = extraAction;
-			p.getFarm().setActiveType(activeType);
+			Main.asrtTrue(actions.size() == l, "Broken action stack");
+			actions.push(a);
+			if (l == 0) {
+				isExtraAction = extraAction;
+			} else {
+				a.addChangeListener(new SubActionStateChangeListener(l));
+			}
+			p.getFarm().setActiveType(activeType, l);
+			// TODO what about change listeners?
 		}
 
 		public void redo() throws CannotRedoException {
 			super.redo();
-			p.getFarm().setActiveType(null);
-			action = null;
-			isExtraAction = false;
-		}
-
-	}
-
-	private class EndSubAction extends SimpleEdit {
-		private static final long serialVersionUID = 1L;
-
-		private final Player p;
-		private final Action sa;
-		private final Purchasable activeSubType;
-
-		public EndSubAction(Player player, Action subaction) {
-			this.p = player;
-			this.sa = subaction;
-			this.activeSubType = player.farm.getActiveSubType();
-		}
-
-		public void undo() throws CannotUndoException {
-			super.undo();
-			subaction = sa;
-			p.getFarm().setActiveSubType(activeSubType);
-		}
-
-		public void redo() throws CannotRedoException {
-			super.redo();
-			p.getFarm().setActiveSubType(null);
-			subaction.removeChangeListeners();
-			subaction = null;
+			p.getFarm().setActiveType(null, l);
+			actions.pop();
+			Main.asrtTrue(actions.size() == l, "Broken action stack");
+			if (l == 0) {
+				isExtraAction = false;
+			} else {
+				// only for subactions
+				a.removeChangeListeners();
+			}
 		}
 
 	}
 
 	private class SubActionStateChangeListener implements ActionStateChangeListener {
+		private final int level;
+
+		public SubActionStateChangeListener(int level) {
+			Main.asrtPositive(level - 1, "Subaction must have level > 0");
+			this.level = level;
+		}
+
 		public void stateChanges(Action subAction) {
-			if (action != null) {
-				action.setChanged();
+			if (hasAction(level - 1)) {
+				// notify parent action
+				getAction(level - 1).setChanged();
 			}
 		}
 	}

@@ -7,6 +7,7 @@ import com.dill.agricola.GeneralSupply;
 import com.dill.agricola.GeneralSupply.Supplyable;
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.extra.FreeBorders;
+import com.dill.agricola.actions.extra.FreeStables;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Building;
@@ -21,8 +22,7 @@ import com.dill.agricola.undo.UndoableFarmEdit;
 public class BuildStall extends BuildAction {
 
 	private final Action fencesAction = new FreeBorders(2);
-
-//	private final Action stablesSubaction = new FreeStables();
+	private final Action stablesAction = new FreeStables();
 
 	public BuildStall() {
 		super(ActionType.STALLS, BuildingType.STALL);
@@ -43,9 +43,23 @@ public class BuildStall extends BuildAction {
 	public boolean canDoOnFarm(Player player, DirPoint pos) {
 		return getUseCount() < 1 && super.canDoOnFarm(player, pos);
 	}
+	
+	public boolean canUndoOnFarm(Player player, DirPoint pos) {
+		return super.canUndoOnFarm(player, pos) 
+				// for barn
+				|| (player.farm.hasBuilding(BuildingType.BARN) && player.canUnpurchase(BuildingType.STABLES, pos, true)); 
+	}
 
 	protected UndoableFarmEdit postActivate(Player player, Building b, DirPoint pos) {
-		return new UseStall((Stall) b);
+		UndoableFarmEdit edit = new UseStall((Stall) b);
+		if (player.farm.hasBuilding(BuildingType.BARN)) {
+			Barn barn = (Barn) player.farm.getBuilding(BuildingType.BARN);
+			if (barn.canUse()) {
+				barn.use(true);
+				return joinEdits(edit, new UseBarn(barn), stablesAction.doOnFarm(player, pos));
+			}
+		}
+		return edit;
 	}
 
 	public Action getSubAction(Player player, boolean afterFarmAction) {
@@ -54,17 +68,6 @@ public class BuildStall extends BuildAction {
 		}
 		return null;
 	}
-
-	/*public Action getSubAction(Player player, boolean afterFarmAction) {
-		if (afterFarmAction && player.farm.hasBuilding(BuildingType.BARN)) {
-			Barn barn = (Barn) player.farm.getBuilding(BuildingType.BARN);
-			if (barn.canActivate()) {
-				UndoableFarmEdit stablesEdit = stablesSubaction.doOnFarm(player, pos);
-				UndoableFarmEdit activateBarn = new ActivateBarn(barn);
-				return joinEdits(edit, stablesEdit, activateBarn);
-			}
-		}
-	}*/
 
 	protected class UseStall extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
@@ -89,23 +92,23 @@ public class BuildStall extends BuildAction {
 
 	}
 
-	protected class ActivateBarn extends SimpleEdit {
+	protected class UseBarn extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
 
 		private Barn barn;
 
-		public ActivateBarn(Barn barn) {
+		public UseBarn(Barn barn) {
 			this.barn = barn;
 		}
 
 		public void undo() throws CannotUndoException {
 			super.undo();
-			barn.activate(false);
+			barn.use(false);
 		}
 
 		public void redo() throws CannotRedoException {
 			super.redo();
-			barn.activate(true);
+			barn.use(true);
 		}
 
 	}

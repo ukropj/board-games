@@ -20,9 +20,11 @@ public abstract class AbstractAction implements Action {
 
 	private final ActionType type;
 	protected PlayerColor user = null;
-	private boolean usedAsSubaction = false;
+	private int subLevel = 0;
 	protected int useCount = 0; // TODO make private
 	protected final List<ActionStateChangeListener> changeListeners = new ArrayList<ActionStateChangeListener>();
+	private Action subaction = null;
+	protected boolean mustUndoSubactions = true;
 
 	protected AbstractAction(ActionType type) {
 		this.type = type;
@@ -58,12 +60,12 @@ public abstract class AbstractAction implements Action {
 		return user;
 	}
 
-	public void useAsSubaction() {
-		usedAsSubaction = true;
+	public void useAsSubaction(int level) {
+		subLevel = level;
 	}
 
-	protected boolean isAsSubAction() {
-		return usedAsSubaction;
+	protected int getLevel() {
+		return subLevel;
 	}
 
 	protected int getUseCount() {
@@ -89,9 +91,18 @@ public abstract class AbstractAction implements Action {
 	public Animals getAccumulatedAnimals() {
 		return null;
 	}
+	
+	public void setSubAction(Action subaction, boolean mustUndo) {
+		this.subaction = subaction;
+		this.mustUndoSubactions = mustUndo;
+	}
 
 	public Action getSubAction(Player player, boolean afterFarmAction) {
-		return null;
+		return subaction;
+	}
+	
+	public boolean mustUndoSubactions() {
+		return mustUndoSubactions;
 	}
 
 	protected MultiEdit joinEdits(List<UndoableFarmEdit> edits) {

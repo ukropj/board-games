@@ -242,7 +242,7 @@ public class FarmPanel extends JPanel {
 		finishBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (ap.hasAction()) {
-					if (ap.finishAction()) {
+					if (ap.finishActions()) {
 						submitListener.actionPerformed(e);
 					}
 				}
@@ -366,7 +366,7 @@ public class FarmPanel extends JPanel {
 		this.msgLabel.setVisible(isActivePlayer);
 		if (isActivePlayer) {
 			if (ap.hasAction()) {
-				Action a = ap.hasSubAction() ? ap.getSubAction() : ap.getAction();
+				Action a = ap.getTopAction();
 				this.msgLabel.setText(a.getType().farmText);
 			} else {
 				this.msgLabel.setText(Msg.get("chooseActionMsg"));
@@ -911,13 +911,12 @@ public class FarmPanel extends JPanel {
 	}
 
 	private PurchasableState getState(DirPoint pos, Purchasable type) {
-		boolean isActive = farm.getActiveType() == type;
-		boolean isSubActive = farm.getActiveSubType() == type;
-		if (active && (isActive || isSubActive)) {
-			if (ap.canDoFarmAction(pos, type, !isActive)) {
+		if (active && farm.hasActiveType(type)) {
+			int level = farm.getLevelOfActiveType(type);
+			if (ap.canDoFarmAction(pos, type, level)) {
 				return PurchasableState.CAN_DO;
 			}
-			if (ap.canUndoFarmAction(pos, type, !isActive)) {
+			if (ap.canUndoFarmAction(pos, type, level)) {
 				return PurchasableState.CAN_UNDO;
 			}
 		}
@@ -983,17 +982,16 @@ public class FarmPanel extends JPanel {
 			Set<Animal> availableAnimals = null;
 
 			boolean done = false, hadAction = ap.hasAction();
-			Purchasable[] activeTypes = { farm.getActiveType(), farm.getActiveSubType() };
+			Map<Integer, Purchasable> activeTypes = farm.getActiveTypes();
 
 			Space space = farm.getSpace(pos);
 
 			// TODO refactor to more functions
 			if (active && phase != Phase.BREEDING) {
-				for (int i = 0; i < activeTypes.length; i++) {
-					Purchasable activeType = activeTypes[i];
-					if (activeType == null) {
-						continue;
-					}
+				for (Entry<Integer, Purchasable> act : activeTypes.entrySet()) {
+					int level = act.getKey();
+					Purchasable activeType = act.getValue();
+
 					switch (activeType) {
 					case EXTENSION:
 						Dir extDir = null;
@@ -1007,7 +1005,7 @@ public class FarmPanel extends JPanel {
 							extDir = Dir.E;
 						}
 						if (extDir != null) {
-							done = ap.doOrUndoFarmAction(new DirPoint(pos.x, 0), Purchasable.EXTENSION);
+							done = ap.doOrUndoFarmAction(new DirPoint(pos.x, 0), Purchasable.EXTENSION, level);
 							changeType = ChangeType.FARM_RESIZE;
 						}
 						break;
@@ -1025,23 +1023,23 @@ public class FarmPanel extends JPanel {
 								// normalize to N/W
 								fencePoint = PointUtils.getNext(fencePoint);
 							}
-							done = ap.doOrUndoFarmAction(fencePoint, Purchasable.FENCE);
+							done = ap.doOrUndoFarmAction(fencePoint, Purchasable.FENCE, level);
 						}
 						break;
 					case TROUGH:
 						if (troughShape.contains(relativeDirPoint)) {
-							done = ap.doOrUndoFarmAction(pos, Purchasable.TROUGH);
+							done = ap.doOrUndoFarmAction(pos, Purchasable.TROUGH, level);
 						}
 						break;
 					case BUILDING:
-						if (ap.canUndoFarmAction(pos, Purchasable.BUILDING, i > 0) && buildingOffRect.contains(relativeDirPoint)) {
-							done = ap.undoFarmAction(pos, Purchasable.BUILDING);
+						if (ap.canUndoFarmAction(pos, Purchasable.BUILDING, level) && buildingOffRect.contains(relativeDirPoint)) {
+							done = ap.undoFarmAction(pos, Purchasable.BUILDING, level);
 						} else if (buildingRect.contains(relativeDirPoint)) {
 							availableAnimals = farm.guessAnimalTypesToPut(pos, true);
 							if (!animalArea.contains(relativeDirPoint) // not clicked in animal area OR
 									// no animals available OR no animals present
 									|| ((availableAnimals.size() == 0 && leftClick) || (space != null && space.getAnimals() == 0 && !leftClick))) {
-								done = ap.doFarmAction(pos, Purchasable.BUILDING);
+								done = ap.doFarmAction(pos, Purchasable.BUILDING, level);
 							}
 						}
 						break;

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
@@ -34,8 +35,7 @@ public class Farm extends SimpleObservable {
 	private final Map<Dir, Stack<Integer>> extensions = new EnumMap<Dir, Stack<Integer>>(Dir.class);
 	private final Animals looseAnimals = new Animals();
 
-	private Purchasable activeType = null;
-	private Purchasable activeSubType = null;
+	private Map<Integer, Purchasable> activeTypes = new HashMap<Integer, Purchasable>();
 	private final Map<Purchasable, Set<DirPoint>> activeSpots = new HashMap<Purchasable, Set<DirPoint>>();
 
 	private boolean animalsValid = true;
@@ -84,45 +84,71 @@ public class Farm extends SimpleObservable {
 	}
 
 	private final void clearActive() {
-		activeType = null;
-		activeSubType = null;
+		activeTypes.clear();
 		for (Set<DirPoint> spots : activeSpots.values()) {
 			spots.clear();
 		}
 	}
 
-	public void setActiveType(Purchasable activeType) {
-		if (this.activeType != activeType) {
-			clearActive();
-			this.activeType = activeType;
-			setChanged();
-		}
-	}
-
-	public void setActiveSubType(Purchasable activeSubType) {
-		if (this.activeSubType != activeSubType) {
-			if (this.activeSubType != null) {
-				activeSpots.get(this.activeSubType).clear();
+	private final void clearActive(int fromLevel) {
+		Set<Integer> levelsToRemove = new HashSet<Integer>();
+		for (Entry<Integer, Purchasable> act : activeTypes.entrySet()) {
+			if (act.getKey() >= fromLevel) {
+				levelsToRemove.add(act.getKey());
+				activeSpots.get(act.getValue()).clear();
 			}
-			this.activeSubType = activeSubType;
+		}
+		for (Integer l : levelsToRemove) {
+			activeTypes.remove(l);
+		}
+	}
+
+	public void setActiveType(Purchasable activeType, int level) {
+		if (getActiveType(level) != activeType) {
+			clearActive(level);
+			if (activeType != null) {
+				this.activeTypes.put(level, activeType);
+			}
 			setChanged();
 		}
 	}
 
-	public Purchasable getActiveType() {
-		return activeType;
+	public Purchasable getActiveType(int level) {
+		return activeTypes.get(level);
 	}
 
-	public Purchasable getActiveSubType() {
-		return activeSubType;
+	public Map<Integer, Purchasable> getActiveTypes() {
+		return activeTypes;
+	}
+
+	public boolean hasActiveType(Purchasable type) {
+		return activeTypes.values().contains(type);
+	}
+
+	public int getLevelOfActiveType(Purchasable type) {
+		for (Entry<Integer, Purchasable> act : activeTypes.entrySet()) {
+			if (act.getValue() == type) {
+				return act.getKey();
+			}
+		}
+		throw new IllegalArgumentException("Not an active type " + type);
 	}
 
 	public boolean isActiveSpot(DirPoint pos, Purchasable forType) {
-		return (activeType == forType || activeSubType == forType)
-				&& activeSpots.get(forType).contains(pos);
+		for (Purchasable type : activeTypes.values()) {
+			if (type == forType) {
+				for (DirPoint spot : activeSpots.get(forType)) {
+					if (spot.equals(pos)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	private void addActiveSpot(DirPoint pos, Purchasable forType) {
+		Main.asrtNotNull(pos, "Cannot add null as active position.");
 		Set<DirPoint> spots = activeSpots.get(forType);
 		spots.add(pos);
 		if (pos.dir != null) {
@@ -314,6 +340,7 @@ public class Farm extends SimpleObservable {
 		} else if (d == Dir.W) {
 			// add to left
 			targetCol = 0;
+			shiftActiveSpots(Dir.E);
 		} else {
 			throw new IllegalArgumentException("Cannot extend farm in direction " + d);
 		}
@@ -336,6 +363,7 @@ public class Farm extends SimpleObservable {
 		} else if (d == Dir.W) {
 			// remove form left
 			targetCol = 0;
+			shiftActiveSpots(Dir.W);
 		} else {
 			throw new IllegalArgumentException("Cannot unextend farm in direction" + d);
 		}
@@ -353,6 +381,14 @@ public class Farm extends SimpleObservable {
 		extensions.get(d).pop();
 		width--;
 		return true;
+	}
+
+	private void shiftActiveSpots(Dir d) {
+		for (Set<DirPoint> spots : activeSpots.values()) {
+			for (DirPoint pos : spots) {
+				PointUtils.translate(pos, d);
+			}
+		}
 	}
 
 	public boolean isClosed(DirPoint pos) {
@@ -413,14 +449,14 @@ public class Farm extends SimpleObservable {
 			return canBuildAnywhere(type);
 		}
 		Space space = getSpace(pos);
-		return space != null && type.canBuildAt(space.getType(), pos);
+		return space != null && type.canBuildAt(space.getType(), pos, this);
 	}
 
 	private boolean canBuildAnywhere(BuildingType type) {
 		List<DirPoint> range = PointUtils.createGridRange(width, height);
 		for (DirPoint pos : range) {
 			Space space = getSpace(pos);
-			if (space != null && type.canBuildAt(space.getType(), pos)) {
+			if (space != null && type.canBuildAt(space.getType(), pos, this)) {
 				return true;
 			}
 		}
@@ -430,7 +466,7 @@ public class Farm extends SimpleObservable {
 	public boolean build(Building b, DirPoint pos) {
 		Main.asrtNotNull(b, "Cannot build null building");
 		Space space = getSpace(pos);
-		if (space != null && b.getType().canBuildAt(space.getType(), pos)) {
+		if (space != null && b.getType().canBuildAt(space.getType(), pos, this)) {
 			b.buildAt(space);
 			putSpace(pos, b);
 			addActiveSpot(pos, Purchasable.BUILDING);

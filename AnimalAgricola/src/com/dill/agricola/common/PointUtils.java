@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PointUtils {
-	
+
 	private PointUtils() {
-		
+
 	}
 
 	public static DirPoint getNext(DirPoint pos) {
@@ -14,25 +14,29 @@ public class PointUtils {
 			return pos;
 		}
 		DirPoint ret = new DirPoint(pos, pos.dir.opposite());
-		switch (pos.dir) {
+		translate(ret, pos.dir);
+		return ret;
+	}
+
+	public static void translate(DirPoint pos, Dir dir) {
+		switch (dir) {
 		case N:
-			ret.translate(0, -1);
-			break;
+			pos.translate(0, -1);
+			return;
 		case E:
-			ret.translate(1, 0);
-			break;
+			pos.translate(1, 0);
+			return;
 		case S:
-			ret.translate(0, 1);
-			break;
+			pos.translate(0, 1);
+			return;
 		case W:
-			ret.translate(-1, 0);
-			break;
+			pos.translate(-1, 0);
+			return;
 		default:
 			throw new IllegalArgumentException();
 		}
-		return ret;
 	}
-	
+
 	public static boolean isNextTo(DirPoint pos1, DirPoint pos2) {
 		int dx = Math.abs(pos1.x - pos2.x);
 		int dy = Math.abs(pos1.y - pos2.y);
@@ -48,17 +52,17 @@ public class PointUtils {
 		}
 		return range;
 	}
-	
+
 	public static List<DirPoint> createGridRange(int maxX, int maxY) {
 		return createGridRange(0, maxX, 0, maxY);
 	}
 
 	public static boolean isInRange(DirPoint pos, int minX, int maxX, int minY, int maxY) {
-		return pos!= null && pos.x >= minX && pos.x < maxX && pos.y >= minY && pos.y < maxY;
+		return pos != null && pos.x >= minX && pos.x < maxX && pos.y >= minY && pos.y < maxY;
 	}
 
 	public static boolean isInRange(DirPoint pos, int maxX, int maxY) {
 		return isInRange(pos, 0, maxX, 0, maxY);
 	}
-	
+
 }

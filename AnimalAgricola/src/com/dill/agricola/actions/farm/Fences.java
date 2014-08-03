@@ -20,7 +20,7 @@ public class Fences extends PurchaseAction {
 
 	public boolean isUsedEnough() {
 		// optional when as subaction 
-		return isAsSubAction() ? true : super.isUsedEnough();
+		return getLevel() > 0 ? true : super.isUsedEnough();
 	}
 	
 }

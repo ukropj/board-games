@@ -21,10 +21,10 @@ public class CompoundAction extends AbstractAction {
 		}
 	}
 	
-	public void useAsSubaction() {
-		super.useAsSubaction();
+	public void useAsSubaction(int level) {
+		super.useAsSubaction(level);
 		for (Action a : actions) {
-			a.useAsSubaction();
+			a.useAsSubaction(level);
 		}
 	}
 

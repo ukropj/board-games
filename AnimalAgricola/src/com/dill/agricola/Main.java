@@ -29,9 +29,9 @@ public class Main {
 	};
 
 	public static boolean DEBUG = true;
-	public static boolean SKIP_LANG = true;
+	public static boolean SKIP_LANG = false;
 
-	private static final Lang DEFAULT_LANG = DEBUG ? Lang.SK : Lang.EN; // 'en' is default
+	private static final Lang DEFAULT_LANG = DEBUG ? Lang.CZ : Lang.EN; // 'en' is default
 
 	public static void main(String[] args) {
 
@@ -85,6 +85,12 @@ public class Main {
 	public static void asrtPositive(int i, String msg) throws IllegalArgumentException {
 		if (i < 0) {
 			throw new IllegalArgumentException(msg + " " + i);
+		}
+	}
+
+	public static void asrtTrue(boolean b, String msg) throws IllegalStateException {
+		if (!b) {
+			throw new IllegalStateException(msg);
 		}
 	}
 

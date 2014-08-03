@@ -9,19 +9,18 @@ public class Barn extends Building {
 
 	public final static Materials COST = new Materials(Material.WOOD, 3);
 
-	private boolean activated = false;
-	
+	private boolean used = false;
+
 	public Barn() {
 		super(BuildingType.BARN, 0, 1);
 	}
-	
-	public boolean canActivate() {
-		return !activated;
+
+	public boolean canUse() {
+		return !used;
 	}
-	
-	public void activate(boolean activate) {
-		this.activated = activate;
+
+	public void use(boolean use) {
+		used = use;
 	}
-	
-	// update next stall to stables for free
+
 }

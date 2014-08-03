@@ -143,10 +143,6 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 					UndoableFarmEdit e = (UndoableFarmEdit) edits.elementAt(i);
 					Logger.logUndo("Inspect " + e.getPresentationName() + " " + i);
 					if (e.canUndo() && e.matchesFarmAction(player, pos, thing)) {
-						e.undo();
-						e.die();
-						edits.removeElementAt(i);
-						Logger.logUndo("Unedit " + e.getPresentationName());
 						if (undoAllAfter) {
 							Logger.logUndo("Undo all after:");
 							int j = edits.size();
@@ -158,6 +154,11 @@ public class MultiEdit extends CompoundEdit implements UndoableFarmEdit {
 								edits.removeElementAt(j);
 								Logger.logUndo("Unedit " + ed.getPresentationName() + " " + j);
 							}
+						} else {
+							e.undo();
+							e.die();
+							edits.removeElementAt(i);
+							Logger.logUndo("Unedit " + e.getPresentationName());							
 						}
 						return true;							
 					}

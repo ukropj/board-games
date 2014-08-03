@@ -47,7 +47,7 @@ public class DirPoint extends Point {
 	}
 
 	public String toString() {
-		return (dir != null ? dir.toString() : "C") + " " + super.toString();
+		return "[x=" + x + ",y=" + y + ",d=" + (dir != null ? dir.toString() : "C") + "]";
 	}
 
 	public Point toPoint() {

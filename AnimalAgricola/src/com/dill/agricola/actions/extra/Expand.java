@@ -11,6 +11,7 @@ import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
+import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.undo.SimpleEdit;
 import com.dill.agricola.undo.UndoableFarmEdit;
@@ -28,7 +29,7 @@ public class Expand extends PurchaseAction {
 		super.reset();
 		setChanged();  // to update available extension count
 	}
-	
+
 	protected Materials getCost(Player player) {
 		return COST;
 	}
@@ -36,11 +37,15 @@ public class Expand extends PurchaseAction {
 	protected boolean isAnyLeft() {
 		return GeneralSupply.getLeft(Supplyable.EXTENSION) > 0;
 	}
-	
+
+	public boolean canDo(Player player) {
+		return super.canDo(player) && !player.farm.hasBuilding(BuildingType.CORNER_HOUSES);
+	}
+
 	public boolean canDoOnFarm(Player player, DirPoint pos) {
 		return getUseCount() < 1 && super.canDoOnFarm(player, pos);
 	}
-	
+
 	protected UndoableFarmEdit postActivate(Player player) {
 		GeneralSupply.useExtension(true);
 		UndoableFarmEdit edit = null;
@@ -49,7 +54,7 @@ public class Expand extends PurchaseAction {
 		}
 		return joinEdits(new UseExtension(), edit);
 	}
-	
+
 	protected class UseExtension extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
 

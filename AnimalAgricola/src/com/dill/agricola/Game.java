@@ -83,7 +83,7 @@ public class Game {
 
 			public void undoOrRedoPerformed(boolean isUndo) {
 				if (ap.hasPlayer()) {
-					ap.beginUpdate(ap.getPlayer().getColor(), ap.hasExtraAction() ? ap.getAction().getType() : null);
+					ap.beginUpdate(ap.getPlayer().getColor(), ap.hasExtraAction() ? ap.getAction(0).getType() : null);
 				}
 
 				for (Player player : players) {

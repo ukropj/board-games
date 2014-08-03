@@ -22,7 +22,7 @@ public interface Action {
 	
 	PlayerColor getUser();
 	
-	void useAsSubaction();
+	void useAsSubaction(int level);
 	
 	boolean isCancelled();
 	
@@ -43,13 +43,18 @@ public interface Action {
 	Materials getAccumulatedMaterials();
 
 	Animals getAccumulatedAnimals();
+
+	void setSubAction(Action subaction, boolean mustUndo);
 	
 	Action getSubAction(Player player, boolean afterFarmAction);
+
+	boolean mustUndoSubactions();
 	
 	void setChanged();
 	
 	void addChangeListener(ActionStateChangeListener changeListener);
 
 	void removeChangeListeners();
+
 
 }

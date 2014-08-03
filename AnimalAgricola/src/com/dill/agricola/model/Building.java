@@ -76,6 +76,7 @@ public abstract class Building extends Space {
 	}
 	
 	public Action getSubAction() {
+		// action invoked when building is built
 		return subAction;
 	}
 

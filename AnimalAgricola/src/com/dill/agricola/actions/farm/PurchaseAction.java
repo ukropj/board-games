@@ -45,15 +45,11 @@ public abstract class PurchaseAction extends AbstractAction {
 		}
 		return null;
 	}
-	
+
 	protected UndoableFarmEdit setPlayerActive(Player player) {
-		boolean isSubaction  = isAsSubAction();
-		if (!isSubaction) {
-			player.getFarm().setActiveType(thing);	
-		} else {
-			player.getFarm().setActiveSubType(thing);								
-		}
-		return new SetActive(player, isSubaction);
+		int level = getLevel();
+		player.getFarm().setActiveType(thing, level);
+		return new SetActive(player, level);
 	}
 
 	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos) {
@@ -77,14 +73,14 @@ public abstract class PurchaseAction extends AbstractAction {
 		protected final Player player;
 		protected final DirPoint pos;
 		private final DirPoint undoPos;
-		
+
 		public PurchaseThing(Player player, DirPoint pos) {
 			super(player.getColor(), thing == Purchasable.EXTENSION && pos.x < 0 ? new DirPoint(0, 0) : pos, thing);
 			this.player = player;
 			this.pos = pos;
 			this.undoPos = thing == Purchasable.EXTENSION && pos.x < 0 ? new DirPoint(0, 0) : pos;
 		}
-		
+
 		public void undo() throws CannotUndoException {
 			super.undo();
 			boolean done = player.unpurchase(thing, getCost(player), undoPos, false);
@@ -92,7 +88,7 @@ public abstract class PurchaseAction extends AbstractAction {
 				throw new CannotUndoException();
 			}
 		}
-		
+
 		public void redo() throws CannotRedoException {
 			super.redo();
 			boolean done = player.purchase(thing, getCost(player), pos);
@@ -100,38 +96,30 @@ public abstract class PurchaseAction extends AbstractAction {
 				throw new CannotRedoException();
 			}
 		}
-		
+
 	}
-	
+
 	protected class SetActive extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
-		
+
 		private final Player player;
-		private final boolean asSubaction;
-		
-		public SetActive(Player player, boolean asSubaction) {
+		private final int level;
+
+		public SetActive(Player player, int level) {
 			this.player = player;
-			this.asSubaction = asSubaction;
+			this.level = level;
 		}
-		
+
 		public void undo() throws CannotUndoException {
 			super.undo();
-			if (!asSubaction) {
-				player.getFarm().setActiveType(null);	
-			} else {
-				player.getFarm().setActiveSubType(null);								
-			}
+			player.getFarm().setActiveType(null, level);
 		}
-		
+
 		public void redo() throws CannotRedoException {
 			super.redo();
-			if (!asSubaction) {
-				player.getFarm().setActiveType(thing);	
-			} else {
-				player.getFarm().setActiveSubType(thing);								
-			}
+			player.getFarm().setActiveType(thing, level);
 		}
-		
+
 	}
 
 }

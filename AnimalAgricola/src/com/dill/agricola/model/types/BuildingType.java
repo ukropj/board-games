@@ -57,9 +57,11 @@ public enum BuildingType {
 	WILD_BOAR_PEN(1, Msg.get("wildBoarPen"), new BuildingText(Msg.get("wildBoarPenText"), 0.13f, 0.52f, 0.74f)),
 
 	// even more special buildings
-	BARN(2, Msg.get("barn"), new BuildingText(Msg.get("barnText"), 0.12f, 0.52f, 0.76f)),
+	BARN(2, Msg.get("barn"), new BuildingText(Msg.get("barnText"), 0.12f, 0.50f, 0.74f)),
 	BYRE_DWELLING(2, Msg.get("byreDwelling")),
 	CARPENTERS_WORKSHOP(2, Msg.get("carpentersWorkshop"), new BuildingText(Msg.get("carpentersWorkshopText"), 0.12f, 0.49f, 0.74f)),
+	CORNER_HOUSES(2, Msg.get("cornerHouses"), new BuildingText(Msg.get("cornerHousesText"), 0.14f, 0.53f, 0.70f),
+			new BuildingText(Msg.get("cornerHousesCondition"), 0.17f, 0.7f, 0.68f)),
 	DAIRY_FARM(2, Msg.get("dairyFarm"), new BuildingText(Msg.get("dairyFarmText"), 0.12f, 0.52f, 0.76f)),
 	ESTATE(2, Msg.get("estate"), new BuildingText(Msg.get("immediately"), 0.4f, 0.5f, 0.4f),
 			new BuildingText(Msg.get("estateText"), 0.34f, 0.72f, 0.53f)),
@@ -67,10 +69,12 @@ public enum BuildingType {
 	MANOR(2, Msg.get("manor"), new BuildingText(Msg.get("manorText"), 0.13f, 0.49f, 0.74f)),
 	MATERIALS_OUTLET(2, Msg.get("materialsOutlet"), new BuildingText(Msg.get("immediately"), 0.16f, 0.52f, 0.39f)),
 	OFFICE(2, Msg.get("office"), new BuildingText(Msg.get("officeText"), 0.13f, 0.48f, 0.74f)),
-	ORGANIC_FARM(2, Msg.get("organicFarm"), new BuildingText(Msg.get("organicFarmText"), 0.13f, 0.49f, 0.76f)),	
-	PEN(2, Msg.get("pen"), new BuildingText(Msg.get("penText"), 0.17f, 0.5f, 0.71f)),	
+	ORGANIC_FARM(2, Msg.get("organicFarm"), new BuildingText(Msg.get("organicFarmText"), 0.13f, 0.49f, 0.76f)),
+	PEN(2, Msg.get("pen"), new BuildingText(Msg.get("penText"), 0.17f, 0.5f, 0.71f)),
 	REED_HUT(2, Msg.get("reedHut"), new BuildingText(Msg.get("immediately"), 0.12f, 0.85f, 0.37f)),
-	STEWARDS_OFFICE(2, Msg.get("stewardsOffice"), new BuildingText(Msg.get("stewardsOfficeText"), 0.12f, 0.52f, 0.76f));
+	SERVANTS_COTTAGE(2, Msg.get("servantsCottage"), new BuildingText(Msg.get("servantsCottageText"), 0.13f, 0.51f, 0.76f)),
+	STEWARDS_OFFICE(2, Msg.get("stewardsOffice"), new BuildingText(Msg.get("stewardsOfficeText"), 0.12f, 0.51f, 0.76f)),
+	WOODWORKING_SHOP(2, Msg.get("woodworkingShop"), new BuildingText(Msg.get("woodworkingShopText"), 0.12f, 0.51f, 0.68f));
 
 	public final static List<BuildingType> SPECIAL_BUILDINGS_TYPES =
 			Collections.unmodifiableList(
@@ -116,9 +120,10 @@ public enum BuildingType {
 	public final static List<BuildingType> EVEN_MORE_SPECIAL_BUILDINGS_TYPES =
 			Collections.unmodifiableList(
 					Arrays.asList(new BuildingType[] {
-//							BARN,
+							BARN,
 							BYRE_DWELLING,
 							CARPENTERS_WORKSHOP,
+							CORNER_HOUSES,
 							DAIRY_FARM,
 							ESTATE,
 							INN,
@@ -128,7 +133,9 @@ public enum BuildingType {
 							ORGANIC_FARM,
 							PEN,
 							REED_HUT,
-							STEWARDS_OFFICE
+							SERVANTS_COTTAGE,
+							STEWARDS_OFFICE,
+							WOODWORKING_SHOP
 					}));
 
 	public final String name;
@@ -141,7 +148,7 @@ public enum BuildingType {
 		this.texts = texts;
 	}
 
-	public boolean canBuildAt(BuildingType placeType, DirPoint pos) {
+	public boolean canBuildAt(BuildingType placeType, DirPoint pos, Farm farm) {
 		switch (this) {
 		case HALF_TIMBERED_HOUSE:
 		case LOG_HOUSE:
@@ -154,6 +161,10 @@ public enum BuildingType {
 			return placeType == STABLES;
 		case FARM_SHOP:
 			return placeType == EMPTY && pos.y == Farm.BY_ROAD;
+		case CORNER_HOUSES:
+			return placeType == EMPTY
+					&& (pos.x == 0 || pos.x == farm.getWidth() - 1)
+					&& (pos.y == Farm.BY_ROAD || pos.y == Farm.BY_FOREST);
 		default:
 			return placeType == EMPTY;
 		}

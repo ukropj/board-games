@@ -61,6 +61,7 @@ public class Player extends SimpleObservable {
 			addMaterial(new Materials(Material.REED, 20));
 
 			DirPoint pos = new DirPoint(1, 1);
+			farm.setActiveType(Purchasable.FENCE, 0);
 			farm.put(Purchasable.FENCE, new DirPoint(pos, Dir.N));
 			farm.put(Purchasable.FENCE, new DirPoint(pos, Dir.W));
 			farm.put(Purchasable.FENCE, new DirPoint(pos, Dir.S));
@@ -68,6 +69,8 @@ public class Player extends SimpleObservable {
 			Fencer.calculateFences(farm);
 			purchaseAnimal(Animal.COW, 1);
 			farm.putAnimals(pos, Animal.COW, 1);
+
+			farm.setActiveType(null, 0);
 		}
 		Fencer.calculateFences(farm);
 	}
@@ -235,7 +238,7 @@ public class Player extends SimpleObservable {
 		}
 		return false;
 	}
-	
+
 	public boolean canUnpurchaseAnimals(Animals animalsToTake) {
 		return animals.isSuperset(animalsToTake);
 	}
