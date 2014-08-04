@@ -10,27 +10,28 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
 import com.dill.agricola.actions.AbstractAction;
-import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Animals;
+import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
+import com.dill.agricola.model.types.Material;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.undo.SimpleEdit;
 import com.dill.agricola.undo.UndoableFarmEdit;
 import com.dill.agricola.view.utils.AgriImages;
-import com.dill.agricola.view.utils.UiFactory;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
+import com.dill.agricola.view.utils.UiFactory;
 
-public class TradeForCow extends AbstractAction {
+public class TradeReed extends AbstractAction {
 
-	public TradeForCow() {
-		super(ActionType.SWITCH_FOR_COW);
+	public TradeReed() {
+		super(ActionType.TRADE_REED);
 	}
 
 	public boolean canDo(Player player) {
-		return player.farm.hasBuilding(BuildingType.CATTLE_FARM) && player.getAnimals() - player.getAnimal(Animal.COW) > 0;
+		return player.farm.hasBuilding(BuildingType.CATTLE_MARKET) && player.getMaterial(Material.REED) > 0;
 	}
 
 	public boolean canDoOnFarm(Player player, DirPoint pos) {
@@ -42,34 +43,27 @@ public class TradeForCow extends AbstractAction {
 	}
 
 	public UndoableFarmEdit doo(Player player) {
+		// TODO refactor, together with TradeForCow
 		if (canDo(player)) {
-			List<Animal> animalsToChange = new ArrayList<Animal>();
-			for (Animal a : Animal.values()) {
-				if (a != Animal.COW && player.getAnimal(a) > 0) {
-					animalsToChange.add(a);
-				}
-			}
+			// pick animal to buy
 			List<JComponent> opts = new ArrayList<JComponent>();
-			for (Animal a : animalsToChange) {
+			for (Animal a : Animal.values()) {
 				JComponent opt = UiFactory.createResourcesPanel(null, new Animals(a), UiFactory.X_AXIS);
 				opt.setPreferredSize(new Dimension(40, 30));
 				opts.add(opt);
 			}
-			JComponent emptyOpt = UiFactory.createResourcesPanel(null, new Animals(), UiFactory.X_AXIS);
-			emptyOpt.setPreferredSize(new Dimension(40, 30));
-			opts.add(emptyOpt);
 			Icon icon = AgriImages.getAnimalIcon(Animal.COW, ImgSize.MEDIUM);
-			int result = UiFactory.showOptionDialog(null, Msg.get("chooseAnimal"), getType().shortDesc, icon, opts, 0);
+			int result = UiFactory.showOptionDialog(null, Msg.get("chooseAnimalsToBuy"), getType().shortDesc, icon, opts, 0);
 
-			Animal chosenAnimal = result != UiFactory.NO_OPTION && result != animalsToChange.size() ? animalsToChange.get(result) : null;
+			Animal chosenAnimal = result != UiFactory.NO_OPTION ? Animal.values()[result] : null;
 			if (chosenAnimal == null) {
 				return null;
 			}
 
-			player.unpurchaseAnimal(chosenAnimal, 1);
-			player.purchaseAnimal(Animal.COW, 1);
+			player.removeMaterial(Material.REED, 1);
+			player.purchaseAnimal(chosenAnimal, 1);
 			setChanged();
-			return new SwitchForCow(player, chosenAnimal);
+			return new TradeForReed(player, chosenAnimal);
 		}
 		return null;
 	}
@@ -83,27 +77,27 @@ public class TradeForCow extends AbstractAction {
 		return true;
 	}
 
-	private class SwitchForCow extends SimpleEdit {
+	private class TradeForReed extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
 
 		private final Player player;
-		private final Animal switchedType;
+		private final Animal toBuy;
 
-		public SwitchForCow(Player player, Animal switchedType) {
+		public TradeForReed(Player player, Animal toBuy) {
 			this.player = player;
-			this.switchedType = switchedType;
+			this.toBuy = toBuy;
 		}
 
 		public void undo() throws CannotUndoException {
 			super.undo();
-			player.unpurchaseAnimal(Animal.COW, 1);
-			player.purchaseAnimal(switchedType, 1);
+			player.unpurchaseAnimal(toBuy, 1);
+			player.addMaterial(Material.REED, 1);
 		}
 
 		public void redo() throws CannotRedoException {
 			super.redo();
-			player.unpurchaseAnimal(switchedType, 1);
-			player.purchaseAnimal(Animal.COW, 1);
+			player.removeMaterial(Material.REED, 1);
+			player.purchaseAnimal(toBuy, 1);
 		}
 
 	}

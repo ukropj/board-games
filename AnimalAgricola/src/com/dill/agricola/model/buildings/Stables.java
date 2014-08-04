@@ -16,7 +16,10 @@ public class Stables extends Building implements MultiImaged {
 	}
 	
 	public int getId() {
-		return ((Stall)buildSpace).getId();
+		if (buildSpace != null && buildSpace instanceof Stall) {
+			return ((Stall)buildSpace).getId();			
+		}
+		return 0;
 	}
 
 }

@@ -56,7 +56,7 @@ public class Player extends SimpleObservable {
 		addMaterial(Material.BORDER, INIT_BORDERS);
 
 		if (Main.DEBUG) {
-			addMaterial(new Materials(Material.WOOD, 10));
+			addMaterial(new Materials(Material.WOOD, 2));
 			addMaterial(new Materials(Material.STONE, 20));
 			addMaterial(new Materials(Material.REED, 20));
 
@@ -128,6 +128,10 @@ public class Player extends SimpleObservable {
 
 	public int getMaterial(Material m) {
 		return material.get(m);
+	}
+	
+	public Set<Material> getMaterialTypes() {
+		return material.types();
 	}
 
 	public boolean canPay(Materials cost) {

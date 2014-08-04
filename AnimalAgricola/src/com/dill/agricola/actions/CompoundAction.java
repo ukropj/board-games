@@ -21,6 +21,11 @@ public class CompoundAction extends AbstractAction {
 		}
 	}
 	
+	public static Action withSubaction(Action action, Action subaction, boolean mustUndo) {
+		action.setSubAction(subaction, mustUndo);
+		return action;
+	}
+	
 	public void useAsSubaction(int level) {
 		super.useAsSubaction(level);
 		for (Action a : actions) {

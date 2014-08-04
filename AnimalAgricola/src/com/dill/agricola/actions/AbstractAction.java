@@ -25,6 +25,7 @@ public abstract class AbstractAction implements Action {
 	protected final List<ActionStateChangeListener> changeListeners = new ArrayList<ActionStateChangeListener>();
 	private Action subaction = null;
 	protected boolean mustUndoSubactions = true;
+	private boolean cancelled = false;
 
 	protected AbstractAction(ActionType type) {
 		this.type = type;
@@ -37,12 +38,14 @@ public abstract class AbstractAction implements Action {
 	public void reset() {
 		user = null;
 		useCount = 0;
+		cancelled = false;
 	}
 
 	public UndoableFarmEdit init() {
 		UndoableFarmEdit edit = isUsed() ? new ActionInit(user, useCount) : null;
 		user = null;
 		useCount = 0;
+		cancelled = false;
 		setChanged();
 		return edit;
 	}
@@ -75,9 +78,13 @@ public abstract class AbstractAction implements Action {
 	public boolean isUsedEnough() {
 		return useCount > 0;
 	}
+	
+	protected void setCancelled() {
+		cancelled = true;
+	}
 
 	public boolean isCancelled() {
-		return false;
+		return cancelled;
 	}
 
 	public boolean canDoOnFarm(Player player) {

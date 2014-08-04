@@ -1,6 +1,6 @@
 package com.dill.agricola.model.buildings.evenmore;
 
-import com.dill.agricola.actions.Action;
+import com.dill.agricola.actions.CompoundAction;
 import com.dill.agricola.actions.extra.FreeBorders;
 import com.dill.agricola.actions.extra.OneTrough;
 import com.dill.agricola.common.Materials;
@@ -12,13 +12,12 @@ public class ServantsCottage extends Building {
 
 	public final static Materials COST = new Materials(Material.WOOD, 2);
 
-	private final static Action subaction = new OneTrough(new Materials(Material.WOOD, 2));
-	static {
-		subaction.setSubAction(new FreeBorders(2), false);		
+	public ServantsCottage() {
+		super(BuildingType.SERVANTS_COTTAGE, 0, 1,
+				CompoundAction.withSubaction(
+						new FreeBorders(2),
+						new OneTrough(new Materials(Material.WOOD, 2)),
+						false));
 	}
 
-	public ServantsCottage() {
-		super(BuildingType.SERVANTS_COTTAGE, 0, 1, subaction);
-	}
-	
 }

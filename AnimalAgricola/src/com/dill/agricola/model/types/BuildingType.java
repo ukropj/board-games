@@ -60,6 +60,7 @@ public enum BuildingType {
 	BARN(2, Msg.get("barn"), new BuildingText(Msg.get("barnText"), 0.12f, 0.50f, 0.74f)),
 	BYRE_DWELLING(2, Msg.get("byreDwelling")),
 	CARPENTERS_WORKSHOP(2, Msg.get("carpentersWorkshop"), new BuildingText(Msg.get("carpentersWorkshopText"), 0.12f, 0.49f, 0.74f)),
+	CATTLE_MARKET(2, Msg.get("cattleMarket"), new BuildingText(Msg.get("cattleMarketText"), 0.27f, 0.47f, 0.39f)),	
 	CORNER_HOUSES(2, Msg.get("cornerHouses"), new BuildingText(Msg.get("cornerHousesText"), 0.14f, 0.53f, 0.70f),
 			new BuildingText(Msg.get("cornerHousesCondition"), 0.17f, 0.7f, 0.68f)),
 	DAIRY_FARM(2, Msg.get("dairyFarm"), new BuildingText(Msg.get("dairyFarmText"), 0.12f, 0.52f, 0.76f)),
@@ -74,6 +75,7 @@ public enum BuildingType {
 	REED_HUT(2, Msg.get("reedHut"), new BuildingText(Msg.get("immediately"), 0.12f, 0.85f, 0.37f)),
 	SERVANTS_COTTAGE(2, Msg.get("servantsCottage"), new BuildingText(Msg.get("servantsCottageText"), 0.13f, 0.51f, 0.76f)),
 	STEWARDS_OFFICE(2, Msg.get("stewardsOffice"), new BuildingText(Msg.get("stewardsOfficeText"), 0.12f, 0.51f, 0.76f)),
+	TRADING_STATION(2, Msg.get("tradingStation"), new BuildingText(Msg.get("tradingStationText"), 0.12f, 0.49f, 0.76f)),	
 	WOODWORKING_SHOP(2, Msg.get("woodworkingShop"), new BuildingText(Msg.get("woodworkingShopText"), 0.12f, 0.51f, 0.68f));
 
 	public final static List<BuildingType> SPECIAL_BUILDINGS_TYPES =
@@ -123,6 +125,7 @@ public enum BuildingType {
 							BARN,
 							BYRE_DWELLING,
 							CARPENTERS_WORKSHOP,
+							CATTLE_MARKET,
 							CORNER_HOUSES,
 							DAIRY_FARM,
 							ESTATE,
@@ -135,6 +138,7 @@ public enum BuildingType {
 							REED_HUT,
 							SERVANTS_COTTAGE,
 							STEWARDS_OFFICE,
+							TRADING_STATION,
 							WOODWORKING_SHOP
 					}));
 
@@ -156,9 +160,9 @@ public enum BuildingType {
 			return placeType == COTTAGE;
 		case STABLES:
 		case OPEN_STABLES:
-			return placeType == STALL;
+			return placeType == STALL || placeType == COW_STALL || placeType == PIG_STALL;
 		case MATERIALS_OUTLET:
-			return placeType == STABLES;
+			return placeType == STABLES; // cannot build on Open Stales
 		case FARM_SHOP:
 			return placeType == EMPTY && pos.y == Farm.BY_ROAD;
 		case CORNER_HOUSES:

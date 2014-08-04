@@ -128,9 +128,9 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 
 			if (edit != null) {
 				postEdit(edit);
-				if (canQuickFinish(level, isExtraAction)) {
-					return finishActions();
-				}
+			}
+			if (canQuickFinish(level, isExtraAction)) {
+				return finishActions();
 			}
 
 			player.notifyObservers(ChangeType.ACTION_DO);
@@ -143,10 +143,10 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 
 	private boolean canQuickFinish(int level, boolean extraAction) {
 		Action action = getAction(level);
-		return (((extraAction && action.getType() != ActionType.BREEDING) || !player.hasLooseAnimals())
+		return !player.hasLooseAnimals()
 				&& player.validate()
 				&& !action.canDoOnFarm(player)
-				&& (!hasAction(level + 1) || canQuickFinish(level + 1, false)));
+				&& (!hasAction(level + 1) || canQuickFinish(level + 1, false));
 	}
 
 	public boolean canDoFarmAction(DirPoint pos, Purchasable thing, int level) {

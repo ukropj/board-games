@@ -176,16 +176,14 @@ public class BuildSpecial extends BuildAction {
 		return UiFactory.showOptionDialog(null, Msg.get("chooseCost"), Msg.get("openStables"), icon, opts, 0);
 	}
 
-	public boolean isCancelled() {
-		return toBuild == null;
-	}
-
 	public UndoableFarmEdit doo(Player player) {
 		if (canDo(player)) {
 			toBuild = chooseBuilding(player);
 			if (toBuild != null) {
 				setChanged();
 				return setPlayerActive(player);
+			} else {
+				setCancelled();
 			}
 		}
 		return null;

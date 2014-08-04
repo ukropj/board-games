@@ -31,7 +31,9 @@ public enum ActionType {
 	MOVE_TROUGHS("moveTroughs"), 
 	MOVE_STALLS("moveStalls"), 
 	EMPTY_REARING_STATION("emptyRearingStation"),
-	FREE_STABLES();
+	FREE_STABLES(),
+	TRADE_REED("tradeReed"), 
+	TRADE_MATERIALS("tradeMaterials");
 	
 	public final String desc;
 	public final String shortDesc;

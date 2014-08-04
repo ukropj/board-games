@@ -52,6 +52,7 @@ import com.dill.agricola.model.Farm;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.Space;
 import com.dill.agricola.model.buildings.MultiImaged;
+import com.dill.agricola.model.buildings.evenmore.CattleMarket;
 import com.dill.agricola.model.buildings.more.AnimalTrader;
 import com.dill.agricola.model.buildings.more.Carpenter;
 import com.dill.agricola.model.types.ActionType;
@@ -423,6 +424,17 @@ public class FarmPanel extends JPanel {
 				}
 				btn = extraBtns.get(type);
 				btn.setEnabled(action.canDo(player) && !ap.hasAction(ActionType.BREEDING));
+				visibleTypes.add(type);
+			}
+			
+			if (farm.hasBuilding(BuildingType.CATTLE_MARKET)) {
+				Action action = CattleMarket.EXTRA_ACTION;
+				ActionType type = action.getType();
+				if (!extraBtns.containsKey(type)) {
+					initExtraButton(action, AgriImages.getButtonImage("trade_reed"), true);
+				}
+				btn = extraBtns.get(type);
+				btn.setEnabled(action.canDo(player));
 				visibleTypes.add(type);
 			}
 

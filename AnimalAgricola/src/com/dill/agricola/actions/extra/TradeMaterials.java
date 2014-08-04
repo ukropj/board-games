@@ -12,25 +12,26 @@ import javax.swing.undo.CannotUndoException;
 import com.dill.agricola.actions.AbstractAction;
 import com.dill.agricola.common.Animals;
 import com.dill.agricola.common.DirPoint;
+import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
+import com.dill.agricola.model.types.Material;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.undo.SimpleEdit;
 import com.dill.agricola.undo.UndoableFarmEdit;
 import com.dill.agricola.view.utils.AgriImages;
-import com.dill.agricola.view.utils.AgriImages.ImgSize;
 import com.dill.agricola.view.utils.UiFactory;
 
-public class TradeAnimals extends AbstractAction {
+public class TradeMaterials extends AbstractAction {
 
-	public TradeAnimals() {
-		super(ActionType.TRADE_ANIMALS);
+	public TradeMaterials() {
+		super(ActionType.TRADE_MATERIALS);
 	}
 
 	public boolean canDo(Player player) {
-		return player.farm.hasBuilding(BuildingType.ANIMAL_TRADER) && player.getAnimalTypes().size() >= 2;
+		return player.farm.hasBuilding(BuildingType.TRADING_STATION) && player.getMaterialTypes().size() >= 2;
 	}
 
 	public boolean canDoOnFarm(Player player, DirPoint pos) {
@@ -44,38 +45,39 @@ public class TradeAnimals extends AbstractAction {
 	public UndoableFarmEdit doo(Player player) {
 		// TODO refactor, together with TradeForCow
 		if (canDo(player)) {
-			List<Animal> types = new ArrayList<Animal>(player.getAnimalTypes());
-			// pick animals to sell
-			List<Animals> sellCombinations = new ArrayList<Animals>();
+			List<Material> types = new ArrayList<Material>(player.getMaterialTypes());
+			types.remove(Material.BORDER);
+			// pick materials to sell
+			List<Materials> sellCombinations = new ArrayList<Materials>();
 			List<JComponent> opts = new ArrayList<JComponent>();
 			for (int i = 0; i < types.size(); i++) {
 				for (int j = i + 1; j < types.size(); j++) {
-					Animals toSell = new Animals(types.get(i), types.get(j));
+					Materials toSell = new Materials(types.get(i), types.get(j));
 					sellCombinations.add(toSell);
-					JComponent opt = UiFactory.createResourcesPanel(null, toSell, UiFactory.X_AXIS);
+					JComponent opt = UiFactory.createResourcesPanel(toSell, null, UiFactory.X_AXIS);
 					opt.setPreferredSize(new Dimension(80, 30));
 					opts.add(opt);
 				}
 			}
-			Icon icon = AgriImages.getAnimalIcon(null, ImgSize.MEDIUM);
-			int sellResult = UiFactory.showOptionDialog(null, Msg.get("chooseAnimalsToSell"), getType().shortDesc, icon, opts, 0);
+			JComponent emptyOpt = UiFactory.createResourcesPanel(new Materials(), null, UiFactory.X_AXIS);
+			emptyOpt.setPreferredSize(new Dimension(40, 30));
+			opts.add(emptyOpt);
+			Icon icon = AgriImages.getMaterialIcon(null);
+			int sellResult = UiFactory.showOptionDialog(null, Msg.get("chooseMaterialsToSell"), getType().shortDesc, icon, opts, 0);
 
-			Animals animalsToSell = sellResult != UiFactory.NO_OPTION ? sellCombinations.get(sellResult) : null;
-			if (animalsToSell == null) {
+			Materials materialsToSell = sellResult != UiFactory.NO_OPTION && sellResult != sellCombinations.size() ? sellCombinations.get(sellResult) : null;
+			if (materialsToSell == null) {
 				return null;
 			}
 			// pick animal to buy
 			List<Animals> buyCombinations = new ArrayList<Animals>();
 			opts.clear();
 			for (Animal a : Animal.values()) {
-				if (animalsToSell.get(a) == 0) {
-					// can buy only other than what is being sold
-					Animals toBuy = new Animals(a);
-					buyCombinations.add(toBuy);
-					JComponent opt = UiFactory.createResourcesPanel(null, toBuy, UiFactory.X_AXIS);
-					opt.setPreferredSize(new Dimension(40, 30));
-					opts.add(opt);
-				}
+				Animals toBuy = new Animals(a);
+				buyCombinations.add(toBuy);
+				JComponent opt = UiFactory.createResourcesPanel(null, toBuy, UiFactory.X_AXIS);
+				opt.setPreferredSize(new Dimension(40, 30));
+				opts.add(opt);
 			}
 			int buyResult = UiFactory.showOptionDialog(null, Msg.get("chooseAnimalsToBuy"), getType().shortDesc, icon, opts, 0);
 
@@ -84,10 +86,10 @@ public class TradeAnimals extends AbstractAction {
 				return null;
 			}
 
-			player.unpurchaseAnimals(animalsToSell);
+			player.removeMaterial(materialsToSell);
 			player.purchaseAnimals(animalsToBuy);
 			setChanged();
-			return new Trade(player, animalsToSell, animalsToBuy);
+			return new Trade(player, materialsToSell, animalsToBuy);
 		}
 		return null;
 	}
@@ -95,7 +97,7 @@ public class TradeAnimals extends AbstractAction {
 	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos) {
 		return null;
 	}
-	
+
 	public boolean isUsedEnough() {
 		// optional
 		return true;
@@ -105,24 +107,24 @@ public class TradeAnimals extends AbstractAction {
 		private static final long serialVersionUID = 1L;
 
 		private final Player player;
-		private final Animals toSell;
+		private final Materials toSell;
 		private final Animals toBuy;
 
-		public Trade(Player player, Animals toSell, Animals toBuy) {
+		public Trade(Player player, Materials materialsToSell, Animals toBuy) {
 			this.player = player;
-			this.toSell = toSell;
+			this.toSell = materialsToSell;
 			this.toBuy = toBuy;
 		}
 
 		public void undo() throws CannotUndoException {
 			super.undo();
 			player.unpurchaseAnimals(toBuy);
-			player.purchaseAnimals(toSell);
+			player.addMaterial(toSell);
 		}
 
 		public void redo() throws CannotRedoException {
 			super.redo();
-			player.unpurchaseAnimals(toSell);
+			player.removeMaterial(toSell);
 			player.purchaseAnimals(toBuy);
 		}
 
