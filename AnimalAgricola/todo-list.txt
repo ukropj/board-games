@@ -1,7 +1,6 @@
 #TODO#
 
 	even more buildings big and small
-	action names (e.g. "Stall", "Fences",...)
 	
 #Bugs#
 

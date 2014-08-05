@@ -5,8 +5,8 @@ import com.dill.agricola.support.Msg;
 public enum ActionType {
 	STARTING_ONE_WOOD("startWood"),
 	THREE_WOOD("wood"),
-	TWO_STONE("stone"),
 	ONE_STONE("stone"),
+	TWO_STONE("stone2"),
 	BUILDING_MATERIAL("material"),
 	BORDERS_EXPAND("bordersExpand"),
 	FENCES("fences"),
@@ -46,8 +46,12 @@ public enum ActionType {
 	}
 	
 	private ActionType(String code) {
-		desc = Msg.get(code + "Act");
+		desc = addStyling(Msg.get(code + "Act"));
 		shortDesc = Msg.get(code + "ShortAct");
 		farmText = Msg.get(code + "Farm");
+	}
+
+	private String addStyling(String string) {
+		return string.replaceFirst("^\"", "<html><b>").replaceFirst("\":", ":</b>");
 	}
 }
