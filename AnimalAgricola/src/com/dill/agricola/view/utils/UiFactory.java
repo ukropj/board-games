@@ -291,4 +291,20 @@ public class UiFactory {
 		b.addActionListener(actionListener);
 		return b;
 	}
+
+	public static JButton createIconButton(String iconName, String toolTip, ActionListener actionListener) {
+		JButton b = new JButton(Images.createIcon(iconName, ImgSize.SMALL));
+		b.setMargin(new Insets(2, 8, 2, 8));
+		b.setAlignmentX(JButton.CENTER_ALIGNMENT);
+		b.setToolTipText(toolTip);
+		
+		b.addActionListener(actionListener);
+		return b;
+	}
+
+	public static void mark(JComponent c) {
+		// used for UI debugging
+		c.setOpaque(true);
+		c.setBackground(Color.RED);
+	}
 }

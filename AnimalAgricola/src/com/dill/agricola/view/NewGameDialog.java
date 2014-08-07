@@ -116,9 +116,11 @@ public class NewGameDialog extends JDialog implements ActionListener, ItemListen
 		JCheckBox moreBuildings = new JCheckBox(Msg.get("moreBuildings", BuildingType.MORE_SPECIAL_BUILDINGS_TYPES.size()), useMoreBuildings);
 		moreBuildings.setActionCommand(OptionCommand.MORE_BUILDINGS.toString());
 		moreBuildings.addItemListener(this);
+		
 		JCheckBox evenMoreBuildings = new JCheckBox(Msg.get("evenMoreBuildings", BuildingType.EVEN_MORE_SPECIAL_BUILDINGS_TYPES.size()), useEvenMoreBuildings);
 		evenMoreBuildings.setActionCommand(OptionCommand.EVEN_MORE_BUILDINGS.toString());
 		evenMoreBuildings.addItemListener(this);
+		
 		JPanel b = UiFactory.createVerticalPanel();
 		b.add(moreBuildings);
 		b.add(evenMoreBuildings);

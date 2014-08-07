@@ -55,7 +55,9 @@ public class GeneralSupply {
 			stallsLeft.add(STALLS[1]);
 		}
 		Collections.shuffle(stallsLeft);
+		
 		troughsLeft = MAX_TROUGHS;
+		
 		extsLeft.clear();
 		extsLeft.addAll(Arrays.asList(EXTS));
 		if (!useEvenMoreBuildings) {
@@ -66,6 +68,7 @@ public class GeneralSupply {
 		}
 		Collections.shuffle(extsLeft);
 		extsUsed.clear();
+		
 		SPECIAL_BUILDINGS.clear(); // clear building instances
 		randomizeBuildings();
 	}

@@ -1,0 +1,12 @@
+1407443733005;BLUE;Domcek;-11.0;true;RED;Jakub;-11.0;false;
+1407443700721;BLUE;Jakub;-11.0;true;RED;Domcek;-11.0;false;
+1407443584788;BLUE;Domcek;-11.0;true;RED;Jakub;-11.0;false;
+1407443548435;BLUE;Domcek;-11.0;true;RED;Jakub;-11.0;false;
+1407443354290;BLUE;Jakub;-11.0;true;RED;Domcek;-11.0;false;
+1407442889756;BLUE;dfôťž"ý  ôô.'.;-11.0;true;RED;Domcek;-11.0;false;
+1407442800099;BLUE;dfôťž"ý  ôô.'.;-11.0;true;RED;Jakub;-11.0;false;
+1407442760608;BLUE;Jakub;-11.0;true;RED;Domcek;-11.0;false;
+1407442742962;BLUE;Domcek;-11.0;true;RED;Jakub;-11.0;false;
+1407442734524;BLUE;Jakub;-11.0;true;RED;Domcek;-11.0;false;
+1407442705573;BLUE;Jakub;-11.0;true;RED;Domcek;-11.0;false;
+1407442659968;BLUE;null;-11.0;true;RED;null;-11.0;false;

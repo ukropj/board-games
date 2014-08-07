@@ -13,4 +13,7 @@
             <fileset dir="${bin}"/>
         </jar>
     </target>
+	<!-- tu run: 
+	java -jar AnimalAgricola/deploy/AnimalAgricola.jar
+	 -->
 </project>

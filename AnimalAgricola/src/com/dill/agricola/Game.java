@@ -49,7 +49,7 @@ public class Game {
 		CLEANUP, BEFORE_WORK, WORK, EXTRA_WORK, BEFORE_BREEDING, BREEDING;
 	}
 
-	public final static int ROUNDS = Main.DEBUG ? 3 : 8;
+	public final static int ROUNDS = Main.DEBUG ? 1 : 8;
 
 	private final Player[] players;
 	private final Board board;
@@ -58,6 +58,8 @@ public class Game {
 	private final TurnUndoManager undoManager;
 	private SubmitListener submitListener;
 
+	private long startTime;
+	
 	private int round = 0;
 	private Phase phase;
 	private PlayerColor startPlayer;
@@ -67,8 +69,8 @@ public class Game {
 	private Action breedingAction = new Breeding();
 	private boolean ended;
 
-	Deque<Player> playerQueue = new ArrayDeque<Player>();
-
+	private final Deque<Player> playerQueue = new ArrayDeque<Player>();
+	
 	public Game() {
 		ap = new ActionPerformer();
 		undoManager = new TurnUndoManager();
@@ -166,6 +168,10 @@ public class Game {
 	public boolean isEnded() {
 		return ended;
 	}
+	
+	public long getStartTime() {
+		return startTime;
+	}
 
 	public void start() {
 		NewGameDialog newDialog = new NewGameDialog(board);
@@ -190,6 +196,8 @@ public class Game {
 
 		setStartingPlayer(newDialog.getStartingPlayer());
 		initialStartPlayer = startPlayer;
+		
+		startTime = System.currentTimeMillis();
 
 		board.startGame();
 		startRound();

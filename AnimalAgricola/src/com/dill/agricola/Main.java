@@ -29,7 +29,7 @@ public class Main {
 	};
 
 	public static boolean DEBUG = true;
-	public static boolean SKIP_LANG = false;
+	public static boolean SKIP_LANG = true;
 
 	private static final Lang DEFAULT_LANG = DEBUG ? Lang.EN : Lang.EN; // 'en' is default
 
