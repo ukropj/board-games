@@ -32,7 +32,7 @@ public class ScoreIO {
 		writeScores(scores);
 	}
 
-	private Collection<Score> getScores() {
+	public Collection<Score> getScores() {
 		if (scores == null) {
 			scores = readScores();
 		}

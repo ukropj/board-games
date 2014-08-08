@@ -49,7 +49,7 @@ public class Game {
 		CLEANUP, BEFORE_WORK, WORK, EXTRA_WORK, BEFORE_BREEDING, BREEDING;
 	}
 
-	public final static int ROUNDS = Main.DEBUG ? 1 : 8;
+	public final static int ROUNDS = Main.DEBUG ? 3 : 8;
 
 	private final Player[] players;
 	private final Board board;

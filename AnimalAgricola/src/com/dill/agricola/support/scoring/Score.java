@@ -16,21 +16,23 @@ public class Score implements Comparable<Score> {
 	private static final DateFormat df = DateFormat.getDateInstance();
 
 	private final long startTime;
+	private final PlayerColor startingPlayer;
 	private final List<PlayerScore> playerScores;
 
 	public Score(Game game, Map<PlayerColor, String> nameMap) {
 		this.startTime = game.getStartTime();
+		this.startingPlayer = game.getInitialStartPlayer();
 		List<PlayerScore> playerScores = new ArrayList<PlayerScore>();
-		PlayerColor startingPlayer = game.getInitialStartPlayer();
 		for (Player player : game.getPlayers()) {
 			PlayerColor color = player.getColor();
-			playerScores.add(new PlayerScore(color, nameMap.get(color), player.getScore(), color == startingPlayer));
+			playerScores.add(new PlayerScore(color, nameMap.get(color), player.getScore()));
 		}
 		this.playerScores = Collections.unmodifiableList(playerScores);
 	}
 
-	private Score(long startTime, List<PlayerScore> playerScores) {
+	private Score(long startTime, PlayerColor startingPlayer, List<PlayerScore> playerScores) {
 		this.startTime = startTime;
+		this.startingPlayer = startingPlayer;
 		this.playerScores = Collections.unmodifiableList(playerScores);
 	}
 
@@ -38,16 +40,27 @@ public class Score implements Comparable<Score> {
 		return startTime;
 	}
 
-	private Date getDate() {
+	public Date getDate() {
 		return new Date(startTime);
+	}
+	
+	public PlayerColor getStartingPlayer() {
+		return startingPlayer;
 	}
 
 	public List<PlayerScore> getPlayerScores() {
 		return playerScores;
 	}
+	
+	public PlayerColor getWinner() {
+		float blueTotal = playerScores.get(0).getScore();
+		float redTotal = playerScores.get(1).getScore();
+		return blueTotal > redTotal ? PlayerColor.BLUE
+				: blueTotal < redTotal ? PlayerColor.RED : startingPlayer.other();
+	}
 
 	public String toString() {
-		return df.format(getDate()) + " " + playerScores;
+		return df.format(getDate()) + " s:" + startingPlayer+  " " + playerScores;
 	}
 
 	public int hashCode() {
@@ -72,12 +85,12 @@ public class Score implements Comparable<Score> {
 
 	public static String serialize(Score score) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(score.getStartTime()).append(";"); // TODO use ISO
+		sb.append(score.getStartTime()).append(";");
+		sb.append(score.getStartingPlayer()).append(";");
 		for (PlayerScore ps : score.getPlayerScores()) {
 			sb.append(ps.getColor()).append(";")
 					.append(sanitize(ps.getName())).append(";")
-					.append(ps.getScore()).append(";")
-					.append(ps.isStarting()).append(";");
+					.append(ps.getScore()).append(";");
 		}
 		return sb.toString();
 	}
@@ -90,15 +103,15 @@ public class Score implements Comparable<Score> {
 		try {
 			String[] parts = str.split(";");
 			long time = Long.valueOf(parts[0]);
+			PlayerColor starting = PlayerColor.valueOf(parts[1]);
 			List<PlayerScore> playerScores = new ArrayList<PlayerScore>();
-			for (int i = 1; i + 3 < parts.length; i += 4) {
+			for (int i = 2; i + 2 < parts.length; i += 3) {
 				PlayerColor color = PlayerColor.valueOf(parts[i]);
 				String name = parts[i + 1];
 				float score = Float.valueOf(parts[i + 2]);
-				boolean isStarting = Boolean.valueOf(parts[i + 3]);
-				playerScores.add(new PlayerScore(color, name, score, isStarting));
+				playerScores.add(new PlayerScore(color, name, score));
 			}
-			return new Score(time, playerScores);
+			return new Score(time, starting, playerScores);
 		} catch (Exception e) {
 			throw new ScoreParsingException(e);
 		}
@@ -109,13 +122,11 @@ public class Score implements Comparable<Score> {
 		private final PlayerColor color;
 		private final String name;
 		private final float score;
-		private final boolean isStarting;
 
-		public PlayerScore(PlayerColor color, String name, float score, boolean isStarting) {
+		public PlayerScore(PlayerColor color, String name, float score) {
 			this.color = color;
 			this.name = name;
 			this.score = score;
-			this.isStarting = isStarting;
 		}
 
 		public PlayerColor getColor() {
@@ -130,11 +141,6 @@ public class Score implements Comparable<Score> {
 			return score;
 		}
 
-		public boolean isStarting() {
-			return isStarting;
-		}
-
-		@Override
 		public String toString() {
 			return color.toString() + " " + score;
 		}

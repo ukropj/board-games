@@ -8,6 +8,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +26,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
 
 import com.dill.agricola.Game;
 import com.dill.agricola.Main;
@@ -36,6 +41,7 @@ import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.support.Fonts;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.support.scoring.Score;
+import com.dill.agricola.support.scoring.Score.PlayerScore;
 import com.dill.agricola.support.scoring.ScoreIO;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
@@ -189,7 +195,7 @@ public class ScorePanel extends JScrollPane implements ActionListener {
 				BorderFactory.createEmptyBorder(2, 2, 2, 2)));
 		return component;
 	}
-	
+
 	private void updateSaveButton() {
 		boolean alreadySaved = io.isSaved(game.getStartTime());
 		if (!Main.DEBUG) {
@@ -202,8 +208,17 @@ public class ScorePanel extends JScrollPane implements ActionListener {
 		NameDialog nameDialog = new NameDialog(
 				(JFrame) SwingUtilities.getWindowAncestor(this),
 				io.getNamesInScores());
-		Score score = new Score(game, nameDialog.getNameMap());
-		io.appendScore(score);
+		Map<PlayerColor, String> nameMap = nameDialog.getNameMap();
+		if (nameMap != null) {
+			Score score = new Score(game, nameMap);
+			io.appendScore(score);
+		}
+	}
+
+	private void showScores() {
+		new ScoresDialog(
+				(JFrame) SwingUtilities.getWindowAncestor(this),
+				new ArrayList<Score>(io.getScores()));
 	}
 
 	private static enum Command {
@@ -214,7 +229,7 @@ public class ScorePanel extends JScrollPane implements ActionListener {
 		Command command = Command.valueOf(e.getActionCommand());
 		switch (command) {
 		case VIEW_SCORE:
-
+			showScores();
 			break;
 		case SAVE_SCORE:
 			saveScores();
@@ -228,7 +243,8 @@ public class ScorePanel extends JScrollPane implements ActionListener {
 	private final static class NameDialog extends JDialog implements ActionListener {
 		private static final long serialVersionUID = 1L;
 
-		List<JComboBox> nameBoxes = new ArrayList<JComboBox>();
+		private final List<JComboBox> nameBoxes = new ArrayList<JComboBox>();
+		private Map<PlayerColor, String> nameMap = null;
 
 		public NameDialog(JFrame parent, List<String> usualNames) {
 			super(parent);
@@ -285,17 +301,198 @@ public class ScorePanel extends JScrollPane implements ActionListener {
 		}
 
 		public Map<PlayerColor, String> getNameMap() {
-			Map<PlayerColor, String> nameMap = new HashMap<PlayerColor, String>();
-			for (JComboBox nameList : nameBoxes) {
-				nameMap.put(PlayerColor.valueOf(nameList.getActionCommand()), (String) nameList.getSelectedItem());
-			}
 			return nameMap;
 		}
 
 		public void actionPerformed(ActionEvent e) {
+			nameMap = new HashMap<PlayerColor, String>();
+			for (JComboBox nameList : nameBoxes) {
+				nameMap.put(PlayerColor.valueOf(nameList.getActionCommand()), (String) nameList.getSelectedItem());
+			}
+
 			setVisible(false);
 			dispose();
 		}
 	}
 
+	private final static class ScoresDialog extends JDialog {
+		private static final long serialVersionUID = 1L;
+
+		public ScoresDialog(JFrame parent, List<Score> scores) {
+			super(parent);
+
+			setTitle(Msg.get("scoresTitle"));
+			setIconImage(Images.createIcon("application-certificate", ImgSize.SMALL).getImage());
+			setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			setModalityType(ModalityType.APPLICATION_MODAL);
+			setResizable(false);
+
+			buildLayout(scores);
+			pack();
+			setLocationRelativeTo(parent);
+
+			setVisible(true);
+		}
+
+		private void buildLayout(List<Score> scores) {
+			JTable table = new JTable(new ScoreModel(scores));
+			table.setPreferredScrollableViewportSize(new Dimension(500, 300));
+			table.setAutoCreateRowSorter(true);
+			table.setDragEnabled(false);
+			table.getTableHeader().setDefaultRenderer(new ScoreHeaderRenderer(table.getTableHeader().getDefaultRenderer()));
+			table.setDefaultRenderer(Float.class, new ScoreNumberRenderer(table.getDefaultRenderer(Float.class)));
+			table.setDefaultRenderer(String.class, new ScoreStringRenderer(table.getDefaultRenderer(String.class)));
+
+			JScrollPane scrollPane = new JScrollPane(table);
+			scrollPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+			getContentPane().add(scrollPane, BorderLayout.CENTER);
+		}
+	}
+
+	private static final class ScoreModel extends AbstractTableModel {
+		private static final long serialVersionUID = 1L;
+
+		public static final int PLAYER_COLS = 2;
+		private static final DateFormat FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+
+		private final List<String> columnNames;
+
+		private final List<Score> scores;
+
+		public ScoreModel(List<Score> scores) {
+			this.scores = scores;
+
+			columnNames = new ArrayList<String>();
+			columnNames.add(Msg.get("dateCol"));
+			for (PlayerColor color : PlayerColor.values()) {
+				columnNames.add(Msg.get(color.toString().toLowerCase()));
+				columnNames.add(Msg.get("scoreCol"));
+			}
+		}
+
+		public int getColumnCount() {
+			return columnNames.size();
+		}
+
+		public int getRowCount() {
+			return scores.size();
+		}
+
+		public String getColumnName(int col) {
+			return columnNames.get(col);
+		}
+
+		private Object getColValue(Score s, int col) {
+			if (col == 0) {
+				return FORMAT.format(s.getDate());
+			}
+			PlayerColor color = getPlayer(col);
+			int playerCol = (col-1) % PLAYER_COLS;
+			PlayerScore ps = s.getPlayerScores().get(color.ordinal());
+
+			switch (playerCol) {
+			case 0:
+				return ps.getName() + (s.getStartingPlayer() == color ? "*" : "");
+			case 1:
+				return ps.getScore();
+			default:
+				throw new IllegalArgumentException("Invalid column index " + col);
+			}
+		}
+
+		public Object getValueAt(int row, int col) {
+			return getColValue(scores.get(row), col);
+		}
+
+		public PlayerColor getPlayer(int col) {
+			if (col == 0) {
+				return null;
+			}
+			return PlayerColor.values()[(col - 1) / ScoreModel.PLAYER_COLS];
+		}
+		
+		public boolean isWinner(int row, int col) {
+			return getPlayer(col) == scores.get(row).getWinner();
+		}
+
+		public Class<?> getColumnClass(int c) {
+			return getValueAt(0, c).getClass();
+		}
+
+		public boolean isCellEditable(int row, int col) {
+			return false;
+		}
+
+	}
+
+	private static final class ScoreHeaderRenderer implements TableCellRenderer {
+
+		private final TableCellRenderer defaultRendered;
+
+		public ScoreHeaderRenderer(TableCellRenderer tableCellRenderer) {
+			defaultRendered = tableCellRenderer;
+		}
+
+		public Component getTableCellRendererComponent(
+				JTable table, Object value,
+				boolean isSelected, boolean hasFocus,
+				int row, int column) {
+			Component comp = defaultRendered.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+			comp.setFont(SMALLER_FONT);
+			if (column > 0) {
+				comp.setForeground(((ScoreModel)table.getModel()).getPlayer(column).getRealColor());
+			}
+			return comp;
+		}
+	}
+
+	private static final class ScoreNumberRenderer implements TableCellRenderer {
+
+		private final TableCellRenderer defaultRendered;
+
+		public ScoreNumberRenderer(TableCellRenderer tableCellRenderer) {
+			defaultRendered = tableCellRenderer;
+		}
+
+		public Component getTableCellRendererComponent(
+				JTable table, Object value,
+				boolean isSelected, boolean hasFocus,
+				int row, int column) {
+			Component comp = defaultRendered.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+			if (comp instanceof JLabel) {
+				((JLabel) comp).setHorizontalAlignment(SwingConstants.CENTER);
+				if (((ScoreModel)table.getModel()).isWinner(row, column)) {
+					comp.setForeground(MORE_COLOR);
+				} else {
+					comp.setForeground(Color.DARK_GRAY);					
+				}
+			}
+			return comp;
+		}
+	}
+
+	private static final class ScoreStringRenderer implements TableCellRenderer {
+
+		private final TableCellRenderer defaultRendered;
+
+		public ScoreStringRenderer(TableCellRenderer tableCellRenderer) {
+			defaultRendered = tableCellRenderer;
+		}
+
+		public Component getTableCellRendererComponent(
+				JTable table, Object value,
+				boolean isSelected, boolean hasFocus,
+				int row, int column) {
+			Component comp = defaultRendered.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+			if (comp instanceof JLabel) {
+				((JLabel) comp).setHorizontalAlignment(SwingConstants.CENTER);
+				if (((ScoreModel)table.getModel()).isWinner(row, column)) {
+					comp.setForeground(MORE_COLOR);
+				} else {
+					comp.setForeground(Color.DARK_GRAY);					
+				}
+			}
+			return comp;
+		}
+	}
 }
