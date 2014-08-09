@@ -180,7 +180,7 @@ public class Game {
 		}
 
 		GeneralSupply.reset(newDialog.getUseMoreBuildings(), newDialog.getUseEvenMoreBuildings());
-		new BuildingOverviewDialog(board, newDialog.getUseMoreBuildings() || newDialog.getUseEvenMoreBuildings());
+		new BuildingOverviewDialog(board, newDialog.getUseMoreBuildings(), newDialog.getUseEvenMoreBuildings());
 
 		for (Player p : players) {
 			p.init();

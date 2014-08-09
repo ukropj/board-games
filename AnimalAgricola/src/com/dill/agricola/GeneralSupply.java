@@ -3,7 +3,6 @@ package com.dill.agricola;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -21,8 +20,10 @@ public class GeneralSupply {
 	}
 
 	public final static int MAX_TROUGHS = 10;
+	public final static int BUILDINGS = 4;
 	public final static int MORE_BUILDINGS = Main.DEBUG ? 27 : 4;
 	public final static int EVEN_MORE_BUILDINGS = Main.DEBUG ? 27 : 4;
+	public final static int[] INITIAL_BUILDING_COUNTS = { BUILDINGS, MORE_BUILDINGS, EVEN_MORE_BUILDINGS };
 	public final static Integer[] EXTS = { 0, 1, 2, 3, 4, 5 };
 	public final static Stall[] STALLS = { new Stall(0), new Stall(1), new Stall(2), new Stall(3), new Stall(4), new Stall(5) };
 
@@ -55,9 +56,9 @@ public class GeneralSupply {
 			stallsLeft.add(STALLS[1]);
 		}
 		Collections.shuffle(stallsLeft);
-		
+
 		troughsLeft = MAX_TROUGHS;
-		
+
 		extsLeft.clear();
 		extsLeft.addAll(Arrays.asList(EXTS));
 		if (!useEvenMoreBuildings) {
@@ -68,9 +69,9 @@ public class GeneralSupply {
 		}
 		Collections.shuffle(extsLeft);
 		extsUsed.clear();
-		
+
 		SPECIAL_BUILDINGS.clear(); // clear building instances
-		randomizeBuildings();
+		randomizeBuildings(INITIAL_BUILDING_COUNTS);
 	}
 
 	public static int getLeft(Supplyable type) {
@@ -107,34 +108,43 @@ public class GeneralSupply {
 		return types;
 	}
 
-	public static void randomizeBuildings() {
+	public static void randomizeBuildings(int[] counts) {
 		buildingsAll.clear();
-		buildingsAll.addAll(generateRandomBuildings());
+		buildingsAll.addAll(generateRandomBuildings(0, counts[0], false));
+		if (useMoreBuildings) {
+			buildingsAll.addAll(generateRandomBuildings(1, counts[1], false));
+		}
+		if (useEvenMoreBuildings) {
+			buildingsAll.addAll(generateRandomBuildings(2, counts[2], false));
+		}
+		Collections.sort(buildingsAll, BuildingType.COMPARATOR);
 		buildingsLeft.clear();
 		buildingsLeft.addAll(buildingsAll);
 	}
 
-	private static List<BuildingType> generateRandomBuildings() {
-		List<BuildingType> types = new ArrayList<BuildingType>(BuildingType.SPECIAL_BUILDINGS_TYPES);
-		if (useMoreBuildings) {
-			List<BuildingType> moreTypes = new ArrayList<BuildingType>(BuildingType.MORE_SPECIAL_BUILDINGS_TYPES);
-			Collections.shuffle(moreTypes);
-			for (int i = 0; i < MORE_BUILDINGS && i < moreTypes.size(); i++) {
-				types.add(moreTypes.get(i));
-			}
+	public static void randomizeBuildings(int set, int count) {
+		buildingsAll.removeAll(BuildingType.set(set));
+		buildingsAll.addAll(generateRandomBuildings(set, count, false));
+		Collections.sort(buildingsAll, BuildingType.COMPARATOR);
+		buildingsLeft.clear();
+		buildingsLeft.addAll(buildingsAll);
+	}
+	
+	public static List<BuildingType> getNextRandomBuildings(int set, int count) {
+		return generateRandomBuildings(set, count, true);
+	}
+
+	private static List<BuildingType> generateRandomBuildings(int set, int count, boolean ignoreCurrent) {
+		List<BuildingType> types = new ArrayList<BuildingType>();
+		List<BuildingType> availableTypes = new ArrayList<BuildingType>(BuildingType.set(set));
+		if (ignoreCurrent) {
+			// find random buildings that are not yet present in allBuildings			
+			availableTypes.removeAll(buildingsAll);
 		}
-		if (useEvenMoreBuildings) {
-			List<BuildingType> moreTypes = new ArrayList<BuildingType>(BuildingType.EVEN_MORE_SPECIAL_BUILDINGS_TYPES);
-			Collections.shuffle(moreTypes);
-			for (int i = 0; i < EVEN_MORE_BUILDINGS && i < moreTypes.size(); i++) {
-				types.add(moreTypes.get(i));
-			}
+		Collections.shuffle(availableTypes);
+		for (int i = 0; i < count && i < availableTypes.size(); i++) {
+			types.add(availableTypes.get(i));
 		}
-		Collections.sort(types, new Comparator<BuildingType>() {
-			public int compare(BuildingType o1, BuildingType o2) {
-				return o1.set != o1.set ? o1.set - o2.set : o1.compareTo(o2);
-			}
-		});
 		return types;
 	}
 

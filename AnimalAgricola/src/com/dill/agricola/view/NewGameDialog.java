@@ -70,7 +70,7 @@ public class NewGameDialog extends JDialog implements ActionListener, ItemListen
 		main.add(buildStartPlayerPanel());
 		main.add(buildExpansionPanel());
 
-		JButton submitButton = UiFactory.createTextButton(Msg.get("startGameBtn"), this);
+		JButton submitButton = UiFactory.createTextButton(Msg.get("nextBtn"), this);
 		submitButton.setActionCommand(OptionCommand.SUBMIT.toString());
 		JPanel submitP = UiFactory.createFlowPanel();
 		submitP.add(submitButton);

@@ -3,6 +3,7 @@ package com.dill.agricola.view;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
@@ -26,9 +27,15 @@ public class BuildingLabel extends JLabel {
 	private JToolTip tooltip;
 	private boolean showImageTooltip = false;;
 
+	public BuildingLabel(BuildingType type, ImgSize size, MouseListener mouseListener) {
+		this(type, size);
+		addMouseListener(mouseListener);
+	}
+
 	public BuildingLabel(BuildingType type, ImgSize size) {
 		this(type, size, 1);
 	}
+	
 
 	public BuildingLabel(BuildingType type, ImgSize size, float ratio) {
 		super(makeSmaller(AgriImages.getBuildingIcon(type, size), ratio));
