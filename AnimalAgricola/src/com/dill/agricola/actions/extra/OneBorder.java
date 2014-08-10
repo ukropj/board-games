@@ -14,7 +14,7 @@ public class OneBorder extends PurchaseAction {
 	public final static Materials COST = new Materials(Material.BORDER);
 
 	public OneBorder() {
-		super(ActionType.ONE_BORDER, Purchasable.FENCE);
+		super(ActionType.ONE_FREE_BORDER, Purchasable.FENCE);
 	}
 
 	protected Materials getCost(Player player) {

@@ -11,7 +11,7 @@ public class CattleMarket extends Building {
 
 	public final static Materials COST = new Materials(
 			Material.WOOD, Material.WOOD, Material.WOOD, Material.WOOD, Material.STONE);
-	public final static Action EXTRA_ACTION = new TradeReed();
+	public final static Action TRADE_REED = new TradeReed();
 	
 	public CattleMarket() {
 		super(BuildingType.CATTLE_MARKET, 2, 2);

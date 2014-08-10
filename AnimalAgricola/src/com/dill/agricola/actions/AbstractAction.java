@@ -79,8 +79,8 @@ public abstract class AbstractAction implements Action {
 		return useCount > 0;
 	}
 	
-	protected void setCancelled() {
-		cancelled = true;
+	protected void setCancelled(boolean cancelled) {
+		this.cancelled = cancelled;
 	}
 
 	public boolean isCancelled() {

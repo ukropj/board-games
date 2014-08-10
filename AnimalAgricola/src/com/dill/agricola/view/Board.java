@@ -367,7 +367,7 @@ public class Board extends JFrame {
 	public void quitGame() {
 		if (Main.DEBUG
 				|| !game.isStarted()
-				|| UiFactory.showQuestionDialog(this, Msg.get("endGameMsg"), Msg.get("gameInProgressTitle"))) {
+				|| UiFactory.showQuestionDialog(this, Msg.get("endGameMsg"), Msg.get("gameInProgressTitle"), null)) {
 			System.exit(0);
 		}
 	}
@@ -383,7 +383,7 @@ public class Board extends JFrame {
 			switch (command) {
 			case NEW:
 				if (!game.isStarted()
-						|| UiFactory.showQuestionDialog(Board.this, Msg.get("restartGameMsg"), Msg.get("gameInProgressTitle"))) {
+						|| UiFactory.showQuestionDialog(Board.this, Msg.get("restartGameMsg"), Msg.get("gameInProgressTitle"), null)) {
 					game.start();
 				}
 				break;

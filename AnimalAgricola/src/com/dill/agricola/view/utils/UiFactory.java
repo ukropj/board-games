@@ -205,12 +205,12 @@ public class UiFactory {
 		return l;
 	}
 
-	public static boolean showQuestionDialog(Component parent, String message, String title) {
+	public static boolean showQuestionDialog(Component parent, String message, String title, Icon icon) {
 		List<JComponent> opts = Arrays.asList(new JComponent[] {
 				UiFactory.createLabel(Msg.get("yesBtn"), null, 50),
 				UiFactory.createLabel(Msg.get("noBtn"), null, 50)
 		});
-		return 0 == showOptionDialog(parent, message, title, null, opts, 0);
+		return 0 == showOptionDialog(parent, message, title, icon, opts, 0);
 	}
 
 	public static int showOptionDialog(Component parent, String message, String title, Icon icon, List<JComponent> opts, int cols) {

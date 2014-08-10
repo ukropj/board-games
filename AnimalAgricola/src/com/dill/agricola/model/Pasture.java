@@ -17,7 +17,11 @@ public class Pasture extends Space {
 			return hasTrough() ? SOLO_FEEDER_CAP : 0;
 		}
 		int troughs = getTroughCount();
-		return troughs == 0 ? CAP : CAP * troughs * FEEDER_MULTI;
+		int cap = troughs == 0 ? CAP : CAP * troughs * FEEDER_MULTI;
+		if (extraCap) {
+			cap++;
+		}
+		return cap;
 	}
 
 	public boolean isAlwaysEnclosed() {

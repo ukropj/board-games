@@ -27,7 +27,7 @@ public class Player extends SimpleObservable {
 
 	public static final int USED_EXT_VP = 4;
 
-	public static final int MAX_WORKERS = Main.DEBUG ? 1 : 3;
+	public static final int MAX_WORKERS = Main.DEBUG ? 3 : 3;
 
 	private final PlayerColor color;
 	public final Farm farm;
@@ -56,7 +56,7 @@ public class Player extends SimpleObservable {
 		addMaterial(Material.BORDER, INIT_BORDERS);
 
 		if (Main.DEBUG) {
-			addMaterial(new Materials(Material.WOOD, 2));
+			addMaterial(new Materials(Material.WOOD, 20));
 			addMaterial(new Materials(Material.STONE, 20));
 			addMaterial(new Materials(Material.REED, 20));
 

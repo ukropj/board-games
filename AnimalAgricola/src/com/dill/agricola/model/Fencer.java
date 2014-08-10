@@ -10,6 +10,7 @@ import com.dill.agricola.common.Dir;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.PointUtils;
 import com.dill.agricola.model.buildings.more.ExtraCapacityProvider;
+import com.dill.agricola.model.types.BuildingType;
 
 public class Fencer {
 
@@ -93,6 +94,7 @@ public class Fencer {
 		}
 		
 		// process results
+		farm.setBuildingList(buildings);
 		boolean farmValid = true;
 		for (DirPoint pos : range) {
 			int pastureNo = floodMap[pos.x][pos.y];
@@ -102,10 +104,14 @@ public class Fencer {
 			for (ExtraCapacityProvider p : ecps) {
 				space.addExtraCapacity(p.getExtraCapacity(pos, space));
 			}
+			boolean extraCap = farm.hasBuilding(BuildingType.FEEDING_STATION)
+					&& !space.getPastureSpaces().isEmpty() 
+					&& space.getTroughCount() == 0
+					&& space.equals(space.getPastureSpaces().iterator().next());
+			space.setExtraCap(extraCap);
 			// check
 			farmValid = farmValid && space.isValid();
 		}
-		farm.setBuildingList(buildings);
 		farm.setValidAnimals(farmValid);
 	}
 

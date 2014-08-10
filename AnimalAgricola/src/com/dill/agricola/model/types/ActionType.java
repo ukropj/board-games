@@ -24,7 +24,7 @@ public enum ActionType {
 	BREEDING("breeding"),
 	BUILDING_REWARD("buildReward"),
 	ONE_TROUGH("oneTrough"),
-	ONE_BORDER("oneBorder"),
+	ONE_FREE_BORDER("oneBorder"),
 	FREE_BORDERS("freeBorders"),
 	SWITCH_FOR_COW("switchForCow"),
 	TRADE_ANIMALS("tradeAnimals"),
@@ -33,7 +33,10 @@ public enum ActionType {
 	EMPTY_REARING_STATION("emptyRearingStation"),
 	FREE_STABLES(),
 	TRADE_REED("tradeReed"), 
-	TRADE_MATERIALS("tradeMaterials");
+	TRADE_MATERIALS("tradeMaterials"), 
+	UPGRADE_TROUGH("upgradeTrough"), 
+	CARVE_STONE("carveStone"), 
+	GIVE_BORDERS("giveBorders");
 	
 	public final String desc;
 	public final String shortDesc;

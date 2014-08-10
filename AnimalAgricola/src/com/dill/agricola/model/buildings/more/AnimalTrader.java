@@ -11,7 +11,7 @@ public class AnimalTrader extends Building {
 
 	public final static Materials COST = new Materials(
 			Material.WOOD, Material.WOOD, Material.REED, Material.REED);
-	public final static Action EXTRA_ACTION = new TradeAnimals();
+	public final static Action TRADE_ANIMALS = new TradeAnimals();
 	
 	public AnimalTrader() {
 		super(BuildingType.ANIMAL_TRADER, 3, 2);

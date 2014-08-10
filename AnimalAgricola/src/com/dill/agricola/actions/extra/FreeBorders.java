@@ -13,9 +13,9 @@ public class FreeBorders extends PurchaseAction {
 	public final static Materials COST = new Materials(Material.BORDER);
 
 	protected final int count;
-	
+
 	public FreeBorders(int count) {
-		super(ActionType.FREE_BORDERS, Purchasable.FENCE);
+		super(count > 1 ? ActionType.FREE_BORDERS : ActionType.ONE_FREE_BORDER, Purchasable.FENCE);
 		this.count = count;
 	}
 

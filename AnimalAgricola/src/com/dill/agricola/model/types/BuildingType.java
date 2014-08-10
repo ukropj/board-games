@@ -58,8 +58,10 @@ public enum BuildingType {
 	STUD(1, Msg.get("stud"), new BuildingText(Msg.get("studText"), 0.12f, 0.52f, 0.76f)),
 	WILD_BOAR_PEN(1, Msg.get("wildBoarPen"), new BuildingText(Msg.get("wildBoarPenText"), 0.13f, 0.52f, 0.74f)),
 
-	// even more special buildings
+	// even more special buildings	
+	ASSEMBLY_HALL(2, Msg.get("assemblyHall"), new BuildingText(Msg.get("assemblyHallText"), 0.12f, 0.50f, 0.74f)),
 	BARN(2, Msg.get("barn"), new BuildingText(Msg.get("barnText"), 0.12f, 0.50f, 0.74f)),
+	BUILDING_FIRM(2, Msg.get("buildingFirm"), new BuildingText(Msg.get("buildingFirmText"), 0.13f, 0.50f, 0.74f)),
 	BYRE_DWELLING(2, Msg.get("byreDwelling")),
 	CARPENTERS_WORKSHOP(2, Msg.get("carpentersWorkshop"), new BuildingText(Msg.get("carpentersWorkshopText"), 0.12f, 0.49f, 0.74f)),
 	CATTLE_MARKET(2, Msg.get("cattleMarket"), new BuildingText(Msg.get("cattleMarketText"), 0.27f, 0.47f, 0.39f)),
@@ -68,6 +70,7 @@ public enum BuildingType {
 	DAIRY_FARM(2, Msg.get("dairyFarm"), new BuildingText(Msg.get("dairyFarmText"), 0.12f, 0.52f, 0.76f)),
 	ESTATE(2, Msg.get("estate"), new BuildingText(Msg.get("immediately"), 0.4f, 0.5f, 0.4f),
 			new BuildingText(Msg.get("estateText"), 0.34f, 0.72f, 0.53f)),
+	FEEDING_STATION(2, Msg.get("feedingStation"), new BuildingText(Msg.get("feedingStationText"), 0.12f, 0.49f, 0.76f)),
 	INN(2, Msg.get("inn"), new BuildingText(Msg.get("immediately"), 0.26f, 0.52f, 0.39f)),
 	MANOR(2, Msg.get("manor"), new BuildingText(Msg.get("manorText"), 0.13f, 0.49f, 0.74f)),
 	MATERIALS_OUTLET(2, Msg.get("materialsOutlet"), new BuildingText(Msg.get("immediately"), 0.16f, 0.52f, 0.39f)),
@@ -77,6 +80,8 @@ public enum BuildingType {
 	REED_HUT(2, Msg.get("reedHut"), new BuildingText(Msg.get("immediately"), 0.12f, 0.85f, 0.37f)),
 	SERVANTS_COTTAGE(2, Msg.get("servantsCottage"), new BuildingText(Msg.get("servantsCottageText"), 0.13f, 0.51f, 0.76f)),
 	STEWARDS_OFFICE(2, Msg.get("stewardsOffice"), new BuildingText(Msg.get("stewardsOfficeText"), 0.12f, 0.51f, 0.76f)),
+	STONE_CARVERS_WORKSHOP(2, Msg.get("stoneCarversWorkshop"), new BuildingText(Msg.get("stoneCarversWorkshopText"), 0.12f, 0.49f, 0.76f),
+			new BuildingText(Msg.get("stoneCarversWorkshopText2"), 0.34f, 0.81f, 0.45f)),
 	TRADING_STATION(2, Msg.get("tradingStation"), new BuildingText(Msg.get("tradingStationText"), 0.12f, 0.49f, 0.76f)),
 	WOODWORKING_SHOP(2, Msg.get("woodworkingShop"), new BuildingText(Msg.get("woodworkingShopText"), 0.12f, 0.51f, 0.68f));
 
@@ -124,13 +129,16 @@ public enum BuildingType {
 	public final static List<BuildingType> EVEN_MORE_SPECIAL_BUILDINGS_TYPES =
 			Collections.unmodifiableList(
 					Arrays.asList(new BuildingType[] {
+							ASSEMBLY_HALL,
 							BARN,
+							BUILDING_FIRM,
 							BYRE_DWELLING,
 							CARPENTERS_WORKSHOP,
 							CATTLE_MARKET,
 							CORNER_HOUSES,
 							DAIRY_FARM,
 							ESTATE,
+							FEEDING_STATION,
 							INN,
 							MANOR,
 							MATERIALS_OUTLET,
@@ -140,6 +148,7 @@ public enum BuildingType {
 							REED_HUT,
 							SERVANTS_COTTAGE,
 							STEWARDS_OFFICE,
+							STONE_CARVERS_WORKSHOP,
 							TRADING_STATION,
 							WOODWORKING_SHOP
 					}));

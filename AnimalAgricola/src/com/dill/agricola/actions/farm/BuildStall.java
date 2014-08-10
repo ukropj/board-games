@@ -24,8 +24,15 @@ public class BuildStall extends BuildAction {
 	private final Action fencesAction = new FreeBorders(2);
 	private final Action stablesAction = new FreeStables();
 
+	protected final boolean allowOne;  
+	
 	public BuildStall() {
-		super(ActionType.STALLS, BuildingType.STALL);
+		this(ActionType.STALLS, true);
+	}
+	
+	public BuildStall(ActionType type, boolean allowOne) {
+		super(type, BuildingType.STALL);
+		this.allowOne = allowOne;
 	}
 
 	protected boolean isAnyLeft() {
@@ -41,7 +48,7 @@ public class BuildStall extends BuildAction {
 	}
 
 	public boolean canDoOnFarm(Player player, DirPoint pos) {
-		return getUseCount() < 1 && super.canDoOnFarm(player, pos);
+		return allowOne ? getUseCount() < 1 : true && super.canDoOnFarm(player, pos);
 	}
 	
 	public boolean canUndoOnFarm(Player player, DirPoint pos) {

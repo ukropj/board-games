@@ -27,6 +27,7 @@ public abstract class Space {
 	private Set<Animal> animalTypesPerPasture = new HashSet<Animal>();
 	private Set<Space> pastureSpaces = new HashSet<Space>();
 	protected Animals extraAnimalCaps = new Animals();
+	protected boolean extraCap;
 
 	public Space() {
 		if (isAlwaysEnclosed()) {
@@ -186,6 +187,10 @@ public abstract class Space {
 			count += space.getAnimals();
 		}
 		return count;
+	}
+	
+	public void setExtraCap(boolean extraCap) {
+		this.extraCap = extraCap;
 	}
 
 

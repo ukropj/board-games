@@ -1,8 +1,11 @@
 #TODO#
 
 	even more buildings big and small
+	chcek messages in undo stack
 	
 #Bugs#
+
+	when usong AssemblyHall, undo button shows unlocalized text
 
 #Nice to have#
 

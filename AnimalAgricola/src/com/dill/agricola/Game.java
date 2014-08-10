@@ -33,6 +33,7 @@ import com.dill.agricola.actions.simple.ThreeWood;
 import com.dill.agricola.actions.simple.TwoStone;
 import com.dill.agricola.common.Animals;
 import com.dill.agricola.model.Player;
+import com.dill.agricola.model.buildings.evenmore.AssemblyHall;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.model.types.PlayerColor;
@@ -321,6 +322,7 @@ public class Game {
 
 	private void endTurn() {
 		Player currentPlayer = ap.getPlayer();
+		
 
 		// animals run away
 		releaseAnimals(currentPlayer);
@@ -328,6 +330,11 @@ public class Game {
 		// switch player
 		Player prevPlayer = currentPlayer;
 		currentPlayer = getOtherPlayer(currentPlayer);
+
+		// not pretty, but can't think of better place
+		if (prevPlayer.farm.hasBuilding(BuildingType.ASSEMBLY_HALL)) {
+			AssemblyHall.GIVE_BORDER.setOtherPlayer(currentPlayer);
+		}
 
 		if (currentPlayer.hasWorkers()) {
 			// if has workers continue with next turn
