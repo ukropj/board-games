@@ -58,17 +58,8 @@ public class PlayerBoard extends JPanel implements Observer {
 		playerLabel = UiFactory.createLabel(Msg.get("player", Msg.get(color.toString().toLowerCase())));
 		playerLabel.setFont(Fonts.FARM_NAME);
 		playerLabel.setPreferredSize(new Dimension(0, 30));
-//		playerLabel.setOpaque(true);
-//		playerLabel.setForeground(Color.WHITE);
 		playerLabel.setForeground(color.getRealColor());
-//		playerLabel.setBackground(color.getRealColor());
 		add(playerLabel, BorderLayout.NORTH);
-
-//		JLabel footerLabel = UiFactory.createLabel("");
-//		footerLabel.setPreferredSize(new Dimension(0, 5));
-//		footerLabel.setOpaque(true);
-//		footerLabel.setBackground(color.getRealColor());
-//		add(footerLabel, BorderLayout.SOUTH);
 	}
 
 	private void buildFarmPanel(ActionListener submitListener) {
@@ -78,7 +69,7 @@ public class PlayerBoard extends JPanel implements Observer {
 		c.gridy = 1;
 		c.gridwidth = 2;
 		c.weightx = 1.0;
-		c.insets = new Insets(0, 0, 10, 0);
+		c.insets = new Insets(0, 0, 0, 0);
 		c.anchor = GridBagConstraints.CENTER;
 		mainPanel.add(farmPanel, c);
 	}

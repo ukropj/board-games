@@ -116,7 +116,7 @@ public class ActionBoard extends JPanel {
 	public void showScoring() {
 		tabPane.setSelectedIndex(scoringTabIndex);
 	}
-
+	
 	public void resetBuildings() {
 		buildingPanel.resetBuildings();
 		ActionPanelFactory.repopulateBuildingPanel(buildingDisplay);

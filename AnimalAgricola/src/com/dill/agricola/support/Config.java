@@ -12,7 +12,8 @@ public class Config {
 		LAST_STARTING_PLAYER,
 		MORE_BUILDINGS,
 		EVEN_MORE_BUILDINGS, 
-		CONDENSED_LAYOUT;
+		CONDENSED_LAYOUT, 
+		BUILDINGS_RIBBON;
 	}
 	
 	private final static Preferences prefs = Preferences.userNodeForPackage(Main.class);

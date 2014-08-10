@@ -18,7 +18,7 @@ import com.dill.agricola.view.utils.UiFactory;
 
 public class Main {
 
-	public static final String VERSION = "1.1";
+	public static final String VERSION = "1.2";
 
 	private static enum Lang {
 		EN, DE, CZ, SK;
@@ -28,7 +28,8 @@ public class Main {
 		};
 	};
 
-	public static boolean DEBUG = true;
+	public static boolean DEBUG = false;
+//	public static boolean DEBUG = true;
 	public static boolean SKIP_LANG = false;
 
 	private static final Lang DEFAULT_LANG = DEBUG ? Lang.EN : Lang.EN; // 'en' is default

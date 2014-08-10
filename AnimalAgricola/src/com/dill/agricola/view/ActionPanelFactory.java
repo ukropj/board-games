@@ -48,7 +48,7 @@ import com.dill.agricola.view.utils.UiFactory;
 
 public class ActionPanelFactory {
 
-	private final static int INSET = 4;
+	private final static int INSET = 2;
 	
 	// shared listeners
 	private static ActionStateChangeListener stallSupplyChangeListener = null;

@@ -110,7 +110,7 @@ public class BuildSpecial extends BuildAction {
 		return getUseCount() < 1 && toBuild != null && canPurchase(player, toBuild, pos);
 	}
 
-	private boolean canPurchase(Player player, BuildingType type, DirPoint pos) {
+	public boolean canPurchase(Player player, BuildingType type, DirPoint pos) {
 		if (type == BuildingType.OPEN_STABLES) {
 			return player.canPurchase(type, getBuildingCost(player, type, 0), pos)
 					|| player.canPurchase(type, getBuildingCost(player, type, 1), pos);

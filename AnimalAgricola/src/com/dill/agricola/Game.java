@@ -99,7 +99,7 @@ public class Game {
 
 		board.pack();
 		if (Main.DEBUG) {
-			board.buildDebugPanel(players);
+//			board.buildDebugPanel(players);
 			board.setExtendedState(JFrame.MAXIMIZED_BOTH);
 //			board.setSize(1100, 640 + (Main.DEBUG ? 50 : 0));
 		} else {
@@ -202,9 +202,6 @@ public class Game {
 
 		board.startGame();
 		startRound();
-//		if (!board.isMaximized()) {
-//			board.pack();		
-//		}
 	}
 
 	private void startRound() {

@@ -384,6 +384,7 @@ public class FarmPanel extends JPanel {
 		btn.setToolTipText(action.getType().desc);
 		btn.setMargin(new Insets(1, 1, 1, 1));
 		btn.setBounds(X1 + farm.getWidth() * S + (3 * M) / 2, Y1 + M, S / 3 + M / 2, S / 3 + M / 2);
+		btn.setCursor(AgriImages.HAND_CURSOR);
 		if (quickAction) {
 			btn.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {

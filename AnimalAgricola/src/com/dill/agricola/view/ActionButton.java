@@ -2,7 +2,6 @@ package com.dill.agricola.view;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -35,13 +34,9 @@ public class ActionButton extends JButton {
 		this.actionType = actionType;
 		setMargin(new Insets(0, 0, 0, 0));
 		setAlignmentX(JButton.CENTER_ALIGNMENT);
-		setCursor(new Cursor(Cursor.HAND_CURSOR));
+		setCursor(AgriImages.HAND_CURSOR);
 		setToolTipText(actionType.desc);
 		setActionCommand(FarmActionCommand.SUBMIT.toString());
-	}
-
-	public void setEnabled(boolean b) {
-		super.setEnabled(b);
 	}
 
 	public ActionType getActionType() {

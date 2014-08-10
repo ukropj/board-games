@@ -25,7 +25,9 @@ public class BuildingLabel extends JLabel {
 	private boolean used = false;
 
 	private JToolTip tooltip;
-	private boolean showImageTooltip = false;;
+	private boolean showImageTooltip = false;
+
+	private boolean buildable = true;
 
 	public BuildingLabel(BuildingType type, ImgSize size, MouseListener mouseListener) {
 		this(type, size);
@@ -35,7 +37,6 @@ public class BuildingLabel extends JLabel {
 	public BuildingLabel(BuildingType type, ImgSize size) {
 		this(type, size, 1);
 	}
-	
 
 	public BuildingLabel(BuildingType type, ImgSize size, float ratio) {
 		super(makeSmaller(AgriImages.getBuildingIcon(type, size), ratio));
@@ -48,7 +49,7 @@ public class BuildingLabel extends JLabel {
 	private static ImageIcon makeSmaller(ImageIcon icon, float ratio) {
 		return new ImageIcon(Images.getBestScaledInstance((BufferedImage) icon.getImage(), ratio));
 	}
-	
+
 	public void setShowImageTooltip(boolean showImageTooltip) {
 		this.showImageTooltip = showImageTooltip;
 	}
@@ -64,9 +65,16 @@ public class BuildingLabel extends JLabel {
 			setToolTipText(type.name + (used ? " " + Msg.get("buildingTaken") : ""));
 		}
 	}
-	
+
 	public boolean isUsed() {
 		return used;
+	}
+
+	public void setBuildable(boolean buildable) {
+		if (this.buildable != buildable) {
+			this.buildable = buildable;
+			this.repaint();
+		}
 	}
 
 	public JToolTip createToolTip() {
@@ -75,7 +83,7 @@ public class BuildingLabel extends JLabel {
 				tooltip = new ImageTooltip(AgriImages.getBuildingIcon(type, ImgSize.BIG).getImage());
 				tooltip.setComponent(this);
 			}
-			return tooltip;			
+			return tooltip;
 		} else {
 			return super.createToolTip();
 		}
@@ -83,7 +91,7 @@ public class BuildingLabel extends JLabel {
 
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		if (used) {
+		if (used || !buildable) {
 			Dimension size = getSize();
 			// overlay
 			g.setColor(AgriImages.OVERLAY_COLOR);

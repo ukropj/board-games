@@ -40,14 +40,17 @@ import javax.swing.event.UndoableEditListener;
 
 import com.dill.agricola.Game;
 import com.dill.agricola.Game.Phase;
+import com.dill.agricola.GeneralSupply;
 import com.dill.agricola.Main;
 import com.dill.agricola.actions.ActionPerformer;
+import com.dill.agricola.actions.farm.BuildSpecial;
 import com.dill.agricola.model.Player;
+import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.support.Config;
+import com.dill.agricola.support.Config.ConfigKey;
 import com.dill.agricola.support.Fonts;
 import com.dill.agricola.support.Msg;
-import com.dill.agricola.support.Config.ConfigKey;
 import com.dill.agricola.undo.TurnUndoManager;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
@@ -71,17 +74,22 @@ public class Board extends JFrame {
 	private final JComponent[] playerPanes;
 	private JTabbedPane playerTabPane;
 	private ActionBoard actionBoard;
-	private DebugPanel debugPanel;
+//	private DebugPanel debugPanel;
 	private JButton undoBtn;
 	private JButton redoBtn;
+	private JComponent buildingsView;
+	private JPanel buildingsRibbon;
 
 	private boolean condensedLayout;
-
+	private boolean showBuildingsRibbon;
+	private BuildSpecial buildSpecialAction;
+	
 	public Board(Game game, ActionPerformer ap, TurnUndoManager undoManager) {
 		this.game = game;
 		this.ap = ap;
 		this.undoManager = undoManager;
 		this.condensedLayout = Config.getBoolean(ConfigKey.CONDENSED_LAYOUT, false);
+		this.showBuildingsRibbon = Config.getBoolean(ConfigKey.BUILDINGS_RIBBON, false);
 		ap.addUndoableEditListener(new UndoButtonUpdater());
 
 		playerBoards = new PlayerBoard[2];
@@ -99,7 +107,7 @@ public class Board extends JFrame {
 
 		mainPane = UiFactory.createFlowPanel();
 		mainPane.setLayout(new GridBagLayout());
-		int b = 10;
+		int b = 5;
 		mainPane.setBorder(BorderFactory.createEmptyBorder(b, b, b, b));
 		getContentPane().add(mainPane, BorderLayout.CENTER);
 
@@ -113,6 +121,8 @@ public class Board extends JFrame {
 
 		initActionsBoard();
 		initPlayerBoards();
+		initBuildingRibbon();
+		buildSpecialAction = new BuildSpecial();
 	}
 
 	private void initToolbar() {
@@ -151,6 +161,10 @@ public class Board extends JFrame {
 		toolbar.add(Box.createHorizontalGlue());
 //		toolbar.add(Box.createHorizontalStrut(100));
 
+		JButton ribbonB = UiFactory.createToolbarButton(null, "buildings-view", Msg.get("viewBuildingsBtn"), bl);
+		ribbonB.setActionCommand(ActionCommand.BUILDINGS.toString());
+		toolbar.add(ribbonB);
+		
 		JButton layoutB = UiFactory.createToolbarButton(null, "video-display", Msg.get("layoutBtn"), bl);
 		layoutB.setActionCommand(ActionCommand.LAYOUT.toString());
 		toolbar.add(layoutB);
@@ -218,7 +232,6 @@ public class Board extends JFrame {
 	}
 
 	private void initActionsBoard() {
-
 		actionBoard = new ActionBoard(game.getActions(), ap, game.getSubmitListener(), this.condensedLayout);
 		actionBoard.addTabs(new ScorePanel(game));
 		GridBagConstraints c = new GridBagConstraints();
@@ -231,11 +244,46 @@ public class Board extends JFrame {
 
 		mainPane.add(actionBoard, c);
 	}
+	
+	private void initBuildingRibbon() {
+		buildingsRibbon = UiFactory.createFlowPanel(3, 0);
 
-	public void buildDebugPanel(Player[] players) {
-		debugPanel = new DebugPanel(players);
-		getContentPane().add(debugPanel, BorderLayout.PAGE_END);
+		JScrollPane sp = new JScrollPane(buildingsRibbon);
+		sp.setBorder(BorderFactory.createEmptyBorder());
+		sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+//		sp.setPreferredSize(new Dimension(650, 15 + 160 * (1 + (more ? 1 : 0) + (evenMore ? 1 : 0))));
+		buildingsView = sp;
+		buildingsView.setVisible(showBuildingsRibbon);
+		getContentPane().add(buildingsView, BorderLayout.PAGE_END);
 	}
+	
+	private void updateRibbon() {
+		buildingsRibbon.removeAll();
+		Player currentPlayer = ap.getPlayer();
+		for (BuildingType type : GeneralSupply.getBuildingsLeft()) {
+			BuildingLabel bl = new BuildingLabel(type, ImgSize.BIG);
+			if (currentPlayer != null) {
+				bl.setBuildable(buildSpecialAction.canPurchase(currentPlayer, type, null));				
+			}
+			buildingsRibbon.add(bl);
+		}
+		buildingsRibbon.revalidate();
+		buildingsRibbon.repaint();
+	}
+	
+	public void toggleRibbon() {
+		showBuildingsRibbon = !showBuildingsRibbon;
+		buildingsView.setVisible(showBuildingsRibbon);
+		Config.putBoolean(ConfigKey.BUILDINGS_RIBBON, showBuildingsRibbon);
+//		invalidate();
+//		repaint();
+	}
+
+//	public void buildDebugPanel(Player[] players) {
+//		debugPanel = new DebugPanel(players);
+//		getContentPane().add(debugPanel, BorderLayout.PAGE_END);
+//	}
 
 	public void setLayoutType(boolean isCondensed) {
 		if (this.condensedLayout != isCondensed) {
@@ -254,6 +302,7 @@ public class Board extends JFrame {
 
 	public void startGame() {
 		actionBoard.resetBuildings();
+		updateRibbon();
 		actionBoard.resetActions();
 		playerBoards[0].reset();
 		playerBoards[1].reset();
@@ -291,7 +340,7 @@ public class Board extends JFrame {
 			if (game.isEnded()) {
 				turnL.setText(Msg.get("winnerLab"));
 			} else {
-				turnL.setText("");				
+				turnL.setText("");
 			}
 			break;
 		default:
@@ -299,6 +348,7 @@ public class Board extends JFrame {
 		}
 
 		actionBoard.updateActions();
+		updateRibbon();
 
 		if (phase == Phase.WORK) {
 			actionBoard.showActions();
@@ -320,9 +370,9 @@ public class Board extends JFrame {
 			playerBoards[currentColor.ordinal()].activate(game.getPhase());
 			playerBoards[currentColor.other().ordinal()].deactivate();
 
-			if (Main.DEBUG) {
-				debugPanel.setCurrentPlayer(currentColor);
-			}
+//			if (Main.DEBUG) {
+//				debugPanel.setCurrentPlayer(currentColor);
+//			}
 
 			if (condensedLayout) {
 				playerTabPane.setSelectedIndex(currentColor.ordinal());
@@ -334,7 +384,7 @@ public class Board extends JFrame {
 				playerL.setText(Msg.get(winner.toString().toLowerCase()));
 				playerL.setForeground(winner.getRealColor());
 			} else {
-				playerL.setText("");				
+				playerL.setText("");
 			}
 			playerBoards[0].deactivate();
 			playerBoards[1].deactivate();
@@ -373,7 +423,7 @@ public class Board extends JFrame {
 	}
 
 	public static enum ActionCommand {
-		NEW, EXIT, UNDO, REDO, ABOUT, SETTINGS, LAYOUT;
+		NEW, EXIT, UNDO, REDO, ABOUT, SETTINGS, LAYOUT, BUILDINGS;
 	}
 
 	private class ToolListener implements ActionListener, ItemListener {
@@ -392,6 +442,9 @@ public class Board extends JFrame {
 				break;
 			case REDO:
 				undoManager.redo();
+				break;
+			case BUILDINGS:
+				toggleRibbon();
 				break;
 			case LAYOUT:
 				setLayoutType(!condensedLayout);

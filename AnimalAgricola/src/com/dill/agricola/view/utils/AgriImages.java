@@ -1,6 +1,7 @@
 package com.dill.agricola.view.utils;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
@@ -20,7 +21,8 @@ import com.dill.agricola.support.Msg;
 
 public class AgriImages {
 	
-	public final static Color OVERLAY_COLOR = new Color(255, 255, 255, 120);
+	public final static Color OVERLAY_COLOR = new Color(255, 255, 255, 100);
+	public static final Cursor HAND_CURSOR = new Cursor(Cursor.HAND_CURSOR);
 
 	private final static BufferedImage[] buildings = new BufferedImage[BuildingType.values().length];
 	private final static BufferedImage[] animals = new BufferedImage[ImgSize.values().length * (Animal.values().length + 1)];
@@ -40,6 +42,7 @@ public class AgriImages {
 	private final static BufferedImage[] redArrowsMedium = new BufferedImage[Dir.values().length];
 	private final static BufferedImage[] redArrowsBig = new BufferedImage[Dir.values().length];
 	private final static BufferedImage[] symbols = new BufferedImage[4];
+
 
 	private AgriImages() {
 	}

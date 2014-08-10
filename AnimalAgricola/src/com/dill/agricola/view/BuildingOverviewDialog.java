@@ -128,7 +128,7 @@ public class BuildingOverviewDialog extends JDialog implements ActionListener, I
 
 		JScrollPane sp = new JScrollPane(allBuildingsPanel);
 		sp.setBorder(BorderFactory.createEmptyBorder());
-		sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
 		sp.setPreferredSize(new Dimension(650, 15 + 160 * (1 + (more ? 1 : 0) + (evenMore ? 1 : 0))));
 
@@ -353,8 +353,7 @@ public class BuildingOverviewDialog extends JDialog implements ActionListener, I
 				selectorBuilt = true;
 			}
 			selectorPanelPane.setVisible(!visible);
-//			updateBuildingPanels();
-			pack();
+			pack(); // TODO should not call this
 			break;
 		case SUBMIT:
 			setVisible(false);
