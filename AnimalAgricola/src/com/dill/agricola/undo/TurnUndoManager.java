@@ -32,7 +32,7 @@ public class TurnUndoManager extends UndoManager {
 			l.undoOrRedoPerformed(true);
 		}
 	}
-	
+
 	public synchronized void redo() throws CannotRedoException {
 		Logger.logUndo("Redo: " + getRedoPresentationName());
 		super.redo();
@@ -48,5 +48,14 @@ public class TurnUndoManager extends UndoManager {
 
 	public void addUndoRedoListener(UndoRedoListener listener) {
 		listeners.add(listener);
+	}
+
+	public void dump() {
+		int i = 0;
+		for (UndoableEdit edit : edits) {
+			if (edit.isSignificant()) {
+				System.out.println((i++) + ": " + edit.getPresentationName());
+			}
+		}
 	}
 }

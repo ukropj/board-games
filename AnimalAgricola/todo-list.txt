@@ -1,11 +1,12 @@
 #TODO#
 
 	even more buildings big and small
-	chcek messages in undo stack
+	check messages in undo stack
+	screenshot maker (integrate with scores?)
 	
 #Bugs#
 
-	when usong AssemblyHall, undo button shows unlocalized text
+	when using AssemblyHall, undo button shows unlocalized text
 
 #Nice to have#
 
@@ -15,3 +16,4 @@
 	stats
 	logging
 	global properties
+	touch display scorlling??

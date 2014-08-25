@@ -18,7 +18,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -42,7 +44,9 @@ import com.dill.agricola.Game;
 import com.dill.agricola.Game.Phase;
 import com.dill.agricola.GeneralSupply;
 import com.dill.agricola.Main;
+import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.ActionPerformer;
+import com.dill.agricola.actions.ActionStateChangeListener;
 import com.dill.agricola.actions.farm.BuildSpecial;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.BuildingType;
@@ -77,13 +81,14 @@ public class Board extends JFrame {
 //	private DebugPanel debugPanel;
 	private JButton undoBtn;
 	private JButton redoBtn;
+
 	private JComponent buildingsView;
 	private JPanel buildingsRibbon;
 
 	private boolean condensedLayout;
 	private boolean showBuildingsRibbon;
 	private BuildSpecial buildSpecialAction;
-	
+
 	public Board(Game game, ActionPerformer ap, TurnUndoManager undoManager) {
 		this.game = game;
 		this.ap = ap;
@@ -164,7 +169,7 @@ public class Board extends JFrame {
 		JButton ribbonB = UiFactory.createToolbarButton(null, "buildings-view", Msg.get("viewBuildingsBtn"), bl);
 		ribbonB.setActionCommand(ActionCommand.BUILDINGS.toString());
 		toolbar.add(ribbonB);
-		
+
 		JButton layoutB = UiFactory.createToolbarButton(null, "video-display", Msg.get("layoutBtn"), bl);
 		layoutB.setActionCommand(ActionCommand.LAYOUT.toString());
 		toolbar.add(layoutB);
@@ -244,9 +249,9 @@ public class Board extends JFrame {
 
 		mainPane.add(actionBoard, c);
 	}
-	
+
 	private void initBuildingRibbon() {
-		buildingsRibbon = UiFactory.createFlowPanel(3, 0);
+		buildingsRibbon = UiFactory.createFlowPanel();
 
 		JScrollPane sp = new JScrollPane(buildingsRibbon);
 		sp.setBorder(BorderFactory.createEmptyBorder());
@@ -256,22 +261,49 @@ public class Board extends JFrame {
 		buildingsView = sp;
 		buildingsView.setVisible(showBuildingsRibbon);
 		getContentPane().add(buildingsView, BorderLayout.PAGE_END);
-	}
-	
-	private void updateRibbon() {
-		buildingsRibbon.removeAll();
-		Player currentPlayer = ap.getPlayer();
-		for (BuildingType type : GeneralSupply.getBuildingsLeft()) {
-			BuildingLabel bl = new BuildingLabel(type, ImgSize.BIG);
-			if (currentPlayer != null) {
-				bl.setBuildable(buildSpecialAction.canPurchase(currentPlayer, type, null));				
-			}
-			buildingsRibbon.add(bl);
+
+		for (Action action : actionBoard.getBuildSpecialActions()) {
+			action.addChangeListener(new BuildingChangeListener());
 		}
+	}
+
+	private void resetRibbon() {
+		buildingsRibbon.removeAll();
+
+		List<BuildingType> types = new ArrayList<BuildingType>(GeneralSupply.getBuildingsAll());
+		for (BuildingType type : types) {
+			final JButton button = new JButton();
+			button.setMargin(new Insets(2, 2, 2, 2));
+			button.add(UiFactory.createLabel(AgriImages.getBuildingIcon(type, ImgSize.BIG, false)));
+			button.setActionCommand(type.toString());
+			button.addActionListener(new BuildingRibbonListener(type));
+			buildingsRibbon.add(button);
+		}
+	}
+
+	private void updateRibbon() {
+		Player currentPlayer = ap.getPlayer();
+		List<BuildingType> left = new ArrayList<BuildingType>(GeneralSupply.getBuildingsLeft());
+
+		for (Component c : buildingsRibbon.getComponents()) {
+			JButton btn = (JButton) c;
+			BuildingType type = BuildingType.valueOf(btn.getActionCommand());
+			boolean isLeft = left.contains(type);
+			btn.setVisible(isLeft);
+			if (isLeft) {
+				boolean canBuild = !ap.hasAction() && actionBoard.canBuildSpecial() && currentPlayer != null && buildSpecialAction.canPurchase(currentPlayer, type, null);
+				if (btn.isEnabled() != canBuild) {
+					btn.setEnabled(canBuild);
+					btn.remove(0);
+					btn.add(UiFactory.createLabel(AgriImages.getBuildingIcon(type, ImgSize.BIG, canBuild)));
+				}
+			}
+		}
+
 		buildingsRibbon.revalidate();
 		buildingsRibbon.repaint();
 	}
-	
+
 	public void toggleRibbon() {
 		showBuildingsRibbon = !showBuildingsRibbon;
 		buildingsView.setVisible(showBuildingsRibbon);
@@ -302,6 +334,7 @@ public class Board extends JFrame {
 
 	public void startGame() {
 		actionBoard.resetBuildings();
+		resetRibbon();
 		updateRibbon();
 		actionBoard.resetActions();
 		playerBoards[0].reset();
@@ -542,6 +575,26 @@ public class Board extends JFrame {
 			return defaultBorder;
 		}
 
+	}
+
+	private final class BuildingRibbonListener implements ActionListener {
+
+		private final BuildingType type;
+
+		public BuildingRibbonListener(BuildingType type) {
+			this.type = type;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			actionBoard.buildSpecial(type);
+		}
+	}
+
+	private final class BuildingChangeListener implements ActionStateChangeListener {
+
+		public void stateChanges(Action action) {
+			updateRibbon();
+		}
 	}
 
 }

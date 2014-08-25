@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +18,10 @@ import javax.swing.event.ChangeListener;
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.ActionPerformer;
 import com.dill.agricola.actions.ActionStateChangeListener;
+import com.dill.agricola.actions.farm.BuildSpecial;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Animal;
+import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.PlayerColor;
 import com.dill.agricola.support.Msg;
 import com.dill.agricola.view.Board.PlayerBorderFactory;
@@ -43,6 +46,8 @@ public class ActionBoard extends JPanel {
 
 	private boolean actionsDisabled;
 	private boolean condensedLayout;
+
+	private final List<BuildSpecial> buildSpecialActions = new ArrayList<BuildSpecial>();
 
 	public ActionBoard(List<Action> actions, final ActionPerformer ap, final ActionListener submitListener, boolean condensedLayout) {
 		this.ap = ap;
@@ -83,6 +88,7 @@ public class ActionBoard extends JPanel {
 
 			if (type == ActionType.SPECIAL || type == ActionType.SPECIAL2) {
 				ActionPanelFactory.bindBuildingPanel(action, buildingDisplay);
+				buildSpecialActions.add((BuildSpecial) action);
 			}
 		}
 
@@ -116,7 +122,7 @@ public class ActionBoard extends JPanel {
 	public void showScoring() {
 		tabPane.setSelectedIndex(scoringTabIndex);
 	}
-	
+
 	public void resetBuildings() {
 		buildingPanel.resetBuildings();
 		ActionPanelFactory.repopulateBuildingPanel(buildingDisplay);
@@ -195,6 +201,31 @@ public class ActionBoard extends JPanel {
 					&& ap.getPlayer() != null
 					&& action.canDo(ap.getPlayer()));
 			actionButtton.setUsed(action.getUser());
+		}
+	}
+	
+	public List<BuildSpecial> getBuildSpecialActions() {
+		return buildSpecialActions;
+	}
+
+	public boolean canBuildSpecial() {
+		for (Action action : buildSpecialActions) {
+			if (!action.isUsed()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void buildSpecial(BuildingType type) {
+		for (BuildSpecial action : buildSpecialActions) {
+			if (!action.isUsed()) {
+				action.setBuildingToBuild(type);
+				if (ap.startAction(action)) {
+					updateActions();
+				}
+				return;
+			}
 		}
 	}
 

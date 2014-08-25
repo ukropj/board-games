@@ -41,6 +41,8 @@ public class BuildSpecial extends BuildAction {
 	private final static Map<BuildingType, Materials> COSTS = new EnumMap<BuildingType, Materials>(BuildingType.class);
 	private final static Materials[] OS_COSTS = new Materials[] { OpenStables.COST_WOOD, OpenStables.COST_STONE };
 	private int osCostNo;
+	
+	private BuildingType explicitToBuild;
 
 	public BuildSpecial() {
 		super(counter++ % 2 == 0 ? ActionType.SPECIAL : ActionType.SPECIAL2);
@@ -78,6 +80,12 @@ public class BuildSpecial extends BuildAction {
 	public UndoableFarmEdit init() {
 		toBuild = null;
 		return super.init();
+	}
+	
+
+	public void setBuildingToBuild(BuildingType type) {
+		// used to skip picker dialog
+		explicitToBuild = type;
 	}
 
 	protected Materials getCost(Player player) {
@@ -178,7 +186,13 @@ public class BuildSpecial extends BuildAction {
 
 	public UndoableFarmEdit doo(Player player) {
 		if (canDo(player)) {
-			toBuild = chooseBuilding(player);
+			if (explicitToBuild != null) {
+				// building type might have been set externally
+				toBuild = explicitToBuild;
+				explicitToBuild = null;
+			} else {
+				toBuild = chooseBuilding(player);								
+			}
 			if (toBuild != null) {
 				setChanged();
 				setCancelled(false);
@@ -267,4 +281,5 @@ public class BuildSpecial extends BuildAction {
 			BuildSpecial.this.setChanged();
 		}
 	}
+
 }

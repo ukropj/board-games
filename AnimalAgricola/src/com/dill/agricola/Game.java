@@ -433,6 +433,10 @@ public class Game {
 		ended = true;
 		ap.endUpdate(); // end last "action/breeding edit"
 		board.endGame();
+		
+		if (Main.DEBUG) {
+			undoManager.dump();			
+		}
 	}
 
 	private void releaseAnimals(Player p) {
