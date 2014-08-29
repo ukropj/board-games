@@ -212,6 +212,7 @@ public class ScorePanel extends JScrollPane implements ActionListener {
 		if (nameMap != null) {
 			Score score = new Score(game, nameMap);
 			io.appendScore(score);
+			game.captureBoard(true);
 		}
 	}
 

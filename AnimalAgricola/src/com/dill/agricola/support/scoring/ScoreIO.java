@@ -21,10 +21,15 @@ import com.dill.agricola.support.scoring.Score.PlayerScore;
 import com.dill.agricola.support.scoring.Score.ScoreParsingException;
 
 public class ScoreIO {
-
-	public static final String FILE_NAME = "_scores.txt";
+	
+	public static final String SCORE_BASE = "_scores/";
+	public static final String FILE_NAME = SCORE_BASE + "_scores.txt";
 
 	private Collection<Score> scores = null;
+	
+	public ScoreIO() {
+		new File(SCORE_BASE).mkdirs();
+	}
 
 	public void appendScore(Score score) {
 		Collection<Score> scores = getScores();

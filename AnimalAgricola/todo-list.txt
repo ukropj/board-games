@@ -1,7 +1,7 @@
 #TODO#
 
 	check messages in undo stack
-	screenshot maker (integrate with scores?)
+	integrate screenshot maker with scores
 	
 #Bugs#
 

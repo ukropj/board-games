@@ -1,7 +1,11 @@
 package com.dill.agricola;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,12 +41,14 @@ import com.dill.agricola.model.buildings.evenmore.AssemblyHall;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.ChangeType;
 import com.dill.agricola.model.types.PlayerColor;
+import com.dill.agricola.support.scoring.ScoreIO;
 import com.dill.agricola.undo.SimpleEdit;
 import com.dill.agricola.undo.TurnUndoManager;
 import com.dill.agricola.undo.TurnUndoManager.UndoRedoListener;
 import com.dill.agricola.view.Board;
 import com.dill.agricola.view.BuildingOverviewDialog;
 import com.dill.agricola.view.NewGameDialog;
+import com.dill.agricola.view.utils.Images;
 
 public class Game {
 
@@ -476,6 +482,24 @@ public class Game {
 				new BuildStall(), new BuildStables(),
 				new BuildSpecial(), new BuildSpecial()//
 				));
+	}
+	
+	public String captureBoard(boolean useTimestamp) {
+		Dimension size = board.getSize();
+		BufferedImage img = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_RGB);
+		Graphics2D g = (Graphics2D)img.getGraphics();
+		g.setColor(Color.white);
+		board.paintAll(g);
+		
+		String path;
+		if (useTimestamp) {
+			path = ScoreIO.SCORE_BASE + getStartTime() + ".png";
+		} else {
+			path = Images.getUniqueName("aa_img.png");
+		}
+		
+		Images.saveImage(img, path);
+		return path;
 	}
 
 	private class SubmitListener implements ActionListener {

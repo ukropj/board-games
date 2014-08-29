@@ -174,6 +174,10 @@ public class Board extends JFrame {
 		layoutB.setActionCommand(ActionCommand.LAYOUT.toString());
 		toolbar.add(layoutB);
 
+		JButton captureB = UiFactory.createToolbarButton(null, "camera-photo", Msg.get("captureBtn"), bl);
+		captureB.setActionCommand(ActionCommand.CAPTURE.toString());
+		toolbar.add(captureB);
+
 //		JButton settingB = UiFactory.createToolbarButton(null, "preferences-system", Msg.get("settingsBtn"), bl);
 //		settingB.setActionCommand(ActionCommand.SETTINGS.toString());
 //		toolbar.add(settingB);
@@ -456,7 +460,7 @@ public class Board extends JFrame {
 	}
 
 	public static enum ActionCommand {
-		NEW, EXIT, UNDO, REDO, ABOUT, SETTINGS, LAYOUT, BUILDINGS;
+		NEW, EXIT, UNDO, REDO, ABOUT, SETTINGS, LAYOUT, BUILDINGS, CAPTURE;
 	}
 
 	private class ToolListener implements ActionListener, ItemListener {
@@ -481,6 +485,11 @@ public class Board extends JFrame {
 				break;
 			case LAYOUT:
 				setLayoutType(!condensedLayout);
+				break;
+			case CAPTURE:
+				String path = game.captureBoard(false);
+				JOptionPane.showMessageDialog(Board.this, Msg.get("capturedMsg", path), Msg.get("capturedTitle"), 
+						JOptionPane.INFORMATION_MESSAGE, Images.createIcon("camera-photo", ImgSize.SMALL));
 				break;
 //			case SETTINGS:
 //				showSettings();

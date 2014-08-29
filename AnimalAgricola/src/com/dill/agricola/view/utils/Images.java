@@ -4,8 +4,11 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -51,6 +54,41 @@ public class Images {
 			System.err.println("Couldn't find file: " + path);
 		}
 		return img;
+	}
+	
+	// naive regex, does not expect dots in file name etc.
+	private static Pattern FILE_PATH = Pattern.compile("^(.*" + File.pathSeparator+ ")?(\\w+)(\\d+)?(\\.\\w+)$");
+	
+	public static String getUniqueName(String path) {
+		File f = new File(path);
+		if (!f.exists()) {
+			return path;
+		}
+		
+		Matcher m = FILE_PATH.matcher(path);
+		if (m.find()) {
+			String b = m.group(1) != null ? m.group(1) : "";
+			String n = m.group(2);
+			int i = 1;
+			if (m.group(3) != null) {
+				i = Integer.parseInt(m.group(3), 10);
+			}
+			String s = m.group(4);
+			
+			while (f.exists()) {
+				path = b + n + (i++) + s;
+				f = new File(path);
+			}			
+		}
+		return path;
+	}
+	
+	public static void saveImage(BufferedImage img, String path) {
+		try {
+			ImageIO.write(img, path.substring(path.lastIndexOf('.') + 1), new File(path));
+		} catch (IOException e) {
+			throw new IllegalArgumentException(e);
+		}
 	}
 
 	/*public BufferedImage getBestScaledInstance(BufferedImage img, int, Object hint, boolean higherQuality) {
