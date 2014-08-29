@@ -9,7 +9,7 @@ public class TwoStone extends MaterialRefillAction {
 	public final static Materials REFILL = new Materials(Material.STONE, 2);
 	
 	public TwoStone() {
-		super(ActionType.TWO_STONE, REFILL);
+		super(ActionType.TWO_STONE, REFILL, true);
 	}
 
 }

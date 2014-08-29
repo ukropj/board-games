@@ -2,29 +2,37 @@
 
 Welcome to computer implementation of "Agricola: All Creatures Big and Small" by Uwe Rosenberg (published by Lookout Games, 2012).
 This readme file will not explain the rules, just the most important facts about this PC version. 
-To learn more about the ACBaS board game visit Board Game Geek (http://www.boardgamegeek.com/boardgame/119890/agricola-all-creatures-big-and-small).
+To learn more about the original board game visit Board Game Geek (http://www.boardgamegeek.com/boardgame/119890/agricola-all-creatures-big-and-small).
 
 ## General 
 
-Game uses Java6 (will also work if you have greater). Start it by double-click on AnimalAgricola.jar file.
-There is no AI or networking present. Two players play on one computer.
+The game uses Java6 (will also work if you have greater). Start it by double-click on AnimalAgricola.jar file.
+There is no AI or networking present. Two players play on single computer.
 
 ## Controls
 
  - Use mouse to select actions.
  - Left click on farm to build or unbuild fences/troughs/buildings.
+ - Farm spots available for interaction are marked with player-colored overlay.
  - Some actions need to be confirmed using green 'tick' button.
  
 ### Manipulating animals
 
  - Acquired animals are waiting below your farm for you to place them.
- - Possible animal locations are marked with blue/red circles.
+ - Possible animal locations are marked with player-colored circles.
  - Any unplaced animals will run away at the end of your turn.
  
  - Left-click on pasture/building to add one animal of particular type.
  - Right-click on pasture/building to remove one animal.
- - Use double-click to add/remove all available animals.
- - Alternatively, use mouse wheel to add/remove animals (this is the most convenient way - try it).
+ - Use left/right double-click to add/remove all available animals (works accros the whole pasture).
+ - Alternatively, use mouse wheel to add/remove animals (this is the most convenient way - try it!).
+ 
+### Extra actions
+
+ - When a special building gives you an extra action:
+ 	- it may be invoked immediately (e.g. "Fence Manufacturer")
+ 	- you may be prompted later, when the action can be performed (e.g. "Home Workshop")
+ 	- a button may appear besides your farm to activate the action when you want (e.g. "Animal Trader")
 
 ### Undo/Redo
 
@@ -33,14 +41,21 @@ There is no AI or networking present. Two players play on one computer.
  	- Game will maintain the correct number of animals, but their positions may change.
  	- You will need to reposition your animals manually after redoing an animal-related action.
  	
-### Displays
+## Displays
 
- - Buildings tab shows bigger building tiles
- - Animals tab shows bonus points scoring tables
+ - Actions tab shows action board.
+ - Buildings tab shows bigger building tiles.
+ - Animals tab shows bonus points scoring tables.
  - Score tab shows current scores of both players.
+ 
+ - Building panel (in the bottom) can be toggled using toolbar.
+ - Board layout can be switched from two farm to single farm usong toolbar.
  
 ## Version history
 
+1.2
+ - added "Even More Buildings Big and Small" expansion
+ - possible to save scores
 1.1
  - added "More Buildings Big and Small" expansion
 1.0

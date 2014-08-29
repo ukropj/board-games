@@ -82,6 +82,7 @@ public enum BuildingType {
 	STEWARDS_OFFICE(2, Msg.get("stewardsOffice"), new BuildingText(Msg.get("stewardsOfficeText"), 0.12f, 0.51f, 0.76f)),
 	STONE_CARVERS_WORKSHOP(2, Msg.get("stoneCarversWorkshop"), new BuildingText(Msg.get("stoneCarversWorkshopText"), 0.12f, 0.49f, 0.76f),
 			new BuildingText(Msg.get("stoneCarversWorkshopText2"), 0.34f, 0.81f, 0.45f)),
+	TIMBER_SHOP(2, Msg.get("timberShop"), new BuildingText(Msg.get("timberShopText"), 0.12f, 0.49f, 0.76f)),
 	TRADING_STATION(2, Msg.get("tradingStation"), new BuildingText(Msg.get("tradingStationText"), 0.12f, 0.49f, 0.76f)),
 	WOODWORKING_SHOP(2, Msg.get("woodworkingShop"), new BuildingText(Msg.get("woodworkingShopText"), 0.12f, 0.51f, 0.68f));
 
@@ -149,6 +150,7 @@ public enum BuildingType {
 							SERVANTS_COTTAGE,
 							STEWARDS_OFFICE,
 							STONE_CARVERS_WORKSHOP,
+							TIMBER_SHOP,
 							TRADING_STATION,
 							WOODWORKING_SHOP
 					}));

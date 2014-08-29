@@ -7,9 +7,9 @@ import com.dill.agricola.model.types.Material;
 public class ThreeWood extends MaterialRefillAction {
 
 	public final static Materials REFILL = new Materials(Material.WOOD, 3);
-	
+
 	public ThreeWood() {
-		super(ActionType.THREE_WOOD, REFILL);
+		super(ActionType.THREE_WOOD, REFILL, true);
 	}
 
 }

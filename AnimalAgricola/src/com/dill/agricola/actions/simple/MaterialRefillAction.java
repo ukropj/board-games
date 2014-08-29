@@ -7,6 +7,7 @@ import com.dill.agricola.actions.AbstractAction;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Player;
+import com.dill.agricola.model.buildings.evenmore.TimberShop;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.undo.SimpleEdit;
 import com.dill.agricola.undo.UndoableFarmEdit;
@@ -16,10 +17,17 @@ public abstract class MaterialRefillAction extends AbstractAction {
 	protected final Materials refill;
 
 	protected final Materials materials = new Materials();
-
+	
+	protected final boolean triggerTimberShop;
+	
 	public MaterialRefillAction(ActionType type, Materials refill) {
+		this(type, refill, false);
+	}
+
+	public MaterialRefillAction(ActionType type, Materials refill, boolean triggerTimberShop) {
 		super(type);
 		this.refill = refill;
+		this.triggerTimberShop = triggerTimberShop;
 	}
 
 	public void reset() {
@@ -29,9 +37,11 @@ public abstract class MaterialRefillAction extends AbstractAction {
 	}
 
 	public UndoableFarmEdit init() {
+		UndoableFarmEdit ts = triggerTimberShop && isUsed() ? TimberShop.takeTopAction(false) : null;
+		
 		materials.add(refill);
 		setChanged();
-		return joinEdits(super.init(), new RefillMaterials(refill));
+		return joinEdits(super.init(), new RefillMaterials(refill), ts);
 	}
 
 	public boolean canDo(Player player) {
@@ -43,6 +53,13 @@ public abstract class MaterialRefillAction extends AbstractAction {
 			UndoableFarmEdit edit = new TakeMaterials(player, new Materials(materials));
 			player.addMaterial(materials);
 			materials.clear();
+			
+			if (triggerTimberShop) {
+				UndoableFarmEdit takeActionEdit = TimberShop.takeTopAction(true);
+				UndoableFarmEdit timberReward = TimberShop.checkReward(false);
+				edit = joinEdits(edit, takeActionEdit, timberReward);				
+			}
+			
 			setChanged();
 			return joinEdits(true, edit);
 		}

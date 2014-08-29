@@ -20,7 +20,7 @@ public class StartOneWood extends MaterialRefillAction {
 	private final Game game;
 	
 	public StartOneWood(Game game) {
-		super(ActionType.STARTING_ONE_WOOD, REFILL);
+		super(ActionType.STARTING_ONE_WOOD, REFILL, true);
 		this.game = game;
 	}
 

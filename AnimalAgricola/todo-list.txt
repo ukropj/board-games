@@ -1,6 +1,5 @@
 #TODO#
 
-	even more buildings big and small
 	check messages in undo stack
 	screenshot maker (integrate with scores?)
 	
@@ -16,4 +15,3 @@
 	stats
 	logging
 	global properties
-	touch display scorlling??

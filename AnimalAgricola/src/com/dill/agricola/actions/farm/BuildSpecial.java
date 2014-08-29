@@ -22,6 +22,7 @@ import com.dill.agricola.model.Building;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.buildings.OpenStables;
 import com.dill.agricola.model.buildings.evenmore.Inn;
+import com.dill.agricola.model.buildings.evenmore.TimberShop;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
@@ -41,7 +42,7 @@ public class BuildSpecial extends BuildAction {
 	private final static Map<BuildingType, Materials> COSTS = new EnumMap<BuildingType, Materials>(BuildingType.class);
 	private final static Materials[] OS_COSTS = new Materials[] { OpenStables.COST_WOOD, OpenStables.COST_STONE };
 	private int osCostNo;
-	
+
 	private BuildingType explicitToBuild;
 
 	public BuildSpecial() {
@@ -81,7 +82,6 @@ public class BuildSpecial extends BuildAction {
 		toBuild = null;
 		return super.init();
 	}
-	
 
 	public void setBuildingToBuild(BuildingType type) {
 		// used to skip picker dialog
@@ -191,7 +191,7 @@ public class BuildSpecial extends BuildAction {
 				toBuild = explicitToBuild;
 				explicitToBuild = null;
 			} else {
-				toBuild = chooseBuilding(player);								
+				toBuild = chooseBuilding(player);
 			}
 			if (toBuild != null) {
 				setChanged();
@@ -238,7 +238,12 @@ public class BuildSpecial extends BuildAction {
 		for (Action a : actions) {
 			a.addChangeListener(new ExtraActionStateChangeListener());
 		}
-		return new UseBuilding(toBuild, actions);
+		UndoableFarmEdit tsEdit = null;
+		if (b.getType() == BuildingType.TIMBER_SHOP) {
+			((TimberShop) b).setOwner(player);
+			tsEdit = TimberShop.checkReward(true);
+		}
+		return joinEdits(new UseBuilding(toBuild, actions), tsEdit);
 	}
 
 	public Action getSubAction(Player player, boolean afterFarmAction) {

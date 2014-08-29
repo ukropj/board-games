@@ -297,16 +297,6 @@ public class Farm extends SimpleObservable {
 		return count;
 	}
 
-	public int count(BuildingType type) {
-		int count = 0;
-		for (Building b : buildingList) {
-			if (b.getType() == type) {
-				count++;
-			}
-		}
-		return count;
-	}
-
 	public List<Integer> getExtensions(Dir d) {
 		return extensions.get(d);
 	}
