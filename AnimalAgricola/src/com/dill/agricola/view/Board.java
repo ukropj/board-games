@@ -367,26 +367,22 @@ public class Board extends JFrame {
 			p.setView(pb);
 			p.setViewPosition(pos);
 		}*/
-//		System.out.println("Painting");
-		
-//		Component c = mainPane;
 		Component c = getContentPane();
 		
-//		Board.lockComponentSize(buildingsRibbon, true);
+		Board.lockComponentSize(buildingsRibbon, true);
 //		actionBoard.lockBuildingDisplaySize(true);
 		
-//		Dimension size = c.getPreferredSize();
-		Dimension size = c.getSize();
-//		System.out.println("Preferred: " + size);
+		Dimension size = c.getPreferredSize();
+		size.setSize(size.getWidth(), 800);
 		
 		Container parent = c.getParent();
 		BufferedImage img = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g = img.createGraphics();
-//		c.setSize(size);
-//		layoutComponent(c);
+		c.setSize(size);
+		layoutComponent(c);
 		SwingUtilities.paintComponent(g, c, parent, 0, 0, size.width, size.height);
 		
-//		Board.lockComponentSize(buildingsRibbon, false);
+		Board.lockComponentSize(buildingsRibbon, false);
 //		actionBoard.lockBuildingDisplaySize(false);
 		parent.add(c);
 		
@@ -395,16 +391,16 @@ public class Board extends JFrame {
 		return img;
 	}
 
-//	private void layoutComponent(Component c) {
-//		synchronized (c.getTreeLock()) {
-//			c.doLayout();
-//			if (c instanceof Container) {
-//				for (Component child : ((Container) c).getComponents()) {
-//					layoutComponent(child);
-//				}
-//			}
-//		}
-//	}
+	private void layoutComponent(Component c) {
+		synchronized (c.getTreeLock()) {
+			c.doLayout();
+			if (c instanceof Container) {
+				for (Component child : ((Container) c).getComponents()) {
+					layoutComponent(child);
+				}
+			}
+		}
+	}
 
 	public boolean isMaximized() {
 		return (getExtendedState() & JFrame.MAXIMIZED_BOTH) != 0;
@@ -537,7 +533,6 @@ public class Board extends JFrame {
 		Container parent = c.getParent();
 		if (parent instanceof JViewport) {
 			JViewport viewport = (JViewport) c.getParent();
-			System.out.println(lock + " " + viewport.getSize());
 			c.setPreferredSize(lock ? viewport.getSize() : null);	
 			viewport.setPreferredSize(lock ? viewport.getSize() : null);	
 			viewport.doLayout();

@@ -206,8 +206,6 @@ public class ActionBoard extends JPanel {
 	
 	public void lockBuildingDisplaySize(boolean lock) {
 		Board.lockComponentSize(buildingDisplay, lock);
-		tabPane.getComponent(0).doLayout();
-		System.out.println("Tab: " + tabPane.getComponent(0).getPreferredSize());
 	}
 	
 	public List<BuildSpecial> getBuildSpecialActions() {
