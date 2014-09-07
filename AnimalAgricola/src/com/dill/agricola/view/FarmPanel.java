@@ -554,7 +554,7 @@ public class FarmPanel extends JPanel {
 	public void paintComponent(Graphics g0) {
 		super.paintComponent(g0);
 		Graphics2D g = (Graphics2D) g0;
-		g.setClip(getVisibleRect());
+//		g.setClip(getVisibleRect());
 
 		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
@@ -802,17 +802,16 @@ public class FarmPanel extends JPanel {
 		if (max > 0 || count > 0) {
 			// draw counter circle
 			g.setColor(UiFactory.makeTranslucent(type != null ? (valid ? type.getColor() : PASTURE_COLOR) : PASTURE_COLOR, 200));
-			Area clip = new Area(getVisibleRect().createIntersection(new Rectangle(realPos.x + M, realPos.y + M, L + 1, L + 1)));
-//			if (index > 0) {
-//				clip.subtract(new Area(new Ellipse2D.Float(realPos.x + S - 6 * M + dx + k, realPos.y + S - 6 * M, 8 * M, 8 * M)));
-//			}
+			Rectangle origClip = g.getClipBounds();
+			Rectangle clipRect = new Rectangle(realPos.x + M, realPos.y + M, L + 1, L + 1);
+			Area clip = new Area(origClip == null ? clipRect : origClip.createIntersection(clipRect));
 			g.setClip(clip);
 			if (index < 3) {
 				g.fillOval(realPos.x + S - 6 * M + dx, realPos.y + S - 6 * M + dy, 6 * M, 8 * M);
 			} else {
 				g.fillOval(realPos.x + S - 6 * M + dx - 2 * M, realPos.y + S - 6 * M + dy + M / 2, 8 * M, 5 * M);
 			}
-			g.setClip(getVisibleRect());
+			g.setClip(origClip);
 			// draw actual/max
 			g.setColor(type != null ? (valid ? type.getContrastingColor() : RED) : Color.BLACK);
 			g.setFont(Fonts.FARM_FONT);

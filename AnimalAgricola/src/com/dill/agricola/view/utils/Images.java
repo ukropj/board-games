@@ -147,10 +147,10 @@ public class Images {
 			}
 
 			BufferedImage tmp = new BufferedImage(w, h, type);
-			Graphics2D g2 = tmp.createGraphics();
-			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, hint);
-			g2.drawImage(ret, 0, 0, w, h, null);
-			g2.dispose();
+			Graphics2D g = tmp.createGraphics();
+			g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, hint);
+			g.drawImage(ret, 0, 0, w, h, null);
+			g.dispose();
 
 			ret = tmp;
 		} while (w != targetWidth || h != targetHeight);

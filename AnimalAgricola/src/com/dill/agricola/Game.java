@@ -1,8 +1,5 @@
 package com.dill.agricola;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -485,11 +482,7 @@ public class Game {
 	}
 	
 	public String captureBoard(boolean useTimestamp) {
-		Dimension size = board.getSize();
-		BufferedImage img = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_RGB);
-		Graphics2D g = (Graphics2D)img.getGraphics();
-		g.setColor(Color.white);
-		board.paintAll(g);
+		BufferedImage img = board.paintPlayerBoards();
 		
 		String path;
 		if (useTimestamp) {

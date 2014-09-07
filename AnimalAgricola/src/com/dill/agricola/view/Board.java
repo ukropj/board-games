@@ -3,6 +3,8 @@ package com.dill.agricola.view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
@@ -36,6 +38,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
+import javax.swing.JViewport;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
@@ -295,7 +299,8 @@ public class Board extends JFrame {
 			boolean isLeft = left.contains(type);
 			btn.setVisible(isLeft);
 			if (isLeft) {
-				boolean canBuild = !ap.hasAction() && actionBoard.canBuildSpecial() && currentPlayer != null && buildSpecialAction.canPurchase(currentPlayer, type, null);
+				boolean canBuild = !ap.hasAction() && actionBoard.canBuildSpecial() && currentPlayer != null
+						&& buildSpecialAction.canPurchase(currentPlayer, type, null);
 				if (btn.isEnabled() != canBuild) {
 					btn.setEnabled(canBuild);
 					btn.remove(0);
@@ -331,6 +336,75 @@ public class Board extends JFrame {
 			Config.putBoolean(ConfigKey.CONDENSED_LAYOUT, condensedLayout);
 		}
 	}
+
+	public BufferedImage paintPlayerBoards() {
+		/*int D = 1;
+		int w = 0;
+		int h = 0;
+		for (PlayerBoard pb : playerBoards) {
+			Dimension size = pb.getPreferredSize();
+			w += size.width + D;
+			h = Math.max(h, size.height);
+		}
+		w += actionBoard.getPreferredSize().width;
+
+		BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+		Graphics2D g = img.createGraphics();
+
+		int x = 0;
+		for (int i = 0; i < playerBoards.length; i++) {
+			PlayerBoard pb = playerBoards[i];
+			JViewport p = (JViewport) pb.getParent();
+			Point pos = p.getViewPosition();
+			Dimension size = pb.getPreferredSize();
+
+			pb.setSize(pb.getPreferredSize());
+			layoutComponent(pb);
+			SwingUtilities.paintComponent(g, pb, p, x, 0, size.width, size.height);
+
+			x += size.width + D;
+			// undo paintComponent changes
+			p.setView(pb);
+			p.setViewPosition(pos);
+		}*/
+//		System.out.println("Painting");
+		
+//		Component c = mainPane;
+		Component c = getContentPane();
+		
+//		Board.lockComponentSize(buildingsRibbon, true);
+//		actionBoard.lockBuildingDisplaySize(true);
+		
+//		Dimension size = c.getPreferredSize();
+		Dimension size = c.getSize();
+//		System.out.println("Preferred: " + size);
+		
+		Container parent = c.getParent();
+		BufferedImage img = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_RGB);
+		Graphics2D g = img.createGraphics();
+//		c.setSize(size);
+//		layoutComponent(c);
+		SwingUtilities.paintComponent(g, c, parent, 0, 0, size.width, size.height);
+		
+//		Board.lockComponentSize(buildingsRibbon, false);
+//		actionBoard.lockBuildingDisplaySize(false);
+		parent.add(c);
+		
+		g.dispose();
+
+		return img;
+	}
+
+//	private void layoutComponent(Component c) {
+//		synchronized (c.getTreeLock()) {
+//			c.doLayout();
+//			if (c instanceof Container) {
+//				for (Component child : ((Container) c).getComponents()) {
+//					layoutComponent(child);
+//				}
+//			}
+//		}
+//	}
 
 	public boolean isMaximized() {
 		return (getExtendedState() & JFrame.MAXIMIZED_BOTH) != 0;
@@ -458,6 +532,20 @@ public class Board extends JFrame {
 			System.exit(0);
 		}
 	}
+	
+	public static void lockComponentSize(Component c, boolean lock) {
+		Container parent = c.getParent();
+		if (parent instanceof JViewport) {
+			JViewport viewport = (JViewport) c.getParent();
+			System.out.println(lock + " " + viewport.getSize());
+			c.setPreferredSize(lock ? viewport.getSize() : null);	
+			viewport.setPreferredSize(lock ? viewport.getSize() : null);	
+			viewport.doLayout();
+		} else {
+			c.setPreferredSize(lock ? c.getSize() : null);			
+		}
+		c.doLayout();
+	}
 
 	public static enum ActionCommand {
 		NEW, EXIT, UNDO, REDO, ABOUT, SETTINGS, LAYOUT, BUILDINGS, CAPTURE;
@@ -488,7 +576,7 @@ public class Board extends JFrame {
 				break;
 			case CAPTURE:
 				String path = game.captureBoard(false);
-				JOptionPane.showMessageDialog(Board.this, Msg.get("capturedMsg", path), Msg.get("capturedTitle"), 
+				JOptionPane.showMessageDialog(Board.this, Msg.get("capturedMsg", path), Msg.get("capturedTitle"),
 						JOptionPane.INFORMATION_MESSAGE, Images.createIcon("camera-photo", ImgSize.SMALL));
 				break;
 //			case SETTINGS:
