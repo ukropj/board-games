@@ -4,6 +4,8 @@
 	
 #Bugs#
 
+	non-quick feature actions should be able to activate just after building is built
+	Timbershop
 
 #Nice to have#
 
