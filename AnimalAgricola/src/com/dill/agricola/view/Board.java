@@ -51,7 +51,6 @@ import com.dill.agricola.Main;
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.ActionPerformer;
 import com.dill.agricola.actions.ActionStateChangeListener;
-import com.dill.agricola.actions.farm.BuildSpecial;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.PlayerColor;
@@ -91,7 +90,6 @@ public class Board extends JFrame {
 
 	private boolean condensedLayout;
 	private boolean showBuildingsRibbon;
-	private BuildSpecial buildSpecialAction;
 
 	public Board(Game game, ActionPerformer ap, TurnUndoManager undoManager) {
 		this.game = game;
@@ -131,7 +129,6 @@ public class Board extends JFrame {
 		initActionsBoard();
 		initPlayerBoards();
 		initBuildingRibbon();
-		buildSpecialAction = new BuildSpecial();
 	}
 
 	private void initToolbar() {
@@ -270,8 +267,8 @@ public class Board extends JFrame {
 		buildingsView.setVisible(showBuildingsRibbon);
 		getContentPane().add(buildingsView, BorderLayout.PAGE_END);
 
-		for (Action action : actionBoard.getBuildSpecialActions()) {
-			action.addChangeListener(new BuildingChangeListener());
+		for (Action action : game.getActions()) {
+			action.addChangeListener(new ActionUsageListener());
 		}
 	}
 
@@ -290,7 +287,6 @@ public class Board extends JFrame {
 	}
 
 	private void updateRibbon() {
-		Player currentPlayer = ap.getPlayer();
 		List<BuildingType> left = new ArrayList<BuildingType>(GeneralSupply.getBuildingsLeft());
 
 		for (Component c : buildingsRibbon.getComponents()) {
@@ -299,8 +295,7 @@ public class Board extends JFrame {
 			boolean isLeft = left.contains(type);
 			btn.setVisible(isLeft);
 			if (isLeft) {
-				boolean canBuild = !ap.hasAction() && actionBoard.canBuildSpecial() && currentPlayer != null
-						&& buildSpecialAction.canPurchase(currentPlayer, type, null);
+				boolean canBuild = actionBoard.canBuildSpecial();
 				if (btn.isEnabled() != canBuild) {
 					btn.setEnabled(canBuild);
 					btn.remove(0);
@@ -687,9 +682,10 @@ public class Board extends JFrame {
 		}
 	}
 
-	private final class BuildingChangeListener implements ActionStateChangeListener {
+	private final class ActionUsageListener implements ActionStateChangeListener {
 
 		public void stateChanges(Action action) {
+			// this is called when any action changes - not optimal, should be called when build action changes or any action is activated
 			updateRibbon();
 		}
 	}

@@ -19,6 +19,7 @@ import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.ActionPerformer;
 import com.dill.agricola.actions.ActionStateChangeListener;
 import com.dill.agricola.actions.farm.BuildSpecial;
+import com.dill.agricola.model.Player;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
@@ -207,10 +208,11 @@ public class ActionBoard extends JPanel {
 		}
 
 		public void stateChanges(Action action) {
+			Player currentPlayer = ap.getPlayer();
 			actionButtton.setEnabled(!actionsDisabled
 					&& !action.isUsed()
-					&& ap.getPlayer() != null
-					&& action.canDo(ap.getPlayer()));
+					&& currentPlayer != null
+					&& action.canDo(currentPlayer));
 			actionButtton.setUsed(action.getUser());
 		}
 	}
@@ -219,13 +221,17 @@ public class ActionBoard extends JPanel {
 		Board.lockComponentSize(buildingDisplay, lock);
 	}
 
-	public List<BuildSpecial> getBuildSpecialActions() {
-		return buildSpecialActions;
-	}
+//	public List<BuildSpecial> getBuildSpecialActions() {
+//		return buildSpecialActions;
+//	}
 
 	public boolean canBuildSpecial() {
+		Player currentPlayer = ap.getPlayer();
+		if (actionsDisabled || ap.hasAction() || currentPlayer == null) {
+			return false;
+		}
 		for (Action action : buildSpecialActions) {
-			if (!action.isUsed()) {
+			if (!action.isUsed() && action.canDo(currentPlayer)) {
 				return true;
 			}
 		}

@@ -76,6 +76,21 @@ public class Game {
 
 	private final Deque<Player> playerQueue = new ArrayDeque<Player>();
 	
+	private final List<Action> actions = new ArrayList<Action>(Arrays.asList(//
+			new StartOneWood(this), new ThreeWood(), // 
+			new OneStone(), new TwoStone(),
+			new BuildingMaterial(),
+
+			new Fences(), new BordersExpand(), //
+			new Walls(), new Troughs(), //
+
+			new Millpond(), new PigSheep(), //
+			new CowPigs(), new HorseSheep(), //
+
+			new BuildStall(), new BuildStables(),
+			new BuildSpecial(), new BuildSpecial()//
+			));
+	
 	public Game() {
 		ap = new ActionPerformer();
 		undoManager = new TurnUndoManager();
@@ -158,10 +173,6 @@ public class Game {
 		return submitListener;
 	}
 
-//	private void switchCurrentPlayer() {
-//		currentPlayer = getPlayer(currentPlayer.getColor().other());
-//	}
-
 	private Player getOtherPlayer(Player p) {
 		return getPlayer(p.getColor().other());
 	}
@@ -176,6 +187,10 @@ public class Game {
 	
 	public long getStartTime() {
 		return startTime;
+	}
+	
+	public List<Action> getActions() {
+		return actions;
 	}
 
 	public void start() {
@@ -465,23 +480,6 @@ public class Game {
 		}
 		ap.postEdit(new ChangeQueue());
 		return playerQueue.removeFirst();
-	}
-
-	public List<Action> getActions() {
-		return new ArrayList<Action>(Arrays.asList(//
-				new StartOneWood(this), new ThreeWood(), // 
-				new OneStone(), new TwoStone(),
-				new BuildingMaterial(),
-
-				new Fences(), new BordersExpand(), //
-				new Walls(), new Troughs(), //
-
-				new Millpond(), new PigSheep(), //
-				new CowPigs(), new HorseSheep(), //
-
-				new BuildStall(), new BuildStables(),
-				new BuildSpecial(), new BuildSpecial()//
-				));
 	}
 	
 	public String captureBoard(boolean useTimestamp) {
