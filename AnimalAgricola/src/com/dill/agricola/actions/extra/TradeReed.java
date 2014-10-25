@@ -10,6 +10,7 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
 import com.dill.agricola.actions.AbstractAction;
+import com.dill.agricola.actions.FeatureAction;
 import com.dill.agricola.common.Animals;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
@@ -24,7 +25,7 @@ import com.dill.agricola.undo.UndoableFarmEdit;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.UiFactory;
 
-public class TradeReed extends AbstractAction {
+public class TradeReed extends AbstractAction implements FeatureAction {
 
 	static private final Materials ONE_REED = new Materials(Material.REED);
 	
@@ -102,6 +103,18 @@ public class TradeReed extends AbstractAction {
 			player.purchaseAnimal(toBuy, 1);
 		}
 
+	}
+
+	public boolean isQuickAction() {
+		return true;
+	}
+
+	public boolean canDoDuringBreeding() {
+		return true;
+	}
+
+	public String getButtonIconName() {
+		return "trade_reed";
 	}
 
 }

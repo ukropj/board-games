@@ -3,6 +3,7 @@ package com.dill.agricola.actions.extra;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
+import com.dill.agricola.actions.FeatureAction;
 import com.dill.agricola.actions.farm.BuildStall;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
@@ -14,7 +15,7 @@ import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.undo.SimpleEdit;
 import com.dill.agricola.undo.UndoableFarmEdit;
 
-public class UpgradeTrough extends BuildStall {
+public class UpgradeTrough extends BuildStall implements FeatureAction {
 
 	private final Materials COST = new Materials(Material.STONE, 2);
 	private final Materials NO_COST = new Materials();
@@ -81,5 +82,17 @@ public class UpgradeTrough extends BuildStall {
 			}
 		}
 
+	}
+	
+	public boolean isQuickAction() {
+		return false;
+	}
+
+	public boolean canDoDuringBreeding() {
+		return true;
+	}
+
+	public String getButtonIconName() {
+		return "upgrade_trough";
 	}
 }

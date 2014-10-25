@@ -6,6 +6,7 @@ import java.util.Set;
 import com.dill.agricola.Game.Phase;
 import com.dill.agricola.Main;
 import com.dill.agricola.actions.Action;
+import com.dill.agricola.actions.FeatureAction;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.types.Animal;
@@ -81,6 +82,12 @@ public abstract class Building extends Space {
 	}
 
 	public Action[] getExtraActions(Phase phase, int round) {
+		// actions granted by this building at the beginning/end of some phase
+		return null;
+	}
+	
+	public FeatureAction[] getFeatureActions() {
+		// actions that can be used anytime
 		return null;
 	}
 

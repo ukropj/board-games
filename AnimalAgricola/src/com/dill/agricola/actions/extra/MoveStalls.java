@@ -3,6 +3,7 @@ package com.dill.agricola.actions.extra;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
+import com.dill.agricola.actions.FeatureAction;
 import com.dill.agricola.actions.farm.PurchaseAction;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
@@ -14,7 +15,7 @@ import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.undo.SimpleEdit;
 import com.dill.agricola.undo.UndoableFarmEdit;
 
-public class MoveStalls extends PurchaseAction {
+public class MoveStalls extends PurchaseAction implements FeatureAction {
 
 	private Building movedBuilding = null;
 
@@ -45,7 +46,7 @@ public class MoveStalls extends PurchaseAction {
 	public boolean canUndoOnFarm(Player player, DirPoint pos) {
 		return false;
 	}
-	
+
 	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos) {
 		if (canDoOnFarm(player, pos)) {
 			if (movedBuilding == null) {
@@ -131,6 +132,18 @@ public class MoveStalls extends PurchaseAction {
 			return MoveStalls.this.getType().shortDesc;
 		}
 
+	}
+
+	public boolean isQuickAction() {
+		return false;
+	}
+
+	public boolean canDoDuringBreeding() {
+		return true;
+	}
+
+	public String getButtonIconName() {
+		return "move_stalls";
 	}
 
 }

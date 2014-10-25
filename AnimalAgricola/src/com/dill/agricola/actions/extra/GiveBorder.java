@@ -3,6 +3,7 @@ package com.dill.agricola.actions.extra;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
+import com.dill.agricola.actions.FeatureAction;
 import com.dill.agricola.actions.farm.PurchaseAction;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
@@ -14,7 +15,7 @@ import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.undo.SimpleEdit;
 import com.dill.agricola.undo.UndoableFarmEdit;
 
-public class GiveBorder extends PurchaseAction {
+public class GiveBorder extends PurchaseAction implements FeatureAction {
 
 	static private final Materials TWO_BORDER = new Materials(Material.BORDER, 2);
 	static private final Materials ONE_BORDER = new Materials(Material.BORDER);
@@ -98,6 +99,18 @@ public class GiveBorder extends PurchaseAction {
 			otherPlayer.addMaterial(materials);
 		}
 
+	}
+
+	public boolean isQuickAction() {
+		return false;
+	}
+
+	public boolean canDoDuringBreeding() {
+		return true;
+	}
+
+	public String getButtonIconName() {
+		return "give_border";
 	}
 
 }

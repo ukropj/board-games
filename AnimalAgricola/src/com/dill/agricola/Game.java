@@ -16,6 +16,7 @@ import javax.swing.undo.CannotUndoException;
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.ActionPerformer;
 import com.dill.agricola.actions.extra.Breeding;
+import com.dill.agricola.actions.extra.GiveBorder;
 import com.dill.agricola.actions.farm.BordersExpand;
 import com.dill.agricola.actions.farm.BuildSpecial;
 import com.dill.agricola.actions.farm.BuildStables;
@@ -333,7 +334,7 @@ public class Game {
 
 		// not pretty, but can't think of better place
 		if (prevPlayer.farm.hasBuilding(BuildingType.ASSEMBLY_HALL)) {
-			AssemblyHall.GIVE_BORDER.setOtherPlayer(currentPlayer);
+			((GiveBorder)AssemblyHall.GIVE_BORDER[0]).setOtherPlayer(currentPlayer);
 		}
 
 		if (currentPlayer.hasWorkers()) {

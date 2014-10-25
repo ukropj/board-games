@@ -43,6 +43,7 @@ import com.dill.agricola.Game.FarmActionCommand;
 import com.dill.agricola.Game.Phase;
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.ActionPerformer;
+import com.dill.agricola.actions.FeatureAction;
 import com.dill.agricola.common.Animals;
 import com.dill.agricola.common.Dir;
 import com.dill.agricola.common.DirPoint;
@@ -52,12 +53,7 @@ import com.dill.agricola.model.Farm;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.Space;
 import com.dill.agricola.model.buildings.MultiImaged;
-import com.dill.agricola.model.buildings.evenmore.AssemblyHall;
-import com.dill.agricola.model.buildings.evenmore.BuildingFirm;
-import com.dill.agricola.model.buildings.evenmore.CattleMarket;
 import com.dill.agricola.model.buildings.evenmore.StoneCarversWorkshop;
-import com.dill.agricola.model.buildings.more.AnimalTrader;
-import com.dill.agricola.model.buildings.more.Carpenter;
 import com.dill.agricola.model.types.ActionType;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
@@ -379,13 +375,13 @@ public class FarmPanel extends JPanel {
 		updateExtraBtns();
 	}
 
-	private void initExtraButton(final Action action, ImageIcon icon, boolean quickAction) {
-		JButton btn = new JButton(icon);
+	private void initExtraButton(final FeatureAction action) {
+		JButton btn = new JButton(AgriImages.getButtonImage(action.getButtonIconName()));
 		btn.setToolTipText(action.getType().desc);
 		btn.setMargin(new Insets(1, 1, 1, 1));
 		btn.setBounds(X1 + farm.getWidth() * S + (3 * M) / 2, Y1 + M, S / 3 + M / 2, S / 3 + M / 2);
 		btn.setCursor(AgriImages.HAND_CURSOR);
-		if (quickAction) {
+		if (action.isQuickAction()) {
 			btn.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					// this action is not managed by ActionPerformer!
@@ -418,72 +414,24 @@ public class FarmPanel extends JPanel {
 	private void updateExtraBtns() {
 		List<ActionType> visibleTypes = new ArrayList<ActionType>();
 		if (active && player.equals(ap.getPlayer())) {
-			// not dynamic, currently not worth it
 			JButton btn;
-			if (farm.hasBuilding(BuildingType.ANIMAL_TRADER)) {
-				Action action = AnimalTrader.TRADE_ANIMALS;
-				ActionType type = action.getType();
-				if (!extraBtns.containsKey(type)) {
-					initExtraButton(action, AgriImages.getButtonImage("trade_animals"), true);
+			List<Building> buildings = player.farm.getFarmBuildings();
+			
+			for (Building building : buildings) {
+				FeatureAction[] actions = building.getFeatureActions();
+				if (actions != null) {
+					for (FeatureAction action : actions) {
+						ActionType type = action.getType();
+						if (!extraBtns.containsKey(type)) {
+							initExtraButton(action);
+						}
+						btn = extraBtns.get(type);
+						btn.setEnabled(action.canDo(player) && 
+								(!ap.hasAction(ActionType.BREEDING) || action.canDoDuringBreeding()) &&
+								(!ap.hasAction() || action.isQuickAction()));
+						visibleTypes.add(type);
+					}
 				}
-				btn = extraBtns.get(type);
-				btn.setEnabled(action.canDo(player) && !ap.hasAction(ActionType.BREEDING));
-				visibleTypes.add(type);
-			}
-
-			if (farm.hasBuilding(BuildingType.CATTLE_MARKET)) {
-				Action action = CattleMarket.TRADE_REED;
-				ActionType type = action.getType();
-				if (!extraBtns.containsKey(type)) {
-					initExtraButton(action, AgriImages.getButtonImage("trade_reed"), true);
-				}
-				btn = extraBtns.get(type);
-				btn.setEnabled(action.canDo(player));
-				visibleTypes.add(type);
-			}
-
-			if (farm.hasBuilding(BuildingType.CARPENTER)) {
-				Action action = Carpenter.MOVE_TROUGHS;
-				ActionType type = action.getType();
-				if (!extraBtns.containsKey(type)) {
-					initExtraButton(action, AgriImages.getButtonImage("move_troughs"), false);
-				}
-				btn = extraBtns.get(type);
-				btn.setEnabled(action.canDo(player) && !ap.hasAction());
-				visibleTypes.add(type);
-			}
-
-			if (farm.hasBuilding(BuildingType.CARPENTER)) {
-				Action action = Carpenter.MOVE_STALLS;
-				ActionType type = action.getType();
-				if (!extraBtns.containsKey(type)) {
-					initExtraButton(action, AgriImages.getButtonImage("move_stalls"), false);
-				}
-				btn = extraBtns.get(type);
-				btn.setEnabled(action.canDo(player) && !ap.hasAction());
-				visibleTypes.add(type);
-			}
-
-			if (farm.hasBuilding(BuildingType.BUILDING_FIRM)) {
-				Action action = BuildingFirm.UPGRADE_TROUGH;
-				ActionType type = action.getType();
-				if (!extraBtns.containsKey(type)) {
-					initExtraButton(action, AgriImages.getButtonImage("upgrade_trough"), false);
-				}
-				btn = extraBtns.get(type);
-				btn.setEnabled(action.canDo(player) && !ap.hasAction());
-				visibleTypes.add(type);
-			}
-
-			if (farm.hasBuilding(BuildingType.ASSEMBLY_HALL)) {
-				Action action = AssemblyHall.GIVE_BORDER;
-				ActionType type = action.getType();
-				if (!extraBtns.containsKey(type)) {
-					initExtraButton(action, AgriImages.getButtonImage("give_border"), false);
-				}
-				btn = extraBtns.get(type);
-				btn.setEnabled(action.canDo(player) && !ap.hasAction());
-				visibleTypes.add(type);
 			}
 		}
 

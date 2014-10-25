@@ -10,6 +10,7 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
 import com.dill.agricola.actions.AbstractAction;
+import com.dill.agricola.actions.FeatureAction;
 import com.dill.agricola.common.Animals;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.model.Player;
@@ -23,7 +24,7 @@ import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
 import com.dill.agricola.view.utils.UiFactory;
 
-public class TradeAnimals extends AbstractAction {
+public class TradeAnimals extends AbstractAction implements FeatureAction {
 
 	public TradeAnimals() {
 		super(ActionType.TRADE_ANIMALS);
@@ -126,6 +127,18 @@ public class TradeAnimals extends AbstractAction {
 			player.purchaseAnimals(toBuy);
 		}
 
+	}
+
+	public boolean isQuickAction() {
+		return true;
+	}
+
+	public boolean canDoDuringBreeding() {
+		return false;
+	}
+
+	public String getButtonIconName() {
+		return "trade_animals";
 	}
 
 }
