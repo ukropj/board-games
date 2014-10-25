@@ -42,11 +42,16 @@ public abstract class AbstractAction implements Action {
 	}
 
 	public UndoableFarmEdit init() {
+		UndoableFarmEdit edit = initUsed();
+		cancelled = false;
+		setChanged();
+		return edit;
+	}
+	
+	public UndoableFarmEdit initUsed() {
 		UndoableFarmEdit edit = isUsed() ? new ActionInit(user, useCount) : null;
 		user = null;
 		useCount = 0;
-		cancelled = false;
-		setChanged();
 		return edit;
 	}
 

@@ -42,6 +42,10 @@ public class GiveBorder extends PurchaseAction {
 	public boolean canDoOnFarm(Player player, DirPoint pos) {
 		return player.canPay(TWO_BORDER) && super.canDoOnFarm(player, pos);
 	}
+	
+	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos) {
+		return this.joinEdits(new GiveBorderNamer(), super.doOnFarm(player, pos));
+	}
 
 	protected UndoableFarmEdit postActivate(Player player) {
 		player.removeMaterial(ONE_BORDER);
@@ -53,6 +57,20 @@ public class GiveBorder extends PurchaseAction {
 		// optional
 		return true;
 	}
+	
+	private class GiveBorderNamer extends SimpleEdit {
+		private static final long serialVersionUID = 1L;
+
+		// helper class used to pose as first significant (name giving) edit before PurchaseThing 
+		
+		public GiveBorderNamer() {
+			super(true);
+		}
+		
+		public String getPresentationName() {
+			return GiveBorder.this.getType().shortDesc;
+		}
+	}
 
 	private class Give extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
@@ -62,6 +80,7 @@ public class GiveBorder extends PurchaseAction {
 		private final Materials materials;
 
 		public Give(Player player, Player otherPlayer, Materials materials) {
+			super(true);
 			this.player = player;
 			this.otherPlayer = otherPlayer;
 			this.materials = materials;

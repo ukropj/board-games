@@ -369,6 +369,8 @@ public class Game {
 				}
 			}
 		}
+		board.workersGoHome();
+		
 		Player currentPlayer = takeFromQueue();
 		if (currentPlayer != null) {
 			startBreedingTurn(currentPlayer);

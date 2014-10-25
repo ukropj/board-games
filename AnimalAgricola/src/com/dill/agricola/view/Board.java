@@ -510,6 +510,11 @@ public class Board extends JFrame {
 		}
 		refresh();
 	}
+	
+	public void workersGoHome() {
+		actionBoard.unuseActions();
+		refresh();
+	}
 
 	public void startingPlayerChanged() {
 		playerBoards[0].updateFarm();

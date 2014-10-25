@@ -50,6 +50,17 @@ public class CompoundAction extends AbstractAction {
 		return !edits.isEmpty() ? joinEdits(edits) : null;
 	}
 	
+	public UndoableFarmEdit initUsed() {
+		List<UndoableFarmEdit> edits = new ArrayList<UndoableFarmEdit>();
+		for (Action a : actions) {
+			UndoableFarmEdit e = a.initUsed();
+			if (e != null) {
+				edits.add(e);
+			}
+		}
+		return !edits.isEmpty() ? joinEdits(edits) : null;
+	}
+	
 	public boolean isUsedEnough() {
 		for (Action a : actions) {
 			if (a.isUsedEnough()) {

@@ -147,8 +147,8 @@ public class ActionBoard extends JPanel {
 				}
 				button.setActive(false);
 			}
-			updateBorder();
 		}
+		updateBorder();
 	}
 
 	private void updateBorder() {
@@ -165,6 +165,17 @@ public class ActionBoard extends JPanel {
 		for (Action action : actions.values()) {
 			action.reset();
 		}
+	}
+
+	public void unuseActions() {
+		for (Action action : actions.values()) {
+			boolean used = action.isUsed();
+			ap.postEdit(action.initUsed());
+			if (used) {
+				action.setChanged();
+			}
+		}
+		revalidate();
 	}
 
 	public void initActions() {
@@ -203,11 +214,11 @@ public class ActionBoard extends JPanel {
 			actionButtton.setUsed(action.getUser());
 		}
 	}
-	
+
 	public void lockBuildingDisplaySize(boolean lock) {
 		Board.lockComponentSize(buildingDisplay, lock);
 	}
-	
+
 	public List<BuildSpecial> getBuildSpecialActions() {
 		return buildSpecialActions;
 	}

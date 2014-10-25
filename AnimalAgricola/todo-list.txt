@@ -1,11 +1,9 @@
 #TODO#
 
 	check messages in undo stack
-	integrate screenshot maker with scores
 	
 #Bugs#
 
-	when using AssemblyHall, undo button shows unlocalized text
 
 #Nice to have#
 

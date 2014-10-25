@@ -15,6 +15,8 @@ public interface Action {
 	void reset();
 
 	UndoableFarmEdit init();
+	
+	UndoableFarmEdit initUsed();
 
 	void setUsed(PlayerColor playerColor);
 
