@@ -16,11 +16,14 @@ import com.dill.agricola.Game.Phase;
 import com.dill.agricola.GeneralSupply.Supplyable;
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.ActionStateChangeListener;
+import com.dill.agricola.actions.FeatureAction;
+import com.dill.agricola.actions.extra.GiveBorder;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Building;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.buildings.OpenStables;
+import com.dill.agricola.model.buildings.evenmore.AssemblyHall;
 import com.dill.agricola.model.buildings.evenmore.Inn;
 import com.dill.agricola.model.buildings.evenmore.TimberShop;
 import com.dill.agricola.model.types.ActionType;
@@ -238,12 +241,27 @@ public class BuildSpecial extends BuildAction {
 		for (Action a : actions) {
 			a.addChangeListener(new ExtraActionStateChangeListener());
 		}
+		if (b.getType() == BuildingType.ASSEMBLY_HALL) {
+			((GiveBorder)AssemblyHall.GIVE_BORDER[0]).setOwningPlayer(player);
+		}
 		UndoableFarmEdit tsEdit = null;
 		if (b.getType() == BuildingType.TIMBER_SHOP) {
 			((TimberShop) b).setOwner(player);
 			tsEdit = TimberShop.checkReward(true);
 		}
+		checkFeatureActions(b);
 		return joinEdits(new UseBuilding(toBuild, actions), tsEdit);
+	}
+
+	private void checkFeatureActions(Building b) {
+		FeatureAction[] actions = b.getFeatureActions();
+		if (actions != null) {
+			for (FeatureAction action : actions) {
+				if (!action.isQuickAction()) {
+					// TODO ask user to do it
+				}
+			}
+		}
 	}
 
 	public Action getSubAction(Player player, boolean afterFarmAction) {

@@ -17,9 +17,11 @@ import com.dill.agricola.undo.UndoableFarmEdit;
 
 public class GiveBorder extends PurchaseAction implements FeatureAction {
 
-	static private final Materials TWO_BORDER = new Materials(Material.BORDER, 2);
-	static private final Materials ONE_BORDER = new Materials(Material.BORDER);
+	private static final Materials TWO_BORDER = new Materials(Material.BORDER, 2);
+	private static final Materials ONE_BORDER = new Materials(Material.BORDER);
 
+	public static Player[] players = null; // will be initailzed in Game
+	
 	private Player otherPlayer = null;
 
 	public GiveBorder() {
@@ -29,9 +31,9 @@ public class GiveBorder extends PurchaseAction implements FeatureAction {
 	protected Materials getCost(Player player) {
 		return ONE_BORDER;
 	}
-
-	public void setOtherPlayer(Player otherPlayer) {
-		this.otherPlayer = otherPlayer;
+	
+	public void setOwningPlayer(Player owningplayer) {
+		this.otherPlayer = players[0].getColor().equals(owningplayer.getColor()) ? players[1] : players[0];
 	}
 
 	public boolean canDo(Player player) {
