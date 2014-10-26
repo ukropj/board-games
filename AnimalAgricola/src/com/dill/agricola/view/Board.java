@@ -429,7 +429,7 @@ public class Board extends JFrame {
 		switch (phase) {
 		case BEFORE_WORK:
 		case BEFORE_BREEDING:
-		case EXTRA_WORK:
+		case FEATURE_BEFORE_WORK:
 			turnL.setText(Msg.get("extraturnLab"));
 			break;
 		case WORK:

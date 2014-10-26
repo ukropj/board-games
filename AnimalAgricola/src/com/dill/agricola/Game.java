@@ -50,7 +50,7 @@ import com.dill.agricola.view.utils.Images;
 public class Game {
 
 	public static enum Phase {
-		CLEANUP, BEFORE_WORK, WORK, EXTRA_WORK, BEFORE_BREEDING, BREEDING;
+		CLEANUP, BEFORE_WORK, WORK, FEATURE_BEFORE_WORK, BEFORE_BREEDING, BREEDING;
 	}
 
 	public final static int ROUNDS = Main.DEBUG ? 3 : 8;
@@ -507,8 +507,8 @@ public class Game {
 					// work end
 					endTurn();
 					break;
-				case EXTRA_WORK:
-					// special action done - continue with work
+				case FEATURE_BEFORE_WORK:
+					// feature action done - continue with work
 					ap.postEdit(new ChangePhase(phase, Phase.WORK, false));
 					phase = Phase.WORK;
 					startTurn(ap.getPlayer());
@@ -530,20 +530,20 @@ public class Game {
 					undoManager.undo();
 				}
 				break;
-			case START_EXTRA_WORK:
+			case START_FEATURE_WORK:
 				switch (phase) {
 				case WORK:
-					// special action start
-					ap.postEdit(new ChangePhase(phase, Phase.EXTRA_WORK, false));
-					phase = Phase.EXTRA_WORK;
+					// feature action start
+					ap.postEdit(new ChangePhase(phase, Phase.FEATURE_BEFORE_WORK, false));
+					phase = Phase.FEATURE_BEFORE_WORK;
 					board.refresh();
 					break;
-				case EXTRA_WORK:
+				/*case FEATURE_WORK:
 					// special action done - continue with work
 					ap.postEdit(new ChangePhase(phase, Phase.WORK, false));
 					phase = Phase.WORK;
 					startTurn(ap.getPlayer());
-					break;
+					break;*/
 				default:
 					break;
 				}
@@ -555,7 +555,7 @@ public class Game {
 	};
 
 	public static enum FarmActionCommand {
-		SUBMIT, CANCEL, START_EXTRA_WORK;
+		SUBMIT, CANCEL, START_FEATURE_WORK;
 	}
 
 	private class StartRound extends SimpleEdit {

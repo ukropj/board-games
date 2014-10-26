@@ -395,7 +395,7 @@ public class FarmPanel extends JPanel {
 				}
 			});
 		} else {
-			btn.setActionCommand(FarmActionCommand.START_EXTRA_WORK.toString());
+			btn.setActionCommand(FarmActionCommand.START_FEATURE_WORK.toString());
 			btn.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					submitListener.actionPerformed(e);
