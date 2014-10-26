@@ -19,7 +19,7 @@ public class MoveTroughs extends MovePurchasable implements FeatureAction {
 	}
 
 	public String getButtonIconName() {
-		return "move_stalls";
+		return "move_troughs";
 	}
 
 }
