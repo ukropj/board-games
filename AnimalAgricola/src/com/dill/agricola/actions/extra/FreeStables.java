@@ -12,8 +12,6 @@ import com.dill.agricola.undo.UndoableFarmEdit;
 
 public class FreeStables extends BuildAction {
 
-	private final static Materials COST = new Materials();
-	
 	private DirPoint posToBuild = null;
 
 	public FreeStables() {
@@ -26,7 +24,7 @@ public class FreeStables extends BuildAction {
 	}
 
 	protected Materials getCost(Player player) {
-		return COST;
+		return Materials.EMPTY;
 	}
 	
 	public boolean canDo(Player player) {

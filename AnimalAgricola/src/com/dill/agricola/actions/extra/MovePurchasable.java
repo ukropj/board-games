@@ -14,7 +14,7 @@ import com.dill.agricola.undo.UndoableFarmEdit;
 
 public abstract class MovePurchasable extends PurchaseAction {
 
-	private final Materials NO_COST = new Materials();
+	private final Materials NO_COST = Materials.EMPTY;
 	
 	protected DirPoint movedFrom = null;
 

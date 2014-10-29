@@ -12,7 +12,7 @@ import com.dill.agricola.model.types.Material;
 public class FarmWell extends Building {
 
 	public final static Materials COST = new Materials(Material.WOOD, Material.STONE, Material.STONE);
-	private final static Action[] EXTRA_ACTIONS = {new OneTrough(new Materials())};
+	private final static Action[] EXTRA_ACTIONS = {new OneTrough(Materials.EMPTY)};
 
 	public FarmWell() {
 		super(BuildingType.FARM_WELL, 0, 0);

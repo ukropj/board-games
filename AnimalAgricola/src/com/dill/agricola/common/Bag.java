@@ -11,7 +11,7 @@ public class Bag<T extends Enum<T>> {
 	protected final Map<T, Integer> map;
 	protected final Class<T> clazz;
 	protected final T[] values;
-	
+
 	public Bag(Class<T> clazz) {
 		this.clazz = clazz;
 		this.values = clazz.getEnumConstants();
@@ -27,7 +27,7 @@ public class Bag<T extends Enum<T>> {
 			map.put(t, map.get(t) + 1);
 		}
 	}
-	
+
 	public Bag(Class<T> clazz, T type, int count) {
 		this(clazz);
 		map.put(type, count);
@@ -51,7 +51,7 @@ public class Bag<T extends Enum<T>> {
 	public void add(T t, int count) {
 		map.put(t, map.get(t) + count);
 	}
-	
+
 	public void substract(T t, int count) {
 		map.put(t, map.get(t) - count);
 	}
@@ -64,7 +64,7 @@ public class Bag<T extends Enum<T>> {
 		}
 		return true;
 	}
-	
+
 	public void clear() {
 		for (T t : values) {
 			map.put(t, 0);
@@ -88,7 +88,7 @@ public class Bag<T extends Enum<T>> {
 		}
 		return this;
 	}
-	
+
 	public Bag<T> add(Bag<T> other) {
 		for (T t : values) {
 			map.put(t, map.get(t) + other.get(t));
@@ -117,7 +117,7 @@ public class Bag<T extends Enum<T>> {
 		}
 		return s;
 	}
-	
+
 	public int subSize(Set<T> types) {
 		int s = 0;
 		for (T t : types) {
@@ -125,7 +125,7 @@ public class Bag<T extends Enum<T>> {
 		}
 		return s;
 	}
-	
+
 	public Set<T> types() {
 		Set<T> types = new TreeSet<T>();
 		for (T t : values) {
@@ -135,14 +135,14 @@ public class Bag<T extends Enum<T>> {
 		}
 		return types;
 	}
-	
+
 	public boolean hasSingleType() {
 		boolean has = false;
 		for (T t : values) {
 			if (map.get(t) > 0) {
 				if (has) {
 					return false;
-				} 
+				}
 				has = true;
 			}
 		}
@@ -180,5 +180,5 @@ public class Bag<T extends Enum<T>> {
 		}
 		return s;
 	}
-
+	
 }

@@ -10,7 +10,7 @@ import com.dill.agricola.model.types.Material;
 public class DuckPond extends Building {
 
 	// requires 6 empty spaces
-	public final static Materials COST = new Materials();
+	public final static Materials COST = Materials.EMPTY;
 	public final static Materials REWARD = new Materials(Material.REED);
 
 	public DuckPond() {

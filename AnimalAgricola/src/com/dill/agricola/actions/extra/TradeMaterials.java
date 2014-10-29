@@ -59,7 +59,7 @@ public class TradeMaterials extends AbstractAction {
 					opts.add(opt);
 				}
 			}
-			JComponent emptyOpt = UiFactory.createResourcesPanel(new Materials(), null, UiFactory.X_AXIS);
+			JComponent emptyOpt = UiFactory.createResourcesPanel(Materials.EMPTY, null, UiFactory.X_AXIS);
 			emptyOpt.setPreferredSize(new Dimension(40, 30));
 			opts.add(emptyOpt);
 			Icon icon = AgriImages.getMaterialIcon(null);

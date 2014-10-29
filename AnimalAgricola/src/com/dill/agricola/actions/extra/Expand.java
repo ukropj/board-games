@@ -18,7 +18,6 @@ import com.dill.agricola.undo.UndoableFarmEdit;
 
 public class Expand extends PurchaseAction {
 
-	public final static Materials COST = new Materials();
 	private final Action tradeForCow = new TradeForCow();
 
 	public Expand() {
@@ -31,7 +30,7 @@ public class Expand extends PurchaseAction {
 	}
 
 	protected Materials getCost(Player player) {
-		return COST;
+		return Materials.EMPTY;
 	}
 
 	protected boolean isAnyLeft() {

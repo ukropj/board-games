@@ -77,7 +77,7 @@ public class Breeding extends AbstractAction {
 		public void undo() throws CannotUndoException {
 			super.undo();
 			boolean done = player.unpurchaseAnimals(newAnimals);
-			player.setLastBornAnimals(new Animals());
+			player.setLastBornAnimals(Animals.EMPTY);
 			if (!done) {
 				throw new CannotUndoException();
 			}

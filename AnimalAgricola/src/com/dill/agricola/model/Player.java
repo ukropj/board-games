@@ -58,7 +58,7 @@ public class Player extends SimpleObservable {
 		lastBorn.clear();
 		featureActions.clear();
 		farm.init(FARM_W, FARM_H);
-		purchase(new Cottage(), new Materials(), new DirPoint(0, 2));
+		purchase(new Cottage(), Materials.EMPTY, new DirPoint(0, 2));
 		addMaterial(Material.BORDER, INIT_BORDERS);
 
 		if (Main.DEBUG) {
@@ -79,9 +79,7 @@ public class Player extends SimpleObservable {
 			farm.setActiveType(null, 0);
 
 			farm.put(Purchasable.TROUGH, new DirPoint(0, 0, null));
-			Stall s = new Stall(0);
-			farm.build(s, new DirPoint(0, 1, null));
-			s.setPaidCost(new Materials());
+			purchase(new Stall(0), Materials.EMPTY, new DirPoint(0, 1, null));
 		}
 		Fencer.calculateFences(farm);
 	}

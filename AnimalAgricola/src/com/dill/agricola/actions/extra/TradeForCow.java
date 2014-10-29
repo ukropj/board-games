@@ -55,7 +55,7 @@ public class TradeForCow extends AbstractAction {
 				opt.setPreferredSize(new Dimension(40, 30));
 				opts.add(opt);
 			}
-			JComponent emptyOpt = UiFactory.createResourcesPanel(null, new Animals(), UiFactory.X_AXIS);
+			JComponent emptyOpt = UiFactory.createResourcesPanel(null, Animals.EMPTY, UiFactory.X_AXIS);
 			emptyOpt.setPreferredSize(new Dimension(40, 30));
 			opts.add(emptyOpt);
 			Icon icon = AgriImages.getAnimalIcon(Animal.COW, ImgSize.MEDIUM);

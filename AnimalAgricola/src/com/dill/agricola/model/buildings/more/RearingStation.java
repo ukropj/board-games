@@ -24,7 +24,6 @@ public class RearingStation extends Building implements ExtraCapacityProvider {
 	public final static Animals EXTRA_CAP2 = new Animals(
 			Animal.SHEEP, Animal.SHEEP, Animal.PIG, Animal.PIG,
 			Animal.COW, Animal.COW, Animal.HORSE, Animal.HORSE);
-	public final static Animals NO_CAP = new Animals();
 
 	private final static Action[] EXTRA_ACTIONS = {
 			new EmptyRearingStation(true),
@@ -44,7 +43,7 @@ public class RearingStation extends Building implements ExtraCapacityProvider {
 
 	// this space can contain one of each animal
 	public Animals getExtraCapacity(DirPoint pos, Space space) {
-		return buildPos.equals(pos) ? mustBeEmpty ? NO_CAP : hasTrough() ? EXTRA_CAP2 : EXTRA_CAP : null;
+		return buildPos.equals(pos) ? mustBeEmpty ? Animals.EMPTY : hasTrough() ? EXTRA_CAP2 : EXTRA_CAP : null;
 	}
 
 	public Set<Animal> getRequiredAnimals() {

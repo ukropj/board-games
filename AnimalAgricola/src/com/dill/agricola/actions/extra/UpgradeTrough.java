@@ -20,7 +20,6 @@ import com.dill.agricola.undo.UndoableFarmEdit;
 public class UpgradeTrough extends BuildStall implements FeatureAction {
 
 	private final Materials COST = new Materials(Material.STONE, 2);
-	private final Materials NO_COST = new Materials();
 
 	public UpgradeTrough() {
 		super(ActionType.UPGRADE_TROUGH, false);
@@ -50,7 +49,7 @@ public class UpgradeTrough extends BuildStall implements FeatureAction {
 	protected UndoableFarmEdit postActivate(Player player, Building b, DirPoint pos) {
 		UndoableFarmEdit edit = super.postActivate(player, b, pos);
 		
-		player.unpurchase(Purchasable.TROUGH, NO_COST, pos, false);		
+		player.unpurchase(Purchasable.TROUGH, Materials.EMPTY, pos, false);		
 		UndoableFarmEdit unpurchaseTrough = new UnpurchaseThing(player, pos, Purchasable.TROUGH);
 		
 		return joinEdits(edit, unpurchaseTrough);
@@ -79,7 +78,7 @@ public class UpgradeTrough extends BuildStall implements FeatureAction {
 
 		public void undo() throws CannotUndoException {
 			super.undo();
-			boolean done = player.purchase(thing, NO_COST, undoPos);
+			boolean done = player.purchase(thing, Materials.EMPTY, undoPos);
 			if (!done) {
 				throw new CannotUndoException();
 			}
@@ -87,7 +86,7 @@ public class UpgradeTrough extends BuildStall implements FeatureAction {
 
 		public void redo() throws CannotRedoException {
 			super.redo();
-			boolean done = player.unpurchase(thing, NO_COST, pos, false);
+			boolean done = player.unpurchase(thing, Materials.EMPTY, pos, false);
 			if (!done) {
 				throw new CannotRedoException();
 			}

@@ -13,7 +13,7 @@ public class FeedStorehouse extends Building {
 	public final static Materials COST = new Materials(Material.WOOD, Material.REED);
 
 	public FeedStorehouse() {
-		super(BuildingType.FEED_STOREHOUSE, 0, 0, new OneTrough(new Materials()));
+		super(BuildingType.FEED_STOREHOUSE, 0, 0, new OneTrough(Materials.EMPTY));
 	}
 	
 	public float getVictoryPoints(Player player) {

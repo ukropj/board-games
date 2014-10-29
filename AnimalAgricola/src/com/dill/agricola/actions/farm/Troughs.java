@@ -16,7 +16,7 @@ import com.dill.agricola.undo.UndoableFarmEdit;
 
 public class Troughs extends PurchaseAction {
 
-	public final static Materials FIRST_COST = new Materials();
+	public final static Materials FIRST_COST = Materials.EMPTY;
 	public final static Materials COST = new Materials(Material.WOOD, 3);
 	
 	public Troughs() {

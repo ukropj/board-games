@@ -19,15 +19,13 @@ public class MoveStallsAndTroughs extends PurchaseAction implements FeatureActio
 
 	private Building movedBuilding = null;
 
-	private final Materials NO_COST = new Materials();
-
 	public MoveStallsAndTroughs() {
 		super(ActionType.MOVE_STALLS_AND_TROUGHS, Purchasable.BUILDING);
 		setSubAction(new MoveTroughs(), false);
 	}
 
 	protected Materials getCost(Player player) {
-		return NO_COST;
+		return Materials.EMPTY;
 	}
 
 	public boolean canDo(Player player) {

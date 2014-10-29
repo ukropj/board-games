@@ -6,7 +6,7 @@ import com.dill.agricola.model.types.BuildingType;
 
 public class Cottage extends Building {
 
-	public final static Materials COST = new Materials();
+	public final static Materials COST = Materials.EMPTY;
 
 	public Cottage() {
 		super(BuildingType.COTTAGE, 0, 1);

@@ -11,7 +11,7 @@ import com.dill.agricola.model.types.BuildingType;
 public class FodderBeetFarm extends Building {
 
 	// requires 2 animals of each kind
-	public final static Materials COST = new Materials();
+	public final static Materials COST = Materials.EMPTY;
 	public final static Animals REWARD = new Animals(Animal.SHEEP, Animal.PIG, Animal.COW, Animal.HORSE);
 
 	public FodderBeetFarm() {
