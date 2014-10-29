@@ -134,7 +134,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 			if (edit != null) {
 				postEdit(edit);
 			}
-			if (canQuickFinish(level)) {
+			if (!isSubaction && canQuickFinish(0)) {
 				return finishActions();
 			}
 
