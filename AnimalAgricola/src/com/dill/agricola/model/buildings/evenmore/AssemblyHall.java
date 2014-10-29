@@ -11,14 +11,14 @@ public class AssemblyHall extends Building {
 
 	public final static Materials COST = new Materials(
 			Material.WOOD, Material.WOOD, Material.WOOD, Material.REED);
-	public final static FeatureAction[] GIVE_BORDER = new FeatureAction[] {new GiveBorder()};
+	public final static FeatureAction GIVE_BORDER = new GiveBorder();
 	
 	public AssemblyHall() {
 		super(BuildingType.ASSEMBLY_HALL, 2, 0);
 	}
 
 	// you can give 1 border to opponent and build 1 free fence
-	public FeatureAction[] getFeatureActions() {
+	public FeatureAction getFeatureAction() {
 		return GIVE_BORDER;
 	}
 }

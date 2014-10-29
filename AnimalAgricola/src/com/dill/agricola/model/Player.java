@@ -1,18 +1,22 @@
 package com.dill.agricola.model;
 
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Observer;
 import java.util.Set;
 
 import com.dill.agricola.Game.Phase;
 import com.dill.agricola.Main;
 import com.dill.agricola.actions.Action;
+import com.dill.agricola.actions.FeatureAction;
 import com.dill.agricola.common.Animals;
 import com.dill.agricola.common.Dir;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.buildings.Cottage;
+import com.dill.agricola.model.buildings.Stall;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Material;
@@ -38,6 +42,7 @@ public class Player extends SimpleObservable {
 	private boolean starting;
 	private int workers;
 	private Animals lastBorn = new Animals();
+	private List<FeatureAction> featureActions = new ArrayList<FeatureAction>();
 
 	public Player(PlayerColor color) {
 		this.color = color;
@@ -51,6 +56,7 @@ public class Player extends SimpleObservable {
 		material.clear();
 		animals.clear();
 		lastBorn.clear();
+		featureActions.clear();
 		farm.init(FARM_W, FARM_H);
 		farm.build(new Cottage(), new DirPoint(0, 2));
 		addMaterial(Material.BORDER, INIT_BORDERS);
@@ -71,6 +77,11 @@ public class Player extends SimpleObservable {
 			farm.putAnimals(pos, Animal.COW, 1);
 
 			farm.setActiveType(null, 0);
+
+			farm.put(Purchasable.TROUGH, new DirPoint(0, 0, null));
+			Stall s = new Stall(0);
+			farm.build(s, new DirPoint(0, 1, null));
+			s.setPaidCost(new Materials());
 		}
 		Fencer.calculateFences(farm);
 	}
@@ -129,7 +140,7 @@ public class Player extends SimpleObservable {
 	public int getMaterial(Material m) {
 		return material.get(m);
 	}
-	
+
 	public Set<Material> getMaterialTypes() {
 		return material.types();
 	}
@@ -263,6 +274,30 @@ public class Player extends SimpleObservable {
 
 	public boolean validate() {
 		return farm.hasValidAnimals();
+	}
+
+	/*public void updateFeatureActions() {
+		featureActions.clear();
+		for (Building building : farm.getFarmBuildings()) {
+			FeatureAction[] actions = building.getFeatureActions();
+			if (actions != null) {
+				for (FeatureAction action : actions) {
+					featureActions.add(action);
+				}
+			}
+		}
+	}*/
+
+	public List<FeatureAction> getFeatureActions() {
+		// TODO do not recalc before each get
+		featureActions.clear();
+		for (Building building : farm.getFarmBuildings()) {
+			FeatureAction action = building.getFeatureAction();
+			if (action != null) {
+				featureActions.add(action);
+			}
+		}
+		return featureActions;
 	}
 
 	private Deque<Action> extraActions = new LinkedList<Action>();

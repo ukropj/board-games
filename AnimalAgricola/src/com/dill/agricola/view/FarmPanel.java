@@ -24,6 +24,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -139,6 +140,10 @@ public class FarmPanel extends JPanel {
 			new int[] { 7 * M, 4 * M, 2 * M, 4 * M, 7 * M },
 			5);
 	private final static Rectangle buildingRect = new Rectangle(M, M, L, L);
+	private final static Area buildingRectSansTrough = substract(new Area(buildingRect), new Area(new Polygon(
+			new int[] { S - 6 * M - 2, S - 6 * M - 2, S - 4 * M, S - 2 * M + 2, S - 2 * M + 2 },
+			new int[] { 7 * M + 2, 4 * M - 1, 2 * M - 3, 4 * M - 1, 7 * M + 2 },
+			5)));
 	private final static Rectangle buildingOffRect = new Rectangle(M, M, L / 3, L / 3);
 	//	private final static Area buildingSansAnimalRect = subtract(new Area(buildingRect), animalArea);
 	private final static Rectangle extRect = new Rectangle(M, M, L, 3 * S - 2 * M);
@@ -189,7 +194,7 @@ public class FarmPanel extends JPanel {
 
 	private JButton finishBtn;
 	private JButton cancelBtn;
-	private Map<ActionType, JButton> extraBtns = new HashMap<ActionType, JButton>();
+	private Map<ActionType, JButton> featureBtns = new HashMap<ActionType, JButton>();
 	private JLabel msgLabel;
 	private JPanel supplyPanel;
 	private final JLabel[] workerLabels = new JLabel[Player.MAX_WORKERS + 1];
@@ -367,15 +372,15 @@ public class FarmPanel extends JPanel {
 		if (isActivePlayer) {
 			if (ap.hasAction()) {
 				Action a = ap.getTopAction();
-				this.msgLabel.setText(a.getType().farmText);
+				this.msgLabel.setText(a.getFarmText());
 			} else {
 				this.msgLabel.setText(Msg.get("chooseActionMsg"));
 			}
 		}
-		updateExtraBtns();
+		updateFeatureBtns(isActivePlayer);
 	}
 
-	private void initExtraButton(final FeatureAction action) {
+	private void initFeatureButton(final FeatureAction action) {
 		JButton btn = new JButton(AgriImages.getButtonImage(action.getButtonIconName()));
 		btn.setToolTipText(action.getType().desc);
 		btn.setMargin(new Insets(1, 1, 1, 1));
@@ -408,34 +413,24 @@ public class FarmPanel extends JPanel {
 			});
 		}
 		add(btn);
-		extraBtns.put(action.getType(), btn);
+		featureBtns.put(action.getType(), btn);
 	}
 
-	private void updateExtraBtns() {
+	private void updateFeatureBtns(boolean isActivePlayer) {
 		List<ActionType> visibleTypes = new ArrayList<ActionType>();
-		if (active && player.equals(ap.getPlayer())) {
-			JButton btn;
-			List<Building> buildings = player.farm.getFarmBuildings();
-			
-			for (Building building : buildings) {
-				FeatureAction[] actions = building.getFeatureActions();
-				if (actions != null) {
-					for (FeatureAction action : actions) {
-						ActionType type = action.getType();
-						if (!extraBtns.containsKey(type)) {
-							initExtraButton(action);
-						}
-						btn = extraBtns.get(type);
-						btn.setEnabled(action.canDo(player) && 
-								(!ap.hasAction(ActionType.BREEDING) || action.canDoDuringBreeding()) &&
-								(!ap.hasAction() || action.isQuickAction()));
-						visibleTypes.add(type);
-					}
-				}
+		for (FeatureAction action : player.getFeatureActions()) {
+			ActionType type = action.getType();
+			if (!featureBtns.containsKey(type)) {
+				initFeatureButton(action);
 			}
+			JButton btn = featureBtns.get(type);
+			btn.setEnabled(isActivePlayer && action.canDo(player) &&
+					(!ap.hasAction(ActionType.BREEDING) || action.canDoDuringBreeding()) &&
+					(!ap.hasAction() || action.isQuickAction()));
+			visibleTypes.add(type);
 		}
 
-		for (Entry<ActionType, JButton> btnEntry : extraBtns.entrySet()) {
+		for (Entry<ActionType, JButton> btnEntry : featureBtns.entrySet()) {
 			JButton btn = btnEntry.getValue();
 			int index = visibleTypes.indexOf(btnEntry.getKey());
 			if (index != -1) {
@@ -457,6 +452,11 @@ public class FarmPanel extends JPanel {
 
 	private static Area intersect(Area area, Area intersector) {
 		area.intersect(intersector);
+		return area;
+	}
+
+	private static Area substract(Area area, Area substractor) {
+		area.subtract(substractor);
 		return area;
 	}
 
@@ -532,12 +532,12 @@ public class FarmPanel extends JPanel {
 		drawPad(g);
 	}
 
-	private void drawRemoveShape(Graphics2D g, DirPoint pos) {
-		drawRemoveShape(g, pos, false);
+	private void drawRemoveShape(Graphics2D g, DirPoint realPos) {
+		drawRemoveShape(g, realPos, false);
 	}
 
-	private void drawRemoveShape(Graphics2D g, DirPoint pos, boolean trough) {
-		AffineTransform tr = AffineTransform.getTranslateInstance(pos.x, pos.y);
+	private void drawRemoveShape(Graphics2D g, DirPoint realPos, boolean trough) {
+		AffineTransform tr = AffineTransform.getTranslateInstance(realPos.x, realPos.y);
 		Shape back = tr.createTransformedShape(trough ? removeTroughBack : removeBack);
 		Shape front = tr.createTransformedShape(removeShape);
 
@@ -863,7 +863,13 @@ public class FarmPanel extends JPanel {
 		switch (getState(pos, Purchasable.BUILDING)) {
 		case CAN_DO:
 			g.setColor(UiFactory.makeTranslucent(player.getColor().getRealColor(), 120));
-			g.fill(r);
+			if (getState(pos, Purchasable.TROUGH) == PurchasableState.CAN_DO) {
+				AffineTransform tr = AffineTransform.getTranslateInstance(realPos.x, realPos.y);
+				// draw building outline sans trough outline
+				g.fill(tr.createTransformedShape(buildingRectSansTrough));
+			} else {
+				g.fill(r);
+			}
 			break;
 		case CAN_UNDO:
 			buildingOffRect.translate(realPos.x, realPos.y);
@@ -906,12 +912,14 @@ public class FarmPanel extends JPanel {
 
 	private PurchasableState getState(DirPoint pos, Purchasable type) {
 		if (active && farm.hasActiveType(type)) {
-			int level = farm.getLevelOfActiveType(type);
-			if (ap.canDoFarmAction(pos, type, level)) {
-				return PurchasableState.CAN_DO;
-			}
-			if (ap.canUndoFarmAction(pos, type, level)) {
-				return PurchasableState.CAN_UNDO;
+			List<Integer> levels = farm.getLevelOfActiveType(type);
+			for (Integer level : levels) {
+				if (ap.canDoFarmAction(pos, type, level)) {
+					return PurchasableState.CAN_DO;
+				}
+				if (ap.canUndoFarmAction(pos, type, level)) {
+					return PurchasableState.CAN_UNDO;
+				}
 			}
 		}
 		return PurchasableState.NA;
@@ -982,6 +990,7 @@ public class FarmPanel extends JPanel {
 
 			// TODO refactor to more functions
 			if (active && phase != Phase.BREEDING) {
+				Collection<Purchasable> types = activeTypes.values();
 				for (Entry<Integer, Purchasable> act : activeTypes.entrySet()) {
 					int level = act.getKey();
 					Purchasable activeType = act.getValue();
@@ -1028,7 +1037,7 @@ public class FarmPanel extends JPanel {
 					case BUILDING:
 						if (ap.canUndoFarmAction(pos, Purchasable.BUILDING, level) && buildingOffRect.contains(relativeDirPoint)) {
 							done = ap.undoFarmAction(pos, Purchasable.BUILDING, level);
-						} else if (buildingRect.contains(relativeDirPoint)) {
+						} else if (buildingRect.contains(relativeDirPoint) && (!types.contains(Purchasable.TROUGH) || !troughShape.contains(relativeDirPoint))) {
 							availableAnimals = farm.guessAnimalTypesToPut(pos, true);
 							if (!animalArea.contains(relativeDirPoint) // not clicked in animal area OR
 									// no animals available OR no animals present

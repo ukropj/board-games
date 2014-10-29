@@ -34,6 +34,11 @@ public abstract class AbstractAction implements Action {
 	public ActionType getType() {
 		return type;
 	}
+	
+	public static <T extends Action> T withSubaction(T action, T subaction, boolean mustUndo) {
+		action.setSubAction(subaction, mustUndo);
+		return action;
+	}
 
 	public void reset() {
 		user = null;
@@ -68,7 +73,7 @@ public abstract class AbstractAction implements Action {
 		return user;
 	}
 
-	public void useAsSubaction(int level) {
+	public void setLevel(int level) {
 		subLevel = level;
 	}
 
@@ -156,6 +161,10 @@ public abstract class AbstractAction implements Action {
 		for (ActionStateChangeListener listener : changeListeners) {
 			listener.stateChanges(this);
 		}
+	}
+	
+	public String getFarmText() {
+		return getType().farmText;
 	}
 
 	public String toString() {

@@ -125,13 +125,17 @@ public class Farm extends SimpleObservable {
 		return activeTypes.values().contains(type);
 	}
 
-	public int getLevelOfActiveType(Purchasable type) {
+	public List<Integer> getLevelOfActiveType(Purchasable type) {
+		List<Integer> levels = new ArrayList<Integer>();
 		for (Entry<Integer, Purchasable> act : activeTypes.entrySet()) {
 			if (act.getValue() == type) {
-				return act.getKey();
+				levels.add(act.getKey());
 			}
 		}
-		throw new IllegalArgumentException("Not an active type " + type);
+		if (levels.isEmpty()) {
+			throw new IllegalArgumentException("Not an active type " + type);			
+		}
+		return levels; 
 	}
 
 	public boolean isActiveSpot(DirPoint pos, Purchasable forType) {
@@ -400,9 +404,9 @@ public class Farm extends SimpleObservable {
 		return unused;
 	}
 
-	public void setBuildingList(List<Building> buildingList) {
+	/*public void setBuildingList(List<Building> buildingList) {
 		this.buildingList = buildingList;
-	}
+	}*/
 
 	public List<Building> getFarmBuildings() {
 		return this.buildingList;
@@ -457,32 +461,24 @@ public class Farm extends SimpleObservable {
 		Main.asrtNotNull(b, "Cannot build null building");
 		Space space = getSpace(pos);
 		if (space != null && b.getType().canBuildAt(space.getType(), pos, this)) {
-			b.buildAt(space);
+			b.buildAt(space, pos);
 			putSpace(pos, b);
 			addActiveSpot(pos, Purchasable.BUILDING);
+			buildingList.add(b);
 			setChanged();
 			return true;
 		}
 		return false;
 	}
 
-//	private Building takenBuilding = null;
-
 	public Building unbuild(DirPoint pos) {
 		Main.asrtNotNull(pos, "Cannot unbuild on null position");
-		/*if (pos == null) {
-			if (activeType == Purchasable.BUILDING) {
-				if (takeLastActive()) {
-					return takenBuilding;
-				}
-			}
-			return null;
-		}*/
 		Building building = getBuilding(pos);
 		if (building != null) {
 			Space original = building.unbuild();
 			putSpace(pos, original);
 			removeActiveSpot(pos, Purchasable.BUILDING);
+			buildingList.remove(building);
 			setChanged();
 			return building;
 		}

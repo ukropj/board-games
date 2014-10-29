@@ -24,7 +24,7 @@ public interface Action {
 	
 	PlayerColor getUser();
 	
-	void useAsSubaction(int level);
+	void setLevel(int level);
 	
 	boolean isCancelled();
 	
@@ -57,6 +57,8 @@ public interface Action {
 	void addChangeListener(ActionStateChangeListener changeListener);
 
 	void removeChangeListeners();
+
+	String getFarmText();
 
 
 }

@@ -26,7 +26,7 @@ import com.dill.agricola.view.utils.AgriImages.ImgSize;
 public class TradeForCow extends AbstractAction {
 
 	public TradeForCow() {
-		super(ActionType.SWITCH_FOR_COW);
+		super(ActionType.TRADE_FOR_COW);
 	}
 
 	public boolean canDo(Player player) {

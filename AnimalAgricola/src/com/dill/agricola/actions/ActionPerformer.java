@@ -24,7 +24,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 	private void checkState(int level) throws IllegalStateException {
 		Main.asrtPositive(level, "Action level cannot be negative");
 		Main.asrtTrue(player != null, "Cannot perform action without player");
-		Main.asrtTrue(actions.size() > level, "Cannot perform action without action " + level);
+		Main.asrtTrue(actions.size() > level, "Cannot perform action on level " + level);
 	}
 
 	public void reset() {
@@ -89,6 +89,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 
 	private boolean startAction(Action action, int level, boolean extraAction) {
 		actions.push(action);
+		action.setLevel(level);
 		boolean isSubaction = level != 0;
 		if (!isSubaction) {
 			// only base action can be extra (for now..)
@@ -96,7 +97,6 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		} else {
 			action.addChangeListener(new SubActionStateChangeListener(level));
 			action.init();
-			action.useAsSubaction(level);
 		}
 		checkState(level);
 
@@ -119,11 +119,9 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 				player.spendWorker();
 			}
 
-			if (!hasAction(level + 1)) {
-				Action subAction = action.getSubAction(player, false);
-				if (subAction != null) {
-					startAction(subAction, level + 1, false);
-				}
+			Action subAction = action.getSubAction(player, false);
+			if (subAction != null && !actions.contains(subAction)) {
+				startAction(subAction, actions.size(), false);
 			}
 
 			if (edit != null) {
@@ -172,11 +170,9 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 			UndoableFarmEdit edit = action.doOnFarm(player, pos);
 			if (edit != null) {
 				postEdit(edit);
-				if (!hasAction(level + 1)) {
-					Action subAction = action.getSubAction(player, true);
-					if (subAction != null) {
-						startAction(subAction, level + 1, false);
-					}
+				Action subAction = action.getSubAction(player, true);
+				if (subAction != null && !actions.contains(subAction)) {
+					startAction(subAction, actions.size(), false);
 				}
 				return true;
 			}
@@ -218,7 +214,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 				postEdit(new EndAction(player, action, level, isExtraAction));
 				player.getFarm().setActiveType(null, level);
 				if (level != 0) {
-					action.removeChangeListeners();					
+					action.removeChangeListeners();
 				}
 			}
 			isExtraAction = false;

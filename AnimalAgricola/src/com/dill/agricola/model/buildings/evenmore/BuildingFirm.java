@@ -11,14 +11,14 @@ public class BuildingFirm extends Building {
 
 	public final static Materials COST = new Materials(
 			Material.WOOD, Material.WOOD, Material.STONE);
-	public final static FeatureAction[] UPGRADE_TROUGH = new FeatureAction[] { new UpgradeTrough() };
+	public final static FeatureAction UPGRADE_TROUGH = new UpgradeTrough();
 
 	public BuildingFirm() {
 		super(BuildingType.BUILDING_FIRM, 2, 0);
 	}
 
 	// allows upgrading trough to stall for 2 stone
-	public FeatureAction[] getFeatureActions() {
+	public FeatureAction getFeatureAction() {
 		return UPGRADE_TROUGH;
 	}
 }

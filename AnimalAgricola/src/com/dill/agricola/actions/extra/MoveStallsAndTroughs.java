@@ -15,14 +15,15 @@ import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.undo.SimpleEdit;
 import com.dill.agricola.undo.UndoableFarmEdit;
 
-public class MoveStalls extends PurchaseAction implements FeatureAction {
+public class MoveStallsAndTroughs extends PurchaseAction implements FeatureAction {
 
 	private Building movedBuilding = null;
 
 	private final Materials NO_COST = new Materials();
 
-	public MoveStalls() {
-		super(ActionType.MOVE_STALLS, Purchasable.BUILDING);
+	public MoveStallsAndTroughs() {
+		super(ActionType.MOVE_STALLS_AND_TROUGHS, Purchasable.BUILDING);
+		setSubAction(new MoveTroughs(), false);
 	}
 
 	protected Materials getCost(Player player) {
@@ -129,7 +130,7 @@ public class MoveStalls extends PurchaseAction implements FeatureAction {
 		}
 
 		public String getPresentationName() {
-			return MoveStalls.this.getType().shortDesc;
+			return MoveStallsAndTroughs.this.getType().shortDesc;
 		}
 
 	}

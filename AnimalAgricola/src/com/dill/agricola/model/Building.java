@@ -86,7 +86,7 @@ public abstract class Building extends Space {
 		return null;
 	}
 	
-	public FeatureAction[] getFeatureActions() {
+	public FeatureAction getFeatureAction() {
 		// actions that can be used anytime
 		return null;
 	}
@@ -108,7 +108,7 @@ public abstract class Building extends Space {
 		return space instanceof Pasture;
 	}
 
-	public void buildAt(Space space) {
+	public void buildAt(Space space, DirPoint pos) {
 		Main.asrtNotNull(space, "Cannot build on null space");
 		for (int i = 0; i < borders.length; i++) {
 			borders[i] = space.borders[i];
@@ -117,6 +117,7 @@ public abstract class Building extends Space {
 		animalType = space.animalType;
 		animalCount.set(space.animalCount);
 		buildSpace = space;
+		buildPos = pos;
 	}
 
 	public Space unbuild() {
@@ -139,6 +140,7 @@ public abstract class Building extends Space {
 			borders[i] = false;
 		}
 		buildSpace = null;
+		buildPos = null;
 		trough = false;
 		animalType = null;
 		animalCount.clear();
@@ -159,10 +161,6 @@ public abstract class Building extends Space {
 			return intermediary;
 		}
 		return null;
-	}
-	
-	public void setPosition(DirPoint pos) {
-		this.buildPos = pos;
 	}
 
 	public String toString() {

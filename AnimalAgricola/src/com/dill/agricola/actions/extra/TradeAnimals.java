@@ -96,7 +96,7 @@ public class TradeAnimals extends AbstractAction implements FeatureAction {
 	public UndoableFarmEdit doOnFarm(Player player, DirPoint pos) {
 		return null;
 	}
-	
+
 	public boolean isUsedEnough() {
 		// optional
 		return true;
@@ -132,7 +132,7 @@ public class TradeAnimals extends AbstractAction implements FeatureAction {
 	public boolean isQuickAction() {
 		return true;
 	}
-
+	
 	public boolean canDoDuringBreeding() {
 		return false;
 	}

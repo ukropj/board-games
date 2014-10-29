@@ -70,7 +70,6 @@ public class Fencer {
 		} while (changed && counter < 10);
 		
 		// one more pass to fill maps
-		List<Building> buildings = new ArrayList<Building>();
 		List<ExtraCapacityProvider> ecps = new ArrayList<ExtraCapacityProvider>();
 		Map<Integer, List<Space>> spaceMap = new HashMap<Integer, List<Space>>();
 		for (DirPoint pos : range) {
@@ -83,10 +82,8 @@ public class Fencer {
 				}
 				spaceMap.get(pastureNo).add(space);
 			}
-			Building b = farm.getBuilding(pos);
+			Building b = farm.getBuilding(pos); // TODO use farm.buildingList
 			if (b!= null) {
-				b.setPosition(pos);
-				buildings.add(b);
 				if (b instanceof ExtraCapacityProvider) {
 					ecps.add((ExtraCapacityProvider)b);
 				}
@@ -94,7 +91,6 @@ public class Fencer {
 		}
 		
 		// process results
-		farm.setBuildingList(buildings);
 		boolean farmValid = true;
 		for (DirPoint pos : range) {
 			int pastureNo = floodMap[pos.x][pos.y];
