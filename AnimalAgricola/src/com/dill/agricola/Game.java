@@ -63,7 +63,7 @@ public class Game {
 	private SubmitListener submitListener;
 
 	private long startTime;
-	
+
 	private int round = 0;
 	private Phase phase;
 	private PlayerColor startPlayer;
@@ -74,7 +74,7 @@ public class Game {
 	private boolean ended;
 
 	private final Deque<Player> playerQueue = new ArrayDeque<Player>();
-	
+
 	private final List<Action> actions = new ArrayList<Action>(Arrays.asList(//
 			new StartOneWood(this), new ThreeWood(), // 
 			new OneStone(), new TwoStone(),
@@ -89,7 +89,7 @@ public class Game {
 			new BuildStall(), new BuildStables(),
 			new BuildSpecial(), new BuildSpecial()//
 			));
-	
+
 	public Game() {
 		ap = new ActionPerformer();
 		undoManager = new TurnUndoManager();
@@ -125,7 +125,7 @@ public class Game {
 		}
 		board.setLocationRelativeTo(null);
 		board.setVisible(true);
-		
+
 		// not pretty, but can't think of better place
 		GiveBorder.players = getPlayers();
 	}
@@ -186,11 +186,11 @@ public class Game {
 	public boolean isEnded() {
 		return ended;
 	}
-	
+
 	public long getStartTime() {
 		return startTime;
 	}
-	
+
 	public List<Action> getActions() {
 		return actions;
 	}
@@ -218,7 +218,7 @@ public class Game {
 
 		setStartingPlayer(newDialog.getStartingPlayer());
 		initialStartPlayer = startPlayer;
-		
+
 		startTime = System.currentTimeMillis();
 
 		board.startGame();
@@ -311,10 +311,10 @@ public class Game {
 	private void endExtraTurn() {
 		ap.postEdit(new Noop());
 		Player currentPlayer = ap.getPlayer();
-		
+
 		// animals run away
 		releaseAnimals(currentPlayer);
-		
+
 		// try another extra turn
 		startExtraTurn(currentPlayer);
 	}
@@ -340,7 +340,7 @@ public class Game {
 
 	private void endTurn() {
 		Player currentPlayer = ap.getPlayer();
-		
+
 		// animals run away
 		releaseAnimals(currentPlayer);
 
@@ -354,10 +354,10 @@ public class Game {
 		} else {
 			// chcek also previous player
 			if (prevPlayer.hasWorkers()) {
-				startTurn(prevPlayer);				
+				startTurn(prevPlayer);
 			} else {
 				// start pre-breeding phase
-				interPhase(Phase.BEFORE_BREEDING);				
+				interPhase(Phase.BEFORE_BREEDING);
 			}
 		}
 	}
@@ -382,7 +382,7 @@ public class Game {
 			}
 		}
 		board.workersGoHome();
-		
+
 		Player currentPlayer = takeFromQueue();
 		if (currentPlayer != null) {
 			startBreedingTurn(currentPlayer);
@@ -450,9 +450,9 @@ public class Game {
 		ended = true;
 		ap.endUpdate(); // end last "action/breeding edit"
 		board.endGame();
-		
+
 		if (Main.DEBUG) {
-			undoManager.dump();			
+			undoManager.dump();
 		}
 	}
 
@@ -477,17 +477,17 @@ public class Game {
 		ap.postEdit(new ChangeQueue());
 		return playerQueue.removeFirst();
 	}
-	
+
 	public String captureBoard(boolean useTimestamp) {
 		BufferedImage img = board.paintPlayerBoards();
-		
+
 		String path;
 		if (useTimestamp) {
 			path = ScoreIO.SCORE_BASE + getStartTime() + ".png";
 		} else {
 			path = Images.getUniqueName("aa_img.png");
 		}
-		
+
 		Images.saveImage(img, path);
 		return path;
 	}
@@ -530,20 +530,41 @@ public class Game {
 					undoManager.undo();
 				}
 				break;
-			case START_FEATURE_WORK:
+			case FEATURE_START:
 				switch (phase) {
 				case WORK:
 					// feature action start
-					ap.postEdit(new ChangePhase(phase, Phase.FEATURE_BEFORE_WORK, false));
-					phase = Phase.FEATURE_BEFORE_WORK;
+					if (!ap.hasAction()) {
+						// before work
+						phase = Phase.FEATURE_BEFORE_WORK;
+						ap.postEdit(new ChangePhase(phase, Phase.FEATURE_BEFORE_WORK, false));
+					} else {
+						// during work
+						// keep phase
+					}
 					board.refresh();
 					break;
-				/*case FEATURE_WORK:
-					// special action done - continue with work
+				case FEATURE_BEFORE_WORK:
+					// another feature action start
+					board.refresh();
+					break;
+				default:
+					break;
+				}
+				break;
+			case FEATURE_END:
+				switch (phase) {
+				case WORK:
+					// feature action quick end during work
+					// wait for work to end
+					board.refresh();
+					break;
+				case FEATURE_BEFORE_WORK:
+					// feature action end - continue with work
 					ap.postEdit(new ChangePhase(phase, Phase.WORK, false));
 					phase = Phase.WORK;
 					startTurn(ap.getPlayer());
-					break;*/
+					break;
 				default:
 					break;
 				}
@@ -555,7 +576,7 @@ public class Game {
 	};
 
 	public static enum FarmActionCommand {
-		SUBMIT, CANCEL, START_FEATURE_WORK;
+		SUBMIT, CANCEL, FEATURE_START, FEATURE_END/*, SUBMIT_FEATURE*/;
 	}
 
 	private class StartRound extends SimpleEdit {

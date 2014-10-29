@@ -2,6 +2,7 @@ package com.dill.agricola.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import com.dill.agricola.GeneralSupply;
@@ -35,7 +37,12 @@ public class Farm extends SimpleObservable {
 	private final Map<Dir, Stack<Integer>> extensions = new EnumMap<Dir, Stack<Integer>>(Dir.class);
 	private final Animals looseAnimals = new Animals();
 
-	private Map<Integer, Purchasable> activeTypes = new HashMap<Integer, Purchasable>();
+	private Map<Integer, Purchasable> activeTypes = new TreeMap<Integer, Purchasable>(new Comparator<Integer>() {
+		// reverse order
+		public int compare(Integer o1, Integer o2) {
+			return o2.compareTo(o1);
+		};
+	});
 	private final Map<Purchasable, Set<DirPoint>> activeSpots = new HashMap<Purchasable, Set<DirPoint>>();
 
 	private boolean animalsValid = true;
@@ -133,9 +140,9 @@ public class Farm extends SimpleObservable {
 			}
 		}
 		if (levels.isEmpty()) {
-			throw new IllegalArgumentException("Not an active type " + type);			
+			throw new IllegalArgumentException("Not an active type " + type);
 		}
-		return levels; 
+		return levels;
 	}
 
 	public boolean isActiveSpot(DirPoint pos, Purchasable forType) {
@@ -299,6 +306,20 @@ public class Farm extends SimpleObservable {
 			}
 		}
 		return count;
+	}
+	
+	public Set<DirPoint> find(Purchasable type) {
+		if (type == Purchasable.FENCE || type == Purchasable.EXTENSION) {
+			throw new IllegalArgumentException("Cannot use 'find' for FENCEs or EXTENSIONs");
+		}
+		Set<DirPoint> spots = new HashSet<DirPoint>();
+		List<DirPoint> range = PointUtils.createGridRange(width, height);
+		for (DirPoint pos : range) {
+			if (has(type, pos, false)) {
+				spots.add(pos);
+			}
+		}
+		return spots;
 	}
 
 	public List<Integer> getExtensions(Dir d) {

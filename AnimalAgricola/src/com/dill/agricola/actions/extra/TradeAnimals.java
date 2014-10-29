@@ -128,10 +128,6 @@ public class TradeAnimals extends AbstractAction implements FeatureAction {
 		}
 
 	}
-
-	public boolean isQuickAction() {
-		return true;
-	}
 	
 	public boolean canDoDuringBreeding() {
 		return false;

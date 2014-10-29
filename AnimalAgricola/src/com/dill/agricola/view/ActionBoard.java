@@ -138,7 +138,7 @@ public class ActionBoard extends JPanel {
 			if (ap.hasAction()) {
 				// when action is being performed, disable everything
 				button.setEnabled(false);
-				button.setActive(ap.hasAction(type));
+				button.setActive(ap.hasTopAction(type));
 			} else {
 				// when no action being performed, disable those that cannot be currently performed
 				if (!a.isUsed()) {

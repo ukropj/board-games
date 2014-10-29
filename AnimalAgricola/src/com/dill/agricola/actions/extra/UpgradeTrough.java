@@ -1,5 +1,7 @@
 package com.dill.agricola.actions.extra;
 
+import java.util.Set;
+
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
@@ -29,7 +31,16 @@ public class UpgradeTrough extends BuildStall implements FeatureAction {
 	}
 
 	public boolean canDo(Player player) {
-		return super.canDo(player) && player.farm.count(Purchasable.TROUGH) > 0;
+		if (!super.canDo(player)) {
+			return false;
+		}
+		Set<DirPoint> troughSpots = player.farm.find(Purchasable.TROUGH);
+		for (DirPoint pos : troughSpots) {
+			if (super.canDoOnFarm(player, pos)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public boolean canDoOnFarm(Player player, DirPoint pos) {
@@ -82,10 +93,6 @@ public class UpgradeTrough extends BuildStall implements FeatureAction {
 			}
 		}
 
-	}
-	
-	public boolean isQuickAction() {
-		return false;
 	}
 
 	public boolean canDoDuringBreeding() {

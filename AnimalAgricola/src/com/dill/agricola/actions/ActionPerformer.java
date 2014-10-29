@@ -54,7 +54,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		return level >= 0 && actions.size() > level;
 	}
 
-	public boolean hasAction(ActionType type) {
+	public boolean hasTopAction(ActionType type) {
 		return !actions.isEmpty() && actions.firstElement().getType() == type;
 	}
 
@@ -86,6 +86,11 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		actions.clear();
 		return startAction(action, 0, extraAction);
 	}
+	
+	public boolean startFeatureAction(FeatureAction action) {
+		// put this action on next availavle level
+		return startAction(action, actions.size(), true);
+	}
 
 	private boolean startAction(Action action, int level, boolean extraAction) {
 		actions.push(action);
@@ -95,7 +100,9 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 			// only base action can be extra (for now..)
 			isExtraAction = extraAction;
 		} else {
-			action.addChangeListener(new SubActionStateChangeListener(level));
+			if (!extraAction) { // extra + subaction = feature
+				action.addChangeListener(new SubActionStateChangeListener(level));
+			}
 			action.init();
 		}
 		checkState(level);
@@ -127,7 +134,7 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 			if (edit != null) {
 				postEdit(edit);
 			}
-			if (canQuickFinish(level, isExtraAction)) {
+			if (canQuickFinish(level)) {
 				return finishActions();
 			}
 
@@ -139,12 +146,12 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		}
 	}
 
-	private boolean canQuickFinish(int level, boolean extraAction) {
+	private boolean canQuickFinish(int level) {
 		Action action = getAction(level);
 		return !player.hasLooseAnimals()
 				&& player.validate()
 				&& !action.canDoOnFarm(player)
-				&& (!hasAction(level + 1) || canQuickFinish(level + 1, false));
+				&& (!hasAction(level + 1) || canQuickFinish(level + 1));
 	}
 
 	public boolean canDoFarmAction(DirPoint pos, Purchasable thing, int level) {
@@ -187,7 +194,8 @@ public class ActionPerformer extends TurnUndoableEditSupport {
 		checkState(level);
 		if (canUndoFarmAction(pos, thing, level)) {
 			Action action = getAction(level);
-			if (undoSpecificAction(player, pos, thing, action.mustUndoSubactions() && hasAction(level + 1))) {
+			Action subaction = action.getSubAction(player, true);
+			if (undoSpecificAction(player, pos, thing, action.mustUndoSubactions() && actions.contains(subaction))) {
 				return true;
 			}
 		}

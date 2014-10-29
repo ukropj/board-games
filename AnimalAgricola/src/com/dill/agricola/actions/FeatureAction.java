@@ -6,11 +6,6 @@ package com.dill.agricola.actions;
  * (usually) during player turn.
  */
 public interface FeatureAction extends Action {
-	
-	/**
-	 * True when not managed by ActionPerformer.
-	 */
-	boolean isQuickAction();
 
 	boolean canDoDuringBreeding();
 	

@@ -64,7 +64,6 @@ import com.dill.agricola.model.types.Material;
 import com.dill.agricola.model.types.Purchasable;
 import com.dill.agricola.support.Fonts;
 import com.dill.agricola.support.Msg;
-import com.dill.agricola.undo.UndoableFarmEdit;
 import com.dill.agricola.view.utils.AgriImages;
 import com.dill.agricola.view.utils.AgriImages.ImgSize;
 import com.dill.agricola.view.utils.Images;
@@ -241,6 +240,7 @@ public class FarmPanel extends JPanel {
 	private void initButtons() {
 		finishBtn = new JButton(AgriImages.getYesIcon());
 		finishBtn.setToolTipText(Msg.get("finishActionTip"));
+		finishBtn.setCursor(AgriImages.HAND_CURSOR);
 		finishBtn.setMargin(new Insets(0, 0, 0, 0));
 		finishBtn.setBounds(X1 + farm.getWidth() * S - S / 3 - 2 * M, Y1 + 3 * S + 3 * M / 2, S / 3 + 3 * M / 2, S / 3);
 		finishBtn.setActionCommand(FarmActionCommand.SUBMIT.toString());
@@ -261,6 +261,7 @@ public class FarmPanel extends JPanel {
 
 		cancelBtn = new JButton(AgriImages.getNoIcon());
 		cancelBtn.setToolTipText(Msg.get("cancelBtnTip"));
+		cancelBtn.setCursor(AgriImages.HAND_CURSOR);
 		cancelBtn.setMargin(new Insets(0, 0, 0, 0));
 		cancelBtn.setBounds(X1 + farm.getWidth() * S, Y1 + 3 * S + 3 * M / 2, S / 3, S / 3);
 		cancelBtn.setActionCommand(FarmActionCommand.CANCEL.toString());
@@ -386,32 +387,19 @@ public class FarmPanel extends JPanel {
 		btn.setMargin(new Insets(1, 1, 1, 1));
 		btn.setBounds(X1 + farm.getWidth() * S + (3 * M) / 2, Y1 + M, S / 3 + M / 2, S / 3 + M / 2);
 		btn.setCursor(AgriImages.HAND_CURSOR);
-		if (action.isQuickAction()) {
-			btn.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					// this action is not managed by ActionPerformer!
-					if (action.canDo(player)) {
-						UndoableFarmEdit edit = action.doo(player);
-						if (edit != null) {
-							ap.postEdit(edit);
-							player.notifyObservers(ChangeType.ACTION_DONE);
-						}
+
+		btn.setActionCommand(FarmActionCommand.FEATURE_START.toString());
+		btn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				submitListener.actionPerformed(e);
+				if (ap.startFeatureAction(action)) {
+					if (ap.isFinished()) {
+						submitListener.actionPerformed(new ActionEvent(e.getSource(), e.getID(), FarmActionCommand.FEATURE_END.toString()));
 					}
 				}
-			});
-		} else {
-			btn.setActionCommand(FarmActionCommand.START_FEATURE_WORK.toString());
-			btn.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					submitListener.actionPerformed(e);
-					if (ap.startAction(action, true)) {
-						if (ap.isFinished()) {
-							submitListener.actionPerformed(e);
-						}
-					}
-				}
-			});
-		}
+			}
+		});
+
 		add(btn);
 		featureBtns.put(action.getType(), btn);
 	}
@@ -425,8 +413,7 @@ public class FarmPanel extends JPanel {
 			}
 			JButton btn = featureBtns.get(type);
 			btn.setEnabled(isActivePlayer && action.canDo(player) &&
-					(!ap.hasAction(ActionType.BREEDING) || action.canDoDuringBreeding()) &&
-					(!ap.hasAction() || action.isQuickAction()));
+					(!ap.hasTopAction(ActionType.BREEDING) || action.canDoDuringBreeding()));
 			visibleTypes.add(type);
 		}
 
@@ -434,13 +421,12 @@ public class FarmPanel extends JPanel {
 			JButton btn = btnEntry.getValue();
 			int index = visibleTypes.indexOf(btnEntry.getKey());
 			if (index != -1) {
-				btn.setLocation(btn.getX(), Y1 + M + index * (S / 3 + M));
+				btn.setLocation(X1 + farm.getWidth() * S + (3 * M) / 2, Y1 + M + index * (S / 3 + M));
 				btn.setVisible(true);
 			} else {
 				btn.setVisible(false);
 			}
 		}
-
 	}
 
 	public void setActive(boolean active, Phase phase) {
@@ -913,13 +899,22 @@ public class FarmPanel extends JPanel {
 	private PurchasableState getState(DirPoint pos, Purchasable type) {
 		if (active && farm.hasActiveType(type)) {
 			List<Integer> levels = farm.getLevelOfActiveType(type);
+			boolean canDo = false;
+			boolean canUndo = false;
 			for (Integer level : levels) {
 				if (ap.canDoFarmAction(pos, type, level)) {
-					return PurchasableState.CAN_DO;
+					canDo = true;
 				}
 				if (ap.canUndoFarmAction(pos, type, level)) {
-					return PurchasableState.CAN_UNDO;
+					canUndo = true;
 				}
+			}
+			if (canUndo) {
+				// UNDO has priority above DO
+				return PurchasableState.CAN_UNDO;
+			}
+			if (canDo) {
+				return PurchasableState.CAN_DO;
 			}
 		}
 		return PurchasableState.NA;
@@ -992,6 +987,7 @@ public class FarmPanel extends JPanel {
 			if (active && phase != Phase.BREEDING) {
 				Collection<Purchasable> types = activeTypes.values();
 				for (Entry<Integer, Purchasable> act : activeTypes.entrySet()) {
+					// levels come from highest to lowest
 					int level = act.getKey();
 					Purchasable activeType = act.getValue();
 

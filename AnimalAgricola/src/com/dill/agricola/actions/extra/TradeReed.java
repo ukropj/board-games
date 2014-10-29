@@ -104,11 +104,7 @@ public class TradeReed extends AbstractAction implements FeatureAction {
 		}
 
 	}
-
-	public boolean isQuickAction() {
-		return true;
-	}
-
+	
 	public boolean canDoDuringBreeding() {
 		return true;
 	}

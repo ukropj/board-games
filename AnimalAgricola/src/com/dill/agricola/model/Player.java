@@ -58,7 +58,7 @@ public class Player extends SimpleObservable {
 		lastBorn.clear();
 		featureActions.clear();
 		farm.init(FARM_W, FARM_H);
-		farm.build(new Cottage(), new DirPoint(0, 2));
+		purchase(new Cottage(), new Materials(), new DirPoint(0, 2));
 		addMaterial(Material.BORDER, INIT_BORDERS);
 
 		if (Main.DEBUG) {

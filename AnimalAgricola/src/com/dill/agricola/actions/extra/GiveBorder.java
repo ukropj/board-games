@@ -103,10 +103,6 @@ public class GiveBorder extends PurchaseAction implements FeatureAction {
 
 	}
 
-	public boolean isQuickAction() {
-		return false;
-	}
-
 	public boolean canDoDuringBreeding() {
 		return true;
 	}

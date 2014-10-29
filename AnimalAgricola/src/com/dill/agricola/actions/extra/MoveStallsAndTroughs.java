@@ -33,7 +33,8 @@ public class MoveStallsAndTroughs extends PurchaseAction implements FeatureActio
 	public boolean canDo(Player player) {
 		return player.farm.hasBuilding(BuildingType.STALL)
 				|| player.farm.hasBuilding(BuildingType.COW_STALL)
-				|| player.farm.hasBuilding(BuildingType.PIG_STALL);
+				|| player.farm.hasBuilding(BuildingType.PIG_STALL)
+				|| getSubAction(player, false).canDo(player);
 	}
 
 	public boolean canDoOnFarm(Player player, DirPoint pos) {
@@ -133,10 +134,6 @@ public class MoveStallsAndTroughs extends PurchaseAction implements FeatureActio
 			return MoveStallsAndTroughs.this.getType().shortDesc;
 		}
 
-	}
-
-	public boolean isQuickAction() {
-		return false;
 	}
 
 	public boolean canDoDuringBreeding() {
