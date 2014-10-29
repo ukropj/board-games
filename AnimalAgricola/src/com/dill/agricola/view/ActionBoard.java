@@ -225,13 +225,13 @@ public class ActionBoard extends JPanel {
 //		return buildSpecialActions;
 //	}
 
-	public boolean canBuildSpecial() {
+	public boolean canBuildSpecial(BuildingType type) {
 		Player currentPlayer = ap.getPlayer();
 		if (actionsDisabled || ap.hasAction() || currentPlayer == null) {
 			return false;
 		}
-		for (Action action : buildSpecialActions) {
-			if (!action.isUsed() && action.canDo(currentPlayer)) {
+		for (BuildSpecial action : buildSpecialActions) {
+			if (!action.isUsed() && action.canPurchase(currentPlayer, type, null)) {
 				return true;
 			}
 		}

@@ -295,7 +295,7 @@ public class Board extends JFrame {
 			boolean isLeft = left.contains(type);
 			btn.setVisible(isLeft);
 			if (isLeft) {
-				boolean canBuild = actionBoard.canBuildSpecial();
+				boolean canBuild = actionBoard.canBuildSpecial(type);
 				if (btn.isEnabled() != canBuild) {
 					btn.setEnabled(canBuild);
 					btn.remove(0);
