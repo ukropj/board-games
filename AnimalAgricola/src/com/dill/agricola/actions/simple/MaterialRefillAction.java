@@ -44,7 +44,7 @@ public abstract class MaterialRefillAction extends AbstractAction {
 	
 	public UndoableFarmEdit initUsed() {
 		UndoableFarmEdit ts = triggerTimberShop && isUsed() ? TimberShop.takeTopAction(false) : null;
-		return joinEdits(super.initUsed(), new RefillMaterials(refill), ts);
+		return joinEdits(super.initUsed(), ts);
 	}
 
 	public boolean canDo(Player player) {
