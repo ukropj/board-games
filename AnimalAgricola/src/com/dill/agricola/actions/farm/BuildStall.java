@@ -48,7 +48,7 @@ public class BuildStall extends BuildAction {
 	}
 
 	public boolean canDoOnFarm(Player player, DirPoint pos) {
-		return allowOne ? getUseCount() < 1 : true && super.canDoOnFarm(player, pos);
+		return (allowOne ? getUseCount() < 1 : true) && super.canDoOnFarm(player, pos);
 	}
 	
 	public boolean canUndoOnFarm(Player player, DirPoint pos) {
