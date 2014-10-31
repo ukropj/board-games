@@ -182,7 +182,7 @@ public class NewGameDialog extends JDialog implements ActionListener, ItemListen
 		Config.putEnum(ConfigKey.LAST_STARTING_PLAYER, getStartingPlayer());
 		Config.putBoolean(ConfigKey.MORE_BUILDINGS, getUseMoreBuildings());
 		Config.putBoolean(ConfigKey.EVEN_MORE_BUILDINGS, getUseEvenMoreBuildings());	
-		Config.putBoolean(ConfigKey.CUSTOM_COTTAGE_PLACEMENT, getUseEvenMoreBuildings());	
+		Config.putBoolean(ConfigKey.CUSTOM_COTTAGE_PLACEMENT, getUseCustomCottage());	
 	}
 
 	public void itemStateChanged(ItemEvent e) {
