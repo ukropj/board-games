@@ -21,6 +21,7 @@ public enum ActionType {
 	COW_AND_PIGS("cowPigs"),
 	HORSE_AND_SHEEP("horseSheep"),
 	// extra
+	COTTAGE("cottage"),
 	BREEDING("breeding"),
 	BUILDING_REWARD("buildReward"),
 	ONE_TROUGH("oneTrough"),

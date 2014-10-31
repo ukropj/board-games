@@ -117,9 +117,7 @@ public class Game {
 
 		board.pack();
 		if (Main.DEBUG) {
-//			board.buildDebugPanel(players);
 			board.setExtendedState(JFrame.MAXIMIZED_BOTH);
-//			board.setSize(1100, 640 + (Main.DEBUG ? 50 : 0));
 		} else {
 //			board.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		}
@@ -203,9 +201,10 @@ public class Game {
 
 		GeneralSupply.reset(newDialog.getUseMoreBuildings(), newDialog.getUseEvenMoreBuildings());
 		new BuildingOverviewDialog(board, newDialog.getUseMoreBuildings(), newDialog.getUseEvenMoreBuildings());
-
+		boolean preBuildCottage = !newDialog.getUseCustomCottage();
+		
 		for (Player p : players) {
-			p.init();
+			p.init(preBuildCottage);
 		}
 		phase = Phase.CLEANUP;
 		ended = false;

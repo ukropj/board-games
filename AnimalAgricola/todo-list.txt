@@ -2,7 +2,6 @@
 
 	check messages in undo stack
 	randommized cottage position
-	Barn updates Pigstall? check rules
 	
 # Bugs
 

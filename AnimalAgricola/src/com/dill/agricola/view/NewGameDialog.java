@@ -36,6 +36,7 @@ public class NewGameDialog extends JDialog implements ActionListener, ItemListen
 	private PlayerColor startingPlayer;
 	private boolean useMoreBuildings;
 	private boolean useEvenMoreBuildings;
+	private boolean useCustomCottage;
 	private boolean done = false;
 
 	public NewGameDialog(JFrame parent) {
@@ -49,6 +50,7 @@ public class NewGameDialog extends JDialog implements ActionListener, ItemListen
 		startingPlayer = Config.getEnum(ConfigKey.LAST_STARTING_PLAYER, PlayerColor.class, PlayerColor.BLUE);
 		useMoreBuildings = Config.getBoolean(ConfigKey.MORE_BUILDINGS, false);
 		useEvenMoreBuildings = Config.getBoolean(ConfigKey.EVEN_MORE_BUILDINGS, false);
+		useCustomCottage = Config.getBoolean(ConfigKey.CUSTOM_COTTAGE_PLACEMENT, false);
 		
 		buildOptions();
 		pack();
@@ -69,6 +71,7 @@ public class NewGameDialog extends JDialog implements ActionListener, ItemListen
 
 		main.add(buildStartPlayerPanel());
 		main.add(buildExpansionPanel());
+		main.add(buildExtraPanel());
 
 		JButton submitButton = UiFactory.createTextButton(Msg.get("nextBtn"), this);
 		submitButton.setActionCommand(OptionCommand.SUBMIT.toString());
@@ -128,13 +131,29 @@ public class NewGameDialog extends JDialog implements ActionListener, ItemListen
 		return expP;
 	}
 	
+	private JPanel buildExtraPanel() {
+		JPanel expP = UiFactory.createBorderPanel(5, 0);
+		expP.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createTitledBorder(Msg.get("extra")),
+				BorderFactory.createEmptyBorder(0, 5, 5, 5)
+				));
+		JCheckBox customCottage = new JCheckBox(Msg.get("customCottage"), useCustomCottage);
+		customCottage.setActionCommand(OptionCommand.CUSTOM_COTTAGE.toString());
+		customCottage.addItemListener(this);
+		
+		JPanel b = UiFactory.createVerticalPanel();
+		b.add(customCottage);
+		expP.add(b, BorderLayout.CENTER);
+		return expP;
+	}
+	
 	private void updateStartPLayerLabel() {
 		startPlayerLabel.setBackground(startingPlayer.getRealColor());
 		startPlayerLabel.setIcon(AgriImages.getFirstTokenIcon(startingPlayer.ordinal(), ImgSize.BIG));
 	}
 
 	private static enum OptionCommand {
-		BLUE_STARTS, RED_STARTS, MORE_BUILDINGS, EVEN_MORE_BUILDINGS, SUBMIT
+		BLUE_STARTS, RED_STARTS, MORE_BUILDINGS, EVEN_MORE_BUILDINGS, CUSTOM_COTTAGE, SUBMIT; 
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -162,7 +181,8 @@ public class NewGameDialog extends JDialog implements ActionListener, ItemListen
 	private void writePrefs() {
 		Config.putEnum(ConfigKey.LAST_STARTING_PLAYER, getStartingPlayer());
 		Config.putBoolean(ConfigKey.MORE_BUILDINGS, getUseMoreBuildings());
-		Config.putBoolean(ConfigKey.EVEN_MORE_BUILDINGS, getUseEvenMoreBuildings());		
+		Config.putBoolean(ConfigKey.EVEN_MORE_BUILDINGS, getUseEvenMoreBuildings());	
+		Config.putBoolean(ConfigKey.CUSTOM_COTTAGE_PLACEMENT, getUseEvenMoreBuildings());	
 	}
 
 	public void itemStateChanged(ItemEvent e) {
@@ -175,6 +195,9 @@ public class NewGameDialog extends JDialog implements ActionListener, ItemListen
 			break;
 		case EVEN_MORE_BUILDINGS:
 			useEvenMoreBuildings = selected;
+			break;
+		case CUSTOM_COTTAGE:
+			useCustomCottage = selected;
 			break;
 		default:
 			break;
@@ -195,6 +218,10 @@ public class NewGameDialog extends JDialog implements ActionListener, ItemListen
 
 	public boolean getUseEvenMoreBuildings() {
 		return useEvenMoreBuildings;
+	}
+	
+	public boolean getUseCustomCottage() {
+		return useCustomCottage;
 	}
 
 }

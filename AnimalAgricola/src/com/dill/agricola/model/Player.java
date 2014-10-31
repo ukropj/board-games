@@ -11,6 +11,7 @@ import com.dill.agricola.Game.Phase;
 import com.dill.agricola.Main;
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.FeatureAction;
+import com.dill.agricola.actions.extra.BuildCottage;
 import com.dill.agricola.common.Animals;
 import com.dill.agricola.common.Dir;
 import com.dill.agricola.common.DirPoint;
@@ -46,10 +47,10 @@ public class Player extends SimpleObservable {
 	public Player(PlayerColor color) {
 		this.color = color;
 		this.farm = new Farm();
-		init();
+		init(false);
 	}
 
-	public void init() {
+	public void init(boolean buildCottage) {
 		workers = MAX_WORKERS;
 		starting = false;
 		material.clear();
@@ -57,8 +58,11 @@ public class Player extends SimpleObservable {
 		lastBorn.clear();
 		featureActions.clear();
 		farm.init(FARM_W, FARM_H);
-		purchase(new Cottage(), Materials.EMPTY, new DirPoint(0, 2));
 		addMaterial(Material.BORDER, INIT_BORDERS);
+
+		if (buildCottage) {
+			purchase(new Cottage(), Cottage.COST, new DirPoint(0, 2));			
+		}
 
 		if (Main.DEBUG) {
 			addMaterial(new Materials(Material.WOOD, 20));
@@ -302,6 +306,11 @@ public class Player extends SimpleObservable {
 
 	public boolean initExtraActions(Phase phase, int forRound) {
 		extraActions.clear();
+		
+		if (forRound == 1 && !farm.hasBuilding(BuildingType.COTTAGE)) {
+			extraActions.add(new BuildCottage());
+		}
+		
 		for (Building b : farm.getFarmBuildings()) {
 			Action[] actions = b.getExtraActions(phase, forRound);
 			if (actions != null) {
