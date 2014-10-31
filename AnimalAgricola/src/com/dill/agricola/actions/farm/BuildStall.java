@@ -21,18 +21,20 @@ import com.dill.agricola.undo.UndoableFarmEdit;
 
 public class BuildStall extends BuildAction {
 
-	private final Action fencesAction = new FreeBorders(2);
-	private final Action stablesAction = new FreeStables();
+	private final Action freeFences = new FreeBorders(2);
+	private final Action freeStables = new FreeStables();
 
+	private final boolean standardAction;
 	protected final boolean allowOne;  
 	
 	public BuildStall() {
-		this(ActionType.STALLS, true);
+		this(ActionType.STALLS, true, true);
 	}
 	
-	public BuildStall(ActionType type, boolean allowOne) {
+	public BuildStall(ActionType type, boolean standardAction, boolean allowOne) {
 		super(type, BuildingType.STALL);
 		this.allowOne = allowOne;
+		this.standardAction = standardAction;
 	}
 
 	protected boolean isAnyLeft() {
@@ -63,15 +65,15 @@ public class BuildStall extends BuildAction {
 			Barn barn = (Barn) player.farm.getBuilding(BuildingType.BARN);
 			if (barn.canUse()) {
 				barn.use(true);
-				return joinEdits(edit, new UseBarn(barn), stablesAction.doOnFarm(player, pos));
+				return joinEdits(edit, new UseBarn(barn), freeStables.doOnFarm(player, pos));
 			}
 		}
 		return edit;
 	}
 
 	public Action getSubAction(Player player, boolean afterFarmAction) {
-		if (afterFarmAction && player.farm.hasBuilding(BuildingType.CARPENTERS_WORKSHOP)) {
-			return fencesAction;
+		if (afterFarmAction && standardAction && player.farm.hasBuilding(BuildingType.CARPENTERS_WORKSHOP)) {
+			return freeFences;
 		}
 		return null;
 	}
@@ -99,7 +101,7 @@ public class BuildStall extends BuildAction {
 
 	}
 
-	protected class UseBarn extends SimpleEdit {
+	protected static class UseBarn extends SimpleEdit {
 		private static final long serialVersionUID = 1L;
 
 		private Barn barn;

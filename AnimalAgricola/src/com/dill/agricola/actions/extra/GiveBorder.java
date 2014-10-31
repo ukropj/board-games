@@ -32,7 +32,7 @@ public class GiveBorder extends PurchaseAction implements FeatureAction {
 		return ONE_BORDER;
 	}
 	
-	public void setOwningPlayer(Player owningplayer) {
+	public void setOwner(Player owningplayer) {
 		this.otherPlayer = players[0].getColor().equals(owningplayer.getColor()) ? players[1] : players[0];
 	}
 

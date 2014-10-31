@@ -16,13 +16,16 @@ import com.dill.agricola.GeneralSupply;
 import com.dill.agricola.GeneralSupply.Supplyable;
 import com.dill.agricola.actions.Action;
 import com.dill.agricola.actions.ActionStateChangeListener;
+import com.dill.agricola.actions.extra.FreeStables;
 import com.dill.agricola.actions.extra.GiveBorder;
+import com.dill.agricola.actions.farm.BuildStall.UseBarn;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.Building;
 import com.dill.agricola.model.Player;
 import com.dill.agricola.model.buildings.OpenStables;
 import com.dill.agricola.model.buildings.evenmore.AssemblyHall;
+import com.dill.agricola.model.buildings.evenmore.Barn;
 import com.dill.agricola.model.buildings.evenmore.Inn;
 import com.dill.agricola.model.buildings.evenmore.TimberShop;
 import com.dill.agricola.model.types.ActionType;
@@ -45,6 +48,7 @@ public class BuildSpecial extends BuildAction {
 	private final static Materials[] OS_COSTS = new Materials[] { OpenStables.COST_WOOD, OpenStables.COST_STONE };
 	private int osCostNo;
 
+	private final Action freeStables = new FreeStables();
 	private BuildingType explicitToBuild;
 
 	public BuildSpecial() {
@@ -240,13 +244,22 @@ public class BuildSpecial extends BuildAction {
 		for (Action a : actions) {
 			a.addChangeListener(new ExtraActionStateChangeListener());
 		}
+
+		BuildingType btype = b.getType();
 		UndoableFarmEdit tsEdit = null;
-		if (b.getType() == BuildingType.TIMBER_SHOP) {
+		if (btype == BuildingType.TIMBER_SHOP) {
 			((TimberShop) b).setOwner(player);
 			tsEdit = TimberShop.checkReward(true);
 		}
-		if (b.getType() == BuildingType.ASSEMBLY_HALL) {
-			((GiveBorder)AssemblyHall.GIVE_BORDER).setOwningPlayer(player);
+		if (btype == BuildingType.ASSEMBLY_HALL) {
+			((GiveBorder) AssemblyHall.GIVE_BORDER).setOwner(player);
+		}
+		if ((btype == BuildingType.COW_STALL || btype == BuildingType.PIG_STALL) && player.farm.hasBuilding(BuildingType.BARN)) {
+			Barn barn = (Barn) player.farm.getBuilding(BuildingType.BARN);
+			if (barn.canUse()) {
+				barn.use(true);
+				return joinEdits(new UseBarn(barn), freeStables.doOnFarm(player, pos));
+			}
 		}
 		return joinEdits(new UseBuilding(toBuild, actions), tsEdit);
 	}

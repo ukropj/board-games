@@ -22,7 +22,7 @@ public class UpgradeTrough extends BuildStall implements FeatureAction {
 	private final Materials COST = new Materials(Material.STONE, 2);
 
 	public UpgradeTrough() {
-		super(ActionType.UPGRADE_TROUGH, false);
+		super(ActionType.UPGRADE_TROUGH, false, false);
 	}
 
 	protected Materials getCost(Player player) {
