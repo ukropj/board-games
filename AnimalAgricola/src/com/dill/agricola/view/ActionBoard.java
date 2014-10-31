@@ -93,7 +93,7 @@ public class ActionBoard extends JPanel {
 			}
 		}
 
-		tabPane.addTab(Msg.get("actionsTitle"), AgriImages.getFirstTokenIcon(1, ImgSize.SMALL), actionPanel);
+		tabPane.addTab(Msg.get("actionsTitle"), AgriImages.getFirstTokenIcon(ImgSize.SMALL), actionPanel);
 		actionsTabIndex = tabPane.indexOfComponent(actionPanel);
 	}
 

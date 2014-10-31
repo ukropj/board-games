@@ -64,7 +64,7 @@ public class ActionPanelFactory {
 		c.weighty = 0.5;
 		switch (action.getType()) {
 		case STARTING_ONE_WOOD:
-			JLabel firstL = UiFactory.createLabel(AgriImages.getFirstTokenIcon(0, ImgSize.MEDIUM));
+			JLabel firstL = UiFactory.createLabel(AgriImages.getFirstTokenIcon(ImgSize.MEDIUM));
 			firstL.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
 			firstL.setOpaque(false);
 			createRefillPanel(parent, 0, 0, action, actionButton, firstL, StartOneWood.REFILL);

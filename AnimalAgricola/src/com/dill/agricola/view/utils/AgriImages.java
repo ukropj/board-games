@@ -60,6 +60,10 @@ public class AgriImages {
 		}
 	}
 
+	public static ImageIcon getFirstTokenIcon(ImgSize size) {
+		return new ImageIcon(getFirstTokenImage(Math.random() < 0.5 ? 0 : 1, size));
+	}
+
 	public static ImageIcon getFirstTokenIcon(int id, ImgSize size) {
 		return new ImageIcon(getFirstTokenImage(id, size));
 	}
