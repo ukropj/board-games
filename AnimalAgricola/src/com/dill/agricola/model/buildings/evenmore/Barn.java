@@ -15,6 +15,8 @@ public class Barn extends Building {
 		super(BuildingType.BARN, 0, 1);
 	}
 
+	// next stall will be updated to stables for free
+	
 	public boolean canUse() {
 		return !used;
 	}

@@ -500,9 +500,6 @@ public class Board extends JFrame {
 
 	public void startRound() {
 		actionBoard.initActions();
-		if (Main.DEBUG && game.getRound() == 1) {
-			actionBoard.initActions();
-		}
 		refresh();
 	}
 	

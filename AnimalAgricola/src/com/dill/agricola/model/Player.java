@@ -16,7 +16,6 @@ import com.dill.agricola.common.Dir;
 import com.dill.agricola.common.DirPoint;
 import com.dill.agricola.common.Materials;
 import com.dill.agricola.model.buildings.Cottage;
-import com.dill.agricola.model.buildings.Stall;
 import com.dill.agricola.model.types.Animal;
 import com.dill.agricola.model.types.BuildingType;
 import com.dill.agricola.model.types.Material;
@@ -78,10 +77,11 @@ public class Player extends SimpleObservable {
 
 			farm.setActiveType(null, 0);
 
-			farm.put(Purchasable.TROUGH, new DirPoint(0, 0, null));
-			purchase(new Stall(0), Materials.EMPTY, new DirPoint(0, 1, null));
+//			farm.put(Purchasable.TROUGH, new DirPoint(0, 0, null));
+//			purchase(new Stall(0), Materials.EMPTY, new DirPoint(0, 1, null));
 		}
 		Fencer.calculateFences(farm);
+		farm.clearActive();
 	}
 
 	public String toString() {

@@ -90,14 +90,14 @@ public class Farm extends SimpleObservable {
 		return col;
 	}
 
-	private final void clearActive() {
+	public void clearActive() {
 		activeTypes.clear();
 		for (Set<DirPoint> spots : activeSpots.values()) {
 			spots.clear();
 		}
 	}
 
-	private final void clearActive(int fromLevel) {
+	private void clearActive(int fromLevel) {
 		Set<Integer> levelsToRemove = new HashSet<Integer>();
 		for (Entry<Integer, Purchasable> act : activeTypes.entrySet()) {
 			if (act.getKey() >= fromLevel) {

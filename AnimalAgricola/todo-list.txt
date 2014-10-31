@@ -1,13 +1,12 @@
-#TODO#
+# TODO
 
 	check messages in undo stack
 	randommized cottage position
+	Barn updates Pigstall? check rules
 	
-#Bugs#
+# Bugs
 
-	non-quick feature actions should be able to activate just after building is built
-
-#Nice to have#
+# Nice to have
 
 	building search
 	single player
