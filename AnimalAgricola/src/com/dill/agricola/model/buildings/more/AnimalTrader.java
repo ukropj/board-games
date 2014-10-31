@@ -15,6 +15,7 @@ public class AnimalTrader extends Building {
 
 	public AnimalTrader() {
 		super(BuildingType.ANIMAL_TRADER, 3, 2);
+		setActive(true);
 	}
 
 	// allows trading 2 different animal for 1 other animal

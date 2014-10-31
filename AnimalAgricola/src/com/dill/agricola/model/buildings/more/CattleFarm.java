@@ -13,6 +13,9 @@ public class CattleFarm extends Building {
 
 	public CattleFarm() {
 		super(BuildingType.CATTLE_FARM, 1, 3, Animal.COW);
+		setActive(true);
 	}
+	
+	// When expanding, you may exchange 1 animal for 1 cow
 
 }

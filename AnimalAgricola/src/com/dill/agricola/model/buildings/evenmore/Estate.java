@@ -17,6 +17,7 @@ public class Estate extends Building {
 	
 	public Estate() {
 		super(BuildingType.ESTATE, 0, 2, Animal.HORSE, new AnimalAction(ActionType.BUILDING_REWARD, REWARD));
+		setActive(true);
 	}
 
 	// 3 points if at least 5 special buildings

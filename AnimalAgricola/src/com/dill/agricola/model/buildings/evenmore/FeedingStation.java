@@ -11,6 +11,7 @@ public class FeedingStation extends Building {
 
 	public FeedingStation() {
 		super(BuildingType.FEEDING_STATION, 0, 1);
+		setActive(true);
 	}
 
 	// can one more animal on each pasture without feeding troughs

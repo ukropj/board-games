@@ -11,6 +11,7 @@ public class CarpentersWorkshop extends Building {
 
 	public CarpentersWorkshop() {
 		super(BuildingType.CARPENTERS_WORKSHOP, 2, 1);
+		setActive(true);
 	}
 
 	// when you carry out 'Stalls' action, build 2 fences for free

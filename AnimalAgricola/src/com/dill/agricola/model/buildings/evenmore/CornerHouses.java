@@ -11,6 +11,7 @@ public class CornerHouses extends Building {
 
 	public CornerHouses() {
 		super(BuildingType.CORNER_HOUSES, 4, 3);
+		setActive(true);
 	}
 
 	// you can no longer expand farm

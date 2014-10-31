@@ -17,9 +17,10 @@ public class Ranch extends Building {
 
 	public Ranch() {
 		super(BuildingType.RANCH, 2, 2, Animal.HORSE);
+		setActive(true);
 	}
 
-	// grants one free fence action during each breeding phase when horse is born
+	// grants one free fence during each breeding phase when horse is born
 	public Action[] getExtraActions(Phase phase, int round) {
 		return phase == Phase.BEFORE_BREEDING ? EXTRA_ACTIONS : null;
 	}

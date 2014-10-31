@@ -17,6 +17,7 @@ public class TradingStation extends Building {
 	
 	public TradingStation() {
 		super(BuildingType.TRADING_STATION, 1, 1, Animal.COW);
+		setActive(true);
 	}
 
 	// allows trading 2 different animal for 1 other animal

@@ -12,6 +12,7 @@ public class LogHouse extends Building {
 
 	public LogHouse() {
 		super(BuildingType.LOG_HOUSE, 0, 4);
+		setActive(true);
 	}
 	
 	public float getVictoryPoints(Player player) {

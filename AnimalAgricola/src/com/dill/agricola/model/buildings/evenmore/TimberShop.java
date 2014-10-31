@@ -26,6 +26,7 @@ public class TimberShop extends Building {
 
 	public TimberShop() {
 		super(BuildingType.TIMBER_SHOP, 1, 0);
+		setActive(true);
 	}
 
 	public static UndoableFarmEdit takeTopAction(boolean take) {

@@ -17,6 +17,7 @@ public class WildBoarPen extends Building implements ExtraCapacityProvider {
 
 	public WildBoarPen() {
 		super(BuildingType.WILD_BOAR_PEN, 0, 2, Animal.PIG);
+		setActive(true);
 	}
 	
 	public Animals getExtraCapacity(DirPoint pos, Space space) {

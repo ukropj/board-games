@@ -12,6 +12,7 @@ public class WoodworkingShop extends Building {
 
 	public WoodworkingShop() {
 		super(BuildingType.WOODWORKING_SHOP, 1, 2);
+		setActive(true);
 	}
 
 	// build any new fences for free

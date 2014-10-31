@@ -24,6 +24,7 @@ public abstract class Building extends Space {
 	protected Space buildSpace = null;
 	protected Materials paidCost; // actual cost payed for this building instance
 	protected DirPoint buildPos;
+	private boolean active = false;
 
 	public Building(BuildingType type, int vp, int cap) {
 		this(type, vp, cap, null, null);
@@ -32,11 +33,11 @@ public abstract class Building extends Space {
 	public Building(BuildingType type, int vp, int cap, Animal reqiredAnimal) {
 		this(type, vp, cap, reqiredAnimal, null);
 	}
-	
+
 	public Building(BuildingType type, int vp, int cap, Action subAction) {
 		this(type, vp, cap, null, subAction);
 	}
-	
+
 	public Building(BuildingType type, int vp, int cap, Animal reqiredAnimal, Action subAction) {
 		this.type = type;
 		this.vp = vp;
@@ -75,7 +76,7 @@ public abstract class Building extends Space {
 			return Collections.emptySet();
 		}
 	}
-	
+
 	public Action getSubAction() {
 		// action invoked when building is built
 		return subAction;
@@ -85,7 +86,7 @@ public abstract class Building extends Space {
 		// actions granted by this building at the beginning/end of some phase
 		return null;
 	}
-	
+
 	public FeatureAction getFeatureAction() {
 		// actions that can be used anytime
 		return null;
@@ -169,5 +170,14 @@ public abstract class Building extends Space {
 
 	public String getShortName() {
 		return Namer.getName(this, 2);
+	}
+
+	protected void setActive(boolean active) {
+		this.active = active;
+	}
+
+	public boolean isActive() {
+		// returns true if building will trigger some special effect in the future
+		return active;
 	}
 }

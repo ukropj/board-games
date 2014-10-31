@@ -9,9 +9,10 @@ import com.dill.agricola.model.types.Material;
 public class StorageBuilding extends Building {
 
 	public final static Materials COST = new Materials(Material.WOOD, Material.WOOD, Material.REED);
-
+	
 	public StorageBuilding() {
 		super(BuildingType.STORAGE_BUILDING, 0, 0);
+		setActive(true);
 	}
 
 	public float getVictoryPoints(Player player) {

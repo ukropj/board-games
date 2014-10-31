@@ -20,6 +20,7 @@ public class HomeWorkshop extends Building {
 
 	public HomeWorkshop() {
 		super(BuildingType.HOME_WORKSHOP, 1, 0);
+		setActive(true);
 	}
 
 	// grants Stall action before each breeding phase

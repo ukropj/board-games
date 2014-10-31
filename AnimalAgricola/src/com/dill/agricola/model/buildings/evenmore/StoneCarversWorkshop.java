@@ -18,6 +18,7 @@ public class StoneCarversWorkshop extends Building {
 	public StoneCarversWorkshop() {
 		super(BuildingType.STONE_CARVERS_WORKSHOP, 0, 0);
 		CARVE_STONE.reset();
+		setActive(true);
 	}
 
 	public Action[] getExtraActions(Phase phase, int round) {
@@ -28,5 +29,7 @@ public class StoneCarversWorkshop extends Building {
 		int stones = CARVE_STONE.getCarvedStones();
 		return stones * 2;
 	}
+	
+	// allows carving stone for extra points
 
 }

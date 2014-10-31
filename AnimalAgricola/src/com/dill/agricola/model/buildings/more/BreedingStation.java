@@ -12,6 +12,7 @@ public class BreedingStation extends Building {
 
 	public BreedingStation() {
 		super(BuildingType.BREEDING_STATION, 0, 2);
+		setActive(true);
 	}
 	
 	// causes extra breeding phase at the end of the game

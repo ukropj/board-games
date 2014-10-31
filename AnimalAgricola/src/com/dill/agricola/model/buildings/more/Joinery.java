@@ -15,6 +15,7 @@ public class Joinery extends Building {
 
 	public Joinery() {
 		super(BuildingType.JOINERY, 0, 0);
+		setActive(true);
 	}
 
 	// grants 1 feeding trough for 2 wood before each breeding phase

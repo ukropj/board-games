@@ -30,14 +30,16 @@ There is no AI or networking present. Two players play on single computer.
 ### Extra actions
 
  - When a special building gives you an extra action:
+ 
  	- it may be invoked immediately (e.g. "Fence Manufacturer")
  	- you may be prompted later, when the action can be performed (e.g. "Home Workshop")
- 	- a button may appear besides your farm to activate the action when you want (e.g. "Animal Trader")
+ 	- a button may appear besides your farm to activate the action whenever you want (e.g. "Assembly Hall")
 
 ### Undo/Redo
 
  - There is no limit - you can undo any number of actions/turns.
  - Undo/redo does not remember exact placements of your animals.
+ 
  	- Game will maintain the correct number of animals, but their positions may change.
  	- You will need to reposition your animals manually after redoing an animal-related action.
  	
@@ -49,10 +51,16 @@ There is no AI or networking present. Two players play on single computer.
  - Score tab shows current scores of both players.
  
  - Building panel (in the bottom) can be toggled using toolbar.
- - Board layout can be switched from two farm to single farm usong toolbar.
+ - Board layout can be switched from two farm to single farm using toolbar.
+ 
+ - Buildings on your farm may be decorated with small "House" symbol in top right corner,
+   this notifies you that the building can grant you an extra action, ability or victory points later,
+   so you won't forget it.
  
 ## Version history
 
+1.2.1
+ - tabbed layout, screen capture
 1.2
  - added "Even More Buildings Big and Small" expansion
  - possible to save scores
@@ -61,4 +69,4 @@ There is no AI or networking present. Two players play on single computer.
 1.0
  - first release, available in English, German, Czech and Slovak
 
-by Jakub Ukrop, April 2014
+by Jakub Ukrop, October 2014

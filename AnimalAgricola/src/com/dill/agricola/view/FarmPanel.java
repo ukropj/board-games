@@ -7,6 +7,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Polygon;
 import java.awt.Rectangle;
@@ -80,6 +81,7 @@ public class FarmPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	public final static Color RED = new Color(154, 0, 25);
+	public final static Image ACTIVE_IMAGE = Images.createIcon("go-home", ImgSize.SMALL).getImage();
 
 	public final static int S = 100;
 	public final static int M = S / 16, L = S - 2 * M;
@@ -863,6 +865,9 @@ public class FarmPanel extends JPanel {
 			buildingOffRect.translate(-realPos.x, -realPos.y);
 			break;
 		default:
+			if (building != null && building.isActive()) {
+				g.drawImage(ACTIVE_IMAGE, realPos.x+M, realPos.y+M, null);
+			}
 			break;
 		}
 	}

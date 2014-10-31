@@ -19,6 +19,7 @@ public class DairyFarm extends Building implements ExtraCapacityProvider {
 
 	public DairyFarm() {
 		super(BuildingType.DAIRY_FARM, 3, 2, Animal.COW);
+		setActive(true);
 	}
 
 	public Animals getExtraCapacity(DirPoint pos, Space space) {

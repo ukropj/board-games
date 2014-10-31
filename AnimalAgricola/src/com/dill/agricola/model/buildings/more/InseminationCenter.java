@@ -11,6 +11,7 @@ public class InseminationCenter extends Building {
 
 	public InseminationCenter() {
 		super(BuildingType.INSEMINATION_CENTER, 0, 0);
+		setActive(true);
 	}
 
 	// allows breeding even with 1 animal

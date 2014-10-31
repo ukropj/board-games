@@ -13,6 +13,7 @@ public class Barn extends Building {
 
 	public Barn() {
 		super(BuildingType.BARN, 0, 1);
+		setActive(true);
 	}
 
 	// next stall will be updated to stables for free
@@ -23,6 +24,7 @@ public class Barn extends Building {
 
 	public void use(boolean use) {
 		used = use;
+		setActive(!used);
 	}
 
 }

@@ -14,6 +14,9 @@ public class StewardsOffice extends Building {
 
 	public StewardsOffice() {
 		super(BuildingType.STEWARDS_OFFICE, -3, 1);
+		setActive(true);
 	}
+	
+	// gives 1 extra worker
 
 }

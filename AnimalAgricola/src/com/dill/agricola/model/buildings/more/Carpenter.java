@@ -17,6 +17,7 @@ public class Carpenter extends Building {
 
 	public Carpenter() {
 		super(BuildingType.CARPENTER, 1, 0);
+		setActive(true);
 	}
 
 	// allows moving stalls and feeding troughs

@@ -17,6 +17,7 @@ public class Office extends Building {
 
 	public Office() {
 		super(BuildingType.OFFICE, 6, 2, Animal.HORSE);
+		setActive(true);
 	}
 
 	// lose 2 points for each building adjacent to the forest

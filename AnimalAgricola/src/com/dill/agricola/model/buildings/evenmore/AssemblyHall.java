@@ -15,6 +15,7 @@ public class AssemblyHall extends Building {
 	
 	public AssemblyHall() {
 		super(BuildingType.ASSEMBLY_HALL, 2, 0);
+		setActive(true);
 	}
 
 	// you can give 1 border to opponent and build 1 free fence

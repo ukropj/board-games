@@ -39,6 +39,7 @@ public class RearingStation extends Building implements ExtraCapacityProvider {
 
 	public RearingStation() {
 		super(BuildingType.REARING_STATION, 1, 0);
+		setActive(true);
 	}
 
 	// this space can contain one of each animal

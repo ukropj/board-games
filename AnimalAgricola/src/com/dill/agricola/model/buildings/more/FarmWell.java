@@ -16,6 +16,7 @@ public class FarmWell extends Building {
 
 	public FarmWell() {
 		super(BuildingType.FARM_WELL, 0, 0);
+		setActive(true);
 	}
 
 	// grants free feeding trough before last 3 rounds

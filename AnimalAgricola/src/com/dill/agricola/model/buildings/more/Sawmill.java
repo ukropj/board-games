@@ -11,6 +11,7 @@ public class Sawmill extends Building {
 
 	public Sawmill() {
 		super(BuildingType.SAWMILL, 4, 0);
+		setActive(true);
 	}
 
 	// buildings and troughs cost one wood less

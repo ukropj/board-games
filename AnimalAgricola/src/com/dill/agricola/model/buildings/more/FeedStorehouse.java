@@ -14,6 +14,7 @@ public class FeedStorehouse extends Building {
 
 	public FeedStorehouse() {
 		super(BuildingType.FEED_STOREHOUSE, 0, 0, new OneTrough(Materials.EMPTY));
+		setActive(true);
 	}
 	
 	public float getVictoryPoints(Player player) {

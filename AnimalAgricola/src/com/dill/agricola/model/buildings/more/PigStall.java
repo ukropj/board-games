@@ -17,6 +17,7 @@ public class PigStall extends Building {
 	
 	public PigStall() {
 		super(BuildingType.PIG_STALL, 0, 3, Animal.PIG, new AnimalAction(ActionType.BUILDING_REWARD, REWARD));
+		setActive(true);
 	}
 
 	// 4 points if at least 13 pigs

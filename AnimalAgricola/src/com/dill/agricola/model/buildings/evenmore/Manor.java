@@ -16,6 +16,7 @@ public class Manor extends Building {
 
 	public Manor() {
 		super(BuildingType.MANOR, 7, 2);
+		setActive(true);
 	}
 
 	// lose 2 points for each building adjacent to the road

@@ -15,9 +15,10 @@ public class CattleMarket extends Building {
 
 	public CattleMarket() {
 		super(BuildingType.CATTLE_MARKET, 2, 2);
+		setActive(true);
 	}
 
-	// allows trading 2 different animal for 1 other animal
+	// allows trading 1 reed for 1 animal
 	public FeatureAction getFeatureAction() {
 		return TRADE_REED;
 	}

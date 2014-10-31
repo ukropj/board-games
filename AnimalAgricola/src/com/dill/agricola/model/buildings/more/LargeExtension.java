@@ -15,6 +15,7 @@ public class LargeExtension extends Building {
 
 	public LargeExtension() {
 		super(BuildingType.LARGE_EXTENSION, 0, 2);
+		setActive(true);
 	}
 
 	public float getVictoryPoints(Player player) {

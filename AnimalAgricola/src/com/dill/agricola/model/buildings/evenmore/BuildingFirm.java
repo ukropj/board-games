@@ -15,6 +15,7 @@ public class BuildingFirm extends Building {
 
 	public BuildingFirm() {
 		super(BuildingType.BUILDING_FIRM, 2, 0);
+		setActive(true);
 	}
 
 	// allows upgrading trough to stall for 2 stone

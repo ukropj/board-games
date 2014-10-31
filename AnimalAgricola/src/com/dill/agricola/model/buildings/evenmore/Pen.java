@@ -11,7 +11,8 @@ public class Pen extends Building {
 
 	public Pen() {
 		super(BuildingType.PEN, 0, 4);
+		setActive(true);
 	}
 	
-	// animals in the pen does not count for scorings
+	// animals in the pen does not count for scoring
 }

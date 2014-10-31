@@ -18,6 +18,7 @@ public class Stud extends Building implements ExtraCapacityProvider {
 
 	public Stud() {
 		super(BuildingType.STUD, 3, 2, Animal.HORSE);
+		setActive(true);
 	}
 
 	public Animals getExtraCapacity(DirPoint pos, Space space) {

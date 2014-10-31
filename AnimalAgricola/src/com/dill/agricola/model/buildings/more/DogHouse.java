@@ -18,6 +18,7 @@ public class DogHouse extends Building implements ExtraCapacityProvider {
 
 	public DogHouse() {
 		super(BuildingType.DOG_HOUSE, 0, 0);
+		setActive(true);
 	}
 
 	public Animals getExtraCapacity(DirPoint pos, Space space) {
