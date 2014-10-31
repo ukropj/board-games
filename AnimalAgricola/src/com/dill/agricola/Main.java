@@ -1,26 +1,19 @@
 package com.dill.agricola;
 
-import java.awt.Color;
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import com.dill.agricola.support.Msg;
-import com.dill.agricola.view.utils.Images;
-import com.dill.agricola.view.utils.UiFactory;
+import com.dill.agricola.view.SplashDialog;
 
 public class Main {
 
 	public static final String VERSION = "1.2";
 
-	private static enum Lang {
+	public static enum Lang {
 		EN, DE, CZ, SK;
 
 		public String toString() {
@@ -33,62 +26,45 @@ public class Main {
 	public static boolean SKIP_LANG = false;
 //	public static boolean SKIP_LANG = true;
 
-	private static final Lang DEFAULT_LANG = DEBUG ? Lang.SK : Lang.EN; // 'en' is default
+	private static final Lang DEFAULT_LANG = Lang.EN; // 'en' is default
 
 	public static void main(String[] args) {
 
-		boolean langChosen = chooseLanguage();
+		Lang lang = DEFAULT_LANG;
 
-		if (!langChosen) {
-			System.exit(1);
-		} else {
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					setLookAndFeel();
+		if (!SKIP_LANG) {
+			SplashDialog sd = new SplashDialog();
+			lang = sd.getSelectedLang();
+			if (lang == null) {
+				// exit
+				System.exit(1);
+			}
+		}
+		Msg.load(new Locale(lang.toString()));
 
-					try {
-						Game g = new Game();
-						g.start();
-					} catch (Throwable e) {
-						String msg = e.getMessage();
-						JOptionPane.showMessageDialog(null, msg != null ? msg : Msg.get("unknownErrorMsg"), Msg.get("errorTitle"), JOptionPane.ERROR_MESSAGE);
-						e.printStackTrace();
-					}
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				setLookAndFeel();
+
+				try {
+					Game g = new Game();
+					g.start();
+				} catch (Throwable e) {
+					String msg = e.getMessage();
+					JOptionPane.showMessageDialog(null, msg != null ? msg : Msg.get("unknownErrorMsg"), Msg.get("errorTitle"), JOptionPane.ERROR_MESSAGE);
+					e.printStackTrace();
 				}
+			}
 
-				private void setLookAndFeel() {
-					try {
-						UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-					} catch (Exception e1) {
-						throw new RuntimeException(e1);
-					}
+			private void setLookAndFeel() {
+				try {
+					UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+				} catch (Exception e1) {
+					throw new RuntimeException(e1);
 				}
+			}
 
-			});
-		}
-	}
-
-	private static boolean chooseLanguage() {
-		List<JComponent> opts = new ArrayList<JComponent>();
-		for (Lang lang : Lang.values()) {
-			JComponent opt = UiFactory.createLabel(getLangIcon(lang));
-			opt.setOpaque(true);
-			opt.setBackground(Color.LIGHT_GRAY);
-			opts.add(opt);
-		}
-		int chosenLang = SKIP_LANG ? DEFAULT_LANG.ordinal() : UiFactory.showOptionDialog(null, "Select language", "Agricola: All Creatures Big and Small",
-				null, opts, 0);
-		if (chosenLang != UiFactory.NO_OPTION) {
-			Msg.load(new Locale(Lang.values()[chosenLang].toString()));
-			return true;
-		}
-		return false;
-	}
-
-	private static ImageIcon getLangIcon(Lang lang) {
-		BufferedImage img = Images.createImage("flags/lang_" + lang.toString());
-		img = Images.getBestScaledInstance(img, 50);
-		return new ImageIcon(img);
+		});
 	}
 
 	public static void asrtPositive(int i, String msg) throws IllegalArgumentException {

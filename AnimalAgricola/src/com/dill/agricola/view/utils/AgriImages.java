@@ -46,7 +46,7 @@ public class AgriImages {
 
 	private AgriImages() {
 	}
-
+	
 	public static BufferedImage getFirstTokenImage(int id, ImgSize size) {
 		int arrId = id + size.ordinal() * PlayerColor.values().length;
 		Main.asrtInRange(arrId, 0, firstTokens.length, "Invalid img id");
