@@ -368,7 +368,7 @@ public class AgriImages {
 		case BUILDING:
 			return getBuildingIcon(BuildingType.HALF_TIMBERED_HOUSE, ImgSize.SMALL);
 		case EXTENSION:
-			return new ImageIcon(Images.getBestScaledInstance(getExtensionImage(0), 0.03f));
+			return new ImageIcon(Images.getBestScaledInstance(getExtensionImage(0), 0.06f));
 		case FENCE:
 			return new ImageIcon(Images.getBestScaledInstance(AgriImages.getFenceImage(Dir.N), 0.5f));
 		case TROUGH:
